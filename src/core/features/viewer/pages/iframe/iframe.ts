@@ -14,7 +14,8 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to display a URL in an iframe.
@@ -22,8 +23,11 @@ import { CoreDomUtils } from '@services/utils/dom';
 @Component({
     selector: 'core-viewer-iframe',
     templateUrl: 'iframe.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreViewerIframePage implements OnInit {
+export default class CoreViewerIframePage implements OnInit {
 
     title?: string; // Page title.
     url?: string; // Iframe URL.
@@ -37,8 +41,7 @@ export class CoreViewerIframePage implements OnInit {
             this.title = CoreNavigator.getRequiredRouteParam('title');
             this.url = CoreNavigator.getRequiredRouteParam('url');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;

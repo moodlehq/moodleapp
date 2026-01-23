@@ -1,7 +1,7 @@
 /** Format Text - Show more styles. */
 /** Styles of elements inside the directive should be placed in format-text.scss */
-@use "theme/globals.variables" as global;
-@use "sass:math" as math;
+@use "../globals.variables" as global;
+@use "sass:math";
 
 core-format-text {
     --core-format-text-background: var(--background, var(--ion-item-background));
@@ -72,7 +72,6 @@ core-format-text {
 
         button.core-image-viewer-icon {
             position: absolute;
-            @include position(null, 10px, 10px, null);
             color: var(--ion-text-color);
             border-radius: var(--mdl-shape-borderRadius-xl);
             background-color: var(--core-format-text-viewer-icon-background);
@@ -82,6 +81,7 @@ core-format-text {
             height: var(--a11y-sizing-minTargetSize);
             max-width: var(--a11y-sizing-minTargetSize);
             font-size: var(--mdl-typography-icon-fontSize-lg);
+            @include position(null, 10px, 10px, null);
 
             ion-icon {
                 flex: 1;
@@ -103,15 +103,20 @@ core-format-text {
         }
     }
 
-    // Disable clicks in links inside MathJax equations.
-    .filter_mathjaxloader_equation .MathJax_Preview a {
-        pointer-events: none;
-    }
-
-    .MathJax_SVG_Display {
+    .filter_mathjaxloader_equation mjx-container,
+    .filter_mathjaxloader_equation mjx-container[jax="CHTML"] { // Increase specificity.
         overflow-x: auto;
         margin: 0;
         padding: 10px 0;
+
+        // Disable clicks in links inside MathJax equations.
+        a {
+            pointer-events: none;
+        }
+
+        mjx-assistive-mml {
+            @include sr-only();
+        }
     }
 
 }
@@ -183,25 +188,25 @@ core-format-text {
 
     .embed-responsive-21by9 {
         &::before {
-            padding-top: percentage(math.div(9, 21));
+            padding-top: math.percentage(math.div(9, 21));
         }
     }
 
     .embed-responsive-16by9 {
         &::before {
-            padding-top: percentage(math.div(9, 16));
+            padding-top: math.percentage(math.div(9, 16));
         }
     }
 
     .embed-responsive-4by3 {
         &::before {
-            padding-top: percentage(math.div(3, 4));
+            padding-top: math.percentage(math.div(3, 4));
         }
     }
 
     .embed-responsive-1by1 {
         &::before {
-            padding-top: percentage(1);
+            padding-top: math.percentage(1);
         }
     }
 
@@ -210,6 +215,9 @@ core-format-text {
 core-format-text,
 .item core-format-text,
 core-rich-text-editor .core-rte-editor {
+    @import "bootstrap/bootstrap";
+    @import "moodle/moodle";
+
     @include core-headings();
 
     p, ul, ol, li {
@@ -302,6 +310,7 @@ core-rich-text-editor .core-rte-editor {
         -webkit-appearance: none;
     }
 
+    --input-size: var(--size, 20px);
     input[type=radio],
     input[type=checkbox] {
         position: relative !important;
@@ -309,8 +318,8 @@ core-rich-text-editor .core-rte-editor {
         --color: var(--text-color);
         --color-checked: var(--color);
 
-        width: var(--size);
-        height: var(--size);
+        width: var(--input-size);
+        height: var(--input-size);
         border-radius: var(--border-radius);
         border-width: var(--outer-border-width);
         border-style: var(--border-style);
@@ -326,7 +335,9 @@ core-rich-text-editor .core-rte-editor {
         }
 
         & + label {
-            line-height: var(--size);
+            line-height: var(--input-size);
+            margin-top: 2px;
+            margin-bottom: 2px;
         }
     }
 
@@ -364,10 +375,11 @@ core-rich-text-editor .core-rte-editor {
         flex-shrink: 0;
     }
 
-    @import "theme/components/atto.scss";
-    // @TODO on 4.5 Remove the comment below.
-    // @import "theme/components/moodle.scss";
-    @import "theme/components/bootstrap/bootstrap.scss";
+    a {
+        color: var(--core-link-color);
+        text-decoration: var(--core-link-decoration, underline);
+    }
+
 }
 
 // h1 is too big and ugly, reduce size when loading.
@@ -381,4 +393,62 @@ ion-header.ios h1 core-format-text {
 :root.dark core-format-text select,
 :root.dark core-rich-text-editor .core-rte-editor select {
 	background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+
+:root.plt-ios core-format-text,
+:root.plt-ios .item core-format-text {
+    .mobileapp-ios-d-none {
+        display: none !important;
+    }
+    .mobileapp-ios-d-block {
+        display: block !important;
+    }
+    .mobileapp-ios-d-inline {
+        display: inline !important;
+    }
+    .mobileapp-ios-d-inline-block {
+        display: inline-block !important;
+    }
+    .mobileapp-ios-d-flex {
+        display: flex !important;
+    }
+}
+
+:root.plt-android core-format-text,
+:root.plt-android .item core-format-text {
+    .mobileapp-android-d-none {
+        display: none !important;
+    }
+    .mobileapp-android-d-block {
+        display: block !important;
+    }
+    .mobileapp-android-d-inline {
+        display: inline !important;
+    }
+    .mobileapp-android-d-inline-block {
+        display: inline-block !important;
+    }
+    .mobileapp-android-d-flex {
+        display: flex !important;
+    }
+}
+
+:root core-format-text,
+:root .item core-format-text {
+    .mobileapp-d-none {
+        display: none !important;
+    }
+    .mobileapp-d-block {
+        display: block !important;
+    }
+    .mobileapp-d-inline {
+        display: inline !important;
+    }
+    .mobileapp-d-inline-block {
+        display: inline-block !important;
+    }
+    .mobileapp-d-flex {
+        display: flex !important;
+    }
 }

@@ -1,5 +1,6 @@
-<!-- Only render the block if it's supported. -->
-<ion-card *ngIf="loaded && componentClass && block && block.visible" class="{{class}}" role="region"
-    [attr.aria-labelledby]="labelledBy ? labelledBy : null">
-    <core-dynamic-component [component]="componentClass" [data]="data" />
-</ion-card>
+@if (loaded() && componentClass() && block().visible) {
+    <!-- Only render the block if it's supported. -->
+    <ion-card class="{{class()}}" role="region" [attr.aria-labelledby]="labelledBy() ? labelledBy() : null">
+        <core-dynamic-component [component]="componentClass()" [data]="data()" />
+    </ion-card>
+}

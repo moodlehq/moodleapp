@@ -1,13 +1,8 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h1 *ngIf="title">{{ title | translate }}</h1>
+            <h1>{{ title | translate }}</h1>
         </ion-title>
-
-        <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
-            <ion-button *ngIf="hasCaptured" (click)="done()">{{ 'core.done' | translate }}</ion-button>
-        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -16,35 +11,62 @@
             <!-- Video stream for image and video. -->
             <video [hidden]="hasCaptured" class="core-webcam-stream" autoplay #streamVideo></video>
 
-            <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
-            <video *ngIf="isVideo" [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo
-                controlsList="nodownload">
-            </video>
-
-            <!-- Canvas to treat the image and an img to show the result. -->
-            <canvas *ngIf="isImage" class="core-webcam-image-canvas" #imgCanvas></canvas>
-            <img *ngIf="isImage" [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}"
-                #previewImage>
+            @if (isVideo) {
+                <!-- For video recording, use 2 videos and show/hide them because a CSS rule caused problems with the controls. -->
+                <video [hidden]="!hasCaptured" class="core-webcam-video-captured" controls #previewVideo controlsList="nodownload">
+                </video>
+            } @else {
+                <!-- Canvas to treat the image and an img to show the result. -->
+                <canvas class="core-webcam-image-canvas" #imgCanvas></canvas>
+                <img [hidden]="!hasCaptured" class="core-webcam-image" alt="{{ 'core.capturedimage' | translate }}" #previewImage>
+            }
         </div>
     </core-loading>
 </ion-content>
 
-<ion-footer *ngIf="readyToCapture">
-    <ion-row>
-        <ion-col />
-        <ion-col class="ion-text-center">
-            <ion-button fill="clear" *ngIf="!hasCaptured" (click)="actionClicked()" [ariaLabel]="title">
-                <ion-icon *ngIf="!isCapturing && isVideo" name="fas-video" slot="icon-only" aria-hidden="true" />
-                <ion-icon *ngIf="isImage" name="fas-camera" slot="icon-only" aria-hidden="true" />
-                <ion-icon *ngIf="isCapturing" name="fas-square" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-            <ion-button fill="clear" *ngIf="hasCaptured" (click)="discard()" [ariaLabel]="'core.discard' | translate">
-                <ion-icon color="danger" name="fas-trash" slot="icon-only" aria-hidden="true" />
-            </ion-button>
-        </ion-col>
-        <ion-col class="ion-padding ion-text-end chrono-container">
-            <core-chrono *ngIf="!isImage" [hidden]="hasCaptured" [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime"
-                (onEnd)="stopCapturing()" />
-        </ion-col>
-    </ion-row>
-</ion-footer>
+@if (readyToCapture) {
+    <ion-footer class="gray-with-border">
+        <ion-row>
+            @if (hasCaptured) {
+                <ion-col class="ion-text-center">
+                    <ion-button fill="clear" expand="block" (click)="discard()" [ariaLabel]="'core.discard' | translate">
+                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" color="danger" />
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-center">
+                    <ion-button fill="clear" expand="block" (click)="done()" [ariaLabel]="'core.done' | translate">
+                        <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+            } @else {
+                <ion-col class="ion-text-start">
+                    <ion-button fill="clear" (click)="cancel()" [ariaLabel]="'core.cancel' | translate">
+                        <ion-icon name="fas-xmark" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+
+                @if (isVideo) {
+                    <ion-col class="ion-text-center">
+                        <ion-button fill="clear" expand="block" (click)="actionClicked()" [ariaLabel]="title">
+                            @if (isCapturing) {
+                                <ion-icon name="fas-square" slot="icon-only" aria-hidden="true" />
+                            } @else {
+                                <ion-icon name="fas-video" slot="icon-only" aria-hidden="true" />
+                            }
+                        </ion-button>
+                    </ion-col>
+                    <ion-col class="ion-padding ion-text-end chrono-container">
+                        <core-chrono [running]="isCapturing" [reset]="resetChrono" [endTime]="maxTime" (onEnd)="stopCapturing()" />
+                    </ion-col>
+                } @else {
+                    <ion-col class="ion-text-center">
+                        <ion-button fill="clear" expand="block" (click)="actionClicked()" [ariaLabel]="title">
+                            <ion-icon name="fas-camera" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    </ion-col>
+                    <ion-col />
+                }
+            }
+        </ion-row>
+    </ion-footer>
+}

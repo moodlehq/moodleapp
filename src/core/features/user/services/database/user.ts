@@ -19,7 +19,7 @@ import { CoreUserBasicData } from '../user';
  * Database variables for CoreUser service.
  */
 export const USERS_TABLE_NAME = 'users';
-export const SITE_SCHEMA: CoreSiteSchema = {
+export const CORE_USER_CACHE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreUserProvider',
     version: 1,
     canBeCleared: [USERS_TABLE_NAME],
@@ -46,15 +46,15 @@ export const SITE_SCHEMA: CoreSiteSchema = {
 };
 
 /**
- * Database variables for CoreUserOffline service.
+ * Database variables for CoreUserPreferencesOffline service.
  */
-export const PREFERENCES_TABLE_NAME = 'user_preferences';
-export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
+export const USER_PREFERENCES_TABLE_NAME = 'user_preferences';
+export const CORE_USER_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreUserOfflineProvider',
     version: 1,
     tables: [
         {
-            name: PREFERENCES_TABLE_NAME,
+            name: USER_PREFERENCES_TABLE_NAME,
             columns: [
                 {
                     name: 'name',

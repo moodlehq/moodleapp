@@ -15,12 +15,6 @@
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonBlogIndexPage } from './pages/index';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
-
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
@@ -35,14 +29,14 @@ import { canLeaveGuard } from '@guards/can-leave';
     return [
         {
             path: 'index',
-            component: AddonBlogIndexPage,
+            loadComponent: () => import('./pages/index/index'),
             data: {
                 mainMenuTabRoot: ADDON_BLOG_MAINMENU_PAGE_NAME,
             },
         },
         {
             path: 'edit/:id',
-            loadComponent: () => import('./pages/edit-entry/edit-entry').then(c => c.AddonBlogEditEntryPage),
+            loadComponent: () => import('./pages/edit-entry/edit-entry'),
             canDeactivate: [canLeaveGuard],
         },
         ...buildTabMainRoutes(injector, {
@@ -53,15 +47,6 @@ import { canLeaveGuard } from '@guards/can-leave';
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreCommentsComponentsModule,
-        CoreTagComponentsModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        AddonBlogIndexPage,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -71,4 +56,4 @@ import { canLeaveGuard } from '@guards/can-leave';
         },
     ],
 })
-export class AddonBlogLazyModule {}
+export default class AddonBlogLazyModule {}

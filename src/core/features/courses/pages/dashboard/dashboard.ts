@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, viewChildren } from '@angular/core';
 
 import { CoreCourses } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockComponent } from '@features/block/components/block/block';
 import { CoreNavigator } from '@services/navigator';
@@ -40,9 +39,9 @@ import { CoreUserProfile } from '@features/user/services/user';
     templateUrl: 'dashboard.html',
     styleUrls: ['dashboard.scss'],
 })
-export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
+export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
 
-    @ViewChildren(CoreBlockComponent) blocksComponents?: QueryList<CoreBlockComponent>;
+    readonly blocksComponents = viewChildren(CoreBlockComponent);
 
     hasMainBlocks = false;
     hasSideBlocks = false;
@@ -50,7 +49,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
     downloadCourseEnabled = false;
     downloadCoursesEnabled = false;
     userId?: number;
-    blocks: Partial<CoreCourseBlock>[] = [];
+    readonly blocks = signal<Partial<CoreCourseBlock>[]>([]);
     loaded = false;
     
     // Parent/mentee properties
@@ -72,7 +71,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async () => {
-            await CoreUtils.ignoreErrors(CoreCourses.logView('dashboard'));
+            await CorePromiseUtils.ignoreErrors(CoreCourses.logView('dashboard'));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
@@ -123,7 +122,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
                 this.hasMainBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.mainBlocks);
                 this.hasSideBlocks = CoreBlockDelegate.hasSupportedBlock(blocks.sideBlocks);
             } catch (error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
 
                 // Cannot get the blocks, just show dashboard if needed.
                 this.loadFallbackBlocks();
@@ -133,7 +132,7 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             this.loadFallbackBlocks();
         } else {
             // Disabled.
-            this.blocks = [];
+            this.blocks.set([]);
         }
 
         this.loaded = true;
@@ -156,7 +155,8 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
             },
         ];
 
-        this.hasMainBlocks = CoreBlockDelegate.isBlockSupported('myoverview') || CoreBlockDelegate.isBlockSupported('timeline');
+        this.hasMainBlocks = CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS.some((blockName) =>
+            CoreBlockDelegate.isBlockSupported(blockName));
     }
 
     /**
@@ -170,14 +170,17 @@ export class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
 
         // Invalidate the blocks.
-        this.blocksComponents?.forEach((blockComponent) => {
-            promises.push(blockComponent.invalidate().catch(() => {
-                // Ignore errors.
-            }));
+        this.blocksComponents()?.forEach((blockComponent) => {
+            promises.push(blockComponent.invalidate());
         });
 
-        Promise.all(promises).finally(() => {
-            this.loadContent().finally(() => {
+        CorePromiseUtils.allPromisesIgnoringErrors(promises).finally(() => {
+            this.loadContent().finally(async () => {
+                await CorePromiseUtils.allPromisesIgnoringErrors(
+                    this.blocksComponents()?.map((blockComponent) =>
+                        blockComponent.reload()),
+                );
+
                 refresher?.complete();
             });
         });

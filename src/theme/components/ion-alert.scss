@@ -20,13 +20,21 @@ ion-alert {
         overflow: auto;
         border-radius: var(--border-radius) !important;
 
+        button.alert-button {
+            // By default, Ionic uses the primary color, which does not meet AA accessibility.
+            color: var(--text-color);
+        }
+
         button.alert-button.alert-button-role-destructive {
             color: var(--danger);
         }
 
     }
 
-    .alert-message {
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/alert#customization
+    .alert-message[class] {
+        // By default, Ionic uses a lighter text color for Android, which does not meet AA accessibility.
+        color: var(--color);
         user-select: text;
         flex-shrink: 0;
 
@@ -76,6 +84,11 @@ ion-alert {
     .alert-head:empty {
         padding-bottom: 0;
     }
+
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/alert#customization
+    &[class] {
+        touch-action: pinch-zoom;
+    }
 }
 
 ion-alert.core-alert-network-error .alert-head,
@@ -99,6 +112,17 @@ div.core-iframe-network-error {
         background-color: var(--danger);
         -webkit-mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
         mask: url("/assets/fonts/font-awesome/solid/triangle-exclamation.svg") no-repeat 50% 50%;
+    }
+}
+
+:root.dark {
+    ion-alert.core-alert-network-error .alert-head,
+    div.core-iframe-network-error {
+        filter: invert(1);
+
+        &::after {
+            filter: invert(1); // Invert the color because it's inverted by the filter above.
+        }
     }
 }
 

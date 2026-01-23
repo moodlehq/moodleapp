@@ -19,6 +19,7 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
 import { CoreSitePlugins, CoreSitePluginsUserHandlerData } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render blocks with only a title and link.
@@ -27,12 +28,9 @@ import { CoreNavigator } from '@services/navigator';
     selector: 'core-siteplugins-only-title-block',
     templateUrl: 'core-siteplugins-only-title-block.html',
     styles: [':host { display: contents; }'],
+    imports: [CoreSharedModule],
 })
 export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {
-
-    constructor() {
-        super('CoreSitePluginsOnlyTitleBlockComponent');
-    }
 
     /**
      * @inheritdoc
@@ -40,7 +38,7 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
     async ngOnInit(): Promise<void> {
         super.ngOnInit();
 
-        this.fetchContentDefaultError = 'Error getting ' + (this.block.contents?.title || 'block') + ' data.';
+        this.fetchContentDefaultError = `Error getting ${this.block.contents?.title || 'block'} data.`;
     }
 
     /**
@@ -68,6 +66,8 @@ export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseCompone
                     args,
                     initResult: handler.initResult,
                     ptrEnabled: (<CoreSitePluginsUserHandlerData> handler.handlerSchema).ptrenabled,
+                    contextLevel: 'block',
+                    contextInstanceId: this.instanceId,
                 },
             },
         );

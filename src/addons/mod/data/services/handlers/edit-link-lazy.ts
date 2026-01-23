@@ -17,7 +17,7 @@ import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_DATA_FEATURE_NAME, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 import { AddonModDataEditLinkHandlerService } from '@addons/mod/data/services/handlers/edit-link';

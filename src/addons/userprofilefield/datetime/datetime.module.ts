@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldDatetimeHandler } from './services/handlers/datetime';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldDatetimeComponent } from './component/datetime';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldDatetimeComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldDatetimeHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonUserProfileFieldDatetimeComponent,
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldDatetimeHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldDatetimeModule {}

@@ -12,20 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CanLeave } from '@guards/can-leave';
-import { CoreFileEntry } from '@services/file-helper';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
@@ -39,8 +38,11 @@ import {
 import { AddonModGlossaryHelper } from '../../services/glossary-helper';
 import { AddonModGlossaryOffline } from '../../services/glossary-offline';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the edit form.
@@ -48,12 +50,16 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-glossary-edit',
     templateUrl: 'edit.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
-export class AddonModGlossaryEditPage implements OnInit, CanLeave {
+export default class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
-    @ViewChild('editFormEl') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('editFormEl');
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     cmId!: number;
     courseId!: number;
     loaded = false;
@@ -82,8 +88,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
     protected syncObserver?: CoreEventObserver;
     protected isDestroyed = false;
     protected saved = false;
-
-    constructor(protected route: ActivatedRoute) {}
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc
@@ -99,7 +104,11 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 this.editorExtraParams.timecreated = timecreated;
                 this.handler = new AddonModGlossaryOfflineFormHandler(this, timecreated);
             } else if (entrySlug) {
-                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug));
+                // Get the entry content unfiltered to edit it.
+                const { entry } = await AddonModGlossary.getEntry(Number(entrySlug), {
+                    readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                    filter: false,
+                });
 
                 this.entry = entry;
                 this.editorExtraParams.timecreated = entry.timecreated;
@@ -108,7 +117,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 this.handler = new AddonModGlossaryNewFormHandler(this);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -142,7 +151,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
                 url: '/mod/glossary/edit.php' + (this.entry ? `?cmid=${this.cmId}&id=${this.entry.id}` : ''),
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingglossary', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingglossary') });
             CoreNavigator.back();
         }
     }
@@ -187,13 +196,13 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
         if (this.hasDataChanged()) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
         // Delete the local files from the tmp folder.
         CoreFileUploader.clearTmpFiles(this.data.attachments);
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -203,7 +212,7 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
      */
     async save(): Promise<void> {
         if (!this.data.concept || !this.data.definition) {
-            CoreDomUtils.showErrorModal('addon.mod_glossary.fillfields', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_glossary.fillfields'));
 
             return;
         }
@@ -219,11 +228,11 @@ export class AddonModGlossaryEditPage implements OnInit, CanLeave {
 
             this.saved = true;
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, savedOnline, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), savedOnline, CoreSites.getCurrentSiteId());
 
             CoreNavigator.back();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.cannoteditentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.cannoteditentry') });
         } finally {
             modal.dismiss();
         }
@@ -292,7 +301,7 @@ abstract class AddonModGlossaryFormHandler {
         const data = this.page.data;
         const itemId = await CoreFileUploader.uploadOrReuploadFiles(
             data.attachments,
-            ADDON_MOD_GLOSSARY_COMPONENT,
+            ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
             glossary.id,
         );
 
@@ -522,7 +531,7 @@ class AddonModGlossaryNewFormHandler extends AddonModGlossaryFormHandler {
             try {
                 onlineAttachments = await this.uploadAttachments(glossary);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -634,7 +643,10 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
         const data = this.page.data;
 
         data.concept = this.entry.concept;
-        data.definition = this.entry.definition || '';
+        data.definition = CoreFileHelper.replacePluginfileUrls(
+            this.entry.definition,
+            this.entry.definitioninlinefiles || [],
+        );
         data.timecreated = this.entry.timecreated;
         data.usedynalink = this.entry.usedynalink;
 
@@ -671,7 +683,10 @@ class AddonModGlossaryOnlineFormHandler extends AddonModGlossaryFormHandler {
 
         const data = this.page.data;
         const options = this.getSaveOptions(glossary);
-        const definition = CoreText.formatHtmlLines(data.definition);
+        const definition = CoreText.formatHtmlLines(CoreFileHelper.restorePluginfileUrls(
+            data.definition,
+            this.entry.definitioninlinefiles || [],
+        ));
 
         // Upload attachments, if any.
         const attachmentsId = await this.uploadAttachments();

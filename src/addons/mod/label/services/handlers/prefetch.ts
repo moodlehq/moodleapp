@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModLabel } from '../label';
-import { ADDON_MOD_LABEL_COMPONENT } from '../../constants';
+import { ADDON_MOD_LABEL_COMPONENT, ADDON_MOD_LABEL_COMPONENT_LEGACY, ADDON_MOD_LABEL_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch labels.
@@ -28,9 +28,9 @@ import { ADDON_MOD_LABEL_COMPONENT } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModLabel';
-    modName = 'label';
-    component = ADDON_MOD_LABEL_COMPONENT;
+    name = ADDON_MOD_LABEL_COMPONENT;
+    modName = ADDON_MOD_LABEL_MODNAME;
+    component = ADDON_MOD_LABEL_COMPONENT_LEGACY;
     updatesNames = /^.*files$/;
 
     /**
@@ -60,7 +60,7 @@ export class AddonModLabelPrefetchHandlerService extends CoreCourseResourcePrefe
         promises.push(AddonModLabel.invalidateLabelData(courseId));
         promises.push(CoreCourse.invalidateModule(module.id));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**

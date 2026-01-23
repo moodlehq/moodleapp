@@ -18,11 +18,11 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModGlossary } from '../glossary';
-import { ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_GLOSSARY_FEATURE_NAME, ADDON_MOD_GLOSSARY_MODNAME, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to glossary entries.
@@ -31,7 +31,7 @@ import { CoreLoadings } from '@services/loadings';
 export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModGlossaryEntryLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModGlossary';
+    featureName = ADDON_MOD_GLOSSARY_FEATURE_NAME;
     pattern = /\/mod\/glossary\/(showentry|view)\.php.*([&?](eid|g|mode|hook)=\d+)/;
 
     /**
@@ -52,7 +52,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
 
                     const module = await CoreCourse.getModuleBasicInfoByInstance(
                         response.entry.glossaryid,
-                        'glossary',
+                        ADDON_MOD_GLOSSARY_MODNAME,
                         { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                     );
 
@@ -67,7 +67,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
                 } finally {
                     modal.dismiss();
                 }

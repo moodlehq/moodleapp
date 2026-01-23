@@ -22,11 +22,11 @@ import {
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModImscp } from '../imscp';
-import { ADDON_MOD_IMSCP_COMPONENT } from '../../constants';
+import { ADDON_MOD_IMSCP_COMPONENT, ADDON_MOD_IMSCP_COMPONENT_LEGACY, ADDON_MOD_IMSCP_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch IMSCPs.
@@ -34,9 +34,9 @@ import { ADDON_MOD_IMSCP_COMPONENT } from '../../constants';
 @Injectable( { providedIn: 'root' })
 export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModImscp';
-    modName = 'imscp';
-    component = ADDON_MOD_IMSCP_COMPONENT;
+    name = ADDON_MOD_IMSCP_COMPONENT;
+    modName = ADDON_MOD_IMSCP_MODNAME;
+    component = ADDON_MOD_IMSCP_COMPONENT_LEGACY;
 
     /**
      * @inheritdoc
@@ -61,7 +61,7 @@ export class AddonModImscpPrefetchHandlerService extends CoreCourseResourcePrefe
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
         // If not found, use undefined so module description is used.
-        const imscp = await CoreUtils.ignoreErrors(AddonModImscp.getImscp(courseId, module.id));
+        const imscp = await CorePromiseUtils.ignoreErrors(AddonModImscp.getImscp(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, imscp);
     }

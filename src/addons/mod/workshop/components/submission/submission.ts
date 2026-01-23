@@ -18,7 +18,6 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { AddonModWorkshopSubmissionPage } from '../../pages/submission/submission';
 import {
     AddonModWorkshopData,
     AddonModWorkshopGetWorkshopAccessInformationWSResponse,
@@ -31,6 +30,7 @@ import {
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { ADDON_MOD_WORKSHOP_COMPONENT, ADDON_MOD_WORKSHOP_PAGE_NAME, AddonModWorkshopPhase } from '@addons/mod/workshop/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays workshop submission.
@@ -38,7 +38,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-workshop-submission',
     templateUrl: 'addon-mod-workshop-submission.html',
-    styleUrls: ['submission.scss'],
+    styleUrl: 'submission.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModWorkshopSubmissionComponent implements OnInit {
 
@@ -49,6 +52,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
     @Input({ required: true }) courseId!: number;
     @Input() assessment?: AddonModWorkshopSubmissionAssessmentWithFormData;
     @Input({ transform: toBoolean }) summary = false;
+    @Input({ transform: toBoolean }) submissionPage = false;
 
     component = ADDON_MOD_WORKSHOP_COMPONENT;
     componentId?: number;
@@ -96,8 +100,7 @@ export class AddonModWorkshopSubmissionComponent implements OnInit {
             }));
         }
 
-        this.viewDetails = !this.summary && this.workshop.phase == AddonModWorkshopPhase.PHASE_CLOSED &&
-            CoreNavigator.getCurrentRoute().component != AddonModWorkshopSubmissionPage;
+        this.viewDetails = !this.submissionPage && !this.summary && this.workshop.phase === AddonModWorkshopPhase.PHASE_CLOSED;
 
         if (this.viewDetails && this.submission.gradeoverby) {
             promises.push(CoreUser.getProfile(this.submission.gradeoverby, this.courseId, true).then((profile) => {

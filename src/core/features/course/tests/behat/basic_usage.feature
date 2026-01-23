@@ -1,4 +1,4 @@
-@core_course @app @javascript
+@core_course @app @core @javascript
 Feature: Test basic usage of one course in app
   In order to participate in one course while using the mobile app
   As a student
@@ -18,8 +18,6 @@ Feature: Test basic usage of one course in app
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-    And I enable "chat" "mod" plugin
-    And I enable "survey" "mod" plugin
     And the following "activities" exist:
       | activity | name            | intro                   | course | idnumber | option                       | section |
       | choice   | Choice course 1 | Test choice description | C1     | choice1  | Option 1, Option 2, Option 3 | 1       |
@@ -29,9 +27,6 @@ Feature: Test basic usage of one course in app
     And the following "activities" exist:
       | activity   | name            | intro       | course | idnumber | groupmode | assessed | scale[modgrade_type] |
       | forum      | Test forum name | Test forum  | C1     | forum    | 0         | 5        | Point                |
-    And the following "activities" exist:
-      | activity   | name            | intro       | course | idnumber | groupmode | section |
-      | chat       | Test chat name  | Test chat   | C1     | chat     | 0         | 2       |
     And the following "activities" exist:
       | activity | name      | intro        | course | idnumber | section |
       | data     | Web links | Useful links | C1     | data1    | 4       |
@@ -61,9 +56,6 @@ Feature: Test basic usage of one course in app
       | question | page |
       | TF1      | 1    |
       | TF2      | 2    |
-    And the following "activities" exist:
-      | activity    | name             | intro        | course | idnumber  | groupmode | section |
-      | survey      | Test survey name | Test survey  | C1     | survey    | 0         | 1       |
     And the following "activities" exist:
       | activity    | name             | intro        | course | idnumber  | groupmode |
       | wiki        | Test wiki name   | Test wiki    | C1     | wiki      | 0         |
@@ -102,8 +94,6 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -112,8 +102,8 @@ Feature: Test basic usage of one course in app
     And I should not find "Web links" in the app
     And I should not find "Test glossary" in the app
 
-    When I set "page-core-course-index .core-course-thumb" styles to "background" "lightblue"
-    And I set "page-core-course-index .core-course-thumb img" styles to "display" "none"
+    When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
+    And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
     Then the UI should match the snapshot
 
     # Test infinite scroll on course
@@ -134,10 +124,6 @@ Feature: Test basic usage of one course in app
     When I go back in the app
     And I press "Test forum name" in the app
     Then the header should be "Test forum name" in the app
-
-    When I go back in the app
-    And I press "Test chat name" in the app
-    Then the header should be "Test chat name" in the app
 
     When I go back in the app
     And I press "Web links" in the app
@@ -162,10 +148,6 @@ Feature: Test basic usage of one course in app
     Then the header should be "Quiz 1" in the app
 
     When I go back in the app
-    And I press "Test survey name" in the app
-    Then the header should be "Test survey name" in the app
-
-    When I go back in the app
     And I press "Test wiki name" in the app
     Then the header should be "Test wiki name" in the app
 
@@ -182,7 +164,6 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test workshop name" in the app
     And the following events should have been logged for "student1" in the app:
       | name                                       | activity | activityname       | course   |
-      | \mod_survey\event\course_module_viewed     | survey   | Test survey name   | Course 1 |
       | \mod_wiki\event\course_module_viewed       | wiki     | Test wiki name     | Course 1 |
       | \mod_lesson\event\course_module_viewed     | lesson   | Test lesson name   | Course 1 |
       | \mod_scorm\event\course_module_viewed      | scorm    | Test scorm name    | Course 1 |
@@ -191,7 +172,6 @@ Feature: Test basic usage of one course in app
       | \mod_assign\event\course_module_viewed     | assign   | assignment         | Course 1 |
       | \mod_assign\event\submission_status_viewed | assign   | assignment         | Course 1 |
       | \mod_forum\event\course_module_viewed      | forum    | Test forum name    | Course 1 |
-      | \mod_chat\event\course_module_viewed       | chat     | Test chat name     | Course 1 |
       | \mod_data\event\course_module_viewed       | data     | Web links          | Course 1 |
       | \mod_lti\event\course_module_viewed        | lti      | Test external name | Course 1 |
       | \mod_feedback\event\course_module_viewed   | feedback | Test feedback name | Course 1 |
@@ -207,8 +187,6 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -223,13 +201,11 @@ Feature: Test basic usage of one course in app
     And I should find "Test wiki name" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
-    And I should not find "Test chat name" in the app
     And I should not find "Web links" in the app
     And I should not find "Test external name" in the app
     And I should not find "Test feedback name" in the app
     And I should not find "Test glossary" in the app
     And I should not find "Quiz 1" in the app
-    And I should not find "Test survey name" in the app
     And I should not find "Test lesson name" in the app
     And I should not find "Test scorm name" in the app
     And I should not find "Test workshop name" in the app
@@ -247,9 +223,7 @@ Feature: Test basic usage of one course in app
     Then I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
     But I should not find "Test forum name" in the app
-    And I should not find "Test chat name" in the app
     And I should not find "Web links" in the app
     And I should not find "Test feedback name" in the app
     And I should not find "Test glossary" in the app
@@ -271,14 +245,9 @@ Feature: Test basic usage of one course in app
     Then the header should be "Test external name" in the app
 
     When I go back in the app
-    And I press "Test survey name" in the app
-    Then the header should be "Test survey name" in the app
-
-    When I go back in the app
     And I press "Course index" in the app
     And I press "Section 2" in the app
     Then I should find "Quiz 1" in the app
-    And I should find "Test chat name" in the app
     And I should find "Test scorm name" in the app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
@@ -287,16 +256,11 @@ Feature: Test basic usage of one course in app
     And I should not find "Test external name" in the app
     And I should not find "Test feedback name" in the app
     And I should not find "Test glossary" in the app
-    And I should not find "Test survey name" in the app
     And I should not find "Test wiki name" in the app
     And I should not find "Test lesson name" in the app
     And I should not find "Test workshop name" in the app
 
-    When I press "Test chat name" in the app
-    Then the header should be "Test chat name" in the app
-
-    When I go back in the app
-    And I press "Quiz 1" in the app
+    When I press "Quiz 1" in the app
     Then the header should be "Quiz 1" in the app
 
     When I go back in the app
@@ -312,12 +276,10 @@ Feature: Test basic usage of one course in app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
     And I should not find "Test forum name" in the app
-    And I should not find "Test chat name" in the app
     And I should not find "Web links" in the app
     And I should not find "Test external name" in the app
     And I should not find "Test glossary" in the app
     And I should not find "Quiz 1" in the app
-    And I should not find "Test survey name" in the app
     And I should not find "Test wiki name" in the app
     And I should not find "Test scorm name" in the app
 
@@ -339,12 +301,10 @@ Feature: Test basic usage of one course in app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
     And I should not find "Test forum name" in the app
-    And I should not find "Test chat name" in the app
     And I should not find "Test external name" in the app
     And I should not find "Test feedback name" in the app
     And I should not find "Test glossary" in the app
     And I should not find "Quiz 1" in the app
-    And I should not find "Test survey name" in the app
     And I should not find "Test wiki name" in the app
     And I should not find "Test lesson name" in the app
     And I should not find "Test scorm name" in the app
@@ -360,12 +320,10 @@ Feature: Test basic usage of one course in app
     But I should not find "Choice course 1" in the app
     And I should not find "assignment" in the app
     And I should not find "Test forum name" in the app
-    And I should not find "Test chat name" in the app
     And I should not find "Web links" in the app
     And I should not find "Test external name" in the app
     And I should not find "Test feedback name" in the app
     And I should not find "Quiz 1" in the app
-    And I should not find "Test survey name" in the app
     And I should not find "Test wiki name" in the app
     And I should not find "Test lesson name" in the app
     And I should not find "Test scorm name" in the app
@@ -383,8 +341,6 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -459,38 +415,11 @@ Feature: Test basic usage of one course in app
       | \core\event\course_viewed | Course 1 | {"coursesectionnumber":4} |
       | \core\event\course_viewed | Course 1 | {"coursesectionnumber":5} |
 
-  Scenario: Self enrol
-    Given I log in as "teacher1"
-    And I add "Self enrolment" enrolment method in "Course 1" with:
-      | Custom instance name | Student self enrolment |
-    And I entered the app as "student2"
-    When I press "Site home" in the app
-    And I press "Available courses" in the app
-    And I press "Course 1" in the app
-    And I press "Enrol me" in the app
-    And I press "OK" in the app
-    And I wait loading to finish in the app
-    Then the header should be "Course 1" in the app
-    And I should find "Test forum name" in the app
-    And I should find "Test wiki name" in the app
-    And I should find "Choice course 1" in the app
-    And I should find "assignment" in the app
-    And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
-    And I should find "Quiz 1" in the app
-    And I should find "Test scorm name" in the app
-    And I should find "Test feedback name" in the app
-    And I should find "Test lesson name" in the app
-    And I should find "Test workshop name" in the app
-    And I should not find "Web links" in the app
-    And I should not find "Test glossary" in the app
-
   Scenario: View blocks on drawer
+    # Add another block just to ensure there is something in the block region and the drawer is displayed.
     Given the following "blocks" exist:
       | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
-      | html             | Course       | C1        | course-view-*   | site-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
-      | activity_modules | Course       | C1        | course-view-*   | site-pre      |                                                                                                              |
+      | html             | Course       | C1        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
     And I entered the course "Course 1" as "student1" in the app
     Then the header should be "Course 1" in the app
     And I should find "Test forum name" in the app
@@ -498,8 +427,6 @@ Feature: Test basic usage of one course in app
     And I should find "Choice course 1" in the app
     And I should find "assignment" in the app
     And I should find "Test external name" in the app
-    And I should find "Test survey name" in the app
-    And I should find "Test chat name" in the app
     And I should find "Quiz 1" in the app
     And I should find "Test scorm name" in the app
     And I should find "Test feedback name" in the app
@@ -510,4 +437,3 @@ Feature: Test basic usage of one course in app
     Then I press "Open block drawer" in the app
     And I should find "HTML title test" in the app
     And I should find "body test" in the app
-    And I should find "Activities" in the app

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
 import {
@@ -23,17 +23,36 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from './messages-offline';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { AddonMessagesSyncEvents, AddonMessagesSyncProvider } from './messages-sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { AddonNotificationsPreferencesNotificationProcessorState } from '@addons/notifications/services/notifications';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import {
+    ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT,
+    ADDON_MESSAGES_LIMIT_CONTACTS,
+    ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH,
+    ADDON_MESSAGES_LIMIT_MESSAGES,
+    ADDON_MESSAGES_LIMIT_SEARCH,
+    ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
+    ADDON_MESSAGES_NEW_MESSAGE_EVENT,
+    ADDON_MESSAGES_OPEN_CONVERSATION_EVENT,
+    ADDON_MESSAGES_POLL_INTERVAL,
+    ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT,
+    ADDON_MESSAGES_READ_CHANGED_EVENT,
+    ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT,
+    ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT,
+    AddonMessagesMessageConversationType,
+    AddonMessagesMessagePrivacy,
+    AddonMessagesUpdateConversationAction,
+} from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 declare module '@singletons/events' {
 
@@ -43,22 +62,15 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonMessagesProvider.NEW_MESSAGE_EVENT]: AddonMessagesNewMessagedEventData;
-        [AddonMessagesProvider.READ_CHANGED_EVENT]: AddonMessagesReadChangedEventData;
-        [AddonMessagesProvider.OPEN_CONVERSATION_EVENT]: AddonMessagesOpenConversationEventData;
-        [AddonMessagesProvider.UPDATE_CONVERSATION_LIST_EVENT]: AddonMessagesUpdateConversationListEventData;
-        [AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT]: AddonMessagesMemberInfoChangedEventData;
-        [AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT]: AddonMessagesUnreadConversationCountsEventData;
-        [AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT]: AddonMessagesContactRequestCountEventData;
-        [AddonMessagesSyncProvider.AUTO_SYNCED]: AddonMessagesSyncEvents;
+        [ADDON_MESSAGES_NEW_MESSAGE_EVENT]: AddonMessagesNewMessagedEventData;
+        [ADDON_MESSAGES_READ_CHANGED_EVENT]: AddonMessagesReadChangedEventData;
+        [ADDON_MESSAGES_OPEN_CONVERSATION_EVENT]: AddonMessagesOpenConversationEventData;
+        [ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT]: AddonMessagesUpdateConversationListEventData;
+        [ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT]: AddonMessagesMemberInfoChangedEventData;
+        [ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT]: AddonMessagesUnreadConversationCountsEventData;
+        [ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT]: AddonMessagesContactRequestCountEventData;
     }
 
-}
-
-export const enum AddonMessagesUpdateConversationAction {
-    MUTE = 'mute',
-    FAVOURITE = 'favourite',
-    DELETE = 'delete',
 }
 
 /**
@@ -69,54 +81,90 @@ export class AddonMessagesProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaMessages:';
 
-    static readonly NEW_MESSAGE_EVENT = 'addon_messages_new_message_event';
-    static readonly READ_CHANGED_EVENT = 'addon_messages_read_changed_event';
-    static readonly OPEN_CONVERSATION_EVENT = 'addon_messages_open_conversation_event'; // Notify a conversation should be opened.
-    static readonly UPDATE_CONVERSATION_LIST_EVENT = 'addon_messages_update_conversation_list_event';
-    static readonly MEMBER_INFO_CHANGED_EVENT = 'addon_messages_member_changed_event';
-    static readonly UNREAD_CONVERSATION_COUNTS_EVENT = 'addon_messages_unread_conversation_counts_event';
-    static readonly CONTACT_REQUESTS_COUNT_EVENT = 'addon_messages_contact_requests_count_event';
-    static readonly POLL_INTERVAL = 10000;
-    static readonly PUSH_SIMULATION_COMPONENT = 'AddonMessagesPushSimulation';
-
-    static readonly MESSAGE_PRIVACY_COURSEMEMBER = 0; // Privacy setting for being messaged by anyone within courses user is member.
-    static readonly MESSAGE_PRIVACY_ONLYCONTACTS = 1; // Privacy setting for being messaged only by contacts.
-    static readonly MESSAGE_PRIVACY_SITE = 2; // Privacy setting for being messaged by anyone on the site.
-    static readonly MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = 1; // An individual conversation.
-    static readonly MESSAGE_CONVERSATION_TYPE_GROUP = 2; // A group conversation.
-    static readonly MESSAGE_CONVERSATION_TYPE_SELF = 3; // A self conversation.
-    static readonly LIMIT_CONTACTS = 50;
-    static readonly LIMIT_MESSAGES = 50;
-    static readonly LIMIT_INITIAL_USER_SEARCH = 3;
-    static readonly LIMIT_SEARCH = 50;
-
-    static readonly NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
-
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('AddonMessages');
-    }
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_NEW_MESSAGE_EVENT instead.
+     */
+    static readonly NEW_MESSAGE_EVENT = ADDON_MESSAGES_NEW_MESSAGE_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_READ_CHANGED_EVENT instead.
+     */
+    static readonly READ_CHANGED_EVENT = ADDON_MESSAGES_READ_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_OPEN_CONVERSATION_EVENT instead.
+     */
+    static readonly OPEN_CONVERSATION_EVENT = ADDON_MESSAGES_OPEN_CONVERSATION_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT instead.
+     */
+    static readonly UPDATE_CONVERSATION_LIST_EVENT = ADDON_MESSAGES_UPDATE_CONVERSATION_LIST_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT instead.
+     */
+    static readonly MEMBER_INFO_CHANGED_EVENT = ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT instead.
+     */
+    static readonly UNREAD_CONVERSATION_COUNTS_EVENT = ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT instead.
+     */
+    static readonly CONTACT_REQUESTS_COUNT_EVENT = ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_POLL_INTERVAL instead.
+     */
+    static readonly POLL_INTERVAL = ADDON_MESSAGES_POLL_INTERVAL;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT instead.
+     */
+    static readonly PUSH_SIMULATION_COMPONENT = ADDON_MESSAGES_PUSH_SIMULATION_COMPONENT;
 
     /**
-     * Add a contact.
-     *
-     * @param userId User ID of the person to add.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Resolved when done.
-     * @deprecatedonmoodle since 3.6
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.COURSEMEMBER instead.
      */
-    protected async addContact(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
+    static readonly MESSAGE_PRIVACY_COURSEMEMBER = AddonMessagesMessagePrivacy.COURSEMEMBER;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.ONLYCONTACTS instead.
+     */
+    static readonly MESSAGE_PRIVACY_ONLYCONTACTS = AddonMessagesMessagePrivacy.ONLYCONTACTS;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessagePrivacy.SITE instead.
+     */
+    static readonly MESSAGE_PRIVACY_SITE = AddonMessagesMessagePrivacy.SITE;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.INDIVIDUAL instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_INDIVIDUAL = AddonMessagesMessageConversationType.INDIVIDUAL;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.GROUP instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_GROUP = AddonMessagesMessageConversationType.GROUP;
+    /**
+     * @deprecated since 5.0. Use AddonMessagesMessageConversationType.SELF instead.
+     */
+    static readonly MESSAGE_CONVERSATION_TYPE_SELF = AddonMessagesMessageConversationType.SELF;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_CONTACTS instead.
+     */
+    static readonly LIMIT_CONTACTS = ADDON_MESSAGES_LIMIT_CONTACTS;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_MESSAGES instead.
+     */
+    static readonly LIMIT_MESSAGES = ADDON_MESSAGES_LIMIT_MESSAGES;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH instead.
+     */
+    static readonly LIMIT_INITIAL_USER_SEARCH = ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH;
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_LIMIT_SEARCH instead.
+     */
+    static readonly LIMIT_SEARCH = ADDON_MESSAGES_LIMIT_SEARCH;
 
-        const params = {
-            userids: [userId],
-        };
+    /**
+     * @deprecated since 5.0. Use ADDON_MESSAGES_NEW_MESSAGE_EVENT instead.
+     */
+    static readonly NOTIFICATION_PREFERENCES_KEY = 'message_provider_moodle_instantmessage';
 
-        await site.write('core_message_create_contacts', params);
-
-        await this.invalidateAllContactsCache(site.getId());
-    }
+    protected logger = CoreLogger.getInstance('AddonMessages');
 
     /**
      * Block a user.
@@ -124,30 +172,23 @@ export class AddonMessagesProvider {
      * @param userId User ID of the person to block.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved when done.
+     * @since 3.6
      */
     async blockContact(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         try {
-            if (site.wsAvailable('core_message_block_user')) {
-                // Since Moodle 3.6
-                const params: AddonMessagesBlockUserWSParams = {
-                    userid: site.getUserId(),
-                    blockeduserid: userId,
-                };
-                await site.write('core_message_block_user', params);
-            } else {
-                const params: { userids: number[] } = {
-                    userids: [userId],
-                };
-                await site.write('core_message_block_contacts', params);
-            }
+            const params: AddonMessagesBlockUserWSParams = {
+                userid: site.getUserId(),
+                blockeduserid: userId,
+            };
+            await site.write('core_message_block_user', params);
 
             await this.invalidateAllMemberInfo(userId, site);
         } finally {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, userBlocked: true };
 
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         }
     }
 
@@ -169,14 +210,13 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_confirm_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
-            this.invalidateContactsCache(site.id),
             this.invalidateUserContacts(site.id),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestConfirmed: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -191,28 +231,23 @@ export class AddonMessagesProvider {
     async createContactRequest(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        // Use legacy function if not available.
-        if (!site.wsAvailable('core_message_create_contact_request')) {
-            await this.addContact(userId, site.getId());
-        } else {
-            const params: AddonMessagesCreateContactRequestWSParams = {
-                userid: site.getUserId(),
-                requesteduserid: userId,
-            };
+        const params: AddonMessagesCreateContactRequestWSParams = {
+            userid: site.getUserId(),
+            requesteduserid: userId,
+        };
 
-            const result = await site.write<AddonMessagesCreateContactRequestWSResponse>(
-                'core_message_create_contact_request',
-                params,
-            );
+        const result = await site.write<AddonMessagesCreateContactRequestWSResponse>(
+            'core_message_create_contact_request',
+            params,
+        );
 
-            if (result.warnings?.length) {
-                throw new CoreWSError(result.warnings[0]);
-            }
+        if (result.warnings?.length) {
+            throw new CoreWSError(result.warnings[0]);
         }
 
         await this.invalidateAllMemberInfo(userId, site).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestCreated: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -234,12 +269,12 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_decline_contact_request', params);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateAllMemberInfo(userId, site),
             this.refreshContactRequestsCount(site.id),
         ]).finally(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRequestDeclined: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         });
     }
 
@@ -261,7 +296,6 @@ export class AddonMessagesProvider {
      * @param conversationIds Conversations to delete.
      * @param siteId Site ID. If not defined, use current site.
      * @param userId User ID. If not defined, current user in the site.
-     * @returns Promise resolved when the conversations have been deleted.
      */
     async deleteConversations(conversationIds: number[], siteId?: string, userId?: number): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -339,7 +373,6 @@ export class AddonMessagesProvider {
      *
      * @param id Message ID.
      * @param userId User we want to delete the message for. If not defined, use current user.
-     * @returns Promise resolved when the message has been deleted.
      */
     async deleteMessageForAllOnline(id: number, userId?: number): Promise<void> {
         userId = userId || CoreSites.getCurrentSiteUserId();
@@ -373,8 +406,8 @@ export class AddonMessagesProvider {
         conversation.lastmessagedate = lastMessage ? lastMessage.timecreated : undefined;
         conversation.sentfromcurrentuser = lastMessage ? lastMessage.useridfrom == userId : undefined;
 
-        if (conversation.type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
-            const isIndividual = conversation.type == AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL;
+        if (conversation.type != AddonMessagesMessageConversationType.GROUP) {
+            const isIndividual = conversation.type == AddonMessagesMessageConversationType.INDIVIDUAL;
 
             const otherUser = conversation.members.find((member) =>
                 (isIndividual && member.id != userId) || (!isIndividual && member.id == userId));
@@ -396,31 +429,12 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Get the cache key for blocked contacts.
-     *
-     * @param userId The user who's contacts we're looking for.
-     * @returns Cache key.
-     */
-    protected getCacheKeyForBlockedContacts(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'blockedContacts:' + userId;
-    }
-
-    /**
-     * Get the cache key for contacts.
-     *
-     * @returns Cache key.
-     */
-    protected getCacheKeyForContacts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contacts';
-    }
-
-    /**
      * Get the cache key for comfirmed contacts.
      *
      * @returns Cache key.
      */
     protected getCacheKeyForUserContacts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'userContacts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}userContacts`;
     }
 
     /**
@@ -429,7 +443,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForContactRequests(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contactRequests';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}contactRequests`;
     }
 
     /**
@@ -438,7 +452,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForContactRequestsCount(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'contactRequestsCount';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}contactRequestsCount`;
     }
 
     /**
@@ -448,17 +462,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     getCacheKeyForDiscussion(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'discussion:' + userId;
-    }
-
-    /**
-     * Get the cache key for the message count.
-     *
-     * @param userId User ID.
-     * @returns Cache key.
-     */
-    protected getCacheKeyForMessageCount(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'count:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}discussion:${userId}`;
     }
 
     /**
@@ -467,16 +471,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForUnreadConversationCounts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'unreadConversationCounts';
-    }
-
-    /**
-     * Get the cache key for the list of discussions.
-     *
-     * @returns Cache key.
-     */
-    protected getCacheKeyForDiscussions(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'discussions';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}unreadConversationCounts`;
     }
 
     /**
@@ -487,7 +482,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversation(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversation:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversation:${userId}:${conversationId}`;
     }
 
     /**
@@ -498,7 +493,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationBetweenUsers(userId: number, otherUserId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationBetweenUsers:' + userId + ':' + otherUserId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationBetweenUsers:${userId}:${otherUserId}`;
     }
 
     /**
@@ -509,7 +504,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationMembers(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationMembers:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationMembers:${userId}:${conversationId}`;
     }
 
     /**
@@ -520,7 +515,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationMessages(userId: number, conversationId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationMessages:' + userId + ':' + conversationId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationMessages:${userId}:${conversationId}`;
     }
 
     /**
@@ -541,7 +536,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForConversationCounts(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversationCounts';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversationCounts`;
     }
 
     /**
@@ -552,7 +547,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForMemberInfo(userId: number, otherUserId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'memberInfo:' + userId + ':' + otherUserId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}memberInfo:${userId}:${otherUserId}`;
     }
 
     /**
@@ -562,7 +557,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getCacheKeyForSelfConversation(userId: number): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'selfconversation:' + userId;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}selfconversation:${userId}`;
     }
 
     /**
@@ -581,112 +576,21 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getRootCacheKeyForConversations(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'conversations:';
-    }
-
-    /**
-     * Get all the contacts of the current user.
-     *
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with the WS data.
-     * @deprecatedonmoodle since 3.6
-     */
-    async getAllContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const contacts = await this.getContacts(siteId);
-
-        try {
-            const blocked = await this.getBlockedContacts(siteId);
-            contacts.blocked = blocked.users;
-            this.storeUsersFromAllContacts(contacts);
-
-            return contacts;
-        } catch {
-            // The WS for blocked contacts might fail, but we still want the contacts.
-            contacts.blocked = [];
-            this.storeUsersFromAllContacts(contacts);
-
-            return contacts;
-        }
-    }
-
-    /**
-     * Get all the users blocked by the current user.
-     *
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with the WS data.
-     */
-    async getBlockedContacts(siteId?: string): Promise<AddonMessagesGetBlockedUsersWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-
-        const userId = site.getUserId();
-
-        const params: AddonMessagesGetBlockedUsersWSParams = {
-            userid: userId,
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCacheKeyForBlockedContacts(userId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
-        };
-
-        return site.read('core_message_get_blocked_users', params, preSets);
-    }
-
-    /**
-     * Get the contacts of the current user.
-     *
-     * This excludes the blocked users.
-     *
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with the WS data.
-     * @deprecatedonmoodle since 3.6
-     */
-    async getContacts(siteId?: string): Promise<AddonMessagesGetContactsWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCacheKeyForContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
-        };
-
-        const contacts = await site.read<AddonMessagesGetContactsWSResponse>('core_message_get_contacts', undefined, preSets);
-
-        // Filter contacts with negative ID, they are notifications.
-        const validContacts: AddonMessagesGetContactsWSResponse = {
-            online: [],
-            offline: [],
-            strangers: [],
-        };
-
-        for (const typeName in contacts) {
-            if (!validContacts[typeName]) {
-                validContacts[typeName] = [];
-            }
-
-            contacts[typeName].forEach((contact: AddonMessagesGetContactsContact) => {
-                if (contact.id > 0) {
-                    validContacts[typeName].push(contact);
-                }
-            });
-        }
-
-        return validContacts;
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}conversations:`;
     }
 
     /**
      * Get the list of user contacts.
      *
      * @param limitFrom Position of the first contact to fetch.
-     * @param limitNum Number of contacts to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param limitNum Number of contacts to fetch. Default is ADDON_MESSAGES_LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the list of user contacts.
      * @since 3.6
      */
     async getUserContacts(
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
+        limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{contacts: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -699,7 +603,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForUserContacts(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const contacts = await site.read<AddonMessagesGetUserContactsWSResponse>('core_message_get_user_contacts', params, preSets);
@@ -723,14 +627,14 @@ export class AddonMessagesProvider {
      * Get the contact request sent to the current user.
      *
      * @param limitFrom Position of the first contact request to fetch.
-     * @param limitNum Number of contact requests to fetch. Default is AddonMessagesProvider.LIMIT_CONTACTS.
+     * @param limitNum Number of contact requests to fetch. Default is ADDON_MESSAGES_LIMIT_CONTACTS.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved with the list of contact requests.
      * @since 3.6
      */
     async getContactRequests(
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_CONTACTS,
+        limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
     ): Promise<{requests: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -743,7 +647,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForContactRequests(),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
 
         const requests = await site.read<AddonMessagesGetContactRequestsWSResponse>(
@@ -791,7 +695,7 @@ export class AddonMessagesProvider {
         };
 
         // Notify the new count so all badges are updated.
-        CoreEvents.trigger(AddonMessagesProvider.CONTACT_REQUESTS_COUNT_EVENT, data , site.id);
+        CoreEvents.trigger(ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, data , site.id);
 
         return data.count;
 
@@ -935,11 +839,11 @@ export class AddonMessagesProvider {
     ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
-        limitTo = limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
+        limitTo = limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForConversationMembers(userId, conversationId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const params: AddonMessagesGetConversationMembersWSParams = {
@@ -983,7 +887,7 @@ export class AddonMessagesProvider {
 
         options.userId = options.userId || site.getUserId();
         options.limitFrom = options.limitFrom || 0;
-        options.limitTo = options.limitTo ?? AddonMessagesProvider.LIMIT_MESSAGES;
+        options.limitTo = options.limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
         options.timeFrom = options.timeFrom || 0;
         options.newestFirst = options.newestFirst ?? true;
 
@@ -1076,7 +980,7 @@ export class AddonMessagesProvider {
         const params: AddonMessagesGetConversationsWSParams = {
             userid: userId,
             limitfrom: limitFrom,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES + 1,
+            limitnum: ADDON_MESSAGES_LIMIT_MESSAGES + 1,
         };
 
         if (forceCache) {
@@ -1091,7 +995,7 @@ export class AddonMessagesProvider {
         if (favourites !== undefined && favourites != null) {
             params.favourites = !!favourites;
         }
-        if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP) {
+        if (site.isVersionGreaterEqualThan('3.7') && type != AddonMessagesMessageConversationType.GROUP) {
             // Add self conversation to the list.
             params.mergeself = true;
         }
@@ -1112,12 +1016,12 @@ export class AddonMessagesProvider {
 
         // Format the conversations, adding some calculated fields.
         const conversations = response.conversations
-            .slice(0, AddonMessagesProvider.LIMIT_MESSAGES)
+            .slice(0, ADDON_MESSAGES_LIMIT_MESSAGES)
             .map((conversation) => this.formatConversation(conversation, userId!));
 
         return {
             conversations,
-            canLoadMore: response.conversations.length > AddonMessagesProvider.LIMIT_MESSAGES,
+            canLoadMore: response.conversations.length > ADDON_MESSAGES_LIMIT_MESSAGES,
         };
     }
 
@@ -1144,215 +1048,12 @@ export class AddonMessagesProvider {
 
         const counts = {
             favourites: result.favourites,
-            individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-            group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
-            self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0,
+            individual: result.types[AddonMessagesMessageConversationType.INDIVIDUAL],
+            group: result.types[AddonMessagesMessageConversationType.GROUP],
+            self: result.types[AddonMessagesMessageConversationType.SELF] || 0,
         };
 
         return counts;
-    }
-
-    /**
-     * Return the current user's discussion with another user.
-     *
-     * @param userId The ID of the other user.
-     * @param excludePending True to exclude messages pending to be sent.
-     * @param lfReceivedUnread Number of unread received messages already fetched, so fetch will be done from this.
-     * @param lfReceivedRead Number of read received messages already fetched, so fetch will be done from this.
-     * @param lfSentUnread Number of unread sent messages already fetched, so fetch will be done from this.
-     * @param lfSentRead Number of read sent messages already fetched, so fetch will be done from this.
-     * @param notUsed Deprecated since 3.9.5
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with messages and a boolean telling if can load more messages.
-     */
-    async getDiscussion(
-        userId: number,
-        excludePending: boolean,
-        lfReceivedUnread: number = 0,
-        lfReceivedRead: number = 0,
-        lfSentUnread: number = 0,
-        lfSentRead: number = 0,
-        notUsed: boolean = false, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string,
-    ): Promise<AddonMessagesGetDiscussionMessages> {
-
-        const site = await CoreSites.getSite(siteId);
-
-        const result: AddonMessagesGetDiscussionMessages = {
-            messages: [],
-            canLoadMore: false,
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCacheKeyForDiscussion(userId),
-        };
-        const params: AddonMessagesGetMessagesWSParams = {
-            useridto: site.getUserId(),
-            useridfrom: userId,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
-        };
-
-        if (lfReceivedUnread > 0 || lfReceivedRead > 0 || lfSentUnread > 0 || lfSentRead > 0) {
-            // Do not use cache when retrieving older messages.
-            // This is to prevent storing too much data and to prevent inconsistencies between "pages" loaded.
-            preSets.getFromCache = false;
-            preSets.saveToCache = false;
-            preSets.emergencyCache = false;
-        }
-
-        // Get message received by current user.
-        const received = await this.getRecentMessages(params, preSets, lfReceivedUnread, lfReceivedRead, undefined, site.getId());
-        result.messages = received;
-        const hasReceived = received.length > 0;
-
-        // Get message sent by current user.
-        params.useridto = userId;
-        params.useridfrom = site.getUserId();
-        const sent = await this.getRecentMessages(params, preSets, lfSentUnread, lfSentRead, undefined, siteId);
-        result.messages = result.messages.concat(sent);
-        const hasSent = sent.length > 0;
-
-        if (result.messages.length > AddonMessagesProvider.LIMIT_MESSAGES) {
-            // Sort messages and get the more recent ones.
-            result.canLoadMore = true;
-            result.messages = this.sortMessages(result['messages']);
-            result.messages = result.messages.slice(-AddonMessagesProvider.LIMIT_MESSAGES);
-        } else {
-            result.canLoadMore = result.messages.length == AddonMessagesProvider.LIMIT_MESSAGES && (!hasReceived || !hasSent);
-        }
-
-        if (excludePending) {
-            // No need to get offline messages, return the ones we have.
-            return result;
-        }
-
-        // Get offline messages.
-        const offlineMessages = await AddonMessagesOffline.getMessages(userId, site.getId());
-
-        result.messages = result.messages.concat(offlineMessages);
-
-        return result;
-    }
-
-    /**
-     * Get the discussions of the current user. This function is used in Moodle sites older than 3.6.
-     * If the site is 3.6 or higher, please use getConversations.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with an object where the keys are the user ID of the other user.
-     */
-    async getDiscussions(siteId?: string): Promise<{[userId: number]: AddonMessagesDiscussion}> {
-        const discussions: { [userId: number]: AddonMessagesDiscussion } = {};
-
-        /**
-         * Convenience function to treat a recent message, adding it to discussions list if needed.
-         */
-        const treatRecentMessage = (
-            message: AddonMessagesGetMessagesMessage |
-            AddonMessagesOfflineConversationMessagesDBRecordFormatted |
-            AddonMessagesOfflineMessagesDBRecordFormatted,
-            userId: number,
-            userFullname: string,
-        ): void => {
-            if (discussions[userId] === undefined) {
-                discussions[userId] = {
-                    fullname: userFullname,
-                    profileimageurl: '',
-                };
-
-                if ((!('timeread' in message) || !message.timeread) && !message.pending && message.useridfrom != currentUserId) {
-                    discussions[userId].unread = true;
-                }
-            }
-
-            const messageId = ('id' in message) ? message.id : 0;
-
-            // Extract the most recent message. Pending messages are considered more recent than messages already sent.
-            const discMessage = discussions[userId].message;
-            if (discMessage === undefined || (!discMessage.pending && message.pending) ||
-                (discMessage.pending == message.pending && (discMessage.timecreated < message.timecreated ||
-                    (discMessage.timecreated == message.timecreated && discMessage.id < messageId)))) {
-
-                discussions[userId].message = {
-                    id: messageId,
-                    user: userId,
-                    message: message.text || '',
-                    timecreated: message.timecreated,
-                    pending: !!message.pending,
-                };
-            }
-        };
-
-        const site = await CoreSites.getSite(siteId);
-
-        const currentUserId = site.getUserId();
-        const params: AddonMessagesGetMessagesWSParams = {
-            useridto: currentUserId,
-            useridfrom: 0,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getCacheKeyForDiscussions(),
-        };
-
-        const received = await this.getRecentMessages(params, preSets, undefined, undefined, undefined, site.getId());
-        // Extract the discussions by filtering same senders.
-        received.forEach((message) => {
-            treatRecentMessage(message, message.useridfrom, message.userfromfullname);
-        });
-
-        // Now get the last messages sent by the current user.
-        params.useridfrom = params.useridto;
-        params.useridto = 0;
-
-        const sent = await this.getRecentMessages(params, preSets);
-        // Extract the discussions by filtering same senders.
-        sent.forEach((message) => {
-            treatRecentMessage(message, message.useridto, message.usertofullname);
-        });
-
-        const offlineMessages = await AddonMessagesOffline.getAllMessages(site.getId());
-
-        offlineMessages.forEach((message) => {
-            treatRecentMessage(message, 'touserid' in message ? message.touserid : 0, '');
-        });
-
-        const discussionsWithUserImg = await this.getDiscussionsUserImg(discussions, site.getId());
-        this.storeUsersFromDiscussions(discussionsWithUserImg);
-
-        return discussionsWithUserImg;
-    }
-
-    /**
-     * Get user images for all the discussions that don't have one already.
-     *
-     * @param discussions List of discussions.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise always resolved. Resolve param is the formatted discussions.
-     */
-    protected async getDiscussionsUserImg(
-        discussions: { [userId: number]: AddonMessagesDiscussion },
-        siteId?: string,
-    ): Promise<{[userId: number]: AddonMessagesDiscussion}> {
-        const promises: Promise<void>[] = [];
-
-        for (const userId in discussions) {
-            if (!discussions[userId].profileimageurl && discussions[userId].message) {
-                // We don't have the user image. Try to retrieve it.
-                promises.push(CoreUser.getProfile(discussions[userId].message!.user, 0, true, siteId).then((user) => {
-                    discussions[userId].profileimageurl = user.profileimageurl;
-
-                    return;
-                }).catch(() => {
-                    // Error getting profile, resolve promise without adding any extra data.
-                }));
-            }
-        }
-
-        await Promise.all(promises);
-
-        return discussions;
     }
 
     /**
@@ -1371,7 +1072,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getCacheKeyForMemberInfo(userId, otherUserId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
         };
         const params: AddonMessagesGetMemberInfoWSParams = {
             referenceuserid: userId,
@@ -1394,7 +1095,7 @@ export class AddonMessagesProvider {
      * @returns Cache key.
      */
     protected getMessagePreferencesCacheKey(): string {
-        return AddonMessagesProvider.ROOT_CACHE_KEY + 'messagePreferences';
+        return `${AddonMessagesProvider.ROOT_CACHE_KEY}messagePreferences`;
     }
 
     /**
@@ -1410,7 +1111,7 @@ export class AddonMessagesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getMessagePreferencesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         const data = await site.read<AddonMessagesGetUserMessagePreferencesWSResponse>(
@@ -1462,45 +1163,44 @@ export class AddonMessagesProvider {
      * Get the most recent messages.
      *
      * @param params Parameters to pass to the WS.
-     * @param preSets Set of presets for the WS.
      * @param limitFromUnread Number of read messages already fetched, so fetch will be done from this number.
      * @param limitFromRead Number of unread messages already fetched, so fetch will be done from this number.
-     * @param notUsed // Deprecated 3.9.5
-     * @param siteId Site ID. If not defined, use current site.
+     * @param options Other options.
      * @returns Promise resolved with the data.
      */
     async getRecentMessages(
         params: AddonMessagesGetMessagesWSParams,
-        preSets: CoreSiteWSPreSets,
-        limitFromUnread: number = 0,
-        limitFromRead: number = 0,
-        notUsed: boolean = false, // eslint-disable-line @typescript-eslint/no-unused-vars
-        siteId?: string,
+        limitFromUnread = 0,
+        limitFromRead = 0,
+        options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonMessagesGetMessagesMessage[]> {
-        limitFromUnread = limitFromUnread || 0;
-        limitFromRead = limitFromRead || 0;
-
         params.read = false;
         params.limitfrom = limitFromUnread;
+        params.limitnum = params.limitnum ?? ADDON_MESSAGES_LIMIT_MESSAGES;
 
-        const response = await this.getMessages(params, preSets, siteId);
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: AddonMessages.getCacheKeyForDiscussion(params.useridto),
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy ?? CoreSitesReadingStrategy.ONLY_NETWORK),
+        };
+
+        const response = await this.getMessages(params, preSets, options.siteId);
         let messages = response.messages;
 
         if (!messages) {
             throw new CoreError('Error fetching recent messages');
         }
 
-        if (messages.length >= (params.limitnum || 0)) {
+        if (messages.length >= (params.limitnum ?? 0)) {
             return messages;
         }
 
         // We need to fetch more messages.
-        params.limitnum = (params.limitnum || 0) - messages.length;
+        params.limitnum = (params.limitnum ?? 0) - messages.length;
         params.read = true;
         params.limitfrom = limitFromRead;
 
         try {
-            const response = await this.getMessages(params, preSets, siteId);
+            const response = await this.getMessages(params, preSets, options.siteId);
             if (response.messages) {
                 messages = messages.concat(response.messages);
             }
@@ -1553,122 +1253,31 @@ export class AddonMessagesProvider {
      *
      * @param siteId Site ID. If not defined, use current site.
      * @returns Resolved with the unread favourite, individual and group conversation counts.
+     * @since 3.6
      */
     async getUnreadConversationCounts(
         siteId?: string,
     ): Promise<{favourites: number; individual: number; group: number; self: number; orMore?: boolean}> {
         const site = await CoreSites.getSite(siteId);
 
-        let counts: AddonMessagesUnreadConversationCountsEventData;
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getCacheKeyForUnreadConversationCounts(),
+        };
 
-        if (this.isGroupMessagingEnabled()) {
-            // @since 3.6
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getCacheKeyForUnreadConversationCounts(),
-            };
+        const result: AddonMessagesGetConversationCountsWSResponse =
+            await site.read('core_message_get_unread_conversation_counts', {}, preSets);
 
-            const result: AddonMessagesGetConversationCountsWSResponse =
-                await site.read('core_message_get_unread_conversation_counts', {}, preSets);
-
-            counts = {
-                favourites: result.favourites,
-                individual: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_INDIVIDUAL],
-                group: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_GROUP],
-                self: result.types[AddonMessagesProvider.MESSAGE_CONVERSATION_TYPE_SELF] || 0,
-            };
-
-        } else {
-            const params: AddonMessageGetUnreadConversationsCountWSParams = {
-                useridto: site.getUserId(),
-            };
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: this.getCacheKeyForMessageCount(site.getUserId()),
-                typeExpected: 'number',
-            };
-
-            const count = await site.read<number>('core_message_get_unread_conversations_count', params, preSets);
-
-            counts = { favourites: 0, individual: count, group: 0, self: 0 };
-        }
+        const counts: AddonMessagesUnreadConversationCountsEventData = {
+            favourites: result.favourites,
+            individual: result.types[AddonMessagesMessageConversationType.INDIVIDUAL],
+            group: result.types[AddonMessagesMessageConversationType.GROUP],
+            self: result.types[AddonMessagesMessageConversationType.SELF] || 0,
+        };
 
         // Notify the new counts so all views are updated.
-        CoreEvents.trigger(AddonMessagesProvider.UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
+        CoreEvents.trigger(ADDON_MESSAGES_UNREAD_CONVERSATION_COUNTS_EVENT, counts, site.id);
 
         return counts;
-    }
-
-    /**
-     * Get the latest unread received messages.
-     *
-     * @param notUsed Not user anymore.
-     * @param forceCache True if it should return cached data. Has priority over ignoreCache.
-     * @param ignoreCache True if it should ignore cached data (it will always fail in offline or server down).
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Promise resolved with the message unread count.
-     */
-    async getUnreadReceivedMessages(
-        notUsed: boolean = true, // eslint-disable-line @typescript-eslint/no-unused-vars
-        forceCache: boolean = false,
-        ignoreCache: boolean = false,
-        siteId?: string,
-    ): Promise<AddonMessagesGetMessagesResult> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: AddonMessagesGetMessagesWSParams = {
-            read: false,
-            limitfrom: 0,
-            limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
-            useridto: site.getUserId(),
-            useridfrom: 0,
-        };
-        const preSets: CoreSiteWSPreSets = {};
-        if (forceCache) {
-            preSets.omitExpires = true;
-        } else if (ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
-
-        return this.getMessages(params, preSets, siteId);
-    }
-
-    /**
-     * Invalidate all contacts cache.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Resolved when done.
-     */
-    async invalidateAllContactsCache(siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        await this.invalidateContactsCache(siteId);
-
-        await this.invalidateBlockedContactsCache(siteId);
-    }
-
-    /**
-     * Invalidate blocked contacts cache.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     */
-    async invalidateBlockedContactsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        const userId = site.getUserId();
-
-        await site.invalidateWsCacheForKey(this.getCacheKeyForBlockedContacts(userId));
-    }
-
-    /**
-     * Invalidate contacts cache.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Resolved when done.
-     */
-    async invalidateContactsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getCacheKeyForContacts());
     }
 
     /**
@@ -1810,24 +1419,6 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Invalidate discussions cache.
-     *
-     * Note that {@link this.getDiscussions} uses the contacts, so we need to invalidate contacts too.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Resolved when done.
-     */
-    async invalidateDiscussionsCache(siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        const promises: Promise<void>[] = [];
-        promises.push(site.invalidateWsCacheForKey(this.getCacheKeyForDiscussions()));
-        promises.push(this.invalidateContactsCache(site.getId()));
-
-        await Promise.all(promises);
-    }
-
-    /**
      * Invalidate member info cache.
      *
      * @param otherUserId The other user ID.
@@ -1863,10 +1454,9 @@ export class AddonMessagesProvider {
      * @returns Promise resolved when done.
      */
     protected async invalidateAllMemberInfo(userId: number, site: CoreSite): Promise<void> {
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.invalidateMemberInfo(userId, site.id),
             this.invalidateUserContacts(site.id),
-            this.invalidateBlockedContactsCache(site.id),
             this.invalidateContactRequestsCache(site.id),
             this.invalidateConversations(site.id),
             this.getConversationBetweenUsers(
@@ -1881,7 +1471,7 @@ export class AddonMessagesProvider {
                 site.id,
                 undefined,
                 true,
-            ).then((conversation) => CoreUtils.allPromises([
+            ).then((conversation) => CorePromiseUtils.allPromises([
                 this.invalidateConversation(conversation.id),
                 this.invalidateConversationMembers(conversation.id, site.id),
             ])).catch(() => {
@@ -1910,90 +1500,12 @@ export class AddonMessagesProvider {
      *
      * @param siteId Site ID. If not defined, current site.
      * @returns Resolved when done.
+     * @since 3.6
      */
     async invalidateUnreadConversationCounts(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
-        if (this.isGroupMessagingEnabled()) {
-            // @since 3.6
-            return site.invalidateWsCacheForKey(this.getCacheKeyForUnreadConversationCounts());
 
-        } else {
-            return site.invalidateWsCacheForKey(this.getCacheKeyForMessageCount(site.getUserId()));
-        }
-    }
-
-    /**
-     * Checks if the a user is blocked by the current user.
-     *
-     * @param userId The user ID to check against.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Resolved with boolean, rejected when we do not know.
-     */
-    async isBlocked(userId: number, siteId?: string): Promise<boolean> {
-        if (this.isGroupMessagingEnabled()) {
-            const member = await this.getMemberInfo(userId, siteId);
-
-            return member.isblocked;
-        }
-
-        const blockedContacts = await this.getBlockedContacts(siteId);
-        if (!blockedContacts.users || blockedContacts.users.length < 1) {
-            return false;
-        }
-
-        return blockedContacts.users.some((user) => userId == user.id);
-    }
-
-    /**
-     * Checks if the a user is a contact of the current user.
-     *
-     * @param userId The user ID to check against.
-     * @param siteId Site ID. If not defined, use current site.
-     * @returns Resolved with boolean, rejected when we do not know.
-     */
-    async isContact(userId: number, siteId?: string): Promise<boolean> {
-        if (this.isGroupMessagingEnabled()) {
-            const member = await this.getMemberInfo(userId, siteId);
-
-            return member.iscontact;
-        }
-
-        const contacts = await this.getContacts(siteId);
-
-        return ['online', 'offline'].some((type) => {
-            if (contacts[type] && contacts[type].length > 0) {
-                return contacts[type].some((user: AddonMessagesGetContactsContact) => userId == user.id);
-            }
-
-            return false;
-        });
-    }
-
-    /**
-     * Returns whether or not group messaging is supported.
-     *
-     * @returns If related WS is available on current site.
-     * @since 3.6
-     */
-    isGroupMessagingEnabled(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('core_message_get_conversations');
-    }
-
-    /**
-     * Returns whether or not group messaging is supported in a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with boolean: whether related WS is available on a certain site.
-     * @since 3.6
-     */
-    async isGroupMessagingEnabledInSite(siteId?: string): Promise<boolean> {
-        try {
-            const site = await CoreSites.getSite(siteId);
-
-            return site.wsAvailable('core_message_get_conversations');
-        } catch {
-            return false;
-        }
+        return site.invalidateWsCacheForKey(this.getCacheKeyForUnreadConversationCounts());
     }
 
     /**
@@ -2051,6 +1563,12 @@ export class AddonMessagesProvider {
     async isPluginEnabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
+        // App requires to support group messaging 3.6 onwards.
+        const groupMessagingEnabled = site.wsAvailable('core_message_get_conversations');
+        if (!groupMessagingEnabled) {
+            return false;
+        }
+
         return site.canUseAdvancedFeature('messaging');
     }
 
@@ -2096,7 +1614,7 @@ export class AddonMessagesProvider {
 
         const params: AddonMessagesMarkMessageReadWSParams = {
             messageid: messageId,
-            timeread: CoreTimeUtils.timestamp(),
+            timeread: CoreTime.timestamp(),
         };
 
         return site.write('core_message_mark_message_read', params);
@@ -2120,32 +1638,6 @@ export class AddonMessagesProvider {
         };
 
         await CoreSites.getCurrentSite()?.write('core_message_mark_all_conversation_messages_as_read', params, preSets);
-    }
-
-    /**
-     * Mark all messages of a discussion as read.
-     *
-     * @param userIdFrom User Id for the sender.
-     * @returns Promise resolved with boolean marking success or not.
-     * @deprecatedonmoodle since 3.6
-     */
-    async markAllMessagesRead(userIdFrom?: number): Promise<boolean> {
-        const params: AddonMessagesMarkAllMessagesAsReadWSParams = {
-            useridto: CoreSites.getCurrentSiteUserId(),
-            useridfrom: userIdFrom,
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            typeExpected: 'boolean',
-        };
-
-        const site = CoreSites.getCurrentSite();
-
-        if (!site) {
-            return false;
-        }
-
-        return site.write('core_message_mark_all_messages_as_read', params, preSets);
     }
 
     /**
@@ -2243,51 +1735,15 @@ export class AddonMessagesProvider {
 
         await site.write('core_message_delete_contacts', params, preSets);
 
-        return CoreUtils.allPromises([
+        return CorePromiseUtils.allPromises([
             this.invalidateUserContacts(site.id),
             this.invalidateAllMemberInfo(userId, site),
-            this.invalidateContactsCache(site.id),
         ]).then(() => {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, contactRemoved: true };
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
 
             return;
         });
-    }
-
-    /**
-     * Search for contacts.
-     *
-     * By default this only returns the first 100 contacts, but note that the WS can return thousands
-     * of results which would take a while to process. The limit here is just a convenience to
-     * prevent viewed to crash because too many DOM elements are created.
-     *
-     * @param query The query string.
-     * @param limit The number of results to return, 0 for none.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the contacts.
-     */
-    async searchContacts(query: string, limit: number = 100, siteId?: string): Promise<AddonMessagesSearchContactsContact[]> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: AddonMessagesSearchContactsWSParams = {
-            searchtext: query,
-            onlymycourses: false,
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            getFromCache: false,
-        };
-
-        let contacts: AddonMessagesSearchContactsContact[] = await site.read('core_message_search_contacts', params, preSets);
-
-        if (limit && contacts.length > limit) {
-            contacts = contacts.splice(0, limit);
-        }
-
-        CoreUser.storeUsers(contacts);
-
-        return contacts;
     }
 
     /**
@@ -2296,7 +1752,7 @@ export class AddonMessagesProvider {
      * @param query The query string.
      * @param userId The user ID. If not defined, current user.
      * @param limitFrom Position of the first result to get. Defaults to 0.
-     * @param limitNum Number of results to get. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param limitNum Number of results to get. Defaults to ADDON_MESSAGES_LIMIT_SEARCH.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the results.
      */
@@ -2304,7 +1760,7 @@ export class AddonMessagesProvider {
         query: string,
         userId?: number,
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
+        limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
@@ -2349,7 +1805,7 @@ export class AddonMessagesProvider {
      *
      * @param query Text to search for.
      * @param limitFrom Position of the first found user to fetch.
-     * @param limitNum Number of found users to fetch. Defaults to AddonMessagesProvider.LIMIT_SEARCH.
+     * @param limitNum Number of found users to fetch. Defaults to ADDON_MESSAGES_LIMIT_SEARCH.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Resolved with two lists of found users: contacts and non-contacts.
      * @since 3.6
@@ -2357,7 +1813,7 @@ export class AddonMessagesProvider {
     async searchUsers(
         query: string,
         limitFrom: number = 0,
-        limitNum: number = AddonMessagesProvider.LIMIT_SEARCH,
+        limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{
             contacts: AddonMessagesConversationMember[];
@@ -2459,7 +1915,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2484,7 +1940,7 @@ export class AddonMessagesProvider {
             {
                 touserid: toUserId,
                 text: message,
-                textformat: 1,
+                textformat: DEFAULT_TEXT_FORMAT,
             },
         ];
 
@@ -2590,7 +2046,7 @@ export class AddonMessagesProvider {
                 message: result,
             };
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -2619,7 +2075,7 @@ export class AddonMessagesProvider {
         const messages = [
             {
                 text: message,
-                textformat: 1,
+                textformat: DEFAULT_TEXT_FORMAT,
             },
         ];
 
@@ -2654,7 +2110,7 @@ export class AddonMessagesProvider {
             conversationid: conversationId,
             messages: messages.map((message) => ({
                 text: message.text,
-                textformat: message.textformat !== undefined ? message.textformat : 1,
+                textformat: message.textformat !== undefined ? message.textformat : DEFAULT_TEXT_FORMAT,
             })),
         };
 
@@ -2766,68 +2222,28 @@ export class AddonMessagesProvider {
     }
 
     /**
-     * Store user data from contacts in local DB.
-     *
-     * @param contactTypes List of contacts grouped in types.
-     */
-    protected storeUsersFromAllContacts(contactTypes: AddonMessagesGetContactsWSResponse): void {
-        for (const x in contactTypes) {
-            CoreUser.storeUsers(contactTypes[x]);
-        }
-    }
-
-    /**
-     * Store user data from discussions in local DB.
-     *
-     * @param discussions List of discussions.
-     * @param siteId Site ID. If not defined, current site.
-     */
-    protected storeUsersFromDiscussions(discussions: { [userId: number]: AddonMessagesDiscussion }, siteId?: string): void {
-        const users: CoreUserBasicData[] = [];
-
-        for (const userId in discussions) {
-            users.push({
-                id: parseInt(userId, 10),
-                fullname: discussions[userId].fullname,
-                profileimageurl: discussions[userId].profileimageurl,
-            });
-        }
-        CoreUser.storeUsers(users, siteId);
-    }
-
-    /**
      * Unblock a user.
      *
      * @param userId User ID of the person to unblock.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Resolved when done.
+     * @since 3.6
      */
     async unblockContact(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         try {
-            if (site.wsAvailable('core_message_unblock_user')) {
-                // Since Moodle 3.6
-                const params: AddonMessagesUnblockUserWSParams = {
-                    userid: site.getUserId(),
-                    unblockeduserid: userId,
-                };
-                await site.write('core_message_unblock_user', params);
-            } else {
-                const params: { userids: number[] } = {
-                    userids: [userId],
-                };
-                const preSets: CoreSiteWSPreSets = {
-                    responseExpected: false,
-                };
-                await site.write('core_message_unblock_contacts', params, preSets);
-            }
+            const params: AddonMessagesUnblockUserWSParams = {
+                userid: site.getUserId(),
+                unblockeduserid: userId,
+            };
+            await site.write('core_message_unblock_user', params);
 
             await this.invalidateAllMemberInfo(userId, site);
         } finally {
             const data: AddonMessagesMemberInfoChangedEventData = { userId, userUnblocked: true };
 
-            CoreEvents.trigger(AddonMessagesProvider.MEMBER_INFO_CHANGED_EVENT, data, site.id);
+            CoreEvents.trigger(ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT, data, site.id);
         }
     }
 
@@ -3061,24 +2477,6 @@ export type AddonMessagesMessagePreferencesNotificationProcessor = {
 };
 
 /**
- * Message discussion (before 3.6).
- *
- * @deprecatedonmoodle since 3.6.
- */
-export type AddonMessagesDiscussion = {
-    fullname: string; // Full name of the other user in the discussion.
-    profileimageurl?: string; // Profile image of the other user in the discussion.
-    message?: { // Last message.
-        id: number; // Message ID.
-        user: number; // User ID that sent the message.
-        message: string; // Text of the message.
-        timecreated: number; // Time the message was sent.
-        pending?: boolean; // Whether the message is pending to be sent.
-    };
-    unread?: boolean; // Whether the discussion has unread messages.
-};
-
-/**
  * Contact for message area.
  */
 export type AddonMessagesMessageAreaContact = {
@@ -3098,68 +2496,6 @@ export type AddonMessagesMessageAreaContact = {
     unreadcount: number; // The number of unread messages in this conversation.
     conversationid: number; // @since 3.6. The id of the conversation.
 } & AddonMessagesMessageAreaContactCalculatedData;
-
-/**
- * Params of core_message_get_blocked_users WS.
- */
-type AddonMessagesGetBlockedUsersWSParams = {
-    userid: number; // The user whose blocked users we want to retrieve.
-};
-
-/**
- * Result of WS core_message_get_blocked_users.
- */
-export type AddonMessagesGetBlockedUsersWSResponse = {
-    users: AddonMessagesBlockedUser[]; // List of blocked users.
-    warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * User data returned by core_message_get_blocked_users.
- */
-export type AddonMessagesBlockedUser = {
-    id: number; // User ID.
-    fullname: string; // User full name.
-    profileimageurl?: string; // User picture URL.
-};
-
-/**
- * Result of WS core_message_get_contacts.
- */
-export type AddonMessagesGetContactsWSResponse = {
-    online: AddonMessagesGetContactsContact[]; // List of online contacts.
-    offline: AddonMessagesGetContactsContact[]; // List of offline contacts.
-    strangers: AddonMessagesGetContactsContact[]; // List of users that are not in the user's contact list but have sent a message.
-} & AddonMessagesGetContactsCalculatedData;
-
-/**
- * User data returned by core_message_get_contacts.
- */
-export type AddonMessagesGetContactsContact = {
-    id: number; // User ID.
-    fullname: string; // User full name.
-    profileimageurl?: string; // User picture URL.
-    profileimageurlsmall?: string; // Small user picture URL.
-    unread: number; // Unread message count.
-};
-
-/**
- * Params of core_message_search_contacts WS.
- */
-type AddonMessagesSearchContactsWSParams = {
-    searchtext: string; // String the user's fullname has to match to be found.
-    onlymycourses?: boolean; // Limit search to the user's courses.
-};
-
-/**
- * User data returned by core_message_search_contacts.
- */
-export type AddonMessagesSearchContactsContact = {
-    id: number; // User ID.
-    fullname: string; // User full name.
-    profileimageurl?: string; // User picture URL.
-    profileimageurlsmall?: string; // Small user picture URL.
-};
 
 /**
  * Params of core_message_get_conversation_messages WS.
@@ -3242,7 +2578,7 @@ export type AddonMessagesGetMessagesMessage = {
     subject: string; // The message subject.
     text: string; // The message text formated.
     fullmessage: string; // The message.
-    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessageformat: CoreTextFormat; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     fullmessagehtml: string; // The message in html.
     smallmessage: string; // The shorten message.
     notification: number; // Is a notification?.
@@ -3256,14 +2592,6 @@ export type AddonMessagesGetMessagesMessage = {
     eventtype?: string; // @since 3.7. The type of notification.
     customdata?: string; // @since 3.7. Custom data to be passed to the message processor.
 } & AddonMessagesGetMessagesMessageCalculatedData;
-
-/**
- * Response object on get discussion.
- */
-export type AddonMessagesGetDiscussionMessages = {
-    messages: (AddonMessagesGetMessagesMessage | AddonMessagesOfflineMessagesDBRecordFormatted)[];
-    canLoadMore: boolean;
-};
 
 /**
  * Params of core_message_data_for_messagearea_search_messages WS.
@@ -3332,7 +2660,7 @@ export type AddonMessagesSendInstantMessagesMessage = {
 
 export type CoreMessageSendMessagesToConversationMessageData ={
     text: string; // The text of the message.
-    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    textformat?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -3359,13 +2687,6 @@ export type AddonMessagesSendMessagesToConversationMessage = {
 export type AddonMessagesSendMessageResults = {
     sent: boolean;
     message: AddonMessagesSendMessagesToConversationMessage | AddonMessagesSendInstantMessagesMessage;
-};
-
-/**
- * Calculated data for core_message_get_contacts.
- */
-export type AddonMessagesGetContactsCalculatedData = {
-    blocked?: AddonMessagesBlockedUser[]; // Calculated in the app. List of blocked users.
 };
 
 /**
@@ -3565,14 +2886,6 @@ type AddonMessagesMarkAllConversationMessagesAsReadWSParams = {
 };
 
 /**
- * Params of core_message_mark_all_messages_as_read WS. Deprecated on Moodle 3.6
- */
-type AddonMessagesMarkAllMessagesAsReadWSParams = {
-    useridto: number; // The user id who received the message, 0 for any user.
-    useridfrom?: number; // The user id who send the message, 0 for any user. -10 or -20 for no-reply or support user.
-};
-
-/**
  * Params of core_message_mute_conversations and core_message_unmute_conversations WS.
  */
 type AddonMessagesMuteConversationsWSParams = {
@@ -3595,7 +2908,7 @@ type AddonMessagesDeleteContactsWSParams = {
 export type AddonMessagesMessageData = {
     touserid: number; // Id of the user to send the private message.
     text: string; // The text of the message.
-    textformat?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    textformat?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     clientmsgid?: string; // Your own client id for the message. If this id is provided, the fail message id will be returned.
 };
 
@@ -3624,13 +2937,6 @@ export type AddonMessagesGetConversationCountsWSResponse = {
 type AddonMessagesSetFavouriteConversationsWSParams = {
     userid?: number; // Id of the user, 0 for current user.
     conversations: number[];
-};
-
-/**
- * Params of core_message_get_unread_conversations_count WS.
- */
-type AddonMessageGetUnreadConversationsCountWSParams = {
-    useridto: number; // The user id who received the message, 0 for any user.
 };
 
 /**

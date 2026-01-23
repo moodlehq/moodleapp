@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreObject } from '@singletons/object';
 import { makeSingleton } from '@singletons';
 import {
     AddonModLessonPageAttemptDBRecord,
@@ -28,6 +28,7 @@ import {
 
 import { AddonModLessonPageWSData } from './lesson';
 import { AddonModLessonPageType } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to handle offline lesson.
@@ -115,7 +116,7 @@ export class AddonModLessonOfflineProvider {
 
         entry.finished = finished ? 1 : 0;
         entry.outoftime = outOfTime ? 1 : 0;
-        entry.timemodified = CoreTimeUtils.timestamp();
+        entry.timemodified = CoreTime.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }
@@ -144,14 +145,14 @@ export class AddonModLessonOfflineProvider {
         const lessons: Record<number, AddonModLessonLessonStoredData> = {};
 
         const [pageAttempts, retakes] = await Promise.all([
-            CoreUtils.ignoreErrors(this.getAllAttempts(siteId)),
-            CoreUtils.ignoreErrors(this.getAllRetakes(siteId)),
+            CorePromiseUtils.ignoreErrors(this.getAllAttempts(siteId)),
+            CorePromiseUtils.ignoreErrors(this.getAllRetakes(siteId)),
         ]);
 
         this.getLessonsFromEntries(lessons, pageAttempts || []);
         this.getLessonsFromEntries(lessons, retakes || []);
 
-        return CoreUtils.objectToArray(lessons);
+        return CoreObject.toArray(lessons);
     }
 
     /**
@@ -420,8 +421,8 @@ export class AddonModLessonOfflineProvider {
      */
     async hasOfflineData(lessonId: number, siteId?: string): Promise<boolean> {
         const [retake, attempts] = await Promise.all([
-            CoreUtils.ignoreErrors(this.getRetake(lessonId, siteId)),
-            CoreUtils.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
+            CorePromiseUtils.ignoreErrors(this.getRetake(lessonId, siteId)),
+            CorePromiseUtils.ignoreErrors(this.getLessonAttempts(lessonId, siteId)),
         ]);
 
         return !!retake || !!attempts?.length;
@@ -503,7 +504,7 @@ export class AddonModLessonOfflineProvider {
             lessonid: lessonId,
             retake: retake,
             pageid: page.id,
-            timemodified: CoreTimeUtils.timestamp(),
+            timemodified: CoreTime.timestamp(),
             courseid: courseId,
             data: data ? JSON.stringify(data) : null,
             type: page.type,
@@ -544,7 +545,7 @@ export class AddonModLessonOfflineProvider {
         const entry = await this.getRetakeWithFallback(lessonId, courseId, retake, site.id);
 
         entry.lastquestionpage = lastPage;
-        entry.timemodified = CoreTimeUtils.timestamp();
+        entry.timemodified = CoreTime.timestamp();
 
         await site.getDb().insertRecord(RETAKES_TABLE_NAME, entry);
     }

@@ -150,13 +150,6 @@
             background-color: #fd7e14; // Orange for upcoming
         }
     }
-
-    swiper-slide {
-        display: block;
-        justify-content: start;
-        align-items: start;
-        text-align: start;
-    }
 }
 
 :host-context(:root.dark) {

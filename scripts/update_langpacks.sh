@@ -29,8 +29,8 @@ fi
 
 detect_languages
 
-generate_local_module_file
-
 gulp lang-override
+
+generate_local_module_file
 
 print_ok 'All done!'

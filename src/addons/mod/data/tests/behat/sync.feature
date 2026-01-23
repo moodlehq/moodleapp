@@ -1,4 +1,4 @@
-@addon_mod_data @app @javascript
+@addon_mod_data @app @mod @mod_data @javascript
 Feature: Users can store entries in database activities when offline and sync when online
   In order to populate databases while offline
   As a user
@@ -28,9 +28,11 @@ Feature: Users can store entries in database activities when offline and sync wh
       | data1    | text | Description | Link description |
 
   Scenario: Create entry (offline)
-    Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Web links" in the app
     And I switch network connection to offline
-    And I should find "No entries yet" in the app
+    Then I should find "No entries yet" in the app
+
     When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
@@ -39,29 +41,35 @@ Feature: Users can store entries in database activities when offline and sync wh
     Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I should find "This Database has offline data to be synchronised" in the app
-    And I go back in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
+
+    When I go back in the app
     And I switch network connection to wifi
     And I press "Web links" near "General" in the app
-    And I should find "https://moodle.org/" in the app
+    Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I should not find "This Database has offline data to be synchronised" in the app
 
   Scenario: Update entry (offline) & Delete entry (offline)
-    Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I should find "No entries yet" in the app
-    And I press "Add entry" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Web links" in the app
+    Then I should find "No entries yet" in the app
+
+    When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
-    And I should find "https://moodle.org/" in the app
+    Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
-    And I press "Information" in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
+
+    When I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
     And I close the popup in the app
     And I switch network connection to offline
-    When I press "Actions menu" in the app
+    And I press "Actions menu" in the app
     And I press "Edit" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodlecloud.com/ |
@@ -72,55 +80,65 @@ Feature: Users can store entries in database activities when offline and sync wh
     And I should find "https://moodlecloud.com/" in the app
     And I should find "Moodle Cloud" in the app
     And I should find "This Database has offline data to be synchronised" in the app
-    And I go back in the app
+    And I should find "## today ##%d %b %Y##" near "Last edited:" in the app
+
+    When I go back in the app
     And I switch network connection to wifi
     And I press "Web links" near "General" in the app
-    And I should not find "https://moodle.org/" in the app
+    Then I should not find "https://moodle.org/" in the app
     And I should not find "Moodle community site" in the app
     And I should find "https://moodlecloud.com/" in the app
     And I should find "Moodle Cloud" in the app
     And I should not find "This Database has offline data to be synchronised" in the app
-    And I press "Information" in the app
+
+    When I press "Information" in the app
     And I press "Refresh" in the app
     And I wait until the page is ready
     And I switch network connection to offline
     And I press "Actions menu" in the app
     And I press "Delete" in the app
-    And I should find "Are you sure you want to delete this entry?" in the app
-    And I press "Delete" in the app
-    And I should find "https://moodlecloud.com/" in the app
+    Then I should find "Are you sure you want to delete this entry?" in the app
+
+    When I press "Delete" in the app
+    Then I should find "https://moodlecloud.com/" in the app
     And I should find "Moodle Cloud" in the app
     And I should find "This Database has offline data to be synchronised" in the app
-    And I go back in the app
+
+    When I go back in the app
     And I switch network connection to wifi
     And I press "Web links" near "General" in the app
-    And I should not find "https://moodlecloud.com/" in the app
+    Then I should not find "https://moodlecloud.com/" in the app
     And I should not find "Moodle Cloud" in the app
     And I should not find "This Database has offline data to be synchronised" in the app
 
   Scenario: Students can undo deleting entries to a database in the app while offline
-    Given I entered the data activity "Web links" on course "Course 1" as "student1" in the app
-    And I should find "No entries yet" in the app
-    And I press "Add entry" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Web links" in the app
+    Then I should find "No entries yet" in the app
+
+    When I press "Add entry" in the app
     And I set the following fields to these values in the app:
       | URL | https://moodle.org/ |
       | Description | Moodle community site |
     And I press "Save" near "Web links" in the app
-    And I should find "https://moodle.org/" in the app
+    Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
-    And I press "Information" in the app
+
+    When I press "Information" in the app
     And I press "Download" in the app
     And I wait until the page is ready
     And I close the popup in the app
-    When I switch network connection to offline
+    And I switch network connection to offline
     And I press "Actions menu" in the app
     And I press "Delete" in the app
-    And I should find "Are you sure you want to delete this entry?" in the app
-    And I press "Delete" in the app
-    And I should find "https://moodle.org/" in the app
+    Then I should find "Are you sure you want to delete this entry?" in the app
+
+    When I press "Delete" in the app
+    Then I should find "https://moodle.org/" in the app
     And I should find "Moodle community site" in the app
     And I should find "This Database has offline data to be synchronised" in the app
-    And I press "Actions menu" in the app
+
+    When I press "Actions menu" in the app
     And I press "Restore" in the app
     And I go back in the app
     And I switch network connection to wifi

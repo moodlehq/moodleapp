@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ContentChild, Input, Output, TemplateRef, EventEmitter } from '@angular/core';
+import { Component, ContentChild, TemplateRef, input, output } from '@angular/core';
 
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreUserAvatarComponent } from '@components/user-avatar/user-avatar';
+import { CoreLinkDirective } from '@directives/link';
 
 /**
  * Component to display a list of sites (accounts).
@@ -39,14 +43,21 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-sites-list',
     templateUrl: 'sites-list.html',
-    styleUrls: ['sites-list.scss'],
+    styleUrl: 'sites-list.scss',
+    imports: [
+        CoreBaseModule,
+        CoreFormatTextDirective,
+        CoreLinkDirective,
+        CoreUserAvatarComponent,
+    ],
 })
 export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
 
-    @Input({ required: true }) accountsList!: CoreAccountsList<T>;
-    @Input({ transform: toBoolean }) sitesClickable = false; // Whether the sites are clickable.
-    @Input({ transform: toBoolean }) currentSiteClickable = false; // If set, specify a different clickable value for current site.
-    @Output() onSiteClicked = new EventEmitter<T>();
+    readonly accountsList = input.required<CoreAccountsList<T>>();
+    readonly sitesClickable = input(false, { transform: toBoolean }); // Whether the sites are clickable.
+    readonly currentSiteClickable = input<boolean, unknown>(undefined, { transform: toBoolean }); // Set a different clickable value
+                                                                                                  // for current site.
+    readonly onSiteClicked = output<T>();
 
     @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
     @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
@@ -58,7 +69,7 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
      * @returns Whether it's clickable.
      */
     isSiteClickable(isCurrentSite: boolean): boolean {
-        return isCurrentSite ? this.currentSiteClickable ?? this.sitesClickable : this.sitesClickable;
+        return isCurrentSite ? this.currentSiteClickable() ?? this.sitesClickable() : this.sitesClickable();
     }
 
     /**

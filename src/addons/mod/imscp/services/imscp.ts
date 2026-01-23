@@ -13,8 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -22,12 +20,14 @@ import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSExternalWarning } from '@services/ws';
+import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_IMSCP_COMPONENT } from '../constants';
+import { ADDON_MOD_IMSCP_COMPONENT_LEGACY } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for IMSCP.
@@ -88,46 +88,7 @@ export class AddonModImscpProvider {
      * @returns Cache key.
      */
     protected getImscpDataCacheKey(courseId: number): string {
-        return AddonModImscpProvider.ROOT_CACHE_KEY + 'imscp:' + courseId;
-    }
-
-    /**
-     * Get a imscp with key=value. If more than one is found, only the first will be returned.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the imscp is retrieved.
-     */
-    protected async getImscpByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModImscpImscp> {
-        const site = await CoreSites.getSite(options.siteId);
-
-        const params: AddonModImscpGetImscpsByCoursesWSParams = {
-            courseids: [courseId],
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getImscpDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_IMSCP_COMPONENT,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
-        };
-
-        const response =
-            await site.read<AddonModImscpGetImscpsByCoursesWSResponse>('mod_imscp_get_imscps_by_courses', params, preSets);
-
-        const currentImscp = response.imscps.find((imscp) => imscp[key] == value);
-        if (currentImscp) {
-            return currentImscp;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return `${AddonModImscpProvider.ROOT_CACHE_KEY}imscp:${courseId}`;
     }
 
     /**
@@ -138,8 +99,24 @@ export class AddonModImscpProvider {
      * @param options Other options.
      * @returns Promise resolved when the imscp is retrieved.
      */
-    getImscp(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModImscpImscp> {
-        return this.getImscpByKey(courseId, 'coursemodule', cmId, options);
+    async getImscp(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModImscpImscp> {
+        const site = await CoreSites.getSite(options.siteId);
+
+        const params: AddonModImscpGetImscpsByCoursesWSParams = {
+            courseids: [courseId],
+        };
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getImscpDataCacheKey(courseId),
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_IMSCP_COMPONENT_LEGACY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+        };
+
+        const response =
+            await site.read<AddonModImscpGetImscpsByCoursesWSResponse>('mod_imscp_get_imscps_by_courses', params, preSets);
+
+        return CoreCourseModuleHelper.getActivityByCmId(response.imscps, cmId);
     }
 
     /**
@@ -156,7 +133,7 @@ export class AddonModImscpProvider {
             }
 
             const filePath = CorePath.concatenatePaths(item.filepath, item.filename);
-            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : '/' + filePath;
+            const filePathAlt = filePath.charAt(0) === '/' ? filePath.substring(1) : `/${filePath}`;
 
             // Check if it's main file.
             return filePath === targetFilePath || filePathAlt === targetFilePath;
@@ -206,7 +183,7 @@ export class AddonModImscpProvider {
      */
     async getLastItemViewed(id: number, siteId?: string): Promise<string | undefined> {
         const site = await CoreSites.getSite(siteId);
-        const entry = await site.getLastViewed(ADDON_MOD_IMSCP_COMPONENT, id);
+        const entry = await site.getLastViewed(ADDON_MOD_IMSCP_COMPONENT_LEGACY, id);
 
         return entry?.value;
     }
@@ -225,10 +202,10 @@ export class AddonModImscpProvider {
         const promises: Promise<void>[] = [];
 
         promises.push(this.invalidateImscpData(courseId, siteId));
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_IMSCP_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_IMSCP_COMPONENT_LEGACY, moduleId));
         promises.push(CoreCourse.invalidateModule(moduleId, siteId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -236,7 +213,6 @@ export class AddonModImscpProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateImscpData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -282,7 +258,7 @@ export class AddonModImscpProvider {
         await CoreCourseLogHelper.log(
             'mod_imscp_view_imscp',
             params,
-            ADDON_MOD_IMSCP_COMPONENT,
+            ADDON_MOD_IMSCP_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -300,7 +276,7 @@ export class AddonModImscpProvider {
     async storeLastItemViewed(id: number, href: string, courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
-        await site.storeLastViewed(ADDON_MOD_IMSCP_COMPONENT, id, href, { data: String(courseId) });
+        await site.storeLastViewed(ADDON_MOD_IMSCP_COMPONENT_LEGACY, id, href, { data: String(courseId) });
     }
 
 }
@@ -316,22 +292,11 @@ type AddonModImscpViewImscpWSParams = {
 /**
  * IMSCP returned by mod_imscp_get_imscps_by_courses.
  */
-export type AddonModImscpImscp = {
-    id: number; // IMSCP id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Activity name.
-    intro?: string; // The IMSCP intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModImscpImscp = CoreCourseModuleStandardElements & {
     revision?: number; // Revision.
     keepold?: number; // Number of old IMSCP to keep.
     structure?: string; // IMSCP structure.
     timemodified?: string; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: boolean; // If visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

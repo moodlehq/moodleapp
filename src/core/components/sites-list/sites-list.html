@@ -1,38 +1,48 @@
-<ion-list class="core-sites-list" *ngIf="accountsList">
-    <ion-card *ngIf="accountsList.currentSite">
-        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList.currentSite, isCurrentSite: true}" />
+@if (accountsList()) {
+    <ion-list class="core-sites-list">
+        @if (accountsList().currentSite) {
+            <ion-card>
+                <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: accountsList().currentSite, isCurrentSite: true}" />
 
-        <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList.currentSite, isCurrentSite: true}" />
+                <ng-container *ngTemplateOutlet="siteItem; context: {site: accountsList().currentSite, isCurrentSite: true}" />
 
-        <ng-container *ngFor="let site of accountsList.sameSite">
-            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
-        </ng-container>
-    </ion-card>
+                @for (site of accountsList().sameSite; track site.id) {
+                    <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
+                }
+            </ion-card>
+        }
 
-    <ion-card *ngFor="let sites of accountsList.otherSites">
-        <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: sites[0], isCurrentSite: false}" />
+        @for (sites of accountsList().otherSites; track sites[0]?.siteUrl) {
+            <ion-card>
+                <ng-container *ngTemplateOutlet="siteCardHeader; context: {site: sites[0], isCurrentSite: false}" />
 
-        <ng-container *ngFor="let site of sites">
-            <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
-        </ng-container>
-    </ion-card>
+                @for (site of sites; track site.id) {
+                    <ng-container *ngTemplateOutlet="siteItem; context: {site: site, isCurrentSite: false}" />
+                }
+            </ion-card>
+        }
 
-</ion-list>
+    </ion-list>
+}
 
 <!-- Template to render the header of a site card. -->
 <ng-template #siteCardHeader let-site="site" let-isCurrentSite="isCurrentSite">
-    <ion-item-divider sticky="true" *ngIf="site" class="core-sites-list-sitename ion-text-nowrap">
-        <ion-label class="ion-text-nowrap">
-            <h2>
-                <core-format-text [text]="site.siteName" clean="true" [siteId]="site.id" />
-            </h2>
-            <p *ngIf="displaySiteUrl(site)">
-                <a [href]="site.siteUrl" core-link [autoLogin]="!!isCurrentSite">
-                    {{ site.siteUrlWithoutProtocol }}
-                </a>
-            </p>
-        </ion-label>
-    </ion-item-divider>
+    @if (site) {
+        <ion-item-divider sticky="true" class="core-sites-list-sitename ion-text-nowrap">
+            <ion-label class="ion-text-nowrap">
+                <h2>
+                    <core-format-text [text]="site.siteName" [clean]="true" [siteId]="site.id" />
+                </h2>
+                @if (displaySiteUrl(site)) {
+                    <p>
+                        <a [href]="site.siteUrl" core-link [autoLogin]="!!isCurrentSite">
+                            {{ site.siteUrlWithoutProtocol }}
+                        </a>
+                    </p>
+                }
+            </ion-label>
+        </ion-item-divider>
+    }
 </ng-template>
 
 <!-- Template to render a site item. -->
@@ -44,11 +54,14 @@
 
         <ion-label class="ion-text-nowrap">
             <p class="item-heading">{{site.fullname}}</p>
-            <ng-container *ngIf="siteLabelTemplate" [ngTemplateOutlet]="siteLabelTemplate"
-                [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
+            @if (siteLabelTemplate) {
+                <ng-container [ngTemplateOutlet]="siteLabelTemplate"
+                    [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
+            }
         </ion-label>
 
-        <ng-container *ngIf="siteItemTemplate" [ngTemplateOutlet]="siteItemTemplate"
-            [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
+        @if (siteItemTemplate) {
+            <ng-container [ngTemplateOutlet]="siteItemTemplate" [ngTemplateOutletContext]="{site: site, isCurrentSite: isCurrentSite}" />
+        }
     </ion-item>
 </ng-template>

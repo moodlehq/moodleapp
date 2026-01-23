@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
@@ -28,12 +28,13 @@ import { AddonModChoiceListLinkHandler } from './services/handlers/list-link';
 import { AddonModChoiceModuleHandler } from './services/handlers/module';
 import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_CHOICE_COMPONENT, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
+import { AddonModChoiceReportLinkHandler } from './services/handlers/report-link';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_CHOICE_PAGE_NAME,
-        loadChildren: () => import('./choice-lazy.module'),
+        path: `${ADDON_MOD_CHOICE_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 
@@ -47,19 +48,16 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModChoiceModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModChoicePrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModChoiceSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChoiceIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModChoiceListLinkHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModChoiceModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModChoicePrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModChoiceSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChoiceIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChoiceListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModChoiceReportLinkHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHOICE_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_CHOICE_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModChoiceModule {}

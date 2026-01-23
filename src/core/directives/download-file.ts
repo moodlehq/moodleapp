@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, OnInit, ElementRef, inject, input } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreLoadings } from '@services/loadings';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSFile } from '@services/ws';
+import { Translate } from '@singletons';
 
 /**
  * Directive to allow downloading and open a file. When the item with this directive is clicked, the file will be
@@ -27,22 +28,19 @@ import { CoreWSFile } from '@services/ws';
 })
 export class CoreDownloadFileDirective implements OnInit {
 
-    @Input('core-download-file') file?: CoreWSFile; // The file to download.
-    @Input() component?: string; // Component to link the file to.
-    @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    readonly file = input<CoreWSFile>(undefined, { alias: 'core-download-file' }); // The file to download.
+    readonly component = input<string>(); // Component to link the file to.
+    readonly componentId = input<string | number>(); // Component ID to use in conjunction with the component.
 
-    protected element: HTMLElement;
-
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
         this.element.addEventListener('click', async (ev: Event) => {
-            if (!this.file) {
+            const file = this.file();
+            if (!file) {
                 return;
             }
 
@@ -52,9 +50,9 @@ export class CoreDownloadFileDirective implements OnInit {
             const modal = await CoreLoadings.show();
 
             try {
-                await CoreFileHelper.downloadAndOpenFile(this.file, this.component, this.componentId);
+                await CoreFileHelper.downloadAndOpenFile(file, this.component(), this.componentId());
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             } finally {
                 modal.dismiss();
             }

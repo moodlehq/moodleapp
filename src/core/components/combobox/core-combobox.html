@@ -1,24 +1,34 @@
-<ion-select *ngIf="interface !== 'modal'" class="ion-text-start" [(ngModel)]="selection" (ngModelChange)="onValueChanged(selection)"
-    interface="popover" [disabled]="disabled" [class.combobox-icon-only]="icon"
-    [interfaceOptions]="{alignment: 'start', arrow: false, cssClass: 'core-combobox-select'}">
-    <div slot="label">
-        <span class="sr-only" *ngIf="label">{{ label }}</span>
-        <ion-icon *ngIf="icon" [name]="icon" aria-hidden="true" />
-    </div>
+@if (interface() !== 'modal') {
+    <ion-select class="ion-text-start" [(ngModel)]="selection" (ngModelChange)="onValueChanged($event)" interface="popover"
+        [disabled]="disabled()" [class.combobox-icon-only]="!!icon()"
+        [interfaceOptions]="{alignment: 'start', arrow: false, cssClass: 'core-combobox-select'}">
+        <div slot="label">
+            @if (label()) {
+                <span class="sr-only">{{ label() }}</span>
+            }
+            @if (icon()) {
+                <ion-icon [name]="icon()" aria-hidden="true" />
+            }
+        </div>
 
-    <ng-content />
-</ion-select>
+        <ng-content />
+    </ion-select>
+} @else {
+    <ion-button aria-haspopup="listbox" [attr.aria-controls]="listboxId()" [attr.aria-owns]="listboxId()" [attr.aria-expanded]="expanded()"
+        (click)="openModal()" [disabled]="disabled()" expand="block" role="combobox">
+        @if (icon()) {
+            <ion-icon [name]="icon()" slot="start" aria-hidden="true" />
+        }
 
-<ion-button *ngIf="interface === 'modal'" aria-haspopup="listbox" [attr.aria-controls]="listboxId" [attr.aria-owns]="listboxId"
-    [attr.aria-expanded]="expanded" (click)="openModal()" [disabled]="disabled" expand="block" role="combobox">
-    <ion-icon *ngIf="icon" [name]="icon" slot="start" aria-hidden="true" />
+        @if (label()) {
+            <span class="sr-only">{{ label() }},</span>
+        }
+        <div class="select-text">
+            <slot name="text"><core-format-text [text]="selection()" /></slot>
+        </div>
 
-    <span class="sr-only" *ngIf="label">{{ label }},</span>
-    <div class="select-text">
-        <slot name="text">{{selection}}</slot>
-    </div>
-
-    <div class="select-icon" role="presentation" aria-hidden="true" slot="end">
-        <div class="select-icon-inner"></div>
-    </div>
-</ion-button>
+        <div class="select-icon" role="presentation" aria-hidden="true" slot="end">
+            <div class="select-icon-inner"></div>
+        </div>
+    </ion-button>
+}

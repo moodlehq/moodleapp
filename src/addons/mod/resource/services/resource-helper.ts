@@ -18,21 +18,21 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreNetwork } from '@services/network';
-import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
-import { CoreUtilsOpenFileOptions } from '@services/utils/utils';
+import { CoreMimetype } from '@singletons/mimetype';
 import { makeSingleton, Translate } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { AddonModResource, AddonModResourceCustomData } from './resource';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { ADDON_MOD_RESOURCE_COMPONENT } from '../constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreTime } from '@singletons/time';
+import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { ModResourceDisplay } from '@addons/mod/constants';
 
 /**
  * Service that provides helper functions for resources.
@@ -52,12 +52,12 @@ export class AddonModResourceHelperProvider {
         const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
             module,
             module.course,
-            ADDON_MOD_RESOURCE_COMPONENT,
+            ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
             module.id,
             contents,
         );
 
-        return CoreMimetypeUtils.getEmbeddedHtml(contents[0], result.path);
+        return CoreMimetype.getEmbeddedHtml(contents[0], result.path);
     }
 
     /**
@@ -83,14 +83,14 @@ export class AddonModResourceHelperProvider {
 
             // This URL is going to be injected in an iframe, we need trustAsResourceUrl to make it work in a browser.
             return CorePath.concatenatePaths(dirPath, mainFilePath);
-        } catch (e) {
+        } catch (error) {
             // Error getting directory, there was an error downloading or we're in browser. Return online URL.
             if (CoreNetwork.isOnline() && mainFile.fileurl) {
                 // This URL is going to be injected in an iframe, we need this to make it work.
                 return CoreSites.getRequiredCurrentSite().checkAndFixPluginfileURL(mainFile.fileurl);
             }
 
-            throw e;
+            throw error;
         }
     }
 
@@ -101,25 +101,24 @@ export class AddonModResourceHelperProvider {
      * @param display The display mode (if available).
      * @returns Whether the resource should be displayed embeded.
      */
-    isDisplayedEmbedded(module: CoreCourseModuleData, display: number): boolean {
+    isDisplayedEmbedded(module: CoreCourseModuleData, display: ModResourceDisplay): boolean {
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!CoreFile.isAvailable() ||
-                (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module))) {
+        if (currentSite && !currentSite.isVersionGreaterEqualThan('3.7') && this.isNextcloudFile(module)) {
             return false;
         }
 
         let ext: string | undefined;
         if (module.contentsinfo) {
-            ext = CoreMimetypeUtils.getExtension(module.contentsinfo.mimetypes[0]);
+            ext = CoreMimetype.getExtension(module.contentsinfo.mimetypes[0]);
         } else if (module.contents?.length) {
-            ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
+            ext = CoreMimetype.getFileExtension(module.contents[0].filename);
         } else {
             return false;
         }
 
-        return (display == CoreConstants.RESOURCELIB_DISPLAY_EMBED || display == CoreConstants.RESOURCELIB_DISPLAY_AUTO) &&
-            CoreMimetypeUtils.canBeEmbedded(ext);
+        return (display === ModResourceDisplay.EMBED || display === ModResourceDisplay.AUTO) &&
+            CoreMimetype.canBeEmbedded(ext);
     }
 
     /**
@@ -129,22 +128,18 @@ export class AddonModResourceHelperProvider {
      * @returns Whether the resource should be displayed in an iframe.
      */
     isDisplayedInIframe(module: CoreCourseModuleData): boolean {
-        if (!CoreFile.isAvailable()) {
-            return false;
-        }
-
         let mimetype: string | undefined;
 
         if (module.contentsinfo) {
             mimetype = module.contentsinfo.mimetypes[0];
         } else if (module.contents) {
-            const ext = CoreMimetypeUtils.getFileExtension(module.contents[0].filename);
-            mimetype = CoreMimetypeUtils.getMimeType(ext);
+            const ext = CoreMimetype.getFileExtension(module.contents[0].filename);
+            mimetype = CoreMimetype.getMimeType(ext);
         } else {
             return false;
         }
 
-        return mimetype == 'text/html' || mimetype == 'application/xhtml+xml';
+        return mimetype === 'text/html' || mimetype === 'application/xhtml+xml';
     }
 
     /**
@@ -188,9 +183,8 @@ export class AddonModResourceHelperProvider {
      * @param module Module where to get the contents.
      * @param courseId Course Id, used for completion purposes.
      * @param options Options to open the file.
-     * @returns Resolved when done.
      */
-    async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreUtilsOpenFileOptions = {}): Promise<void> {
+    async openModuleFile(module: CoreCourseModuleData, courseId: number, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
         const modal = await CoreLoadings.show();
 
         try {
@@ -198,7 +192,7 @@ export class AddonModResourceHelperProvider {
             await CoreCourseHelper.downloadModuleAndOpenFile(
                 module,
                 courseId,
-                ADDON_MOD_RESOURCE_COMPONENT,
+                ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
                 module.id,
                 module.contents,
                 undefined,
@@ -220,7 +214,7 @@ export class AddonModResourceHelperProvider {
                 url: `/mod/resource/view.php?id=${module.id}`,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_resource.errorwhileloadingthecontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_resource.errorwhileloadingthecontent') });
         } finally {
             modal.dismiss();
         }
@@ -263,7 +257,7 @@ export class AddonModResourceHelperProvider {
         }
 
         if (options.showtype) {
-            options.filedetails.type = CoreMimetypeUtils.getMimetypeDescription(mainFile);
+            options.filedetails.type = CoreMimetype.getMimetypeDescription(mainFile);
         }
 
         if (options.showdate) {
@@ -313,7 +307,7 @@ export class AddonModResourceHelperProvider {
                 extra.push(details.extension);
             } else if (details.mimetype) {
                 // Mostly used from 3.7 to 4.2.
-                extra.push(CoreMimetypeUtils.getMimetypeDescription(details.mimetype));
+                extra.push(CoreMimetype.getMimetypeDescription(details.mimetype));
             } else if (details.type) {
                 // Used on 3.5 and 3.6 where mimetype populated on getModuleOptions using main file.
                 extra.push(details.type); // Already translated.
@@ -324,12 +318,12 @@ export class AddonModResourceHelperProvider {
             if (details.modifieddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.modifieddate',
-                    { $a: CoreTimeUtils.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.modifieddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             } else if (details.uploadeddate) {
                 extra.push(Translate.instant(
                     'addon.mod_resource.uploadeddate',
-                    { $a: CoreTimeUtils.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
+                    { $a: CoreTime.userDate(details.uploadeddate * 1000, 'core.strftimedatetimeshort') },
                 ));
             }
         }

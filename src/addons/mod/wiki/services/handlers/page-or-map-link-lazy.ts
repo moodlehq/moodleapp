@@ -16,13 +16,13 @@ import { Injectable } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { Md5 } from 'ts-md5';
 import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiPageOrMapLinkHandlerService } from '@addons/mod/wiki/services/handlers/page-or-map-link';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to a wiki page or the wiki map.
@@ -44,7 +44,7 @@ export class AddonModWikiPageOrMapLinkHandlerLazyService extends AddonModWikiPag
 
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 page.wikiid,
-                'wiki',
+                ADDON_MOD_WIKI_MODNAME,
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
 
@@ -70,7 +70,7 @@ export class AddonModWikiPageOrMapLinkHandlerLazyService extends AddonModWikiPag
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_wiki.errorloadingpage') });
         } finally {
             modal.dismiss();
         }

@@ -12,32 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModAssignSubmissionCommentsHandler } from './services/handler';
-import { AddonModAssignSubmissionCommentsComponent } from './component/comments';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 
 @NgModule({
-    declarations: [
-        AddonModAssignSubmissionCommentsComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreCommentsComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModAssignSubmissionCommentsComponent,
+        provideAppInitializer(() => {
+            AddonModAssignSubmissionDelegate.registerHandler(AddonModAssignSubmissionCommentsHandler.instance);
+        }),
     ],
 })
 export class AddonModAssignSubmissionCommentsModule {}

@@ -1,15 +1,15 @@
 @use "theme/globals" as *;
 
 :host {
-    @include position(50%, 0px, null, null);
     position: fixed;
     z-index: 10;
     transform: translateY(-50%);
+    @include position(50%, 0px, null, null);
 
     ion-button {
         margin: 0;
         --padding-start: 0.5em;
-        --padding-end: 0;
+        --padding-end: calc(var(--ion-safe-area-right, 0px) + 0px);
         --core-input-radius: 2em 0 0 2em;
         height: 56px;
         --box-shadow: 0 3px 5px -1px rgb(0 0 0 / 20%), 0 6px 10px 0 rgb(0 0 0 / 14%), 0 1px 18px 0 rgb(0 0 0 / 12%);
@@ -19,7 +19,7 @@
         }
 
         &:hover {
-            --padding-end: 1.2em;
+            --padding-end: calc(var(--ion-safe-area-right, 0px) + 1.2em);
             --padding-start: 1em;
         }
     }

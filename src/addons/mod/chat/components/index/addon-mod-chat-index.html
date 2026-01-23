@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     } @else {
-    <core-context-menu>
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
-    </core-context-menu>
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -19,24 +19,32 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
-    <ion-card *ngIf="chatTime" class="core-info-card">
-        <ion-item>
-            <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
-            <ion-label>{{ 'addon.mod_chat.sessionstartsin' | translate:{$a: chatTime} }}</ion-label>
-        </ion-item>
-    </ion-card>
+    @if (chatTime) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
+                <ion-label>{{ 'addon.mod_chat.sessionstartsin' | translate:{$a: chatTime} }}</ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
-    <ion-button *ngIf="chat" class="ion-margin ion-text-wrap" expand="block" fill="outline" (click)="viewSessions()">
-        {{ 'addon.mod_chat.viewreport' | translate }}
-    </ion-button>
+    @if (chat) {
+        <ion-button class="ion-margin ion-text-wrap" expand="block" fill="outline" (click)="viewSessions()">
+            {{ 'addon.mod_chat.viewreport' | translate }}
+        </ion-button>
+    }
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="chat">
-            <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="enterChat()">
-                {{ 'addon.mod_chat.enterchat' | translate }}
-            </ion-button>
+    @if (!showLoading) {
+        <div collapsible-footer slot="fixed">
+            @if (chat) {
+                <div class="list-item-limited-width">
+                    <ion-button class="ion-margin ion-text-wrap" expand="block" (click)="enterChat()">
+                        {{ 'addon.mod_chat.enterchat' | translate }}
+                    </ion-button>
+                </div>
+            }
+
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
         </div>
-
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+    }
 </core-loading>

@@ -1,20 +1,30 @@
-<ng-container *ngIf="editMode && form" [formGroup]="form">
-    <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
-        [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" [required]="field.required"
-        [title]="'addon.mod_data_fields_picture.fieldtypelabel' | translate" />
-    <core-input-errors *ngIf="error" [errorText]="error" />
+@if (editMode && form) {
+    <ng-container [formGroup]="form">
+        <core-attachments [files]="files" [maxSize]="maxSizeBytes" maxSubmissions="1" [component]="component" [componentId]="componentId"
+            [allowOffline]="true" acceptedTypes="image" [courseId]="database?.course" [required]="field.required"
+            [title]="'addon.mod_data_fields_picture.fieldtypelabel' | translate" />
+        @if (error) {
+            <core-input-errors [errorText]="error" />
+        }
 
-    <ion-input [label]="'addon.mod_data.alttext' | translate" labelPlacement="stacked" type="text"
-        [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
-</ng-container>
+        <ion-input [label]="'addon.mod_data.alttext' | translate" labelPlacement="stacked" type="text"
+            [formControlName]="'f_'+field.id+'_alttext'" [placeholder]=" 'addon.mod_data.alttext' | translate" />
+    </ng-container>
+}
 
-<ng-container *ngIf="searchMode && form" [formGroup]="form">
-    <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
-</ng-container>
+@if (searchMode && form) {
+    <ng-container [formGroup]="form">
+        <ion-input type="text" [formControlName]="'f_'+field.id" [placeholder]="field.name" />
+    </ng-container>
+}
 
-<button class="as-link" *ngIf="listMode && imageUrl" (click)="navigateEntry()">
-    <img [url]="imageUrl" [alt]="title" class="core-media-adapt-width list_picture" core-external-content />
-</button>
+@if (listMode && imageUrl) {
+    <button class="as-link" (click)="navigateEntry()">
+        <img [url]="imageUrl" [alt]="title" class="core-media-adapt-width list_picture" core-external-content />
+    </button>
+}
 
-<img *ngIf="showMode && imageUrl" [url]="imageUrl" [alt]="title" class="core-media-adapt-width list_picture" [attr.width]="width"
-    [attr.height]="height" core-external-content />
+@if (showMode && imageUrl) {
+    <img [url]="imageUrl" [alt]="title" class="core-media-adapt-width list_picture" [attr.width]="width" [attr.height]="height"
+        core-external-content />
+}

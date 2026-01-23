@@ -8,6 +8,15 @@ ion-input {
     }
 }
 
+// We need [class] to increase the specificity, See: https://ionicframework.com/docs/api/input#css-custom-properties
+ion-input[class] {
+    --highlight-color: var(--dark);
+
+    &.has-focus .label-text {
+        font-weight: bold;
+    }
+}
+
 input[disabled],
 input[readonly] {
     opacity: var(--mdl-input-disabled-opacity);

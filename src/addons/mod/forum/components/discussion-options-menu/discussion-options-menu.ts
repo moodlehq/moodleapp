@@ -14,14 +14,14 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { PopoverController } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * This component is meant to display a popover with the discussion options.
@@ -29,7 +29,6 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'addon-forum-discussion-options-menu',
     templateUrl: 'discussion-options-menu.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -57,7 +56,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
             const response = await AddonModForum.canAddDiscussionToAll(this.forumId, { cmId: this.cmId });
 
             this.canPin = !!response.canpindiscussions;
-        } catch (error) {
+        } catch {
             this.canPin = false;
         }
     }
@@ -86,7 +85,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 translateMessage: true,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             PopoverController.dismiss();
         } finally {
             modal.dismiss();
@@ -118,7 +117,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 translateMessage: true,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             PopoverController.dismiss();
         } finally {
             modal.dismiss();
@@ -150,7 +149,7 @@ export class AddonModForumDiscussionOptionsMenuComponent implements OnInit {
                 translateMessage: true,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             PopoverController.dismiss();
         } finally {
             modal.dismiss();

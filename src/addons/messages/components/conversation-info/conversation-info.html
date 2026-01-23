@@ -15,24 +15,27 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 
-    <core-loading [hideUntil]="loaded">
-        <ion-item class="ion-text-center" *ngIf="conversation">
-            <ion-label>
-                <div class="large-avatar">
-                    <img class="avatar" [url]="conversation.imageurl" core-external-content [alt]="conversation.name"
-                        onError="this.src='assets/img/group-avatar.svg'">
-                </div>
-                <h2>
-                    <!-- WS didn't filter the name, see MDL-81815. -->
-                    <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
-                </h2>
-                <p>
-                    <core-format-text *ngIf="conversation.subname" [text]="conversation.subname" contextLevel="system"
-                        [contextInstanceId]="0" />
-                </p>
-                <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
-            </ion-label>
-        </ion-item>
+    <core-loading [hideUntil]="loaded" placeholderType="imageandboxes">
+        @if (conversation) {
+            <ion-item class="ion-text-center">
+                <ion-label>
+                    <div class="large-avatar">
+                        <img class="avatar" [url]="conversation.imageurl" core-external-content [alt]="conversation.name"
+                            onError="this.src='assets/img/group-avatar.svg'">
+                    </div>
+                    <h2>
+                        <!-- WS didn't filter the name, see MDL-81815. -->
+                        <core-format-text [text]="conversation.name" contextLevel="system" [contextInstanceId]="0" [wsNotFiltered]="true" />
+                    </h2>
+                    <p>
+                        @if (conversation.subname) {
+                            <core-format-text [text]="conversation.subname" contextLevel="system" [contextInstanceId]="0" />
+                        }
+                    </p>
+                    <p>{{ 'addon.messages.numparticipants' | translate:{$a: conversation.membercount} }}</p>
+                </ion-label>
+            </ion-item>
+        }
 
         <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let member of members" (click)="closeModal(member.id)"
             [detail]="true" button>
@@ -40,8 +43,9 @@
             <ion-label>
                 <p class="item-heading">
                     {{ member.fullname }}
-                    <ion-icon name="fas-user-slash" *ngIf="member.isblocked"
-                        [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                    @if (member.isblocked) {
+                        <ion-icon name="fas-user-slash" [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                    }
                 </p>
             </ion-label>
         </ion-item>

@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, Type } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@singletons/events';
 import { CoreLang } from '@services/lang';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
-import { CoreIframeUtils } from '@services/utils/iframe';
+import { CoreIframe } from '@singletons/iframe';
 import { Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreAnalytics } from '@services/analytics';
 import { CoreNative } from '@features/native/services/native';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreEditorService } from '@features/editor/services/editor';
 
 /**
  * Page that displays the general settings.
@@ -35,15 +37,18 @@ import { CoreNative } from '@features/native/services/native';
 @Component({
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
-    styleUrls: ['general.scss'],
+    styleUrl: 'general.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsGeneralPage {
+export default class CoreSettingsGeneralPage {
 
     languages: { code: string; name: string }[] = [];
     selectedLanguage = '';
     zoomLevels: { value: CoreZoomLevel; style: number; selected: boolean }[] = [];
     selectedZoomLevel = CoreZoomLevel.NONE;
-    richTextEditor = true;
+    pinchToZoom = false;
     debugDisplay = false;
     analyticsAvailable = false;
     analyticsEnabled = false;
@@ -52,6 +57,8 @@ export class CoreSettingsGeneralPage {
     colorSchemeDisabled = false;
     isAndroid = false;
     displayIframeHelp = false;
+
+    protected editorSettingsComponentClass?: Type<unknown>;
 
     constructor() {
         this.asyncInit();
@@ -98,7 +105,9 @@ export class CoreSettingsGeneralPage {
                 selected: value === this.selectedZoomLevel,
             }));
 
-        this.richTextEditor = await CoreConfig.get(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, true);
+        this.pinchToZoom = await CoreSettingsHelper.getPinchToZoom();
+
+        this.editorSettingsComponentClass = await CoreEditorService.getSettingsComponentClass();
 
         this.debugDisplay = await CoreConfig.get(CoreConstants.SETTINGS_DEBUG_DISPLAY, false);
 
@@ -107,7 +116,7 @@ export class CoreSettingsGeneralPage {
             this.analyticsEnabled = await CoreConfig.get(CoreConstants.SETTINGS_ANALYTICS_ENABLED, true);
         }
 
-        this.displayIframeHelp = CoreIframeUtils.shouldDisplayHelp();
+        this.displayIframeHelp = CoreIframe.shouldDisplayHelp();
     }
 
     /**
@@ -131,7 +140,7 @@ export class CoreSettingsGeneralPage {
         try {
             await CoreLang.changeCurrentLanguage(this.selectedLanguage);
         } finally {
-            const langName = this.languages.find((lang) => lang.code == this.selectedLanguage)?.name;
+            const langName = this.languages.find((lang) => lang.code === this.selectedLanguage)?.name;
 
             const buttons: AlertButton[] = [
                 {
@@ -153,7 +162,7 @@ export class CoreSettingsGeneralPage {
                 },
             ];
 
-            const alert = await CoreDomUtils.showAlertWithOptions(
+            const alert = await CoreAlerts.show(
                 {
                     message: Translate.instant('core.settings.changelanguagealert'),
                     buttons,
@@ -175,7 +184,7 @@ export class CoreSettingsGeneralPage {
     protected async applyLanguageAndRestart(): Promise<void> {
         // Invalidate cache for all sites to get the content in the right language.
         const sites = await CoreSites.getSitesInstances();
-        await CoreUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
+        await CorePromiseUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
 
         CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
 
@@ -207,6 +216,19 @@ export class CoreSettingsGeneralPage {
     }
 
     /**
+     * Called when pinch-to-zoom is enabled or disabled.
+     *
+     * @param ev Event
+     */
+    pinchToZoomChanged(ev: Event): void {
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        CoreSettingsHelper.applyPinchToZoom(this.pinchToZoom);
+        CoreConfig.set(CoreConstants.SETTINGS_PINCH_TO_ZOOM, this.pinchToZoom ? 1 : 0);
+    }
+
+    /**
      * Called when a new color scheme is selected.
      *
      * @param ev Event
@@ -220,18 +242,6 @@ export class CoreSettingsGeneralPage {
     }
 
     /**
-     * Called when the rich text editor is enabled or disabled.
-     *
-     * @param ev Event
-     */
-    richTextEditorChanged(ev: Event): void {
-        ev.stopPropagation();
-        ev.preventDefault();
-
-        CoreConfig.set(CoreConstants.SETTINGS_RICH_TEXT_EDITOR, this.richTextEditor ? 1 : 0);
-    }
-
-    /**
      * Called when the debug display setting is enabled or disabled.
      *
      * @param ev Event
@@ -241,7 +251,7 @@ export class CoreSettingsGeneralPage {
         ev.preventDefault();
 
         CoreConfig.set(CoreConstants.SETTINGS_DEBUG_DISPLAY, this.debugDisplay ? 1 : 0);
-        CoreDomUtils.setDebugDisplay(this.debugDisplay);
+        CoreAlerts.setDebugDisplay(this.debugDisplay);
     }
 
     /**

@@ -15,7 +15,7 @@
 import { Component, Input } from '@angular/core';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { AddonModAssignFeedbackCommentsTextData } from '../feedback/comments/services/handler';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -40,18 +40,20 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
      * Open a modal to edit the feedback plugin.
      *
      * @returns Promise resolved with the input data, rejected if cancelled.
+     * @deprecated since 5.0.0. Use inline forms instead.
      */
     async editFeedback(): Promise<AddonModAssignFeedbackCommentsTextData> {
         if (!this.canEdit) {
             throw new CoreError('Cannot edit feedback');
         }
 
-        const { AddonModAssignEditFeedbackModalComponent } =
-            await import('@addons/mod/assign/components/edit-feedback-modal/edit-feedback-modal');
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const { AddonModAssignEditPluginFeedbackModalComponent } =
+            await import('@addons/mod/assign/components/edit-feedback-plugin-modal/edit-feedback-plugin-modal');
 
         // Create the navigation modal.
         const modalData = await CoreModals.openModal<AddonModAssignFeedbackCommentsTextData>({
-            component: AddonModAssignEditFeedbackModalComponent,
+            component: AddonModAssignEditPluginFeedbackModalComponent,
             componentProps: {
                 assign: this.assign,
                 submission: this.submission,

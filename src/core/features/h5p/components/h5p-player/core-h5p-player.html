@@ -1,12 +1,16 @@
-<div *ngIf="!showPackage && urlParams" class="core-h5p-placeholder">
-    <ion-button class="core-h5p-placeholder-play-button" fill="clear" (click)="play($event)" [ariaLabel]="'core.h5p.play' | translate">
-        <ion-icon name="far-circle-play" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+@if (showPackage) {
+    <core-h5p-iframe [fileUrl]="urlParams?.url" [displayOptions]="displayOptions" [onlinePlayerUrl]="src" [component]="component"
+        [componentId]="componentId" [fileTimemodified]="fileTimemodified" />
+} @else if (urlParams) {
+    <div class="core-h5p-placeholder">
+        <ion-button class="core-h5p-placeholder-play-button enlarge-on-hover" fill="clear" (click)="play($event)"
+            [ariaLabel]="'core.h5p.play' | translate">
+            <ion-icon name="far-circle-play" slot="icon-only" aria-hidden="true" />
+        </ion-button>
 
-    <div class="core-h5p-placeholder-download-container">
-        <core-download-refresh [status]="state" [enabled]="canDownload$ | async" [loading]="calculating$ | async" [canTrustDownload]="true"
-            (action)="download()" />
+        <div class="core-h5p-placeholder-download-container">
+            <core-download-refresh [status]="state" [enabled]="canDownload$ | async" [loading]="calculating$ | async"
+                [canTrustDownload]="true" (action)="download()" />
+        </div>
     </div>
-</div>
-
-<core-h5p-iframe *ngIf="showPackage" [fileUrl]="urlParams!.url" [displayOptions]="displayOptions" [onlinePlayerUrl]="src" />
+}

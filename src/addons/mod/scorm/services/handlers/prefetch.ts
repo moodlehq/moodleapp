@@ -21,12 +21,12 @@ import { CoreFilepool } from '@services/filepool';
 import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { AddonModScorm, AddonModScormScorm } from '../scorm';
 import { AddonModScormSync } from '../scorm-sync';
-import { ADDON_MOD_SCORM_COMPONENT } from '../../constants';
+import { ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch SCORMs.
@@ -35,8 +35,8 @@ import { ADDON_MOD_SCORM_COMPONENT } from '../../constants';
 export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModScorm';
-    modName = 'scorm';
-    component = ADDON_MOD_SCORM_COMPONENT;
+    modName = ADDON_MOD_SCORM_MODNAME;
+    component = ADDON_MOD_SCORM_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^tracks$/;
 
     /**
@@ -84,9 +84,11 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             this.downloadOrPrefetchMainFileIfNeeded(scorm, prefetch, onProgress, siteId),
             // Download WS data. If it fails we don't want to fail the whole download, so we'll ignore the error for now.
             // @todo Implement a warning system so the user knows which SCORMs have failed.
-            CoreUtils.ignoreErrors(this.fetchWSData(scorm, siteId)),
+            CorePromiseUtils.ignoreErrors(this.fetchWSData(scorm, siteId)),
             // Download intro files, ignoring errors.
-            CoreUtils.ignoreErrors(CoreFilepool.downloadOrPrefetchFiles(siteId, files, prefetch, false, this.component, module.id)),
+            CorePromiseUtils.ignoreErrors(
+                CoreFilepool.downloadOrPrefetchFiles(siteId, files, prefetch, false, this.component, module.id),
+            ),
         ]);
 
         // Success, return the hash.
@@ -154,7 +156,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             (event: ProgressEvent<EventTarget>) => this.downloadProgress(false, onProgress, event),
         );
 
-        await CoreUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, packageUrl));
+        await CorePromiseUtils.ignoreErrors(CoreFilepool.removeFileByUrl(siteId, packageUrl));
     }
 
     /**
@@ -175,10 +177,9 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
-        const result = AddonModScorm.isScormUnsupported(scorm);
-
-        if (result) {
-            throw new CoreError(Translate.instant(result));
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
+            // Shouldn't happen, if scorm uses online player it shouldn't be downloaded.
+            throw new CoreError('This SCORM cannot be downloaded.');
         }
 
         // First verify that the file needs to be downloaded.
@@ -238,7 +239,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
      */
     async fetchAttempts(scorm: AddonModScormScorm, modOptions: CoreCourseCommonModWSOptions): Promise<void> {
         // If it fails, assume we have no attempts.
-        const numAttempts = await CoreUtils.ignoreErrors(AddonModScorm.getAttemptCountOnline(scorm.id, modOptions), 0);
+        const numAttempts = await CorePromiseUtils.ignoreErrors(AddonModScorm.getAttemptCountOnline(scorm.id, modOptions), 0);
 
         if (numAttempts <= 0) {
             // No attempts. We'll still try to get user data to be able to identify SCOs not visible and so.
@@ -268,7 +269,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
     async getDownloadSize(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreFileSizeSum> {
         const scorm = await this.getScorm(module, courseId);
 
-        if (AddonModScorm.isScormUnsupported(scorm)) {
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
             return { size: -1, total: false };
         } else if (!scorm.packagesize) {
             // We don't have package size, try to calculate it.
@@ -351,7 +352,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
             return false;
         }
 
-        if (AddonModScorm.isScormUnsupported(scorm)) {
+        if (AddonModScorm.useOnlinePlayer(scorm)) {
             return false;
         }
 

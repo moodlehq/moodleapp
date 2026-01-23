@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreSite } from '@classes/sites/site';
-import { CoreCoursesProvider } from '@features/courses/services/courses';
+import { CORE_COURSES_ENROL_INVALID_KEY } from '@features/courses/constants';
 import { CoreSites } from '@services/sites';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -45,7 +45,7 @@ export class AddonEnrolSelfService {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSelfEnrolmentInfoCacheKey(instanceId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         return await site.read<AddonEnrolSelfGetInstanceInfoWSResponse>('enrol_self_get_instance_info', params, preSets);
@@ -66,7 +66,6 @@ export class AddonEnrolSelfService {
      *
      * @param instanceId Self instance ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSelfEnrolmentInfo(instanceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -82,7 +81,7 @@ export class AddonEnrolSelfService {
      * @param instanceId Enrol instance ID.
      * @param siteId Site ID. If not defined, use current site.
      * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
-     *         with an object with errorcode = CoreCoursesProvider.ENROL_INVALID_KEY.
+     *         with an object with errorcode = CORE_COURSES_ENROL_INVALID_KEY.
      */
     async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
 
@@ -112,7 +111,7 @@ export class AddonEnrolSelfService {
                 warning.warningcode == '2' || warning.warningcode == '3' || warning.warningcode == '4');
 
             if (warning) {
-                throw new CoreWSError({ errorcode: CoreCoursesProvider.ENROL_INVALID_KEY, message: warning.message });
+                throw new CoreWSError({ errorcode: CORE_COURSES_ENROL_INVALID_KEY, message: warning.message });
             } else {
                 throw new CoreWSError(response.warnings[0]);
             }

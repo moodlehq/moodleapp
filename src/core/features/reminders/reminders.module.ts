@@ -12,29 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
-import { CoreRemindersComponentsModule } from './components/components.module';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
 import { CoreReminders } from './services/reminders';
 
+/**
+ * Get reminders services.
+ *
+ * @returns Block services.
+ */
+export async function getRemindersServices(): Promise<Type<unknown>[]> {
+    const { CoreRemindersService } = await import('@features/reminders/services/reminders');
+
+    return [
+        CoreRemindersService,
+    ];
+}
+
+/**
+ * Get directives and components for site plugins.
+ *
+ * @returns Returns directives and components.
+ */
+export async function getRemindersExportedDirectives(): Promise<Type<unknown>[]> {
+    const { CoreRemindersDateComponent } = await import('@features/reminders/components/date/date');
+
+    return [
+        CoreRemindersDateComponent,
+    ];
+}
+
 @NgModule({
-    imports: [
-        CoreRemindersComponentsModule,
-    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,
             useValue: [REMINDERS_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                await CoreReminders.initialize();
-            },
-        },
+        provideAppInitializer(() => CoreReminders.initialize()),
     ],
 })
 export class CoreRemindersModule {}

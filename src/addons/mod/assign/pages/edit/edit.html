@@ -17,37 +17,47 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="userSubmission && userSubmission.plugins && userSubmission.plugins.length">
-            <!-- @todo plagiarism_print_disclosure -->
-            <core-timer *ngIf="timeLimitEndTime > 0" [endTime]="timeLimitEndTime" (finished)="timeUp()" timeUpText="00:00:00"
-                [timerText]="'addon.mod_assign.assigntimeleft' | translate" [align]="'center'" [timeLeftClassThreshold]="-1"
-                [underTimeClassThresholds]="[300, 900]" />
+        @if (userSubmission && userSubmission.plugins && userSubmission.plugins.length) {
+            <ion-list>
+                <!-- @todo plagiarism_print_disclosure -->
+                @if (timeLimitEndTime > 0) {
+                    <core-timer [endTime]="timeLimitEndTime" (finished)="timeUp()" timeUpText="00:00:00"
+                        [timerText]="'addon.mod_assign.assigntimeleft' | translate" [align]="'center'" [timeLeftClassThreshold]="-1"
+                        [underTimeClassThresholds]="[300, 900]" />
+                }
 
-            <!-- Assign activity instructions and attachments if needed. -->
-            <ion-item class="ion-text-wrap" *ngIf="activityInstructions">
-                <ion-label>
-                    <core-format-text [text]="activityInstructions" [component]="component" [componentId]="moduleId" contextLevel="module"
-                        [contextInstanceId]="moduleId" [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
+                <!-- Assign activity instructions and attachments if needed. -->
+                @if (activityInstructions) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="activityInstructions" [component]="component" [componentId]="moduleId"
+                                contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
+                        </ion-label>
+                    </ion-item>
+                }
 
-            <ng-container *ngIf="assign?.submissionattachments">
-                <core-file *ngFor="let file of introAttachments" [file]="file" [component]="component" [componentId]="moduleId" />
-            </ng-container>
+                @if (assign?.submissionattachments) {
 
-            <form name="addon-mod_assign-edit-form" #editSubmissionForm>
-                <!-- Submission statement. -->
-                <ion-item class="ion-text-wrap" *ngIf="submissionStatement">
-                    <ion-checkbox name="submissionstatement" [(ngModel)]="submissionStatementAccepted">
-                        <core-format-text [text]="submissionStatement" [filter]="false" />
-                    </ion-checkbox>
-                    <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
-                    <input type="hidden" [ngModel]="submissionStatementAccepted" name="submissionstatement">
-                </ion-item>
+                    <core-file *ngFor="let file of introAttachments" [file]="file" [component]="component" [componentId]="moduleId" />
 
-                <addon-mod-assign-submission-plugin *ngFor="let plugin of userSubmission.plugins" [assign]="assign"
-                    [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="allowOffline" />
-            </form>
-        </ion-list>
+                }
+
+                <form name="addon-mod_assign-edit-form" #editSubmissionForm>
+                    <!-- Submission statement. -->
+                    @if (submissionStatement) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-checkbox name="submissionstatement" [(ngModel)]="submissionStatementAccepted">
+                                <core-format-text [text]="submissionStatement" [filter]="false" />
+                            </ion-checkbox>
+                            <!-- ion-checkbox doesn't use an input. Create a hidden input to hold the value. -->
+                            <input type="hidden" [ngModel]="submissionStatementAccepted" name="submissionstatement">
+                        </ion-item>
+                    }
+
+                    <addon-mod-assign-submission-plugin *ngFor="let plugin of userSubmission.plugins" [assign]="assign"
+                        [submission]="userSubmission" [plugin]="plugin" [edit]="true" [allowOffline]="true" />
+                </form>
+            </ion-list>
+        }
     </core-loading>
 </ion-content>

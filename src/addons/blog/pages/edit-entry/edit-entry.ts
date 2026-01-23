@@ -13,7 +13,7 @@
 // limitations under the License.
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { ADDON_BLOG_ENTRY_UPDATED, ADDON_BLOG_SYNC_ID } from '@addons/blog/constants';
+import { ADDON_BLOG_ENTRY_UPDATED, ADDON_BLOG_SYNC_ID, CoreSiteBlogLevel } from '@addons/blog/constants';
 import {
     AddonBlog,
     AddonBlogAddEntryOption,
@@ -23,45 +23,41 @@ import {
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
 import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
-import { CoreCommentsComponentsModule } from '@features/comments/components/components.module';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseBasicData } from '@features/courses/services/courses';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { CoreTagComponentsModule } from '@features/tag/components/components.module';
 import { CanLeave } from '@guards/can-leave';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { Translate } from '@singletons';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreEvents } from '@singletons/events';
 import { CoreForms } from '@singletons/form';
-import { CoreFileEntry } from '@services/file-helper';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
+import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 @Component({
     selector: 'addon-blog-edit-entry',
     templateUrl: './edit-entry.html',
-    standalone: true,
     imports: [
-        CoreEditorComponentsModule,
+        CoreEditorRichTextEditorComponent,
         CoreSharedModule,
-        CoreCommentsComponentsModule,
-        CoreTagComponentsModule,
     ],
 })
-export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
+export default class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
-    @ViewChild('editEntryForm') formElement!: ElementRef;
+    readonly formElement = viewChild.required<ElementRef<HTMLFormElement>>('editEntryForm');
 
     publishState = AddonBlogPublishState;
     form = new FormGroup({
@@ -80,8 +76,6 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
     maxFiles = 99;
     initialFiles: CoreFileEntry[] = [];
     files: CoreFileEntry[] = [];
-    courseId?: number;
-    modId?: number;
     userId?: number;
     associatedCourse?: CoreCourseBasicData;
     associatedModule?: CoreCourseModuleData;
@@ -94,6 +88,12 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
     siteHomeId?: number;
     forceLeave = false;
     isOfflineEntry = false;
+
+    protected courseId?: number;
+    protected modId?: number;
+    readonly blogLevel = signal(CoreSiteBlogLevel.BLOG_SITE_LEVEL);
+    readonly isUserLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_USER_LEVEL);
+    readonly isGlobalLevel = computed(() => this.blogLevel() === CoreSiteBlogLevel.BLOG_GLOBAL_LEVEL);
 
     /**
      * Gives if the form is not pristine. (only for existing entries)
@@ -136,6 +136,13 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             return CoreNavigator.back();
         }
 
+        const blogLevel = Number(await site.getConfig('bloglevel'));
+        this.blogLevel.set(isNaN(blogLevel) ? CoreSiteBlogLevel.BLOG_SITE_LEVEL : blogLevel);
+
+        if (this.isUserLevel()) {
+            this.form.controls.publishState.setValue(AddonBlogPublishState.draft);
+        }
+
         const entryId = CoreNavigator.getRouteParam('id');
         const lastModified = CoreNavigator.getRouteNumberParam('lastModified');
         const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
@@ -163,7 +170,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
                     this.associatedCourse = course;
                 }
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'Error getting associations, they may not be displayed correctly.');
+                CoreAlerts.showError(error, { default: 'Error getting associations, they may not be displayed correctly.' });
             }
 
             return;
@@ -173,8 +180,10 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             await AddonBlogSync.waitForSync(ADDON_BLOG_SYNC_ID);
 
             if (!this.isOfflineEntry) {
-                const offlineContent = await this.getFormattedBlogOfflineEntry({ id: entryIdParsed });
-                this.entry = offlineContent ?? await this.getEntry({ filters, lastModified, entryId: entryIdParsed });
+                const onlineEntryParams = { filters, lastModified, entryId: entryIdParsed };
+
+                const offlineContent = await this.getFormattedBlogOfflineEntry({ id: entryIdParsed }, onlineEntryParams);
+                this.entry = offlineContent ?? await this.getEntry(onlineEntryParams, false);
             } else {
                 this.entry = await this.getFormattedBlogOfflineEntry({ created: Number(entryId?.slice(4)) });
 
@@ -186,11 +195,9 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             this.files = [...(this.entry.attachmentfiles ?? [])];
             this.initialFiles = [...this.files];
 
-            if (this.entry) {
-                CoreSync.blockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
-                this.courseId = this.courseId || this.entry.courseid;
-                this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
-            }
+            CoreSync.blockOperation(AddonBlogProvider.COMPONENT, this.entry.id ?? this.entry.created);
+            this.courseId = this.courseId || this.entry.courseid;
+            this.modId = CoreNavigator.getRouteNumberParam('cmId') || this.entry.coursemoduleid;
 
             if (this.courseId) {
                 this.form.controls.associateWithCourse.setValue(true);
@@ -203,7 +210,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
                 this.associatedModule = await CoreCourse.getModule(this.modId);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error retrieving data.');
+            CoreAlerts.showError(error, { default: 'Error retrieving data.' });
             this.forceLeave = true;
             CoreNavigator.back();
 
@@ -211,9 +218,12 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
         }
 
         this.form.setValue({
-            subject: this.entry?.subject ?? '',
-            summary: this.entry?.summary ?? '',
-            publishState: this.entry?.publishstate ?? AddonBlogPublishState.site,
+            subject: this.entry.subject,
+            summary: CoreFileHelper.replacePluginfileUrls(
+                this.entry.summary,
+                this.entry.summaryfiles,
+            ),
+            publishState: this.entry?.publishstate ?? AddonBlogPublishState.draft,
             associateWithCourse: this.form.controls.associateWithCourse.value,
             associateWithModule: this.form.controls.associateWithModule.value,
         });
@@ -236,13 +246,18 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
     /**
      * Retrieves blog entry.
      *
+     * @param params Params to get the entry.
+     * @param filter Whether to obtain the data filtered or not. If filter=true it will always return cached data.
      * @returns Blog entry.
      */
-    protected async getEntry(params: AddonBlogEditEntryGetEntryParams): Promise<AddonBlogPost> {
+    protected async getEntry(params: AddonBlogEditEntryGetEntryParams, filter = false): Promise<AddonBlogPost> {
         try {
             const { entries } = await AddonBlog.getEntries(
                 { entryid: params.entryId },
-                { readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK },
+                {
+                    readingStrategy: filter ? CoreSitesReadingStrategy.ONLY_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+                    filter,
+                },
             );
 
             const selectedEntry = entries.find(entry => entry.id === params.entryId);
@@ -257,12 +272,15 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
             return selectedEntry;
         } catch (error) {
-            if (!params.filters || CoreUtils.isWebServiceError(error)) {
+            if (!params.filters || CoreWSError.isWebServiceError(error)) {
                 // Cannot get the entry, reject.
                 throw error;
             }
 
-            const updatedEntries = await AddonBlog.getEntries(params.filters);
+            const updatedEntries = await AddonBlog.getEntries(params.filters, {
+                readingStrategy: filter ? CoreSitesReadingStrategy.ONLY_CACHE : CoreSitesReadingStrategy.ONLY_NETWORK,
+                filter,
+            });
             const entry = updatedEntries.entries.find(entry => entry.id === params.entryId);
 
             if (!entry) {
@@ -323,7 +341,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
                 const filters: AddonBlogFilter | undefined = CoreNavigator.getRouteParam('filters');
                 const entry = this.entry && 'attachment' in this.entry
                     ? this.entry
-                    : await CoreUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }));
+                    : await CorePromiseUtils.ignoreErrors(this.getEntry({ filters, lastModified, entryId: this.entry.id }, true));
 
                 const removedFiles = CoreFileUploader.getFilesToDelete(entry?.attachmentfiles ?? [], this.files);
 
@@ -335,9 +353,9 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
                 return await this.saveEntry({ attachmentsId: attachmentsid });
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // It's a WebService error, the user cannot send the message so don't store it.
-                    CoreDomUtils.showErrorModalDefault(error, 'Error updating entry.');
+                    CoreAlerts.showError(error, { default: 'Error updating entry.' });
 
                     return;
                 }
@@ -350,7 +368,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             }
         }
 
-        const created = this.entry?.created ?? CoreTimeUtils.timestamp();
+        const created = this.entry?.created ?? CoreTime.timestamp();
 
         try {
             if (!this.files.length) {
@@ -360,9 +378,9 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
             const attachmentsId = await this.uploadOrStoreFiles({ created });
             await this.saveEntry({ created, attachmentsId });
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
-                CoreDomUtils.showErrorModalDefault(error, 'Error creating entry.');
+                CoreAlerts.showError(error, { default: 'Error creating entry.' });
 
                 return;
             }
@@ -411,10 +429,10 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
         if ((!this.entry && this.hasDataChangedForNewEntry) || (this.entry && this.hasDataChangedForEdit)) {
             // Modified, confirm user wants to go back.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+            await CoreAlerts.confirmLeaveWithChanges();
         }
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         return true;
     }
@@ -445,17 +463,17 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
         if (!this.entry?.id) {
             await AddonBlog.addEntry({
                 subject,
-                summary,
-                summaryformat: 1,
+                summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
+                summaryformat: DEFAULT_TEXT_FORMAT,
                 options,
-                created: params.created ?? CoreTimeUtils.timestamp(),
+                created: params.created ?? CoreTime.timestamp(),
                 forceOffline: params.forceOffline,
             });
         } else {
             await AddonBlog.updateEntry({
                 subject,
-                summary,
-                summaryformat: 1,
+                summary: CoreFileHelper.restorePluginfileUrls(summary, this.entry?.summaryfiles ?? []),
+                summaryformat: DEFAULT_TEXT_FORMAT,
                 options,
                 forceOffline: params.forceOffline,
                 entryid: this.entry.id,
@@ -465,7 +483,7 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
 
         CoreEvents.trigger(ADDON_BLOG_ENTRY_UPDATED);
         this.forceLeave = true;
-        CoreForms.triggerFormSubmittedEvent(this.formElement, true, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormSubmittedEvent(this.formElement(), true, CoreSites.getCurrentSiteId());
 
         return CoreNavigator.back();
     }
@@ -474,14 +492,23 @@ export class AddonBlogEditEntryPage implements CanLeave, OnInit, OnDestroy {
      * Retrieves a formatted blog offline entry.
      *
      * @param params Entry creation date or entry ID.
+     * @param onlineEntryParams When editing an online entry, the params to obtain it.
      * @returns Formatted entry.
      */
     async getFormattedBlogOfflineEntry(
         params: AddonBlogEditGetFormattedBlogOfflineEntryParams,
+        onlineEntryParams?: AddonBlogEditEntryGetEntryParams,
     ): Promise<AddonBlogEditEntryFormattedOfflinePost | undefined> {
         const entryRecord = await AddonBlogOffline.getOfflineEntry(params);
+        if (!entryRecord) {
+            return;
+        }
 
-        return entryRecord ? await AddonBlog.formatOfflineEntry(entryRecord) : undefined;
+        const onlineEntry = onlineEntryParams ?
+            await CorePromiseUtils.ignoreErrors(this.getEntry(onlineEntryParams, true)) :
+            undefined;
+
+        return await AddonBlog.formatOfflineEntry(entryRecord, onlineEntry);
     }
 
 }

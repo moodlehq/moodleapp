@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     } @else {
-    <core-context-menu>
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
-    </core-context-menu>
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -30,22 +30,30 @@
             (click)="openBook(chapter.id)">
             <ion-label>
                 <p [class.ion-padding-start]="addPadding && chapter.level === 1 ? true : null">
-                    <span *ngIf="showNumbers" class="addon-mod-book-number">{{chapter.indexNumber}} </span>
-                    <span *ngIf="showBullets" class="addon-mod-book-bullet">&bull; </span>
+                    @if (showNumbers) {
+                        <span class="addon-mod-book-number">{{chapter.indexNumber}} </span>
+                    } @else if (showBullets) {
+                        <span class="addon-mod-book-bullet">&bull; </span>
+                    }
                     <core-format-text [text]="chapter.title" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                 </p>
             </ion-label>
         </ion-item>
     </ion-list>
 
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width">
-            <ion-button expand="block" (click)="openBook()" class="ion-margin ion-text-wrap">
-                <span *ngIf="!hasStartedBook">{{ 'core.start' | translate }}</span>
-                <span *ngIf="hasStartedBook">{{ 'core.resume' | translate }}</span>
-            </ion-button>
-        </div>
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            <div class="list-item-limited-width">
+                <ion-button expand="block" (click)="openBook()" class="ion-margin ion-text-wrap">
+                    @if (!hasStartedBook) {
+                        <span>{{ 'core.start' | translate }}</span>
+                    } @else {
+                        <span>{{ 'core.resume' | translate }}</span>
+                    }
+                </ion-button>
+            </div>
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+        </div>
+    }
 </core-loading>

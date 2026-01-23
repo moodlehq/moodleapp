@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive } from '@angular/core';
+import { Input, OnInit, OnDestroy, ElementRef, Output, EventEmitter, Directive, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -37,14 +37,11 @@ export class CoreSitePluginsCallWSBaseDirective implements OnInit, OnDestroy {
     @Output() onDone = new EventEmitter<void>(); // Notifies when the WS call is done (either success or fail).
 
     protected logger: CoreLogger;
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected invalidateObserver?: Subscription;
+    protected parentContent = inject(CoreSitePluginsPluginContentComponent);
 
-    constructor(
-        element: ElementRef,
-        protected parentContent: CoreSitePluginsPluginContentComponent | null,
-    ) {
-        this.element = element.nativeElement || element;
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreSitePluginsCallWS');
     }
 

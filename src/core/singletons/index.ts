@@ -13,13 +13,12 @@
 // limitations under the License.
 
 import {
-    AbstractType,
     ApplicationInitStatus,
     ApplicationRef,
     Injector,
     NgZone as NgZoneService,
-    Type,
     EnvironmentInjector,
+    ProviderToken,
 } from '@angular/core';
 import { Router as RouterService } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -43,7 +42,6 @@ import { Clipboard as ClipboardService } from '@awesome-cordova-plugins/clipboar
 import { Device as DeviceService } from '@awesome-cordova-plugins/device/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
-import { Geolocation as GeolocationService } from '@awesome-cordova-plugins/geolocation/ngx';
 import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
@@ -81,7 +79,7 @@ let createSingletonMethodProxy = (instance: any, method: Function, property: str
  */
 export type CoreSingletonProxy<Service = unknown> = Service & {
     instance: Service;
-    injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string;
+    injectionToken: ProviderToken<Service>;
     setInstance(instance: Service): void;
 };
 
@@ -116,7 +114,7 @@ export function setCreateSingletonMethodProxy(method: typeof createSingletonMeth
  * @returns Singleton proxy.
  */
 export function makeSingleton<Service extends object = object>(
-    injectionToken: Type<Service> | AbstractType<Service> | Type<unknown> | string,
+    injectionToken: ProviderToken<Service>,
 ): CoreSingletonProxy<Service> {
     const singleton = {
         injectionToken,
@@ -136,8 +134,6 @@ export function makeSingleton<Service extends object = object>(
                 throw new Error('Can\'t resolve a singleton instance without an injector');
             }
 
-            // @todo Check type to avoid deprecation.
-            // eslint-disable-next-line deprecation/deprecation
             const instance = injector.get(injectionToken);
 
             singleton.setInstance(instance);
@@ -172,7 +168,6 @@ export const Badge = makeSingleton(BadgeService);
 export const Clipboard = makeSingleton(ClipboardService);
 export const File = makeSingleton(FileService);
 export const FileOpener = makeSingleton(FileOpenerService);
-export const Geolocation = makeSingleton(GeolocationService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
@@ -199,7 +194,8 @@ export const ModalController = makeSingleton(ModalControllerService);
 export const PopoverController = makeSingleton(PopoverControllerService);
 export const ToastController = makeSingleton(ToastControllerService);
 export const GestureController = makeSingleton(GestureControllerService);
-export const ApplicationInit = makeSingleton<CoreApplicationInitStatus>(ApplicationInitStatus);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const ApplicationInit = makeSingleton<CoreApplicationInitStatus>(ApplicationInitStatus as any);
 export const Application = makeSingleton(ApplicationRef);
 export const NavController = makeSingleton(NavControllerService);
 export const Router = makeSingleton(RouterService);

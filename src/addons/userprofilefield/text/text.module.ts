@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldTextHandler } from './services/handlers/text';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldTextComponent } from './component/text';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldTextComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonUserProfileFieldTextComponent,
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldTextHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldTextModule {}

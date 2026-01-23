@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { Component, ElementRef, Input, OnChanges } from '@angular/core';
+import { Component, ElementRef, effect, input, inject } from '@angular/core';
 import { CoreDom } from '@singletons/dom';
 
 /**
@@ -30,29 +29,23 @@ import { CoreDom } from '@singletons/dom';
 @Component({
     selector: 'core-style',
     template: '',
-    standalone: true,
-    imports: [
-        CoreSharedModule,
-    ],
+    imports: [],
 })
-export class CoreStyleComponent implements OnChanges {
+export class CoreStyleComponent {
 
-    @Input() css = ''; // CSS rules.
-    @Input() prefix = ''; // Prefix to add to CSS rules.
+    readonly css = input(''); // CSS rules.
+    readonly prefix = input(''); // Prefix to add to CSS rules.
 
-    constructor(private element: ElementRef) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    /**
-     * @inheritdoc
-     */
-    ngOnChanges(): void {
-        if (this.element && this.element.nativeElement) {
+    constructor() {
+        effect(() => {
             const style = document.createElement('style');
-            style.innerHTML = CoreDom.prefixCSS(this.css, this.prefix);
+            style.innerHTML = CoreDom.prefixCSS(this.css(), this.prefix());
 
-            this.element.nativeElement.innerHTML = '';
-            this.element.nativeElement.appendChild(style);
-        }
+            this.element.innerHTML = '';
+            this.element.appendChild(style);
+        });
     }
 
 }

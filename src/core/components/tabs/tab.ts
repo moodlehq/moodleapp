@@ -12,13 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, ElementRef, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    EventEmitter,
+    ContentChild,
+    TemplateRef,
+    inject,
+} from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * A tab to use inside core-tabs. The content of this tab will be displayed when the tab is selected.
@@ -32,7 +44,7 @@ import { CoreTabsComponent } from './tabs';
  * Example usage:
  *
  * <core-tabs selectedIndex="1">
- *     <core-tab [title]="'core.courses.timeline' | translate" (ionSelect)="switchTab('timeline')">
+ *     <core-tab [title]="'core.courses.tabname' | translate" (ionSelect)="switchTab('tabname')">
  *         <ng-template> <!-- This ng-template is required. -->
  *             <!-- Tab contents. -->
  *         </ng-template>
@@ -41,7 +53,8 @@ import { CoreTabsComponent } from './tabs';
  */
 @Component({
     selector: 'core-tab',
-    template: '<ng-container *ngIf="loaded && template" [ngTemplateOutlet]="template" />',
+    template: '@if (loaded && template) {<ng-container [ngTemplateOutlet]="template" />}',
+    imports: [CoreBaseModule],
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
@@ -70,19 +83,16 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
 
     @ContentChild(TemplateRef) template?: TemplateRef<void>; // Template defined by the content.
 
-    element: HTMLElement; // The core-tab element.
+    element: HTMLElement = inject(ElementRef).nativeElement; // The core-tab element.
     loaded = false;
     initialized = false;
     tabElement?: HTMLElement | null;
 
     protected isEnabled = true;
+    protected tabs = inject(CoreTabsComponent);
 
-    constructor(
-        protected tabs: CoreTabsComponent,
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
-        this.id = this.id || 'core-tab-' + CoreUtils.getUniqueId('CoreTabComponent');
+    constructor() {
+        this.id = this.id || `core-tab-${CoreUtils.getUniqueId('CoreTabComponent')}`;
         this.element.setAttribute('role', 'tabpanel');
         this.element.setAttribute('tabindex', '0');
         this.element.setAttribute('aria-hidden', 'true');
@@ -92,7 +102,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.element.setAttribute('aria-labelledby', this.id + '-tab');
+        this.element.setAttribute('aria-labelledby', `${this.id}-tab`);
         this.element.setAttribute('id', this.id);
 
         this.tabs.addTab(this);
@@ -112,7 +122,7 @@ export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {
     async selectTab(): Promise<void> {
         this.element.classList.add('selected');
 
-        this.tabElement = this.tabElement || document.getElementById(this.id + '-tab');
+        this.tabElement = this.tabElement || document.getElementById(`${this.id}-tab`);
         this.tabElement?.setAttribute('aria-selected', 'true');
         this.element.setAttribute('aria-hidden', 'false');
 

@@ -18,12 +18,13 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { AddonModQuiz } from '../quiz';
 import { AddonModQuizHelper } from '../quiz-helper';
 import { isSafeNumber } from '@/core/utils/types';
 import { ADDON_MOD_QUIZ_FEATURE_NAME } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for quiz push notifications clicks.
@@ -35,25 +36,19 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
     priority = 200;
     featureName = ADDON_MOD_QUIZ_FEATURE_NAME;
 
-    protected readonly SUPPORTED_NAMES = ['submission', 'confirmation', 'attempt_overdue'];
+    protected static readonly SUPPORTED_NAMES = ['submission', 'confirmation', 'attempt_overdue'];
 
     /**
-     * Check if a notification click is handled by this handler.
-     *
-     * @param notification The notification to check.
-     * @returns Whether the notification click is handled by this handler
+     * @inheritdoc
      */
     async handles(notification: AddonModQuizPushNotificationData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_quiz' &&
-                this.SUPPORTED_NAMES.indexOf(notification.name ?? '') !== -1 &&
+                AddonModQuizPushClickHandlerService.SUPPORTED_NAMES.indexOf(notification.name ?? '') !== -1 &&
                 !!(notification.customdata?.instance || notification.contexturl);
     }
 
     /**
-     * Handle the notification click.
-     *
-     * @param notification The notification to check.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async handleClick(notification: AddonModQuizPushNotificationData): Promise<void> {
         const contextUrlParams = CoreUrl.extractUrlParams(notification.contexturl || '');
@@ -67,12 +62,14 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
             contextUrlParams.page !== undefined
         ) {
             // A student made a submission, go to view the attempt.
-            return AddonModQuizHelper.handleReviewLink(
+            await AddonModQuizHelper.handleReviewLink(
                 Number(contextUrlParams.attempt),
                 Number(contextUrlParams.page),
                 Number(data.instance),
                 notification.site,
             );
+
+            return;
         }
 
         // Open the activity.
@@ -81,9 +78,9 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
+        await CorePromiseUtils.ignoreErrors(AddonModQuiz.invalidateContent(moduleId, courseId, notification.site));
 
-        return CoreCourseHelper.navigateToModule(moduleId, {
+        await CoreCourseHelper.navigateToModule(moduleId, {
             courseId,
             siteId: notification.site,
         });

@@ -14,28 +14,33 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreConstants } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCourseModuleComponent } from '../../components/module/module';
+import { CoreSharedModule } from '@/core/shared.module';
+import { ModFeature, ModArchetype, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
  * Page that displays all modules of a certain type in a course.
+ *
+ * @deprecatedonmoodle 5.1 Use course overview instead.
  */
 @Component({
     selector: 'page-core-course-list-mod-type',
     templateUrl: 'list-mod-type.html',
-    styles: `core-course-module:last-child {
-        --activity-border: 0px;
-        --card-padding-bottom: 0px;
-    }`,
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleComponent,
+    ],
 })
-export class CoreCourseListModTypePage implements OnInit {
+export default class CoreCourseListModTypePage implements OnInit {
 
     private static readonly PAGE_LENGTH = 10; // How many activities should load each time showMoreActivities is called.
 
@@ -62,7 +67,7 @@ export class CoreCourseListModTypePage implements OnInit {
                 ws: 'core_course_get_contents',
                 name: this.title,
                 data: { category: this.modName },
-                url: (this.modName === 'resources' ? '/course/resources.php' : `/mod/${this.modName}/index.php`) +
+                url: (this.modName === RESOURCE_ARCHETYPE_NAME ? '/course/resources.php' : `/mod/${this.modName}/index.php`) +
                     `?id=${this.courseId}`,
             });
         });
@@ -77,7 +82,7 @@ export class CoreCourseListModTypePage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteParam('courseId');
             this.modName = CoreNavigator.getRequiredRouteParam('modName');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -111,7 +116,7 @@ export class CoreCourseListModTypePage implements OnInit {
             this.lastShownSectionIndex = -1;
             this.showMoreActivities();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting data');
+            CoreAlerts.showError(error, { default: 'Error getting data' });
         }
     }
 
@@ -136,23 +141,23 @@ export class CoreCourseListModTypePage implements OnInit {
                 }
 
                 if (!CoreCourseHelper.canUserViewModule(modOrSubsection, section) ||
-                    !CoreCourse.moduleHasView(modOrSubsection) ||
+                    !CoreCourseModuleHelper.moduleHasView(modOrSubsection) ||
                     modOrSubsection.visibleoncoursepage === 0) {
                     // Ignore this module.
                     return false;
                 }
 
-                if (this.modName === 'resources') {
+                if (this.modName === RESOURCE_ARCHETYPE_NAME) {
                     // Check that the module is a resource.
                     if (this.archetypes[modOrSubsection.modname] === undefined) {
                         this.archetypes[modOrSubsection.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                             modOrSubsection.modname,
-                            CoreConstants.FEATURE_MOD_ARCHETYPE,
-                            CoreConstants.MOD_ARCHETYPE_OTHER,
+                            ModFeature.MOD_ARCHETYPE,
+                            ModArchetype.OTHER,
                         );
                     }
 
-                    if (this.archetypes[modOrSubsection.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+                    if (this.archetypes[modOrSubsection.modname] === ModArchetype.RESOURCE) {
                         return true;
                     }
 
@@ -190,7 +195,7 @@ export class CoreCourseListModTypePage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
+        await CorePromiseUtils.ignoreErrors(CoreCourse.invalidateSections(this.courseId));
 
         try {
             await this.fetchData();

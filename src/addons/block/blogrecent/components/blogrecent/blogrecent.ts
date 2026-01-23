@@ -23,7 +23,6 @@ import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-re
     selector: 'addon-block-blog-recent',
     templateUrl: '../../../../../core/features/block/components/pre-rendered-block/core-block-pre-rendered.html',
     styleUrl: 'blogrecent.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

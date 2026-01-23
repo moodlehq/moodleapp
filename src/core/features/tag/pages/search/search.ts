@@ -13,9 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUrl } from '@singletons/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
@@ -25,6 +23,10 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSites } from '@services/sites';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
 
 /**
  * Page that displays most used tags and allows searching.
@@ -32,12 +34,17 @@ import { CoreSites } from '@services/sites';
 @Component({
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
-    styleUrls: ['search.scss'],
+    styleUrl: 'search.scss',
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+    ],
 })
-export class CoreTagSearchPage implements OnInit {
+export default class CoreTagSearchPage implements OnInit {
 
     collectionId!: number;
-    query!: string;
+    query = '';
     collections: CoreTagCollection[] = [];
     cloud?: CoreTagCloud;
     loaded = false;
@@ -59,7 +66,7 @@ export class CoreTagSearchPage implements OnInit {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
     ngOnInit(): void {
         this.collectionId = CoreNavigator.getRouteNumberParam('collectionId') || 0;
@@ -83,7 +90,7 @@ export class CoreTagSearchPage implements OnInit {
                 this.logView();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
+            CoreAlerts.showError(error, { default: 'Error loading tags.' });
         }
     }
 
@@ -129,7 +136,7 @@ export class CoreTagSearchPage implements OnInit {
      * @param refresher Refresher event.
      */
     refreshData(refresher?: HTMLIonRefresherElement): void {
-        CoreUtils.allPromises([
+        CorePromiseUtils.allPromises([
             CoreTag.invalidateTagCollections(),
             CoreTag.invalidateTagCloud(this.collectionId, undefined, undefined, this.query),
         ]).finally(() => this.fetchData().finally(() => {
@@ -155,7 +162,7 @@ export class CoreTagSearchPage implements OnInit {
         CoreKeyboard.close();
 
         return this.fetchTags().catch((error) => {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tags.');
+            CoreAlerts.showError(error, { default: 'Error loading tags.' });
         }).finally(() => {
             this.searching = false;
         });

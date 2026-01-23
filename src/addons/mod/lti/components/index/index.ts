@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Optional, OnInit } from '@angular/core';
-import { IonContent } from '@ionic/angular';
-
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { AddonModLti, AddonModLtiLti } from '../../services/lti';
 import { AddonModLtiHelper } from '../../services/lti-helper';
-import { ADDON_MOD_LTI_COMPONENT } from '../../constants';
+import { ADDON_MOD_LTI_COMPONENT_LEGACY } from '../../constants';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an LTI entry page.
@@ -27,23 +27,21 @@ import { ADDON_MOD_LTI_COMPONENT } from '../../constants';
 @Component({
     selector: 'addon-mod-lti-index',
     templateUrl: 'addon-mod-lti-index.html',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModLtiIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_LTI_COMPONENT;
+    component = ADDON_MOD_LTI_COMPONENT_LEGACY;
     pluginName = 'lti';
     displayDescription = false;
 
     lti?: AddonModLtiLti; // The LTI object.
 
     protected fetchContentDefaultError = 'addon.mod_lti.errorgetlti';
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModLtiIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc

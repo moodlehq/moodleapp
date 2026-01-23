@@ -16,33 +16,36 @@
             : userFullname }}
         </div>
 
-        <core-format-text class="message-text" [text]="text" (afterRender)="afterRender.emit()" [contextLevel]="contextLevel"
-            [contextInstanceId]="instanceId" [courseId]="courseId" />
-    </div>
+        <div class="extra">
+            <div class="message-time">
+                @if (messageValue.pending) {
+                    <ion-icon name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status" />
+                } @else {
+                    @if (messageValue.deleted) {
+                        <ion-icon name="fas-trash" aria-hidden="true" />
+                        <span class="ion-text-wrap">{{ 'core.deletedoffline' | translate }}</span>
+                    } @else {
+                        {{ time() | coreFormatDate: 'strftimetime' }}
+                    }
+                }
+            </div>
 
-    <div class="extra">
-        <div class="message-time">
-            <ng-container *ngIf="!message.pending && !message.deleted">
-                {{ time | coreFormatDate: 'strftimetime' }}
-            </ng-container>
-            <ng-container *ngIf="!message.pending && message.deleted">
-                <ion-icon name="fas-trash" aria-hidden="true" />
-                <span class="ion-text-wrap">
-                    {{ 'core.deletedoffline' | translate }}
-                </span>
-            </ng-container>
-            <ion-icon *ngIf="message.pending" name="fas-clock" [attr.aria-label]="'core.notsent' | translate" role="status" />
+            @if (showDelete() && !messageValue.deleted && messageValue.delete !== false) {
+                <ion-button fill="clear"  color="danger" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                    (click)="delete($event)" [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
+                    <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
+            @if (showDelete() && messageValue.deleted) {
+                <ion-button fill="clear" color="danger" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                    (click)="undoDelete($event)" [ariaLabel]="'core.restore' | translate" class="delete-button">
+                    <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </div>
 
-        <ion-button *ngIf="showDelete && !message.deleted && message.delete !== false" fill="clear" [@coreSlideInOut]="'fromRight'"
-            color="danger" (click)="delete($event)" [ariaLabel]="'addon.messages.deletemessage' | translate" class="delete-button">
-            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-        </ion-button>
-        <ion-button *ngIf="showDelete && message.deleted" fill="clear" [@coreSlideInOut]="'fromRight'" color="danger"
-            (click)="undoDelete($event)" [ariaLabel]="'core.restore' | translate" class="delete-button">
-            <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
-        </ion-button>
+        @if (messageValue.showTail) {
+            <div class="tail"></div>
+        }
     </div>
-
-    <div class="tail" *ngIf="message.showTail"></div>
-</div>
+}

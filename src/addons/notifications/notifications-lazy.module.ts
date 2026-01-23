@@ -13,16 +13,12 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonNotificationsListPage } from '@addons/notifications/pages/list/list';
-import { AddonNotificationsNotificationPage } from '@addons/notifications/pages/notification/notification';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreScreen } from '@services/screen';
-import { AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
+import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -34,24 +30,24 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'list',
-            data: { mainMenuTabRoot: AddonNotificationsMainMenuHandlerService.PAGE_NAME },
-            component: AddonNotificationsListPage,
-            children: conditionalRoutes([
+            data: { mainMenuTabRoot: ADDONS_NOTICATIONS_MAIN_PAGE_NAME },
+            loadComponent: () => import('@addons/notifications/pages/list/list'),
+            loadChildren: () => conditionalRoutes([
                 {
                     path: ':id',
-                    component: AddonNotificationsNotificationPage,
+                    loadComponent: () => import('@addons/notifications/pages/notification/notification'),
                 },
             ], () => CoreScreen.isTablet),
         },
         ...conditionalRoutes([
             {
                 path: 'list/:id',
-                component: AddonNotificationsNotificationPage,
+                loadComponent: () => import('@addons/notifications/pages/notification/notification'),
             },
         ], () => CoreScreen.isMobile),
         {
             path: 'notification',
-            component: AddonNotificationsNotificationPage,
+            loadComponent: () => import('@addons/notifications/pages/notification/notification'),
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'list',
@@ -61,14 +57,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        AddonNotificationsListPage,
-        AddonNotificationsNotificationPage,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -78,4 +66,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonNotificationsLazyModule {}
+export default class AddonNotificationsLazyModule {}

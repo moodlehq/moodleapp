@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
@@ -26,6 +25,10 @@ import {
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { AddonModH5PActivityGradeMethod } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreScreen } from '@services/screen';
+import { map } from 'rxjs';
 
 /**
  * Page that displays all users that can attempt an H5P activity.
@@ -33,17 +36,22 @@ import { AddonModH5PActivityGradeMethod } from '../../constants';
 @Component({
     selector: 'page-addon-mod-h5pactivity-users-attempts',
     templateUrl: 'users-attempts.html',
-    styleUrls: ['users-attempts.scss'],
+    styleUrl: 'users-attempts.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
+export default class AddonModH5PActivityUsersAttemptsPage implements OnInit {
 
     loaded = false;
     courseId!: number;
     cmId!: number;
     h5pActivity?: AddonModH5PActivityData;
     users: AddonModH5PActivityUserAttemptsFormatted[] = [];
+    totalAttempts?: number;
     fetchMoreUsersFailed = false;
     canLoadMore = false;
+    readonly isTablet: Signal<boolean>;
 
     protected page = 0;
     protected logView: () => void;
@@ -54,7 +62,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id));
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(this.h5pActivity.id));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM_LIST,
@@ -64,6 +72,8 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
                 url: `/mod/h5pactivity/report.php?a=${this.h5pActivity.id}`,
             });
         });
+
+        this.isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
     }
 
     /**
@@ -74,8 +84,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -111,7 +120,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+            CoreAlerts.showError(error, { default: 'Error loading attempts.' });
         } finally {
             this.loaded = true;
         }
@@ -145,6 +154,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             this.users = this.users.concat(formattedUsers);
         }
 
+        this.totalAttempts = result.totalAttempts;
         this.canLoadMore = result.canLoadMore;
         this.page++;
     }
@@ -192,7 +202,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
         try {
             await this.fetchUsers(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more users');
+            CoreAlerts.showError(error, { default: 'Error loading more users' });
 
             this.fetchMoreUsersFailed = true;
         }
@@ -214,7 +224,7 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateAllUsersAttempts(this.h5pActivity.id));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData(true);
     }
@@ -238,6 +248,6 @@ export class AddonModH5PActivityUsersAttemptsPage implements OnInit {
  * User attempts data with some calculated data.
  */
 type AddonModH5PActivityUserAttemptsFormatted = AddonModH5PActivityUserAttempts & {
-    user?: CoreUserProfile;
+    user: CoreUserProfile;
     score?: number;
 };

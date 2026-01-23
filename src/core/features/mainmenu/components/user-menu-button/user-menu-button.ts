@@ -12,17 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Optional } from '@angular/core';
+import { Component, OnInit, inject, input, linkedSignal, signal } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
-import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
-import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
 import { IonRouterOutlet } from '@ionic/angular';
-import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
-import { CoreModals } from '@services/modals';
-import { CoreMainMenuUserMenuTourComponent } from '../user-menu-tour/user-menu-tour';
-import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
+import { CoreModals } from '@services/overlays/modals';
+import CoreMainMenuPage from '@features/mainmenu/pages/menu/menu';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuPlacement } from '@features/mainmenu/constants';
 
 /**
  * Component to display an avatar on the header to open user menu.
@@ -32,29 +30,50 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
-    styleUrls: ['user-menu-button.scss'],
+    styleUrl: 'user-menu-button.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreMainMenuUserButtonComponent implements OnInit {
 
-    @Input({ transform: toBoolean }) alwaysShow = false;
-    siteInfo?: CoreSiteInfo;
-    isMainScreen = false;
-    userTour: CoreUserTourDirectiveOptions = {
-        id: 'user-menu',
-        component: CoreMainMenuUserMenuTourComponent,
-        alignment: CoreUserToursAlignment.Start,
-        side: CoreScreen.isMobile ? CoreUserToursSide.Start : CoreUserToursSide.End,
-    };
+    readonly alwaysShow = input(false, { transform: toBoolean });
 
-    constructor(protected routerOutlet: IonRouterOutlet, @Optional() protected menuPage: CoreMainMenuPage | null) {
-        this.siteInfo = CoreSites.getCurrentSite()?.getInfo();
+    readonly siteInfo = signal<CoreSiteInfo | undefined>(undefined);
+    readonly showButton = linkedSignal(() => this.shouldShowButton());
+
+    protected routerOutlet = inject(IonRouterOutlet);
+    protected menuPage = inject(CoreMainMenuPage, { optional: true });
+
+    constructor() {
+        this.siteInfo.set(CoreSites.getCurrentSite()?.getInfo());
     }
 
     /**
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.isMainScreen = !this.routerOutlet.canGoBack();
+        this.showButton.set(this.shouldShowButton());
+    }
+
+    /**
+     * Determine if the button should be shown.
+     *
+     * @returns True if the button should be shown, false otherwise.
+     */
+    protected shouldShowButton(): boolean {
+        if (!this.siteInfo()) {
+            return false;
+        }
+
+        if (this.alwaysShow()) {
+            return true;
+        }
+
+        const isMainScreen = !this.routerOutlet.canGoBack();
+        const tabsPlacement = this.menuPage?.tabsPlacement();
+
+        return isMainScreen && tabsPlacement === CoreMainMenuPlacement.BOTTOM;
     }
 
     /**

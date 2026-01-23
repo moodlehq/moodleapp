@@ -1,17 +1,20 @@
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding" *ngIf="previousModule || nextModule">
-        <ion-col size="6" class="ion-no-padding core-course-module-navigation-arrow">
-            <ion-button fill="clear" class="core-course-previous-module ion-text-wrap" [disabled]="!previousModule"
-                (click)="goToActivity(false)">
-                <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
-                <div class="button-text">{{ 'core.course.previousactivity' | translate }}</div>
-            </ion-button>
-        </ion-col>
-        <ion-col size="6" class="ion-no-padding core-course-module-navigation-arrow">
-            <ion-button fill="clear" class="core-course-next-module ion-text-wrap" [disabled]=" !nextModule" (click)="goToActivity(true)">
-                <div class="button-text">{{ 'core.course.nextactivity' | translate }}</div>
-                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-            </ion-button>
-        </ion-col>
-    </ion-row>
+<core-loading [hideUntil]="loaded()" [fullscreen]="false" placeholderType="column" placeholderHeight="28px" [placeholderLimit]="1">
+    @if (previousModule() || nextModule()) {
+        <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding">
+            <ion-col size="6" class="ion-no-padding core-course-module-navigation-arrow">
+                <ion-button fill="clear" class="core-course-previous-module ion-text-wrap" [disabled]="!previousModule()"
+                    (click)="goToActivity(false)">
+                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
+                    <div class="button-text">{{ 'core.course.previousactivity' | translate }}</div>
+                </ion-button>
+            </ion-col>
+            <ion-col size="6" class="ion-no-padding core-course-module-navigation-arrow">
+                <ion-button fill="clear" class="core-course-next-module ion-text-wrap" [disabled]="!nextModule()"
+                    (click)="goToActivity(true)">
+                    <div class="button-text">{{ 'core.course.nextactivity' | translate }}</div>
+                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                </ion-button>
+            </ion-col>
+        </ion-row>
+    }
 </core-loading>

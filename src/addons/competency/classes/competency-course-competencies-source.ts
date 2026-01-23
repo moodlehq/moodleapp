@@ -14,7 +14,7 @@
 
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonCompetency,
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
@@ -35,8 +35,8 @@ export class AddonCompetencyCourseCompetenciesSource
         return `${courseId}-${userId || 'current-user'}`;
     }
 
-    readonly COURSE_ID: number;
-    readonly USER_ID?: number;
+    readonly courseId: number;
+    readonly userId?: number;
 
     courseCompetencies?: AddonCompetencyDataForCourseCompetenciesPageWSResponse;
     user?: CoreUserProfile;
@@ -44,8 +44,8 @@ export class AddonCompetencyCourseCompetenciesSource
     constructor(courseId: number, userId?: number) {
         super();
 
-        this.COURSE_ID = courseId;
-        this.USER_ID = userId;
+        this.courseId = courseId;
+        this.userId = userId;
     }
 
     /**
@@ -70,7 +70,7 @@ export class AddonCompetencyCourseCompetenciesSource
      * Invalidate course cache.
      */
     async invalidateCache(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonCompetency.invalidateCourseCompetencies(this.COURSE_ID, this.USER_ID));
+        await CorePromiseUtils.ignoreErrors(AddonCompetency.invalidateCourseCompetencies(this.courseId, this.userId));
     }
 
     /**
@@ -89,8 +89,8 @@ export class AddonCompetencyCourseCompetenciesSource
      */
     private async loadCourseCompetencies(): Promise<void> {
         [this.courseCompetencies, this.user] = await Promise.all([
-            AddonCompetency.getCourseCompetencies(this.COURSE_ID, this.USER_ID),
-            AddonCompetencyHelper.getProfile(this.USER_ID),
+            AddonCompetency.getCourseCompetencies(this.courseId, this.userId),
+            AddonCompetencyHelper.getProfile(this.userId),
         ]);
     }
 

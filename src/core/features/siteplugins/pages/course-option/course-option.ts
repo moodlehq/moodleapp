@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 
 import { CoreSitePluginsPluginContentComponent } from '@features/siteplugins/components/plugin-content/plugin-content';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreNavigator } from '@services/navigator';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the index of a course option site plugin.
@@ -25,10 +26,14 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'core-site-plugins-course-option',
     templateUrl: 'core-siteplugins-course-option.html',
+    imports: [
+        CoreSharedModule,
+        CoreSitePluginsPluginContentComponent,
+    ],
 })
-export class CoreSitePluginsCourseOptionPage implements OnInit {
+export default class CoreSitePluginsCourseOptionPage implements OnInit {
 
-    @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
+    readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 
     courseId?: number;
     handlerUniqueName?: string;
@@ -71,7 +76,7 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
      */
     async refreshData(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
-            await this.content?.refreshContent(false);
+            await this.content()?.refreshContent(false);
         } finally {
             refresher.complete();
         }
@@ -81,35 +86,35 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
      * The page is about to enter and become the active page.
      */
     ionViewWillEnter(): void {
-        this.content?.callComponentFunction('ionViewWillEnter');
+        this.content()?.callComponentFunction('ionViewWillEnter');
     }
 
     /**
      * The page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.
      */
     ionViewDidEnter(): void {
-        this.content?.callComponentFunction('ionViewDidEnter');
+        this.content()?.callComponentFunction('ionViewDidEnter');
     }
 
     /**
      * The page is about to leave and no longer be the active page.
      */
     ionViewWillLeave(): void {
-        this.content?.callComponentFunction('ionViewWillLeave');
+        this.content()?.callComponentFunction('ionViewWillLeave');
     }
 
     /**
      * The page has finished leaving and is no longer the active page.
      */
     ionViewDidLeave(): void {
-        this.content?.callComponentFunction('ionViewDidLeave');
+        this.content()?.callComponentFunction('ionViewDidLeave');
     }
 
     /**
      * The page is about to be destroyed and have its elements removed.
      */
     ionViewWillUnload(): void {
-        this.content?.callComponentFunction('ionViewWillUnload');
+        this.content()?.callComponentFunction('ionViewWillUnload');
     }
 
     /**
@@ -118,11 +123,12 @@ export class CoreSitePluginsCourseOptionPage implements OnInit {
      * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        if (!this.content) {
+        const content = this.content();
+        if (!content) {
             return true;
         }
 
-        const result = await this.content.callComponentFunction('canLeave');
+        const result = await content.callComponentFunction('canLeave');
 
         return result === undefined || result === null ? true : !!result;
     }

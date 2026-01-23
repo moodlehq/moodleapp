@@ -16,7 +16,8 @@ import { CoreContentLinksHandlerBase } from './base-handler';
 import { Translate } from '@singletons';
 
 import { CoreContentLinksAction } from '../services/contentlinks-delegate';
-import { CoreNavigator } from '@services/navigator';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+import { CoreCourseOverview } from '@features/course/services/course-overview';
 
 /**
  * Handler to handle URLs pointing to a list of a certain type of modules.
@@ -28,12 +29,6 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
      */
     protected title = '';
 
-    /**
-     * Construct the handler.
-     *
-     * @param addon Name of the addon as it's registered in course delegate. It'll be used to check if it's disabled.
-     * @param modName Name of the module (assign, book, ...).
-     */
     constructor(
         public addon: string,
         public modName: string,
@@ -41,33 +36,22 @@ export class CoreContentLinksModuleListHandler extends CoreContentLinksHandlerBa
         super();
 
         // Match the index.php URL with an id param.
-        this.pattern = new RegExp('/mod/' + modName + '/index.php.*([&?]id=\\d+)');
-        this.featureName = 'CoreCourseModuleDelegate_' + addon;
+        this.pattern = new RegExp(`/mod/${modName}/index.php.*([&?]id=\\d+)`);
+        this.featureName = CORE_COURSE_MODULE_FEATURE_PREFIX + addon;
     }
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @param siteIds List of sites the URL belongs to.
-     * @param url The URL to treat.
-     * @param params The params of the URL. E.g. 'mysite.com?id=1' -> {id: 1}
-     * @returns List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(
         siteIds: string[],
         url: string,
         params: Record<string, string>,
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
-
         return [{
             action: async (siteId): Promise<void> => {
-                await CoreNavigator.navigateToSitePath('course/' + params.id + '/list-mod-type', {
-                    params: {
-                        modName: this.modName,
-                        title: this.title || Translate.instant('addon.mod_' + this.modName + '.modulenameplural'),
-                    },
-                    siteId,
-                });
+                const title = this.title || Translate.instant(`addon.mod_${this.modName}.modulenameplural`);
+                await CoreCourseOverview.navigateToCourseOverview(parseInt(params.id), this.modName, title, siteId);
             },
         }];
     }

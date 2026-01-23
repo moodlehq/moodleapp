@@ -27,14 +27,16 @@
                             <p class="item-heading" id="device-{{device.id}}">
                                 <strong>{{ device.name }} {{ device.model }}</strong> ({{platform.platform}} {{ device.version }})
                             </p>
-                            <p *ngIf="device.current"><strong>{{ 'core.currentdevice' | translate }}</strong></p>
+                            @if (device.current) {
+                                <p><strong>{{ 'core.currentdevice' | translate }}</strong></p>
+                            }
                             <p>
                                 {{ 'core.lastmodified' | translate }}: {{ device.timemodified * 1000 |
                                 coreFormatDate:'strftimedatetimeshort' }}
                             </p>
                         </ion-label>
                         <core-button-with-spinner [loading]="device.updating" slot="end">
-                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, device.enable)"
+                            <ion-toggle [(ngModel)]="device.enable" (ngModelChange)="enableDevice(device, !!device.enable)"
                                 [attr.aria-labelledby]="'device-'+ device.id " />
                         </core-button-with-spinner>
                     </ion-item>

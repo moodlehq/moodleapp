@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
-
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreSitePluginsPluginContentComponent } from '../../components/plugin-content/plugin-content';
+import { CoreSharedModule } from '@/core/shared.module';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Page to render a site plugin page.
@@ -27,10 +28,14 @@ import { CoreSitePluginsPluginContentComponent } from '../../components/plugin-c
 @Component({
     selector: 'page-core-site-plugins-plugin',
     templateUrl: 'plugin.html',
+    imports: [
+        CoreSharedModule,
+        CoreSitePluginsPluginContentComponent,
+    ],
 })
-export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
+export default class CoreSitePluginsPluginPage implements OnInit, CanLeave {
 
-    @ViewChild(CoreSitePluginsPluginContentComponent) content?: CoreSitePluginsPluginContentComponent;
+    readonly content = viewChild(CoreSitePluginsPluginContentComponent);
 
     title?: string; // Page title.
     component?: string;
@@ -40,6 +45,9 @@ export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
     jsData?: Record<string, unknown>; // JS variables to pass to the plugin so they can be used in the template or JS.
     preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
     ptrEnabled = false;
+    contextLevel?: ContextLevel; // The context level to filter text.
+    contextInstanceId?: number; // The instance ID related to the context.
+    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 
     /**
      * @inheritdoc
@@ -53,6 +61,9 @@ export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
         this.jsData = CoreNavigator.getRouteParam('jsData');
         this.preSets = CoreNavigator.getRouteParam('preSets');
         this.ptrEnabled = !CoreUtils.isFalseOrZero(CoreNavigator.getRouteBooleanParam('ptrEnabled'));
+        this.contextLevel = CoreNavigator.getRouteParam('contextLevel');
+        this.contextInstanceId = CoreNavigator.getRouteNumberParam('contextInstanceId');
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId');
     }
 
     /**
@@ -61,7 +72,7 @@ export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
      * @param refresher Refresher.
      */
     refreshData(refresher: HTMLIonRefresherElement): void {
-        this.content?.refreshContent(false).finally(() => {
+        this.content()?.refreshContent(false).finally(() => {
             refresher.complete();
         });
     }
@@ -70,35 +81,35 @@ export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
      * The page is about to enter and become the active page.
      */
     ionViewWillEnter(): void {
-        this.content?.callComponentFunction('ionViewWillEnter');
+        this.content()?.callComponentFunction('ionViewWillEnter');
     }
 
     /**
      * The page has fully entered and is now the active page. This event will fire, whether it was the first load or a cached page.
      */
     ionViewDidEnter(): void {
-        this.content?.callComponentFunction('ionViewDidEnter');
+        this.content()?.callComponentFunction('ionViewDidEnter');
     }
 
     /**
      * The page is about to leave and no longer be the active page.
      */
     ionViewWillLeave(): void {
-        this.content?.callComponentFunction('ionViewWillLeave');
+        this.content()?.callComponentFunction('ionViewWillLeave');
     }
 
     /**
      * The page has finished leaving and is no longer the active page.
      */
     ionViewDidLeave(): void {
-        this.content?.callComponentFunction('ionViewDidLeave');
+        this.content()?.callComponentFunction('ionViewDidLeave');
     }
 
     /**
      * The page is about to be destroyed and have its elements removed.
      */
     ionViewWillUnload(): void {
-        this.content?.callComponentFunction('ionViewWillUnload');
+        this.content()?.callComponentFunction('ionViewWillUnload');
     }
 
     /**
@@ -107,11 +118,12 @@ export class CoreSitePluginsPluginPage implements OnInit, CanLeave {
      * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        if (!this.content) {
+        const content = this.content();
+        if (!content) {
             return true;
         }
 
-        const result = await this.content.callComponentFunction('canLeave');
+        const result = await content.callComponentFunction('canLeave');
 
         return result === undefined || result === null ? true : !!result;
     }

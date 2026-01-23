@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { Translate } from '@singletons';
 import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
 import { CoreArray } from '@singletons/array';
+import { CoreObject } from '@singletons/object';
 
 const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'table', 'col', 'figure', 'td', 'th', 'li'];
 
@@ -59,7 +60,7 @@ export class CoreH5PContentValidator {
      * @returns Promise resolved when done.
      */
     async addon(library: CoreH5PLibraryAddonData): Promise<void> {
-        const depKey = 'preloaded-' + library.machineName;
+        const depKey = `preloaded-${library.machineName}`;
 
         this.dependencies[depKey] = {
             library: library,
@@ -354,7 +355,7 @@ export class CoreH5PContentValidator {
         }
 
         if (!isArray) {
-            list = CoreUtils.objectToArray(<Record<string, unknown>> list);
+            list = CoreObject.toArray(<Record<string, unknown>> list);
         }
 
         if (!list.length) {
@@ -590,7 +591,7 @@ export class CoreH5PContentValidator {
         }
 
         // Find all dependencies for this library.
-        const depKey = 'preloaded-' + library.machineName;
+        const depKey = `preloaded-${library.machineName}`;
         if (!this.dependencies[depKey]) {
             this.dependencies[depKey] = {
                 library: library,
@@ -677,7 +678,7 @@ export class CoreH5PContentValidator {
      */
     protected filterXssSplit(tags: string[], store: boolean = false): string {
         if (store) {
-            this.allowedHtml = CoreUtils.arrayToObject(tags);
+            this.allowedHtml = CoreArray.toObject(tags);
 
             return '';
         }
@@ -717,7 +718,7 @@ export class CoreH5PContentValidator {
         }
 
         if (slash != '') {
-            return '</' + elem + '>';
+            return `</${elem}>`;
         }
 
         // Is there a closing XHTML slash at the end of the attributes?
@@ -730,9 +731,9 @@ export class CoreH5PContentValidator {
             ALLOWED_STYLEABLE_TAGS.indexOf(elem) != -1 ? this.allowedStyles : undefined,
         ).join(' ');
         attr2 = attr2.replace(/[<>]/g, '');
-        attr2 = attr2.length ? ' ' + attr2 : '';
+        attr2 = attr2.length ? ` ${attr2}` : '';
 
-        return '<' + elem + attr2 + xhtmlSlash + '>';
+        return `<${elem}${attr2}${xhtmlSlash}>`;
     }
 
     /**
@@ -811,14 +812,14 @@ export class CoreH5PContentValidator {
                                 }
                             }
 
-                            attrArray.push('style="' + validatedStyles.join(';') + ';"');
+                            attrArray.push(`style="${validatedStyles.join(';')};"`);
                             break;
                         }
 
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;
@@ -831,7 +832,7 @@ export class CoreH5PContentValidator {
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;
@@ -844,7 +845,7 @@ export class CoreH5PContentValidator {
                         thisVal = this.filterXssBadProtocol(matches[1]);
 
                         if (!skip) {
-                            attrArray.push(attrName + '="' + thisVal + '"');
+                            attrArray.push(`${attrName}="${thisVal}"`);
                         }
                         working = 1;
                         mode = 0;

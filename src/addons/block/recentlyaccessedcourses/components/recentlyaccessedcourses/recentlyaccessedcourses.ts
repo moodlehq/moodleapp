@@ -16,10 +16,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
-    CoreCoursesProvider,
     CoreCoursesMyCoursesUpdatedEventData,
     CoreCourses,
-    CoreCourseSummaryData,
+    CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
@@ -29,10 +28,16 @@ import {
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to render a recent courses block.
@@ -40,10 +45,9 @@ import { CoreCoursesComponentsModule } from '@features/courses/components/compon
 @Component({
     selector: 'addon-block-recentlyaccessedcourses',
     templateUrl: 'addon-block-recentlyaccessedcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
@@ -58,8 +62,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     protected fetchContentDefaultError = 'Error getting recent courses data.';
 
     constructor() {
-        super('AddonBlockRecentlyAccessedCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 
@@ -73,7 +76,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         this.scrollElementId = `addon-block-recentlyaccessedcourses-scroll-${scrollId}`;
 
         this.coursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
                 this.refreshCourseList(data);
             },
@@ -114,7 +117,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 
         // Invalidate course completion data.
         promises.push(this.invalidateCourseList().finally(() =>
-            CoreUtils.allPromises(courseIds.map((courseId) =>
+            CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
         if (courseIds.length  == 1) {
@@ -126,7 +129,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -136,7 +139,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
         const showCategories = this.block.configsRecord && this.block.configsRecord.displaycategories &&
             this.block.configsRecord.displaycategories.value == '1';
 
-        let recentCourses: CoreCourseSummaryData[] = [];
+        let recentCourses: CoreCourseSummaryExporterData[] = [];
         try {
             recentCourses = await CoreCourses.getRecentCourses();
         } catch {
@@ -170,20 +173,20 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
     }
 
     /**
-     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a CORE_COURSES_MY_COURSES_UPDATED_EVENT event.
      *
      * @param data Event data.
      * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
             // Always update if user enrolled in a course.
             return this.refreshContent();
         }
 
         const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
         const course = this.courses[courseIndex];
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
             if (!course) {
                 // Not found, use WS update.
                 return this.refreshContent();
@@ -196,8 +199,8 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             await this.invalidateCourseList();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED &&
-            data.state == CoreCoursesProvider.STATE_FAVOURITE && course) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED &&
+            data.state === CORE_COURSES_STATE_FAVOURITE && course) {
             course.isfavourite = !!data.value;
             await this.invalidateCourseList();
         }
@@ -214,7 +217,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
 }
 
 type AddonBlockRecentlyAccessedCourse =
-    (Omit<CoreCourseSummaryData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
+    (Omit<CoreCourseSummaryExporterData, 'visible'> & CoreCourseSearchedDataWithExtraInfoAndOptions) |
     (CoreEnrolledCourseDataWithOptions & {
         categoryname?: string; // Category name,
     });

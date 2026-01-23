@@ -5,29 +5,34 @@
 </core-navbar-buttons>
 <core-dynamic-component [component]="courseFormatComponent" [data]="data">
     <!-- Default course format. -->
-    <core-loading [hideUntil]="loaded">
+    <core-loading [hideUntil]="loaded" placeholderType="listwithicon" placeholderHeight="128px" placeholderWidth="44px">
 
-        <!-- Single section. -->
-        <div *ngIf="selectedSection && selectedSection.id !== allSectionsId" class="list-item-limited-width">
-            <core-dynamic-component [component]="singleSectionComponent" [data]="data">
-                <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
-                    [value]="accordionMultipleValue">
-                    <core-course-section *ngIf="!selectedSection.hiddenbynumsections && selectedSection.id !== stealthModulesSectionId"
-                        [course]="course" [section]="selectedSection" [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules"
-                        [collapsible]="false" />
-                </ion-accordion-group>
-                <core-empty-box *ngIf="!selectedSection.hasContent" icon="fas-table-cells-large"
-                    [message]="'core.course.nocontentavailable' | translate" />
-            </core-dynamic-component>
-        </div>
+        @if (selectedSection && selectedSection.id !== allSectionsId) {
+            <!-- Single section. -->
+            <div class="list-item-limited-width">
+                <core-dynamic-component [component]="singleSectionComponent" [data]="data">
+                    <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
+                        [value]="accordionMultipleValue">
+                        @if (!selectedSection.hiddenbynumsections && selectedSection.id !== stealthModulesSectionId) {
+                            <core-course-section [course]="course" [section]="selectedSection" [lastModuleViewed]="lastModuleViewed"
+                                [viewedModules]="viewedModules" [collapsible]="false" />
+                        }
+                    </ion-accordion-group>
+                    @if (!selectedSection.hasContent) {
+                        <core-empty-box icon="fas-table-cells-large" [message]="'core.course.nocontentavailable' | translate" />
+                    }
+                </core-dynamic-component>
+            </div>
+        }
 
-        <!-- Multiple sections. -->
-        <div *ngIf="selectedSection && selectedSection.id === allSectionsId" class="list-item-limited-width">
-            <core-dynamic-component [component]="allSectionsComponent" [data]="data">
-                <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
-                    [value]="accordionMultipleValue">
-                    @for (section of sections; track section.id) {
-                    @if ($index
+        @if (selectedSection && selectedSection.id === allSectionsId) {
+            <!-- Multiple sections. -->
+            <div class="list-item-limited-width">
+                <core-dynamic-component [component]="allSectionsComponent" [data]="data">
+                    <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
+                        [value]="accordionMultipleValue">
+                        @for (section of sections; track section.id) {
+                            @if ($index
                     <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !==allSectionsId && section.id
                         !==stealthModulesSectionId) { <core-course-section [course]="course" [section]="section"
                         [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true"
@@ -37,37 +42,51 @@
                 </ion-accordion-group>
             </core-dynamic-component>
 
-            <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />
-        </div>
-        <div collapsible-footer appearOnBottom *ngIf="displayCourseIndex && (previousSection || nextSection)" slot="fixed">
-            <div class="core-course-section-nav-buttons safe-area-padding-horizontal list-item-limited-width">
-                <ion-button *ngIf="previousSection" (click)="sectionChanged(previousSection)" expand="block"
-                    [ariaLabel]="('core.previous' | translate) + ': ' + previousSection.name" class="ion-text-nowrap">
-                    <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
-                    <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id" />
-                </ion-button>
-                <ion-button *ngIf="nextSection" (click)="sectionChanged(nextSection)" expand="block"
-                    [ariaLabel]="('core.next' | translate) + ': ' + nextSection.name" class="ion-text-nowrap">
-                    <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id" />
-                    <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
-                </ion-button>
+                <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />
             </div>
-        </div>
+        }
+
+        @if (displayCourseIndex && (previousSection || nextSection)) {
+            <div collapsible-footer appearOnBottom slot="fixed">
+                <div class="core-course-section-nav-buttons list-item-limited-width">
+                    @if (previousSection) {
+                        <ion-button (click)="sectionChanged(previousSection)" expand="block"
+                            [ariaLabel]="('core.previous' | translate) + ': ' + previousSection.name" class="ion-text-nowrap">
+                            <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
+                            <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id" />
+                        </ion-button>
+                    }
+                    @if (nextSection) {
+                        <ion-button (click)="sectionChanged(nextSection)" expand="block"
+                            [ariaLabel]="('core.next' | translate) + ': ' + nextSection.name" class="ion-text-nowrap">
+                            <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id" />
+                            <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
+                        </ion-button>
+                    }
+                </div>
+            </div>
+        }
     </core-loading>
 </core-dynamic-component>
 
 
-<core-block-side-blocks-button slot="fixed" *ngIf="loaded && course && displayBlocks && hasBlocks" contextLevel="course"
-    [instanceId]="course.id" />
+@if (loaded && course && displayBlocks && hasBlocks) {
+    <core-block-side-blocks-button slot="fixed" contextLevel="course" [instanceId]="course.id" />
+}
 
 <!-- Course Index button. -->
-<ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="loaded && (displayCourseIndex || communicationRoomUrl)">
-    <ion-fab-button size="small" *ngIf="communicationRoomUrl" [href]="communicationRoomUrl" core-link capture="false"
-        [attr.aria-label]="'core.course.communicationroomlink' | translate">
-        <ion-icon name="far-comments" aria-hidden="true" />
-    </ion-fab-button>
-    <ion-fab-button *ngIf="displayCourseIndex" (click)="openCourseIndex()" [userTour]="courseIndexTour"
-        [attr.aria-label]="'core.course.courseindex' | translate" color="secondary">
-        <ion-icon name="fas-list-ul" aria-hidden="true" />
-    </ion-fab-button>
-</ion-fab>
+@if (loaded && (displayCourseIndex || communicationRoomUrl)) {
+    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+        @if (communicationRoomUrl) {
+            <ion-fab-button size="small" [href]="communicationRoomUrl" core-link [capture]="false"
+                [attr.aria-label]="'core.course.communicationroomlink' | translate">
+                <ion-icon name="far-comments" aria-hidden="true" />
+            </ion-fab-button>
+        }
+        @if (displayCourseIndex) {
+            <ion-fab-button (click)="openCourseIndex()" [attr.aria-label]="'core.course.courseindex' | translate" color="secondary">
+                <ion-icon name="fas-list-ul" aria-hidden="true" />
+            </ion-fab-button>
+        }
+    </ion-fab>
+}

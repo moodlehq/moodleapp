@@ -1,4 +1,4 @@
-@addon_mod_forum @app @javascript
+@addon_mod_forum @app @mod @mod_forum @javascript
 Feature: Test basic usage of forum activity in app
   In order to participate in the forum while using the mobile app
   As a student
@@ -53,7 +53,6 @@ Feature: Test basic usage of forum activity in app
   Scenario: Reply a post
     Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
     When I replace "/.*/" within ".addon-mod-forum-discussion-author p" with "[Publication date]"
-    And I replace "/\d+ seconds ago/" within ".addon-mod-forum-discussion-more-info ion-note" with "[seconds] seconds ago"
     Then the UI should match the snapshot
 
     When I press "Initial discussion" in the app
@@ -276,7 +275,8 @@ Feature: Test basic usage of forum activity in app
     But I should not find "Not sent" in the app
 
   Scenario: New discussion offline & Sync Forum
-    Given I entered the forum activity "Test forum name" on course "Course 1" as "student1" in the app
+    Given I entered the course "Course 1" as "student1" in the app
+    And I press "Test forum name" in the app
     When I switch network connection to offline
     And I press "Add discussion topic" in the app
     And I set the following fields to these values in the app:

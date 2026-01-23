@@ -21,7 +21,6 @@ import {
     ONBOARDING_DONE,
 } from '@features/login/constants';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
@@ -30,9 +29,11 @@ import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreText } from '@singletons/text';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the developer options.
@@ -40,8 +41,11 @@ import { CoreText } from '@singletons/text';
 @Component({
     selector: 'page-core-app-settings-dev',
     templateUrl: 'dev.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsDevPage implements OnInit {
+export default class CoreSettingsDevPage implements OnInit {
 
     rtl = false;
     forceSafeAreaMargins = false;
@@ -62,6 +66,13 @@ export class CoreSettingsDevPage implements OnInit {
 
     siteId: string | undefined;
 
+    token?: string;
+    privateToken?: string;
+    filesAccessKey?: string;
+
+    autoLoginTimeBetweenRequests?: number;
+    lastAutoLoginTime?: number;
+
     async ngOnInit(): Promise<void> {
         this.rtl = CorePlatform.isRTL;
         this.RTLChanged();
@@ -69,7 +80,8 @@ export class CoreSettingsDevPage implements OnInit {
         this.forceSafeAreaMargins = document.documentElement.classList.contains('force-safe-area-margins');
         this.safeAreaChanged();
 
-        this.siteId = CoreSites.getCurrentSite()?.getId();
+        const currentSite = CoreSites.getCurrentSite();
+        this.siteId = currentSite?.getId();
 
         this.stagingSitesCount = CoreConstants.CONFIG.sites.filter((site) => site.staging).length;
 
@@ -79,7 +91,7 @@ export class CoreSettingsDevPage implements OnInit {
         }
         this.alwaysShowLoginForm = Boolean(await CoreConfig.get(ALWAYS_SHOW_LOGIN_FORM, 0));
 
-        if (!this.siteId) {
+        if (!currentSite) {
             return;
         }
 
@@ -90,6 +102,15 @@ export class CoreSettingsDevPage implements OnInit {
         this.pluginStylesCount = 0;
 
         this.userToursEnabled = !CoreUserTours.isDisabled();
+
+        const privateToken = currentSite.getPrivateToken();
+        const filesAccessKey = currentSite.getFilesAccessKey();
+        this.token = `...${currentSite.getToken().slice(-3)}`;
+        this.privateToken = privateToken && (`...${privateToken.slice(-3)}`);
+        this.filesAccessKey = filesAccessKey && (`...${filesAccessKey.slice(-3)}`);
+
+        this.autoLoginTimeBetweenRequests = await currentSite.getAutoLoginMinTimeBetweenRequests();
+        this.lastAutoLoginTime = currentSite.getLastAutoLoginTime();
 
         document.head.querySelectorAll('style').forEach((style) => {
             if (this.siteId && style.id.endsWith(this.siteId)) {
@@ -107,13 +128,14 @@ export class CoreSettingsDevPage implements OnInit {
             }
         });
 
+        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
         this.sitePlugins = CoreSitePlugins.getCurrentSitePluginList().map((plugin) => ({
             addon: plugin.addon,
             component: plugin.component,
             version: plugin.version,
         }));
 
-        const disabledFeatures = (await CoreSites.getCurrentSite()?.getPublicConfig())?.tool_mobile_disabledfeatures;
+        const disabledFeatures = (await currentSite.getPublicConfig())?.tool_mobile_disabledfeatures;
 
         this.disabledFeatures = disabledFeatures?.split(',').filter(feature => feature.trim().length > 0) ?? [];
     }
@@ -183,7 +205,12 @@ export class CoreSettingsDevPage implements OnInit {
      * Copies site info.
      */
     copyInfo(): void {
-        CoreText.copyToClipboard(JSON.stringify({ disabledFeatures: this.disabledFeatures, sitePlugins: this.sitePlugins }));
+        CoreText.copyToClipboard(JSON.stringify({
+            disabledFeatures: this.disabledFeatures,
+            sitePlugins: this.sitePlugins,
+            autoLoginTimeBetweenRequests: this.autoLoginTimeBetweenRequests,
+            lastAutoLoginTime: this.lastAutoLoginTime,
+        }));
     }
 
     /**
@@ -202,7 +229,7 @@ export class CoreSettingsDevPage implements OnInit {
      * Invalidate app caches.
      */
     async invalidateCaches(): Promise<void> {
-        const success = await CoreDomUtils.showOperationModals('Invalidating caches', false, async () => {
+        const success = await CoreLoadings.showOperationModals('Invalidating caches', false, async () => {
             await CoreCacheManager.invalidate();
 
             return true;
@@ -239,7 +266,7 @@ export class CoreSettingsDevPage implements OnInit {
             this.previousEnableStagingSites = enabled;
         } catch (error) {
             this.enableStagingSites = !enabled;
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 

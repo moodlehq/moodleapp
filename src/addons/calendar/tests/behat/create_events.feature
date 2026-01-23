@@ -1,4 +1,4 @@
-@addon_calendar @app @javascript
+@addon_calendar @app @core @core_calendar @javascript
 Feature: Test creation of calendar events in app
   In order to take advantage of all the calendar features while using the mobile app
   As a student
@@ -6,7 +6,7 @@ Feature: Test creation of calendar events in app
 
   Background:
     Given the following config values are set as admin:
-      | nofixday | 1 |
+      | nofixday  | 1 |
       | nofixhour | 1 |
     And the following "users" exist:
       | username | firstname  | lastname  | email                |
@@ -37,7 +37,7 @@ Feature: Test creation of calendar events in app
 
     # Create the event.
     When I set the field "Event title" to "User Event 01" in the app
-    And I set the field "Date" to "2025-04-11T09:00" in the app
+    And I set the field "Date" to "2025-04-08T09:00" in the app
     And I press "Without duration" in the app
     And I set the field "Description" to "This is User Event 01 description." in the app
     And I set the field "Location" to "Barcelona" in the app
@@ -46,18 +46,18 @@ Feature: Test creation of calendar events in app
 
     # Verify that event was created right.
     When I open the calendar for "4" "2025" in the app
-    And I press "Friday, 11 April 2025" in the app
+    And I press "Tuesday, 8 April 2025" in the app
     Then I should find "User Event 01" in the app
 
     When I press "User Event 01" in the app
-    Then I should find "Friday, 11 April" in the app
+    Then I should find "Tuesday, 8 April" in the app
     And I should find "Starting time: 9:00 AM" in the app
     And I should find "User event" within "Event type" "ion-item" in the app
     And I should find "This is User Event 01 description." in the app
     And I should find "Barcelona" in the app
     But I should not find "Ending time" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     Then I should find "Edit" in the app
     And I should find "Delete" in the app
 

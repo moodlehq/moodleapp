@@ -18,10 +18,10 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Content links handler for feedback print questions.
@@ -31,7 +31,7 @@ import { CoreLoadings } from '@services/loadings';
 export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackPrintLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
+    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
     pattern = /\/mod\/feedback\/print\.php.*([?&](id)=\d+)/;
 
     /**
@@ -51,7 +51,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}/form`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}/form`,
                         {
                             params: {
                                 preview: true,
@@ -60,7 +60,7 @@ export class AddonModFeedbackPrintLinkHandlerService extends CoreContentLinksHan
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+                    CoreAlerts.showError(error, { default: 'Error opening link.' });
                 } finally {
                     modal.dismiss();
                 }

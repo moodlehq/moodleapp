@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, OnInit, input, output, signal } from '@angular/core';
 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
+import { CoreBaseModule } from '@/core/base.module';
 
 /**
  * Component to display a site selector. It will display a select with the list of sites. If the selected site changes,
@@ -29,34 +30,35 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'core-site-picker',
     templateUrl: 'core-site-picker.html',
+    imports: [CoreBaseModule],
 })
 export class CoreSitePickerComponent implements OnInit {
 
-    @Input() initialSite?: string; // Initial site. If not provided, current site.
-    @Output() siteSelected = new EventEmitter<string>(); // Emit an event when a site is selected. Sends the siteId as parameter.
+    readonly initialSite = input<string>(); // Initial site. If not provided, current site.
+    readonly siteSelected = output<string>(); // Emit an event when a site is selected. Sends the siteId as parameter.
 
-    selectedSite?: string;
-    sites?: SiteInfo[];
+    readonly selectedSite = signal<string | undefined>(undefined);
+    readonly sites = signal<SiteInfo[]>([]);
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.selectedSite = this.initialSite || CoreSites.getCurrentSiteId();
+        this.selectedSite.set(this.initialSite() || CoreSites.getCurrentSiteId());
 
         // Load the sites.
         const sites = await CoreSites.getSites();
 
-        if (!this.selectedSite && sites.length) {
+        if (!this.selectedSite() && sites.length) {
             // There is no current site, select the first one.
-            this.selectedSite = sites[0].id;
-            this.siteSelected.emit(this.selectedSite);
+            this.selectedSite.set(sites[0].id);
+            this.siteSelected.emit(sites[0].id);
         }
 
         await Promise.all(sites.map(async (site: SiteInfo) => {
             // Format the site name.
             const options = { clean: true, singleLine: true, filter: false };
-            const siteName = await CoreUtils.ignoreErrors(
+            const siteName = await CorePromiseUtils.ignoreErrors(
                 CoreFilter.formatText(site.siteName || '', options, [], site.id),
                 site.siteName || '',
             );
@@ -67,7 +69,7 @@ export class CoreSitePickerComponent implements OnInit {
             );
         }));
 
-        this.sites = sites;
+        this.sites.set(sites);
     }
 
 }

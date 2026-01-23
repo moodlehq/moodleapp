@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-
+import { Component, effect, OnInit, Signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { AccordionGroupCustomEvent } from '@ionic/angular';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityAttempt,
@@ -27,6 +27,14 @@ import {
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreScreen } from '@services/screen';
+import { map } from 'rxjs';
+import { Translate } from '@singletons';
+import { AddonModH5PActivityAttemptCompletionComponent } from '../../components/attempt-completion/attempt-completion';
+import { AddonModH5PActivityAttemptSuccessComponent } from '../../components/attempt-success/attempt-success';
+import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/attempt-summary/attempt-summary';
 
 /**
  * Page that displays user attempts of a certain user.
@@ -34,9 +42,15 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 @Component({
     selector: 'page-addon-mod-h5pactivity-user-attempts',
     templateUrl: 'user-attempts.html',
-    styleUrls: ['user-attempts.scss'],
+    styleUrl: 'user-attempts.scss',
+    imports: [
+        CoreSharedModule,
+        AddonModH5PActivityAttemptCompletionComponent,
+        AddonModH5PActivityAttemptSuccessComponent,
+        AddonModH5PActivityAttemptSummaryComponent,
+    ],
 })
-export class AddonModH5PActivityUserAttemptsPage implements OnInit {
+export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
     loaded = false;
     courseId!: number;
@@ -45,6 +59,9 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
     attemptsData?: AddonModH5PActivityUserAttempts;
     user?: CoreUserProfile;
     isCurrentUser = false;
+    readonly isTablet: Signal<boolean>;
+    allAttemptsTitle = Translate.instant('addon.mod_h5pactivity.all_attempts');
+    expandedAttemptId = '';
 
     protected userId!: number;
     protected logView: () => void;
@@ -55,7 +72,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
                 this.h5pActivity.id,
                 { userId: this.userId },
             ));
@@ -68,6 +85,15 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
                 url: `/mod/h5pactivity/report.php?a=${this.h5pActivity.id}&userid=${this.userId}`,
             });
         });
+
+        this.isTablet = toSignal(CoreScreen.layoutObservable.pipe(map(() => CoreScreen.isTablet)), { requireSync: true });
+
+        // Reset expanded attempt when switching to tablet view.
+        effect(() => {
+            if (this.isTablet()) {
+                this.expandedAttemptId = '';
+            }
+        });
     }
 
     /**
@@ -79,8 +105,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.userId = CoreNavigator.getRouteNumberParam('userId') || CoreSites.getCurrentSiteUserId();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -118,7 +143,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempts.');
+            CoreAlerts.showError(error, { default: 'Error loading attempts.' });
         } finally {
             this.loaded = true;
         }
@@ -167,7 +192,7 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateUserAttempts(this.h5pActivity.id, this.userId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }
@@ -179,6 +204,13 @@ export class AddonModH5PActivityUserAttemptsPage implements OnInit {
      */
     openAttempt(attempt: AddonModH5PActivityAttempt): void {
         CoreNavigator.navigate(`../../attemptresults/${attempt.id}`);
+    }
+
+    /**
+     * Function called when an attempt accordion is toggled.
+     */
+    onAttemptAccordionGroupChanged(event: AccordionGroupCustomEvent<string>): void {
+        this.expandedAttemptId = event.detail.value;
     }
 
 }

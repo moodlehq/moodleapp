@@ -16,12 +16,12 @@ import { Injectable } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiEditLinkHandlerService } from '@addons/mod/wiki/services/handlers/edit-link';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to edit a wiki page.
@@ -42,7 +42,7 @@ export class AddonModWikiEditLinkHandlerLazyService extends AddonModWikiEditLink
 
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 pageContents.wikiid,
-                'wiki',
+                ADDON_MOD_WIKI_MODNAME,
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
 
@@ -62,7 +62,7 @@ export class AddonModWikiEditLinkHandlerLazyService extends AddonModWikiEditLink
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_wiki.errorloadingpage') });
         } finally {
             modal.dismiss();
         }

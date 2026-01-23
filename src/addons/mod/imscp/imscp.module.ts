@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -29,7 +29,16 @@ import { ADDON_MOD_IMSCP_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_IMSCP_PAGE_NAME,
-        loadChildren: () => import('./imscp-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/view',
+                loadComponent: () => import('./pages/view/view'),
+            },
+        ],
     },
 ];
 
@@ -38,17 +47,13 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModImscpModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModImscpIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModImscpListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModImscpPrefetchHandler.instance);
-                CorePluginFileDelegate.registerHandler(AddonModImscpPluginFileHandler.instance);
-            },
-        },
-    ],
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModImscpModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModImscpIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModImscpListLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModImscpPrefetchHandler.instance);
+            CorePluginFileDelegate.registerHandler(AddonModImscpPluginFileHandler.instance);
+        }),
+],
 })
 export class AddonModImscpModule {}

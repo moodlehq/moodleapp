@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @javascript
+@addon_mod_quiz @app @mod @mod_quiz @javascript
 Feature: Navigate through a quiz in the app
 
   Background:
@@ -80,6 +80,8 @@ Feature: Navigate through a quiz in the app
     When I press "Submit all and finish" in the app
     And I press "Submit" near "Once you submit" in the app
     Then I should find "Review" in the app
+
+    When I press "Show all questions on one page" in the app
     And I should find "Text of the first question" in the app
     And I should find "Text of the second question" in the app
 
@@ -142,6 +144,8 @@ Feature: Navigate through a quiz in the app
 
     When I press "Submit" near "Once you submit" in the app
     Then I should find "Review" in the app
-    And I should find "Text of the first question" in the app
+
+    When I press "Show all questions on one page" in the app
+    Then I should find "Text of the first question" in the app
     And I should find "Text of the second question" in the app
     And I should find "Text of the third question" in the app

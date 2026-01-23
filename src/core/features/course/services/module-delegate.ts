@@ -41,7 +41,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * This is to replicate the "plugin_supports" function of Moodle.
      * If you need some dynamic checks please implement the supportsFeature function.
      */
-    supportedFeatures?: Record<string, unknown>;
+    supportedFeatures?: Partial<Record<ModFeature, unknown>>;
 
     /**
      * Get the data required to display the module in the course contents view.
@@ -113,7 +113,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param feature The feature to check.
      * @returns The result of the supports check.
      */
-    supportsFeature?(feature: string): unknown;
+    supportsFeature?(feature: ModFeature): unknown;
 
     /**
      * Return true to show the manual completion regardless of the course's showcompletionconditions setting.
@@ -147,6 +147,20 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @returns bool True if the activity is branded, false otherwise.
      */
     isBranded?(): Promise<boolean>;
+
+    /**
+     * Get the data to render a course overview item.
+     *
+     * @param item Item to get the content for.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Data to render the item content. If undefined it means the app doesn't know how to render the item.
+     */
+    getOverviewItemContent?(
+        item: CoreCourseOverviewItem,
+        activity: CoreCourseOverviewActivity,
+        courseId: number,
+    ): Promise<CoreCourseOverviewItemContent | undefined>;
 }
 
 /**
@@ -204,13 +218,6 @@ export interface CoreCourseModuleHandlerData {
      * displayed as a custom course item instead of a tipical activity card.
      */
     hasCustomCmListItem?: boolean;
-
-    /**
-     * The buttons to display in the module item.
-     *
-     * @deprecated since 4.3 Use button instead. It will only display the first.
-     */
-    buttons?: CoreCourseModuleHandlerButton[];
 
     /**
      * The button to display in the module item.
@@ -308,6 +315,23 @@ export interface CoreCourseModuleHandlerButton {
         options?: CoreNavigationOptions,
     ): Promise<void> | void;
 }
+
+/**
+ * Data to render a course overview item.
+ * It can either be a component class to render the item, or a string with content to display (if null, empty content).
+ */
+export type CoreCourseOverviewItemContent = (OverviewItemContentComponentData | { content: string | null }) & {
+    classes?: string[];
+};
+
+/**
+ * Data to render a course overview item using a component.
+ */
+type OverviewItemContentComponentData = {
+    component: Type<unknown>;
+    componentData?: Record<string, unknown>; // If set, extra data to pass to the component. By default, the app will pass the
+                                             // item and other data like the activity data and course ID.
+};
 
 /**
  * Delegate to register module handlers.
@@ -469,13 +493,13 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
     }
 
     /**
-     * Get whether the icon for the given module should be treated as a shape or a rich image.
+     * Get the data to render a course overview item.
      *
      * @param modname The name of the module type.
-     * @param modicon The mod icon string.
-     * @param module The module to use.
-     * @returns Whether the icon should be treated as a shape.
-     * @deprecated since 4.3. Now it uses platform information. This function is not used anymore.
+     * @param item Overview item data.
+     * @param activity Activity data the item belongs to.
+     * @param courseId Course ID the item belongs to.
+     * @returns Data to render the item.
      */
     async moduleIconIsShape(
         modname: string,

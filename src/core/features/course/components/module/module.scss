@@ -380,4 +380,9 @@ $type-folder: #f97316;
             color: #fcd34d;
         }
     }
+
+    .colored-box-with-icon.core-course-last-module-viewed {
+        background-color: var(--info-shade);
+        color: var(--info-tint);
+    }
 }

@@ -18,11 +18,11 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 let lastInAppUrl: string | null = null;
 
@@ -41,17 +41,17 @@ export default function(): void {
         if (CoreCustomURLSchemes.isCustomURL(url)) {
             // Close the browser if it's a valid SSO URL.
             CoreCustomURLSchemes.handleCustomURL(url).catch((error) => {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, url, 'InAppBrowser');
             });
-            CoreUtils.closeInAppBrowser();
+            CoreOpener.closeInAppBrowser();
 
             return;
         }
 
         if (isExternalApp && url.includes('://token=')) {
             // It's an SSO token for another app. Close the IAB and show an error.
-            CoreUtils.closeInAppBrowser();
-            CoreDomUtils.showErrorModal(new CoreSiteError({
+            CoreOpener.closeInAppBrowser();
+            CoreAlerts.showError(new CoreSiteError({
                 supportConfig: CoreSites.getCurrentSite()
                     ? CoreUserAuthenticatedSupportConfig.forCurrentSite()
                     : new CoreUserNullSupportConfig(),
@@ -68,15 +68,15 @@ export default function(): void {
         }
 
         // Open in browser should launch the right app if found and do nothing if not found.
-        CoreUtils.openInBrowser(url, { showBrowserWarning: false });
+        CoreOpener.openInBrowser(url, { showBrowserWarning: false });
 
         // At this point, URL schemes will stop working in IAB, and in Android the IAB is showing a "Webpage not available" error.
         // Re-loading the page inside the existing IAB doesn't fix it, we need to re-load the whole IAB.
         if (lastInAppUrl) {
-            CoreUtils.openInApp(lastInAppUrl);
+            CoreOpener.openInApp(lastInAppUrl);
         } else {
             // No last URL loaded, close the InAppBrowser.
-            CoreUtils.closeInAppBrowser();
+            CoreOpener.closeInAppBrowser();
         }
     });
 

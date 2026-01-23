@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-
-import { CoreDomUtils } from '@services/utils/dom';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of devices.
@@ -25,8 +25,11 @@ import { CoreUtils } from '@services/utils/utils';
 @Component({
     selector: 'page-addon-message-output-airnotifier-devices',
     templateUrl: 'devices.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
+export default class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestroy {
 
     platformDevices: AddonMessageOutputAirnotifierPlatformDevices[] = [];
     loaded = false;
@@ -50,7 +53,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
             const devices = await AddonMessageOutputAirnotifier.getUserDevices();
             this.formatDevices(devices);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.loaded = true;
         }
@@ -112,7 +115,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      * Fetch devices. The purpose is to store the updated data, it won't be reflected in the view.
      */
     protected async updateDevices(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+        await CorePromiseUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
         await AddonMessageOutputAirnotifier.getUserDevices();
     }
@@ -124,7 +127,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
      */
     async refreshDevices(refresher: HTMLIonRefresherElement): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
+            await CorePromiseUtils.ignoreErrors(AddonMessageOutputAirnotifier.invalidateUserDevices());
 
             await this.fetchDevices();
         } finally {
@@ -148,7 +151,7 @@ export class AddonMessageOutputAirnotifierDevicesPage implements OnInit, OnDestr
             this.updateDevicesAfterDelay();
         } catch (error) {
             // Show error and revert change.
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             device.enable = !device.enable;
         } finally {
             device.updating = false;

@@ -15,10 +15,8 @@
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { CoreSite } from '@classes/sites/site';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreUser, CoreUserProfile, USER_PROFILE_REFRESHED } from '@features/user/services/user';
@@ -28,11 +26,9 @@ import {
     CoreUserProfileHandlerType,
     CoreUserDelegateContext,
 } from '@features/user/services/user-delegate';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
 import { ModalController, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreCourses, CoreCoursesProvider } from '@features/courses/services/courses';
@@ -51,18 +47,14 @@ import { CoreAppLinks, AppLinkSection, AppLinkItem } from '../../services/app-li
     selector: 'core-main-menu-user-menu',
     templateUrl: 'user-menu.html',
     styleUrl: 'user-menu.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
+        CoreSiteLogoComponent,
     ],
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
-    siteId?: string;
     siteInfo?: CoreSiteInfo;
-    siteName?: string;
-    siteLogo?: string;
-    siteLogoLoaded = false;
     siteUrl?: string;
     displaySiteUrl = false;
     handlers: CoreUserProfileHandlerData[] = [];
@@ -91,13 +83,15 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     // App version info (auto-updated by post-commit hook)
     appVersion = CoreConstants.CONFIG.versionname;
-    buildNumber = 30;
-    buildTime = '2026-01-23 18:44';
+    buildNumber = 31;
+    buildTime = '2026-01-23 18:48';
 
     // Secret debug menu (tap build number 7 times)
     debugTapCount = 0;
     debugTapTimeout?: ReturnType<typeof setTimeout>;
 
+    protected siteId?: string;
+    protected siteName?: string;
     protected subscription!: Subscription;
 
     /**
@@ -113,8 +107,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.displayContactSupport = new CoreUserAuthenticatedSupportConfig(currentSite).canContactSupport();
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
         this.displaySiteUrl = currentSite.shouldDisplayInformativeLinks();
-
-        this.loadSiteLogo(currentSite);
 
         if (!this.siteInfo) {
             return;
@@ -167,8 +159,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                     .map((handler) => handler.data);
 
                 // Only update handlers if they have changed, to prevent a blink effect.
-                if (newHandlers.length !== this.handlers.length ||
-                        JSON.stringify(newHandlers) !== JSON.stringify(this.handlers)) {
+                if (newHandlers.length !== this.accountHandlers.length ||
+                        JSON.stringify(newHandlers) !== JSON.stringify(this.accountHandlers)) {
                     this.accountHandlers = newHandlers;
                 }
 
@@ -429,12 +421,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async logout(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
-
-            return;
-        }
-
         if (this.removeAccountOnLogout) {
             // Ask confirm.
             const siteName = this.siteName ?
@@ -442,8 +428,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
                 '';
 
             try {
-                await CoreDomUtils.showDeleteConfirm('core.login.confirmdeletesite', { sitename: siteName });
-            } catch (error) {
+                await CoreAlerts.confirmDelete(Translate.instant('core.login.confirmdeletesite', { sitename: siteName }));
+            } catch {
                 // User cancelled, stop.
                 return;
             }
@@ -463,12 +449,6 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
      * @param event Click event
      */
     async switchAccounts(event: Event): Promise<void> {
-        if (CoreNavigator.currentRouteCanBlockLeave()) {
-            await CoreDomUtils.showAlert(undefined, Translate.instant('core.cannotlogoutpageblocks'));
-
-            return;
-        }
-
         const thisModal = await ModalController.getTop();
 
         event.preventDefault();

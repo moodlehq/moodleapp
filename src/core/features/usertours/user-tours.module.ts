@@ -12,26 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreUserToursComponentsModule } from './components/components.module';
 import { CoreUserTours } from './services/user-tours';
 
 /**
  * User Tours module.
  */
 @NgModule({
-    imports: [
-        CoreUserToursComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: async () => {
-                await CoreUserTours.initializeDatabase();
-            },
-        },
+        provideAppInitializer(() => CoreUserTours.initializeDatabase()),
     ],
 })
 export class CoreUserToursModule {}

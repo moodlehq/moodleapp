@@ -13,18 +13,18 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     CoreDataPrivacy,
     CoreDataPrivacyDataRequestType,
     CoreDataPrivacyGetAccessInformationWSResponse,
 } from '@features/dataprivacy/services/dataprivacy';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 
 import { ModalController } from '@singletons';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays the new request page.
@@ -32,7 +32,6 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-data-privacy-new-request',
     templateUrl: 'newrequest.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -48,9 +47,9 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
     form: FormGroup;
     typeControl: FormControl<CoreDataPrivacyDataRequestType>;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    protected fb = inject(FormBuilder);
+
+    constructor() {
         this.form = new FormGroup({});
 
         // Initialize form variables.
@@ -115,7 +114,7 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
                 ModalController.dismiss(true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending data privacy request');
+            CoreAlerts.showError(error, { default: 'Error sending data privacy request' });
         } finally {
             modal.dismiss();
         }

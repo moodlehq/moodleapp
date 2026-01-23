@@ -19,12 +19,13 @@ import { CorePushNotificationsClickHandler } from '@features/pushnotifications/s
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
 import { CoreCourses } from '../courses';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler for course request push notifications clicks.
@@ -69,14 +70,14 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
         // Open the course.
         const modal = await CoreLoadings.show();
 
-        await CoreUtils.ignoreErrors(CoreCourses.invalidateUserCourses(notification.site));
+        await CorePromiseUtils.ignoreErrors(CoreCourses.invalidateUserCourses(notification.site));
 
         try {
             const result = await CoreCourseHelper.getCourse(courseId, notification.site);
             const params: Params = {
                 course: result.course,
             };
-            let page = 'course/' + courseId;
+            let page = `course/${courseId}`;
 
             if (!result.enrolled) {
                 // User not enrolled (shouldn't happen), open the preview page.
@@ -85,7 +86,7 @@ export class CoreCoursesRequestPushClickHandlerService implements CorePushNotifi
 
             await CoreNavigator.navigateToSitePath(page, { params, siteId: notification.site });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting course.');
+            CoreAlerts.showError(error, { default: 'Error getting course.' });
         } finally {
             modal.dismiss();
         }

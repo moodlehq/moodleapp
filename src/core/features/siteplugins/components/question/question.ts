@@ -13,8 +13,10 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 import { AddonModQuizQuestion } from '@features/question/classes/base-question-component';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
@@ -28,6 +30,10 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-site-plugins-question',
     templateUrl: 'core-siteplugins-question.html',
     styles: [':host { display: contents; }'],
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+    ],
 })
 export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 
@@ -47,7 +53,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.question = this.question;
         this.jsData.component = this.component;
@@ -63,7 +69,7 @@ export class CoreSitePluginsQuestionComponent extends CoreSitePluginsCompileInit
         this.jsData.onAbort = this.onAbort;
 
         if (this.question) {
-            this.getHandlerData(CoreQuestionDelegate.getHandlerName('qtype_' + this.question.type));
+            this.getHandlerData(CoreQuestionDelegate.getHandlerName(`qtype_${this.question.type}`));
         }
     }
 

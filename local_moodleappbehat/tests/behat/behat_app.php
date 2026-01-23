@@ -38,6 +38,7 @@ class behat_app extends behat_app_helper {
     /** @var array Config overrides */
     protected $appconfig = [
         'disableUserTours' => true,
+        'enableonboarding' => false,
         'toastDurations' => [ // Extend toast durations in Behat so they don't disappear too soon.
             'short' => 7500,
             'long' => 10000,
@@ -101,7 +102,7 @@ class behat_app extends behat_app_helper {
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
      */
-    public function i_enter_the_app(string $username = null) {
+    public function i_enter_the_app(?string $username = null) {
         $this->i_launch_the_app();
 
         if (!is_null($username)) {
@@ -128,14 +129,18 @@ class behat_app extends behat_app_helper {
      *
      * @When I launch the app :runtime
      * @When I launch the app
-     * @param string $runtime Runtime
+     * @param string $runtime Runtime, deprecated and not used anymore.
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
+     * @deprecated since 5.1 "I launch the app :runtime" is deprecated, use "I launch the app" instead and
+     * "Given the app has the following config:
+     * | enableonboarding | true |"
+     * to enable onboarding in tests that need it.
      */
     public function i_launch_the_app(string $runtime = '') {
         // Go to page and prepare browser for app.
-        $this->prepare_browser(['skiponboarding' => empty($runtime)]);
+        $this->prepare_browser();
     }
 
     /**
@@ -283,11 +288,15 @@ class behat_app extends behat_app_helper {
      * @When I wait for the BigBlueButton room to start
      */
     public function i_wait_bbb_room_to_start() {
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
 
         $this->getSession()->switchToWindow(array_pop($windowNames));
         $this->spin(function($context) {
-            $joinmodal = $context->getSession()->getPage()->find('css', 'div[role="dialog"][aria-label="How would you like to join the audio?"]');
+            $joinmodal = $context->getSession()->getPage()->find('css', implode(', ', [
+                'div[role="dialog"][aria-label="How would you like to join the audio?"]',
+                'div[role="dialog"][aria-label="There was an issue with your audio devices"]',
+            ]));
+
 
             if ($joinmodal) {
                 return true;
@@ -467,7 +476,7 @@ class behat_app extends behat_app_helper {
     /**
      * Presses standard buttons in the app.
      *
-     * @When /^I press the (back|more menu|page menu|user menu) button in the app$/
+     * @When /^I press the (back|more menu|page context menu|user menu) button in the app$/
      * @param string $button Button type
      * @throws DriverException If the button push doesn't work
      */
@@ -476,7 +485,30 @@ class behat_app extends behat_app_helper {
             $result = $this->runtime_js("pressStandard('$button')");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error pressing standard button - ' . $result);
+                throw new DriverException("Error pressing $button button - $result");
+            }
+
+            return true;
+        });
+
+        $this->wait_for_pending_js();
+    }
+
+    /**
+     * Presses deprecated page menu button in the app.
+     *
+     * @When /^I press the page menu button in the app$/
+     * @throws DriverException If the button push doesn't work
+     * @deprecated since 5.1 Use "I press the page context menu button in the app" instead.
+     */
+    public function i_press_the_page_menu_button_in_the_app() {
+        $button = 'page context menu';
+
+        $this->spin(function() use ($button) {
+            $result = $this->runtime_js("pressStandard('$button')");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error pressing deprecated page menu button - ' . $result);
             }
 
             return true;
@@ -604,6 +636,7 @@ class behat_app extends behat_app_helper {
         $data = $data->getColumnsHash()[0];
         $title = array_keys($data)[0];
         $data = (object) $data;
+        $username = $data->user ?? '';
 
         switch ($title) {
             case 'discussion':
@@ -645,7 +678,7 @@ class behat_app extends behat_app_helper {
                 throw new DriverException('Invalid custom link title - ' . $title);
         }
 
-        $this->open_moodleapp_custom_url($pageurl);
+        $this->open_moodleapp_custom_url($pageurl, '', $username);
     }
 
     /**
@@ -984,7 +1017,7 @@ class behat_app extends behat_app_helper {
      */
     public function the_app_should_have_opened_a_browser_tab(bool $not = false, ?string $urlpattern = null) {
         $this->spin(function() use ($not, $urlpattern) {
-            $windowNames = $this->getSession()->getWindowNames();
+            $windowNames = $this->get_window_names();
             $openedbrowsertab = count($windowNames) === 2;
 
             if ((!$not && !$openedbrowsertab) || ($not && $openedbrowsertab && is_null($urlpattern))) {
@@ -1091,7 +1124,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_switch_to_the_browser_tab_opened_by_the_app() {
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
         if (count($windowNames) !== 2) {
             throw new DriverException('Expected to see 2 tabs open, not ' . count($windowNames));
         }
@@ -1139,7 +1172,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException If there aren't exactly 2 tabs open
      */
     public function i_close_the_browser_tab_opened_by_the_app() {
-        $names = $this->getSession()->getWindowNames();
+        $names = $this->get_window_names();
         if (count($names) !== 2) {
             throw new DriverException('Expected to see 2 tabs open, not ' . count($names));
         }
@@ -1174,15 +1207,16 @@ class behat_app extends behat_app_helper {
     public function i_switch_network_connection(string $mode) {
         switch ($mode) {
             case 'wifi':
-                $this->runtime_js("network.setForceConnectionMode('$mode');");
+                $this->runtime_js("network.setForceConnectionMode('wifi')");
                 break;
             case 'cellular':
-                $this->runtime_js("network.setForceConnectionMode('$mode');");
+                $this->runtime_js("network.setForceConnectionMode('cellular')");
                 break;
             case 'offline':
-                $this->runtime_js("network.setForceConnectionMode('none');");
+                $this->runtime_js("network.setForceConnectionMode('offline')");
                 break;
             default:
+                $this->runtime_js("network.setForceConnectionMode('unknown')");
                 break;
         }
     }
@@ -1196,7 +1230,7 @@ class behat_app extends behat_app_helper {
     public function i_open_a_browser_tab_with_url(string $url) {
         $this->execute_script("window.open('$url', '_system');");
 
-        $windowNames = $this->getSession()->getWindowNames();
+        $windowNames = $this->get_window_names();
         $this->getSession()->switchToWindow($windowNames[1]);
     }
 
@@ -1312,6 +1346,27 @@ class behat_app extends behat_app_helper {
         ]);
 
         $this->zone_js("navigator.navigateToSitePath('/calendar/index', $options)");
+    }
+
+    /**
+     * Change language in the app
+     *
+     * @When /^I change language to "(.+)" in the app$/
+     * @param string $language Language code.
+     */
+    public function i_change_language(string $langcode) {
+        $this->spin(function() use ($langcode) {
+            $result = $this->runtime_js("changeLanguage('$langcode')");
+
+            if ($result !== 'OK') {
+                throw new DriverException('Error changing language - ' . $result);
+            }
+
+            return true;
+        });
+
+        // Wait the app to be restarted.
+        $this->prepare_browser();
     }
 
     /**

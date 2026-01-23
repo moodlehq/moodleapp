@@ -18,29 +18,38 @@ import {
     AddonMessagesOffline, AddonMessagesOfflineAnyMessagesFormatted,
 } from './messages-offline';
 import {
-    AddonMessagesProvider,
     AddonMessages,
     AddonMessagesGetMessagesWSParams,
 } from './messages';
 import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { CoreConstants } from '@/core/constants';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
-import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreWait } from '@singletons/wait';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
+import { ADDON_MESSAGES_AUTO_SYNCED } from '../constants';
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MESSAGES_AUTO_SYNCED]: AddonMessagesSyncEvents;
+    }
+
+}
 
 /**
  * Service to sync messages.
  */
 @Injectable({ providedIn: 'root' })
 export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessagesSyncEvents> {
-
-    static readonly AUTO_SYNCED = 'addon_messages_autom_synced';
 
     constructor() {
         super('AddonMessagesSync');
@@ -55,9 +64,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      */
     protected getSyncId(conversationId?: number, userId?: number): string {
         if (conversationId) {
-            return 'conversationid:' + conversationId;
+            return `conversationid:${conversationId}`;
         } else if (userId) {
-            return 'userid:' + userId;
+            return `userid:${userId}`;
         } else {
             // Should not happen.
             throw new CoreError('Incorrect messages sync id.');
@@ -73,7 +82,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllDiscussions(siteId?: string, onlyDeviceOffline: boolean = false): Promise<void> {
-        const syncFunctionLog = 'all discussions' + (onlyDeviceOffline ? ' (Only offline)' : '');
+        const syncFunctionLog = `all discussions${onlyDeviceOffline ? ' (Only offline)' : ''}`;
 
         return this.syncOnSites(syncFunctionLog, (siteId) => this.syncAllDiscussionsFunc(onlyDeviceOffline, siteId), siteId);
     }
@@ -113,7 +122,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 }
 
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
+                CoreEvents.trigger(ADDON_MESSAGES_AUTO_SYNCED, result, siteId);
 
                 return;
             }));
@@ -126,7 +135,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 }
 
                 // Sync successful, send event.
-                CoreEvents.trigger(AddonMessagesSyncProvider.AUTO_SYNCED, result, siteId);
+                CoreEvents.trigger(ADDON_MESSAGES_AUTO_SYNCED, result, siteId);
 
                 return;
             }));
@@ -176,7 +185,6 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             conversationId,
         };
 
-        const groupMessagingEnabled = AddonMessages.isGroupMessagingEnabled();
         let messages: AddonMessagesOfflineAnyMessagesFormatted[];
         const errors: (string | CoreError | CoreErrorObject)[] = [];
 
@@ -216,7 +224,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
             const text = ('text' in message ? message.text : message.smallmessage) || '';
             const textFieldName = conversationId ? 'text' : 'smallmessage';
-            const wrappedText = message[textFieldName][0] != '<' ? '<p>' + text + '</p>' : text;
+            const wrappedText = message[textFieldName][0] != '<' ? `<p>${text}</p>` : text;
 
             try {
                 if (onlineMessages.indexOf(wrappedText) != -1) {
@@ -227,7 +235,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                     await AddonMessages.sendMessageOnline(userId, text, siteId);
                 }
             } catch (error) {
-                if (!CoreUtils.isWebServiceError(error)) {
+                if (!CoreWSError.isWebServiceError(error)) {
                     // Error sending, stop execution.
                     if (CoreNetwork.isOnline()) {
                         // App is online, unmark deviceoffline if marked.
@@ -248,12 +256,6 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 await AddonMessagesOffline.deleteConversationMessage(conversationId, text, message.timecreated, siteId);
             } else if (userId) {
                 await AddonMessagesOffline.deleteMessage(userId, text, message.timecreated, siteId);
-            }
-
-            // In some Moodle versions, wait 1 second to make sure timecreated is different.
-            // This is because there was a bug where messages with the same timecreated had a wrong order.
-            if (!groupMessagingEnabled && i < messages.length - 1) {
-                await CoreWait.wait(1000);
             }
         }
 
@@ -290,11 +292,11 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                     timeFrom: time,
                 });
 
-                const sentMessages = result.messages.filter((message) => message.useridfrom == siteCurrentUserId);
+                const sentMessages = result.messages.filter((message) => message.useridfrom === siteCurrentUserId);
 
                 return sentMessages.map((message) => message.text);
             } catch (error) {
-                if (error && error.errorcode == 'invalidresponse') {
+                if (error && error.errorcode === 'invalidresponse') {
                     // There's a bug in Moodle that causes this error if there are no new messages. Return empty array.
                     return [];
                 }
@@ -305,15 +307,9 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             const params: AddonMessagesGetMessagesWSParams = {
                 useridto: userId,
                 useridfrom: siteCurrentUserId,
-                limitnum: AddonMessagesProvider.LIMIT_MESSAGES,
-            };
-            const preSets: CoreSiteWSPreSets = {
-                cacheKey: AddonMessages.getCacheKeyForDiscussion(userId),
-                getFromCache: false,
-                emergencyCache: false,
             };
 
-            const messages = await AddonMessages.getRecentMessages(params, preSets, 0, 0, false, siteId);
+            const messages = await AddonMessages.getRecentMessages(params, 0, 0, { siteId });
 
             time = time * 1000; // Convert to milliseconds.
             const messagesAfterTime = messages.filter((message) => message.timecreated >= time);

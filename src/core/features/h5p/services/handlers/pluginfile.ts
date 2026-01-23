@@ -15,12 +15,15 @@
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
-import { CoreFilepoolOnProgressCallback } from '@services/filepool';
-import { CorePluginFileDownloadableResult, CorePluginFileHandler } from '@services/plugin-file-delegate';
+import {
+    CorePluginFileDownloadableResult,
+    CorePluginFileHandler,
+    CorePluginFileTreatDownloadedFileOptions,
+} from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSFile } from '@services/ws';
 import { CoreH5P } from '../h5p';
 import { Translate, makeSingleton } from '@singletons';
@@ -36,12 +39,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     name = 'CoreH5PPluginFileHandler';
 
     /**
-     * React to a file being deleted.
-     *
-     * @param fileUrl The file URL used to download the file.
-     * @param path The path of the deleted file.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async fileDeleted(fileUrl: string, path: string, siteId?: string): Promise<void> {
         // If an h5p file is deleted, remove the contents folder.
@@ -49,18 +47,14 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     }
 
     /**
-     * Check whether a file can be downloaded. If so, return the file to download.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the file to use. Rejected if cannot download.
+     * @inheritdoc
      */
     async getDownloadableFile(file: CoreWSFile, siteId?: string): Promise<CoreWSFile> {
-        const site = await CoreSites.getSite(siteId);
-
+        siteId = siteId || CoreSites.getCurrentSiteId();
         const fileUrl = CoreFileHelper.getFileUrl(file);
 
-        if (site.containsUrl(fileUrl) && fileUrl.match(/pluginfile\.php\/[^/]+\/core_h5p\/export\//i)) {
+        const isTrusted = await CoreH5P.isTrustedUrl(fileUrl, siteId);
+        if (isTrusted) {
             // It's already a deployed file, use it.
             return file;
         }
@@ -69,11 +63,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     }
 
     /**
-     * Given an HTML element, get the URLs of the files that should be downloaded and weren't treated by
-     * CoreFilepoolProvider.extractDownloadableFilesFromHtml.
-     *
-     * @param container Container where to get the URLs from.
-     * @returns List of URLs.
+     * @inheritdoc
      */
     getDownloadableFilesFromHTML(container: HTMLElement): string[] {
         const iframes = <HTMLIFrameElement[]> Array.from(container.querySelectorAll('iframe.h5p-iframe'));
@@ -91,11 +81,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     }
 
     /**
-     * Get a file size.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with the size.
+     * @inheritdoc
      */
     async getFileSize(file: CoreWSFile, siteId?: string): Promise<number> {
         try {
@@ -103,7 +89,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
 
             return trustedFile.filesize || 0;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // WS returned an error, it means it cannot be downloaded.
                 return 0;
             }
@@ -113,20 +99,14 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     }
 
     /**
-     * Whether or not the handler is enabled on a site level.
-     *
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
         return CoreH5P.canGetTrustedH5PFileInSite();
     }
 
     /**
-     * Check if a file is downloadable.
-     *
-     * @param file The file data.
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved with a boolean and a reason why it isn't downloadable if needed.
+     * @inheritdoc
      */
     async isFileDownloadable(file: CoreWSFile, siteId?: string): Promise<CorePluginFileDownloadableResult> {
         const offlineDisabled = await CoreH5P.isOfflineDisabled(siteId);
@@ -144,31 +124,21 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
     }
 
     /**
-     * Check whether the file should be treated by this handler. It is used in functions where the component isn't used.
-     *
-     * @param file The file data.
-     * @returns Whether the file should be treated by this handler.
+     * @inheritdoc
      */
     shouldHandleFile(file: CoreWSFile): boolean {
-        return CoreMimetypeUtils.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
+        return CoreMimetype.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
     }
 
     /**
-     * Treat a downloaded file.
-     *
-     * @param fileUrl The file URL used to download the file.
-     * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
-     * @param onProgress Function to call on progress.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     treatDownloadedFile(
         fileUrl: string,
         file: FileEntry,
-        siteId?: string,
-        onProgress?: CoreFilepoolOnProgressCallback,
+        options: CorePluginFileTreatDownloadedFileOptions = {},
     ): Promise<void> {
-        return CoreH5PHelper.saveH5P(fileUrl, file, siteId, onProgress);
+        return CoreH5PHelper.saveH5P(fileUrl, file, options);
     }
 
 }

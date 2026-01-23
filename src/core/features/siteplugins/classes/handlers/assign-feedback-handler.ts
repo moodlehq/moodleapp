@@ -16,7 +16,6 @@ import { Type } from '@angular/core';
 
 import { AddonModAssignDefaultFeedbackHandler } from '@addons/mod/assign/services/handlers/default-feedback';
 import { AddonModAssignPlugin } from '@addons/mod/assign/services/assign';
-import { CoreSitePluginsAssignFeedbackComponent } from '@features/siteplugins/components/assign-feedback/assign-feedback';
 import { Translate } from '@singletons';
 import type{ IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 
@@ -32,7 +31,10 @@ export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignDefaultF
     /**
      * @inheritdoc
      */
-    getComponent(): Type<IAddonModAssignFeedbackPluginComponent> | undefined {
+    async getComponent(): Promise<Type<IAddonModAssignFeedbackPluginComponent>> {
+        const { CoreSitePluginsAssignFeedbackComponent } =
+            await import('@features/siteplugins/components/assign-feedback/assign-feedback');
+
         return CoreSitePluginsAssignFeedbackComponent;
     }
 
@@ -41,7 +43,7 @@ export class CoreSitePluginsAssignFeedbackHandler extends AddonModAssignDefaultF
      */
     getPluginName(plugin: AddonModAssignPlugin): string {
         // Check if there's a translated string for the plugin.
-        const translationId = this.prefix + 'pluginname';
+        const translationId = `${this.prefix}pluginname`;
         const translation = Translate.instant(translationId);
 
         if (translationId != translation) {

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModQuizIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the quiz entry page.
@@ -22,9 +23,13 @@ import { AddonModQuizIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-quiz-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModQuizIndexComponent,
+    ],
 })
-export class AddonModQuizIndexPage extends CoreCourseModuleMainActivityPage<AddonModQuizIndexComponent> {
+export default class AddonModQuizIndexPage extends CoreCourseModuleMainActivityPage<AddonModQuizIndexComponent> {
 
-    @ViewChild(AddonModQuizIndexComponent) activityComponent?: AddonModQuizIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModQuizIndexComponent);
 
 }

@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModChatIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a chat.
@@ -22,9 +23,13 @@ import { AddonModChatIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-chat-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModChatIndexComponent,
+    ],
 })
-export class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
+export default class AddonModChatIndexPage extends CoreCourseModuleMainActivityPage<AddonModChatIndexComponent> {
 
-    @ViewChild(AddonModChatIndexComponent) activityComponent?: AddonModChatIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModChatIndexComponent);
 
 }

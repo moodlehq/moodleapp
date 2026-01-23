@@ -32,4 +32,8 @@ ion-popover {
             @include margin-horizontal(null, var(--mdl-spacing-4));
         }
     }
+
+    &::part(backdrop) {
+       touch-action: pinch-zoom;
+    }
 }

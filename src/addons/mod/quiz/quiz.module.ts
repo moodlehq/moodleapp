@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -33,7 +33,8 @@ import { AddonModQuizPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModQuizPushClickHandler } from './services/handlers/push-click';
 import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_QUIZ_COMPONENT, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
+import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Get mod Quiz services.
@@ -56,21 +57,24 @@ export async function getModQuizServices(): Promise<Type<unknown>[]> {
     ];
 }
 
-/**
- * Get quiz component modules.
- *
- * @returns Quiz component modules.
- */
-export async function getModQuizComponentModules(): Promise<unknown[]> {
-    const { AddonModQuizComponentsModule } = await import('@addons/mod/quiz/components/components.module');
-
-    return [AddonModQuizComponentsModule];
-}
-
 const routes: Routes = [
     {
         path: ADDON_MOD_QUIZ_PAGE_NAME,
-        loadChildren: () => import('./quiz-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/player',
+                loadComponent: () => import('./pages/player/player'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/review/:attemptId',
+                loadComponent: () => import('./pages/review/review'),
+            },
+        ],
     },
 ];
 
@@ -85,22 +89,18 @@ const routes: Routes = [
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModQuizReviewLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
-                CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModQuizModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModQuizPrefetchHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModQuizReviewLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModQuizPushClickHandler.instance);
+            CoreCronDelegate.register(AddonModQuizSyncCronHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_QUIZ_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModQuizModule {}

@@ -1,4 +1,4 @@
-@import "./globals.scss";
+@import "./globals";
 
 :root.force-safe-area-margins {
     --ion-safe-area-left: 40px;
@@ -8,16 +8,34 @@
 }
 
 :root {
-    --zoom-level: 100%;
-    zoom: var(--zoom-level);
+    --zoom-ratio: 1;
+    --zoom-level: calc(100% * var(--zoom-ratio));  // @deprecated since 5.1.
+    zoom: calc(100% * var(--zoom-ratio));
 
     &.ios {
-        font-size: var(--zoom-level);
+        font-size: calc(100% * var(--zoom-ratio));
+    }
+
+    // Apply zoom ratio to safe area and keyboard height CSS variable.
+    // Also, store safe area variables as --root-safe-area-*.
+    // Contrary to the --ion-safe-area-* variables, these are never overridden.
+    --root-safe-area-left: calc(var(--ion-safe-area-left, 0px) / var(--zoom-ratio));
+    --root-safe-area-right: calc(var(--ion-safe-area-right, 0px) / var(--zoom-ratio));
+    --root-safe-area-top: calc(var(--ion-safe-area-top, 0px) / var(--zoom-ratio));
+    --root-safe-area-bottom: calc(var(--ion-safe-area-bottom, 0px) / var(--zoom-ratio));
+    --root-keyboard-height: calc(var(--keyboard-height, 0px) / var(--zoom-ratio));
+    & > body {
+        --ion-safe-area-left: var(--root-safe-area-left);
+        --ion-safe-area-right: var(--root-safe-area-right);
+        --ion-safe-area-top: var(--root-safe-area-top);
+        --ion-safe-area-bottom: var(--root-safe-area-bottom);
+        --keyboard-height: var(--root-keyboard-height);
     }
 }
 
 a {
     color: var(--core-link-color);
+    text-decoration: var(--core-link-decoration, underline);
     cursor: pointer;
 }
 
@@ -48,6 +66,16 @@ a {
 
 .core-bold {
     font-weight: bold;
+}
+
+.core-text-sm {
+    font: var(--mdl-typography-body-font-sm);
+}
+.core-text-md {
+    font: var(--mdl-typography-body-font-md);
+}
+.core-text-lg {
+    font: var(--mdl-typography-body-font-lg);
 }
 
 .img-responsive {
@@ -121,23 +149,6 @@ a {
     }
 }
 
-// Ionic toolbar on header.
-ion-toolbar {
-    --min-height: var(--core-header-toolbar-height);
-}
-
-ion-tabs.hide-header ion-header {
-    display: none;
-}
-
-ion-footer {
-    background-color: var(--contrast-background);
-
-    > ion-toolbar:only-child {
-        top: 1px;
-    }
-}
-
 // Ionic list.
 ion-list {
     padding: 0 !important;
@@ -160,20 +171,18 @@ ion-list {
     );
 }
 
-.ion-padding.safe-area-padding-horizontal {
-    @include safe-area-padding-horizontal(16px, 16px);
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=ltr] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-left: 0px !important;
 }
 
-.ion-margin.safe-margin-horizontal {
-    @include safe-area-margin-horizontal(16px, 16px);
-}
-
-ion-tabs.placement-side .tabs-inner {
-    --ion-safe-area-left: 0px;
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner,
+:root[dir=rtl] body:not(.core-iframe-fullscreen) ion-tabs.placement-side .tabs-inner ion-content {
+    --ion-safe-area-right: 0px !important;
 }
 
 ion-tabs.placement-bottom .tabs-inner {
-    --ion-safe-area-bottom: 0px;
+    --ion-safe-area-bottom: 0px !important;
 }
 
 core-tabs,
@@ -186,16 +195,6 @@ core-tabs-outlet {
         --border-color-active: var(--core-tab-border-color-active);
         --color-selected: var(--border-color-active);
         --font-weight-active: var(--core-tab-font-weight-active);
-    }
-}
-
-core-split-view.menu-and-content {
-    .menu {
-        --ion-safe-area-right: 0px;
-    }
-
-    .content-outlet {
-        --ion-safe-area-left: 0px;
     }
 }
 
@@ -224,19 +223,14 @@ core-split-view.menu-and-content {
         var(--selected-item-color)
     );
     --padding-start: calc(16px - var(--selected-item-border-width));
-
-    > * {
-        --ion-safe-area-left: 0px;
-    }
-
-    &::part(native) {
-        --ion-safe-area-left: 0px;
-    }
 }
 
 // Extra text colors.
 .text-gray {
     color: var(--gray-500);
+}
+.text-dimmed {
+    opacity: .7;
 }
 
 // Wait to load before showing the image.
@@ -288,12 +282,6 @@ core-format-text a {
 .core-horizontal-scroll {
     display: block;
     overflow-x: scroll;
-    .safe-area-pseudo-padding-start {
-        @include padding-horizontal(var(--ion-safe-area-left), 0px);
-    }
-    .safe-area-pseudo-padding-end {
-        @include padding-horizontal(0px, var(--ion-safe-area-right));
-    }
 }
 
 // Text formats.
@@ -387,9 +375,10 @@ td {
     @include core-focus-outline();
 }
 
-ion-input,
-ion-input input,
-ion-textarea,
+// We need [class] to increase the specificity, See: https://ionicframework.com/docs/api/input#css-custom-properties
+ion-input[class],
+ion-textarea[class],
+ion-searchbar[class],
 core-rich-text-editor {
     --placeholder-color: var(--ion-placeholder-color);
     --placeholder-opacity: var(--mdl-placeholder-opacity);
@@ -426,6 +415,9 @@ ion-grid.core-no-grid > ion-row {
     z-index: 3;
     display: block;
     background-color: var(--core-collapsible-footer-background);
+
+    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+
 
     .ion-margin {
         margin-top: 8px;
@@ -540,6 +532,13 @@ ion-grid.core-no-grid > ion-row {
 // Fix subtitles wider than video.
 video::-webkit-media-text-track-display {
     white-space: normal !important;
+}
+
+*:fullscreen {
+    padding-top: var(--root-safe-area-top);
+    padding-left: var(--root-safe-area-left);
+    padding-bottom: var(--root-safe-area-bottom);
+    padding-right: var(--root-safe-area-right);
 }
 
 /**

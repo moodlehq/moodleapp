@@ -1,0 +1,7 @@
+// Fixes for app
+// Some styles applied by format-text are making bootstrap components look bad
+// This file is used to override those styles
+
+ul.nav-tabs {
+    -webkit-margin-start: 0px;
+}

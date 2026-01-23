@@ -21,9 +21,9 @@
                 list-style-type: none;
 
                 .user {
-                    @include float(start);
                     position: relative;
                     padding-bottom: 16px;
+                    @include float(start);
 
                     .core-adapted-img-container {
                         display: inline;
@@ -32,8 +32,9 @@
 
                     .userpicture {
                         border-radius: var(--core-avatar-radius);
-                        width: var(--core-avatar-size);
-                        height: var(--core-avatar-size);
+                        width: var(--core-avatar-size) !important;
+                        height: var(--core-avatar-size) !important;
+                        vertical-align: middle;
                     }
 
                     .userinitials {
@@ -54,8 +55,8 @@
                 }
 
                 .message {
-                    @include float(end);
                     margin-top: 3px;
+                    @include float(end);
                 }
 
                 .uservisibility { // No support on the app.

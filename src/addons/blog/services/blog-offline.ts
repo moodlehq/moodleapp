@@ -17,7 +17,7 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreObject } from '@singletons/object';
 import { CorePath } from '@singletons/path';
@@ -108,7 +108,7 @@ export class AddonBlogOfflineService {
      */
     async getOfflineEntry(filter: { id?: number; created?: number }, siteId?: string): Promise<AddonBlogOfflineEntry | undefined> {
         const site = await CoreSites.getSite(siteId);
-        const record = await CoreUtils.ignoreErrors(
+        const record = await CorePromiseUtils.ignoreErrors(
             site.getDb().getRecord<AddonBlogOfflineEntry>(OFFLINE_BLOG_ENTRIES_TABLE_NAME, filter),
         );
 
@@ -153,9 +153,9 @@ export class AddonBlogOfflineService {
     async getOfflineEntryFilesFolderPath(params: AddonBlogOfflineParams, siteId?: string): Promise<string> {
         const site = await CoreSites.getSite(siteId);
         const siteFolderPath = CoreFile.getSiteFolder(site.id);
-        const folder = 'created' in params ? 'created-' + params.created : params.id;
+        const folder = 'created' in params ? `created-${params.created}` : params.id;
 
-        return CorePath.concatenatePaths(siteFolderPath, 'offlineblog/' + folder);
+        return CorePath.concatenatePaths(siteFolderPath, `offlineblog/${folder}`);
     }
 
     /**
@@ -170,7 +170,7 @@ export class AddonBlogOfflineService {
             const folderPath = await AddonBlogOffline.getOfflineEntryFilesFolderPath(folderName, siteId);
 
             return await CoreFileUploader.getStoredFiles(folderPath);
-        } catch (error) {
+        } catch {
             return [];
         }
     }

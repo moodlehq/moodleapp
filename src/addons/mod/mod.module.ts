@@ -31,6 +31,7 @@ import { AddonModLessonModule } from './lesson/lesson.module';
 import { AddonModLightboxGalleryModule } from './lightboxgallery/lightboxgallery.module';
 import { AddonModLtiModule } from './lti/lti.module';
 import { AddonModPageModule } from './page/page.module';
+import { AddonModQbankModule } from './qbank/qbank.module';
 import { AddonModQuizModule } from './quiz/quiz.module';
 import { AddonModResourceModule } from './resource/resource.module';
 import { AddonModScormModule } from './scorm/scorm.module';
@@ -59,6 +60,7 @@ import { AddonModWorkshopModule } from './workshop/workshop.module';
         AddonModLightboxGalleryModule,
         AddonModLtiModule,
         AddonModPageModule,
+        AddonModQbankModule,
         AddonModQuizModule,
         AddonModResourceModule,
         AddonModScormModule,

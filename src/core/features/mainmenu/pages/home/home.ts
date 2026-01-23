@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver } from '@singletons/events';
 import { CoreTabsOutletComponent, CoreTabsOutletTab } from '@components/tabs-outlet/tabs-outlet';
 import { CoreMainMenuHomeDelegate, CoreMainMenuHomeHandlerToDisplay } from '../../services/home-delegate';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/handlers/mainmenu';
+import { CoreArray } from '@singletons/array';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
+import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
+import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
  * Page that displays the Home.
@@ -28,10 +31,15 @@ import { CoreMainMenuHomeHandlerService } from '@features/mainmenu/services/hand
 @Component({
     selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
+    imports: [
+        CoreSharedModule,
+        CoreSiteLogoComponent,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class CoreMainMenuHomePage implements OnInit {
+export default class CoreMainMenuHomePage implements OnInit {
 
-    @ViewChild(CoreTabsOutletComponent) tabsComponent?: CoreTabsOutletComponent;
+    readonly tabsComponent = viewChild(CoreTabsOutletComponent);
 
     siteName = '';
     tabs: CoreTabsOutletTab[] = [];
@@ -44,16 +52,9 @@ export class CoreMainMenuHomePage implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        await this.loadSiteName();
-
         this.subscription = CoreMainMenuHomeDelegate.getHandlersObservable().subscribe((handlers) => {
             handlers && this.initHandlers(handlers);
         });
-
-        // Refresh the enabled flags if site is updated.
-        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
-            await this.loadSiteName();
-        }, CoreSites.getCurrentSiteId());
     }
 
     /**
@@ -62,7 +63,7 @@ export class CoreMainMenuHomePage implements OnInit {
     initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs.
         const loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
-        const handlersMap = CoreUtils.arrayToObject(handlers, 'title');
+        const handlersMap = CoreArray.toObject(handlers, 'title');
         const newTabs = handlers.map((handler): CoreTabsOutletTab => {
             const tab = this.tabs.find(tab => tab.title == handler.title);
 
@@ -72,12 +73,13 @@ export class CoreMainMenuHomePage implements OnInit {
             }
 
             return {
-                page: `/main/${CoreMainMenuHomeHandlerService.PAGE_NAME}/${handler.page}`,
+                page: `/main/${MAIN_MENU_HOME_PAGE_NAME}/${handler.page}`,
                 pageParams: handler.pageParams,
                 title: handler.title,
                 class: handler.class,
                 icon: handler.icon,
                 badge: handler.badge,
+                enabled: handler.enabled ?? true,
             };
         });
 
@@ -93,14 +95,6 @@ export class CoreMainMenuHomePage implements OnInit {
     }
 
     /**
-     * Load the site name.
-     */
-    protected async loadSiteName(): Promise<void> {
-        const site = CoreSites.getRequiredCurrentSite();
-        this.siteName = await site.getSiteName() || '';
-    }
-
-    /**
      * Tab was selected.
      */
     tabSelected(): void {
@@ -111,14 +105,14 @@ export class CoreMainMenuHomePage implements OnInit {
      * User entered the page.
      */
     ionViewDidEnter(): void {
-        this.tabsComponent?.ionViewDidEnter();
+        this.tabsComponent()?.ionViewDidEnter();
     }
 
     /**
      * User left the page.
      */
     ionViewDidLeave(): void {
-        this.tabsComponent?.ionViewDidLeave();
+        this.tabsComponent()?.ionViewDidLeave();
     }
 
 }

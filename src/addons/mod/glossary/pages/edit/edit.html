@@ -4,73 +4,84 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1 *ngIf="glossary">
-                <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
-            </h1>
+            @if (glossary) {
+                <h1>
+                    <core-format-text [text]="glossary.name" contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                </h1>
+            }
         </ion-title>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form #editFormEl *ngIf="glossary">
-            <ion-item>
-                <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_glossary.concept' | translate"
-                    [(ngModel)]="data.concept" name="concept" [label]="'addon.mod_glossary.concept' | translate" />
-            </ion-item>
-
-            <ion-item>
-                <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
-                <core-rich-text-editor [control]="definitionControl" (contentChanged)="onDefinitionChange($event)"
-                    [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component"
-                    [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId" elementId="definition_editor"
-                    [draftExtraParams]="editorExtraParams" />
-            </ion-item>
-
-            <ion-item *ngIf="categories.length > 0">
-                <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" multiple="true" interface="action-sheet"
-                    [placeholder]="'addon.mod_glossary.categories' | translate" name="categories" [cancelText]="'core.cancel' | translate"
-                    [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}"
-                    [label]="'addon.mod_glossary.categories' | translate">
-                    <ion-select-option *ngFor="let category of categories" [value]="category.id">
-                        {{ category.name }}
-                    </ion-select-option>
-                </ion-select>
-            </ion-item>
-
-            <ion-item *ngIf="showAliases">
-                <ion-textarea labelPlacement="stacked" [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases" name="aliases"
-                    [label]="'addon.mod_glossary.aliases' | translate" />
-            </ion-item>
-
-            <core-attachments [files]="data.attachments" [component]="component" [componentId]="glossary.coursemodule" [allowOffline]="true"
-                [courseId]="courseId" [title]="'addon.mod_glossary.attachment' | translate" />
-
-            <ng-container *ngIf="glossary.usedynalink">
-                <ion-item-divider>
-                    <ion-label>
-                        <h2>{{ 'addon.mod_glossary.linking' | translate }}</h2>
-                    </ion-label>
-                </ion-item-divider>
-                <ion-item class="ion-text-wrap">
-                    <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink">
-                        {{ 'addon.mod_glossary.entryusedynalink' | translate }}
-                    </ion-toggle>
+        @if (glossary) {
+            <form #editFormEl>
+                <ion-item>
+                    <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_glossary.concept' | translate"
+                        [(ngModel)]="data.concept" name="concept" [label]="'addon.mod_glossary.concept' | translate" />
                 </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive">
-                        {{ 'addon.mod_glossary.casesensitive' | translate }}
-                    </ion-toggle>
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch">
-                        {{ 'addon.mod_glossary.fullmatch' | translate }}
-                    </ion-toggle>
-                </ion-item>
-            </ng-container>
 
-            <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">
-                {{ 'core.save' | translate }}
-            </ion-button>
-        </form>
+                <ion-item>
+                    <ion-label position="stacked">{{ 'addon.mod_glossary.definition' | translate }}</ion-label>
+                    <core-rich-text-editor [control]="definitionControl" (contentChanged)="onDefinitionChange($event)"
+                        [placeholder]="'addon.mod_glossary.definition' | translate" name="addon_mod_glossary_edit" [component]="component"
+                        [componentId]="cmId" [autoSave]="true" contextLevel="module" [contextInstanceId]="cmId"
+                        elementId="definition_editor" [draftExtraParams]="editorExtraParams" />
+                </ion-item>
+
+                @if (categories.length > 0) {
+                    <ion-item>
+                        <ion-select labelPlacement="stacked" [(ngModel)]="data.categories" [multiple]="true" interface="action-sheet"
+                            [placeholder]="'addon.mod_glossary.categories' | translate" name="categories"
+                            [cancelText]="'core.cancel' | translate"
+                            [interfaceOptions]="{header: 'addon.mod_glossary.categories' | translate}"
+                            [label]="'addon.mod_glossary.categories' | translate">
+                            <ion-select-option *ngFor="let category of categories" [value]="category.id">
+                                {{ category.name }}
+                            </ion-select-option>
+                        </ion-select>
+                    </ion-item>
+                }
+
+                @if (showAliases) {
+                    <ion-item lines="none">
+                        <ion-textarea labelPlacement="stacked" [(ngModel)]="data.aliases" rows="1" [core-auto-rows]="data.aliases"
+                            name="aliases" [label]="'addon.mod_glossary.aliases' | translate" />
+                    </ion-item>
+                }
+
+                <core-attachments [files]="data.attachments" [component]="component" [componentId]="glossary.coursemodule"
+                    [allowOffline]="true" [courseId]="courseId" [title]="'addon.mod_glossary.attachment' | translate" />
+
+                @if (glossary.usedynalink) {
+
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_glossary.linking' | translate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    <ion-item class="ion-text-wrap">
+                        <ion-toggle [(ngModel)]="data.usedynalink" name="usedynalink">
+                            {{ 'addon.mod_glossary.entryusedynalink' | translate }}
+                        </ion-toggle>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap">
+                        <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.casesensitive" name="casesensitive">
+                            {{ 'addon.mod_glossary.casesensitive' | translate }}
+                        </ion-toggle>
+                    </ion-item>
+                    <ion-item class="ion-text-wrap">
+                        <ion-toggle [disabled]="!data.usedynalink" [(ngModel)]="data.fullmatch" name="fullmatch">
+                            {{ 'addon.mod_glossary.fullmatch' | translate }}
+                        </ion-toggle>
+                    </ion-item>
+
+                }
+
+                <ion-button class="ion-margin" expand="block" [disabled]="!data.concept || !data.definition" (click)="save()">
+                    {{ 'core.save' | translate }}
+                </ion-button>
+            </form>
+        }
     </core-loading>
 </ion-content>

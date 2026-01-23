@@ -93,6 +93,9 @@ function load_langpacks {
     if [ -d  "$LANGPACKS_PATH" ]; then
         pushd "$LANGPACKS_PATH"
 
+        # Clean files to allow branch changes.
+        git restore --source=HEAD :/
+
         git checkout "langpack_$LANGVERSION"
         if [ $? -ne 0 ]; then
             echo "Cannot checkout language repository langpack_$LANGVERSION"
@@ -101,7 +104,7 @@ function load_langpacks {
 
         git pull
         if [ $? -ne 0 ]; then
-            echo "Cannot update language repository"
+            echo "Cannot pull language repository"
             exit 1
         fi
 

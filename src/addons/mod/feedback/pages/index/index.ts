@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModFeedbackIndexComponent } from '../../components/index/index';
 import { AddonModFeedbackIndexTabName } from '../../constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a feedback.
@@ -24,10 +25,15 @@ import { AddonModFeedbackIndexTabName } from '../../constants';
 @Component({
     selector: 'page-addon-mod-feedback-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModFeedbackIndexComponent,
+    ],
 })
-export class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent> implements OnInit {
+export default class AddonModFeedbackIndexPage extends CoreCourseModuleMainActivityPage<AddonModFeedbackIndexComponent>
+    implements OnInit {
 
-    @ViewChild(AddonModFeedbackIndexComponent) activityComponent?: AddonModFeedbackIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModFeedbackIndexComponent);
 
     selectedTab?: AddonModFeedbackIndexTabName;
     selectedGroup?: number;

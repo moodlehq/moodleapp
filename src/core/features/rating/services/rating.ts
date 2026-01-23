@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreRatingOffline } from './rating-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'CoreRating:';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreObject } from '@singletons/object';
 
 /**
  * Service to handle ratings.
  */
 @Injectable( { providedIn: 'root' })
 export class CoreRatingProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'CoreRating:';
 
     static readonly AGGREGATE_NONE = 0; // No ratings.
     static readonly AGGREGATE_AVERAGE = 1;
@@ -128,7 +129,7 @@ export class CoreRatingProvider {
 
             return response;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error or offline not supported, reject.
                 return Promise.reject(error);
             }
@@ -237,7 +238,7 @@ export class CoreRatingProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getItemRatingsCacheKey(contextLevel, instanceId, component, ratingArea, itemId, scaleId, sort),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -276,7 +277,6 @@ export class CoreRatingProvider {
      * @param scaleId Scale id.
      * @param sort Sort field.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateRatingItems(
         contextLevel: ContextLevel,
@@ -350,8 +350,8 @@ export class CoreRatingProvider {
         });
 
         if (result) {
-            result.scales = CoreUtils.objectToArray(scales);
-            result.ratings = CoreUtils.objectToArray(ratings);
+            result.scales = CoreObject.toArray(scales);
+            result.ratings = CoreObject.toArray(ratings);
         }
 
         return result;
@@ -428,7 +428,8 @@ export class CoreRatingProvider {
         scaleId: number,
         sort: string,
     ): string {
-        return `${ROOT_CACHE_KEY}${contextLevel}:${instanceId}:${component}:${ratingArea}:${itemId}:${scaleId}:${sort}`;
+        return `${CoreRatingProvider.ROOT_CACHE_KEY}${contextLevel}:${instanceId}:` +
+            `${component}:${ratingArea}:${itemId}:${scaleId}:${sort}`;
     }
 
 }

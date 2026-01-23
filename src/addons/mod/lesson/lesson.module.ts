@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -32,12 +32,27 @@ import { AddonModLessonPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLessonPushClickHandler } from './services/handlers/push-click';
 import { AddonModLessonReportLinkHandler } from './services/handlers/report-link';
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
-import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
+import { ADDON_MOD_LESSON_COMPONENT_LEGACY, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
     {
         path: ADDON_MOD_LESSON_PAGE_NAME,
-        loadChildren: () => import('./lesson-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/player',
+                loadComponent: () => import('./pages/player/player'),
+                canDeactivate: [canLeaveGuard],
+            },
+            {
+                path: ':courseId/:cmId/user-retake/:userId',
+                loadComponent: () => import('./pages/user-retake/user-retake'),
+            },
+        ],
     },
 ];
 
@@ -51,22 +66,18 @@ const routes: Routes = [
             useValue: [SITE_SCHEMA, OFFLINE_SITE_SCHEMA, SYNC_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModLessonModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModLessonPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModLessonSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonGradeLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModLessonModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModLessonPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModLessonSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonGradeLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLessonReportLinkHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModLessonPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_LESSON_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModLessonModule {}

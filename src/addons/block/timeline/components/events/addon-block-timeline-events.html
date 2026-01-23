@@ -78,10 +78,15 @@
     </div>
 </div>
 
-<div class="ion-padding ion-text-center" *ngIf="canLoadMore">
-    <!-- Button and spinner to show more attempts. -->
-    <ion-button expand="block" (click)="loadMore.emit()" fill="outline" *ngIf="!loadingMore">
-        {{ 'core.loadmore' | translate }}
-    </ion-button>
-    <ion-spinner *ngIf="loadingMore" [attr.aria-label]="'core.loading' | translate" />
-</div>
+@if (canLoadMore()) {
+    <div class="ion-padding ion-text-center">
+        <!-- Button and spinner to show more attempts. -->
+        @if (loadingMore()) {
+            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+        } @else {
+            <ion-button expand="block" (click)="loadMore.emit()" fill="outline">
+                {{ 'core.loadmore' | translate }}
+            </ion-button>
+        }
+    </div>
+}

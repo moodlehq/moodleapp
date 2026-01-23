@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import moment from 'moment-timezone';
-
 import { CoreConstants } from '@/core/constants';
 
 import { CoreTime } from './time';
@@ -108,8 +106,8 @@ export class CoreLogger {
     private static prepareLogFn(logFn: LogFunction, className: string): LogFunction {
         // Return our own function that will call the logging function with the treated message.
         return (...args): void => {
-            const now = moment().format('l LTS');
-            args[0] = now + ' ' + className + ': ' + args[0]; // Prepend timestamp and className to the original message.
+            const now = new Date().toLocaleString();
+            args[0] = `${now} ${className}: ${args[0]}`; // Prepend timestamp and className to the original message.
             logFn.apply(null, args);
         };
     }

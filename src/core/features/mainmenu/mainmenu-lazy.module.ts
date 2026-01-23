@@ -14,13 +14,9 @@
 
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreSharedModule } from '@/core/shared.module';
 
 import { resolveMainMenuRoutes } from './mainmenu-routing.module';
-import { CoreMainMenuPage } from './pages/menu/menu';
-import { CoreMainMenuHomeHandlerService } from './services/handlers/mainmenu';
-import { CoreMainMenuProvider } from './services/mainmenu';
-import { CoreMainMenuComponentsModule } from './components/components.module';
+import { MAIN_MENU_HOME_PAGE_NAME, MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -34,15 +30,15 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: '',
-            component: CoreMainMenuPage,
-            children: [
+            loadComponent: () => import('@features/mainmenu/pages/menu/menu'),
+            loadChildren: () => [
                 {
-                    path: CoreMainMenuHomeHandlerService.PAGE_NAME,
-                    loadChildren: () => import('./mainmenu-home-lazy.module').then(m => m.CoreMainMenuHomeLazyModule),
+                    path: MAIN_MENU_HOME_PAGE_NAME,
+                    loadChildren: () => import('./mainmenu-home-lazy.module'),
                 },
                 {
-                    path: CoreMainMenuProvider.MORE_PAGE_NAME,
-                    loadChildren: () => import('./mainmenu-more-lazy.module').then(m => m.CoreMainMenuMoreLazyModule),
+                    path: MAIN_MENU_MORE_PAGE_NAME,
+                    loadChildren: () => import('./mainmenu-more-lazy.module'),
                 },
                 ...mainMenuRoutes.children,
             ],
@@ -52,15 +48,8 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        CoreMainMenuPage,
-    ],
     providers: [
         { provide: ROUTES, multi: true, useFactory: buildRoutes, deps: [Injector] },
     ],
 })
-export class CoreMainMenuLazyModule {}
+export default class CoreMainMenuLazyModule {}

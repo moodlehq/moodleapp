@@ -19,8 +19,8 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModForum,
@@ -31,7 +31,9 @@ import {
 } from './forum';
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT } from '../constants';
+import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service that provides some features for forums.
@@ -106,7 +108,7 @@ export class AddonModForumHelperProvider {
             try {
                 await Promise.all(promises);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     throw error;
                 }
 
@@ -160,7 +162,7 @@ export class AddonModForumHelperProvider {
         if (errors.length == groupIds.length) {
             // All requests have failed.
             for (let i = 0; i < errors.length; i++) {
-                if (CoreUtils.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
+                if (CoreWSError.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
                     // The WebService has thrown an error or offline not supported, reject.
                     throw errors[i];
                 }
@@ -224,7 +226,7 @@ export class AddonModForumHelperProvider {
 
         // Get user data.
         promises.push(
-            CoreUtils.ignoreErrors(
+            CorePromiseUtils.ignoreErrors(
                 CoreUser.instance
                     .getProfile(offlineReply.userid, offlineReply.courseid, true)
                     .then(user => {
@@ -254,8 +256,8 @@ export class AddonModForumHelperProvider {
     async deleteNewDiscussionStoredFiles(forumId: number, timecreated: number, siteId?: string): Promise<void> {
         const folderPath = await AddonModForumOffline.getNewDiscussionFolder(forumId, timecreated, siteId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -270,8 +272,8 @@ export class AddonModForumHelperProvider {
     async deleteReplyStoredFiles(forumId: number, postId: number, siteId?: string, userId?: number): Promise<void> {
         const folderPath = await AddonModForumOffline.getReplyFolder(forumId, postId, siteId, userId);
 
-        // Ignore any errors, CoreFileProvider.removeDir fails if folder doesn't exist.
-        await CoreUtils.ignoreErrors(CoreFile.removeDir(folderPath));
+        // Ignore any errors, CoreFile.removeDir fails if folder doesn't exist.
+        await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(folderPath));
     }
 
     /**
@@ -288,13 +290,13 @@ export class AddonModForumHelperProvider {
 
         if (getDueDateMessage) {
             if (this.isDueDateReached(forum)) {
-                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
+                const dueDate = CoreTime.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumisdue', { $a: dueDate });
             }
 
             if (forum.duedate && forum.duedate > 0) {
-                const dueDate = CoreTimeUtils.userDate(forum.duedate * 1000);
+                const dueDate = CoreTime.userDate(forum.duedate * 1000);
 
                 return Translate.instant('addon.mod_forum.thisforumhasduedate', { $a: dueDate });
             }
@@ -403,7 +405,7 @@ export class AddonModForumHelperProvider {
      * @returns If cut off date has been reached.
      */
     isCutoffDateReached(forum: AddonModForumData): boolean {
-        const now = Date.now() / 1000;
+        const now = CoreTime.timestamp();
 
         return !!forum.cutoffdate && forum.cutoffdate > 0 && forum.cutoffdate < now;
     }
@@ -415,7 +417,7 @@ export class AddonModForumHelperProvider {
      * @returns If due date has been reached.
      */
     isDueDateReached(forum: AddonModForumData): forum is AddonModForumData & { duedate: number } {
-        const now = Date.now() / 1000;
+        const now = CoreTime.timestamp();
         const duedate = forum.duedate ?? 0;
 
         return duedate > 0 && duedate < now;
@@ -502,7 +504,7 @@ export class AddonModForumHelperProvider {
             return this.storeNewDiscussionFiles(forumId, timecreated, files, siteId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
     }
 
     /**
@@ -544,7 +546,7 @@ export class AddonModForumHelperProvider {
             return this.storeReplyFiles(forumId, postId, files, siteId, userId);
         }
 
-        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT, forumId, siteId);
+        return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
     }
 
 }

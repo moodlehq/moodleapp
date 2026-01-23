@@ -14,9 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { AddonCompetencyProvider } from './competency';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { makeSingleton, Translate } from '@singletons';
+import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '../constants';
 
 /**
  * Service that provides some features regarding learning plans.
@@ -46,16 +46,16 @@ export class AddonCompetencyHelperProvider {
      * @returns The status name translated.
      * @todo Move statutes into an enum.
      */
-    getCompetencyStatusName(status: number): string {
+    getCompetencyStatusName(status: AddonCompetencyReviewStatus): string {
         let statusTranslateName: string;
         switch (status) {
-            case AddonCompetencyProvider.REVIEW_STATUS_IDLE:
+            case AddonCompetencyReviewStatus.IDLE:
                 statusTranslateName = 'idle';
                 break;
-            case AddonCompetencyProvider.REVIEW_STATUS_IN_REVIEW:
+            case AddonCompetencyReviewStatus.IN_REVIEW:
                 statusTranslateName = 'inreview';
                 break;
-            case AddonCompetencyProvider.REVIEW_STATUS_WAITING_FOR_REVIEW:
+            case AddonCompetencyReviewStatus.WAITING_FOR_REVIEW:
                 statusTranslateName = 'waitingforreview';
                 break;
             default:
@@ -63,7 +63,7 @@ export class AddonCompetencyHelperProvider {
                 return String(status);
         }
 
-        return Translate.instant('addon.competency.usercompetencystatus_' + statusTranslateName);
+        return Translate.instant(`addon.competency.usercompetencystatus_${statusTranslateName}`);
     }
 
     /**
@@ -73,22 +73,22 @@ export class AddonCompetencyHelperProvider {
      * @returns The status name translated.
      * @todo Move statutes into an enum.
      */
-    getPlanStatusName(status: number): string {
+    getPlanStatusName(status: AddonCompetencyLearningPlanStatus): string {
         let statusTranslateName: string;
         switch (status) {
-            case AddonCompetencyProvider.STATUS_DRAFT:
+            case AddonCompetencyLearningPlanStatus.DRAFT:
                 statusTranslateName = 'draft';
                 break;
-            case AddonCompetencyProvider.STATUS_ACTIVE:
+            case AddonCompetencyLearningPlanStatus.ACTIVE:
                 statusTranslateName = 'active';
                 break;
-            case AddonCompetencyProvider.STATUS_COMPLETE:
+            case AddonCompetencyLearningPlanStatus.COMPLETE:
                 statusTranslateName = 'complete';
                 break;
-            case AddonCompetencyProvider.STATUS_WAITING_FOR_REVIEW:
+            case AddonCompetencyLearningPlanStatus.WAITING_FOR_REVIEW:
                 statusTranslateName = 'waitingforreview';
                 break;
-            case AddonCompetencyProvider.STATUS_IN_REVIEW:
+            case AddonCompetencyLearningPlanStatus.IN_REVIEW:
                 statusTranslateName = 'inreview';
                 break;
             default:
@@ -96,7 +96,7 @@ export class AddonCompetencyHelperProvider {
                 return String(status);
         }
 
-        return Translate.instant('addon.competency.planstatus' + statusTranslateName);
+        return Translate.instant(`addon.competency.planstatus${statusTranslateName}`);
     }
 
 }

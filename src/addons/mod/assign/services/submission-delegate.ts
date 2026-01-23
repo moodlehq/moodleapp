@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { AddonModAssignDefaultSubmissionHandler } from './handlers/default-submission';
 import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, AddonModAssignSavePluginData } from './assign';
@@ -43,12 +43,29 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
      * @param submission The submission.
      * @param plugin The plugin object.
      * @returns Boolean or promise resolved with boolean: whether it can be edited in offline.
+     * @deprecated since 5.0. Use canContainFiltersWhenEditing instead.
      */
     canEditOffline?(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): boolean | Promise<boolean>;
+
+    /**
+     * Whether the plugin can contain filters in the submission contents and the field with filters can be edited.
+     * If any of the editable field of the submission uses format_string or format_text in LMS, this function should return true.
+     * Used to determine if the app needs to fetch unfiltered data when editing the submission.
+     *
+     * @param assign The assignment.
+     * @param submission The submission.
+     * @param plugin The plugin object.
+     * @returns Whether the submission can contain filters.
+     */
+    canContainFiltersWhenEditing?(
+        assign: AddonModAssignAssign,
+        submission: AddonModAssignSubmission,
+        plugin: AddonModAssignPlugin,
+    ): Promise<boolean>;
 
     /**
      * Check if a plugin has no data.
@@ -289,12 +306,7 @@ export interface AddonModAssignSubmissionHandler extends CoreDelegateHandler {
 export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonModAssignSubmissionHandler> {
 
     protected handlerNameProperty = 'type';
-
-    constructor(
-        protected defaultHandler: AddonModAssignDefaultSubmissionHandler,
-    ) {
-        super('AddonModAssignSubmissionDelegate');
-    }
+    protected defaultHandler = inject(AddonModAssignDefaultSubmissionHandler);
 
     /**
      * @inheritdoc
@@ -304,19 +316,31 @@ export class AddonModAssignSubmissionDelegateService extends CoreDelegate<AddonM
     }
 
     /**
-     * Whether the plugin can be edited in offline for existing submissions.
+     * Whether the plugin can contain filters in the submission contents.
      *
      * @param assign The assignment.
      * @param submission The submission.
      * @param plugin The plugin object.
-     * @returns Promise resolved with boolean: whether it can be edited in offline.
+     * @returns Whether the submission can contain filters.
      */
-    async canPluginEditOffline(
+    async canPluginContainFiltersWhenEditing(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignPlugin,
     ): Promise<boolean | undefined> {
-        return this.executeFunctionOnEnabled(plugin.type, 'canEditOffline', [assign, submission, plugin]);
+        const handler = this.getHandler(plugin.type);
+
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        if (handler && !handler.canContainFiltersWhenEditing && handler.canEditOffline) {
+            // Plugin implements the old callback but not the new one. Use the old one.
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            const canEditOffline = await handler.canEditOffline(assign, submission, plugin);
+
+            // If cannot edit offline, assume it can contain filters.
+            return !canEditOffline;
+        }
+
+        return this.executeFunctionOnEnabled(plugin.type, 'canContainFiltersWhenEditing', [assign, submission, plugin]);
     }
 
     /**

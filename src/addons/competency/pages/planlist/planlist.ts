@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
@@ -23,6 +22,8 @@ import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the list of learning plans.
@@ -30,10 +31,13 @@ import { Translate } from '@singletons';
 @Component({
     selector: 'page-addon-competency-planlist',
     templateUrl: 'planlist.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
+export default class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     plans: CoreListItemsManager<AddonCompetencyPlanFormatted, AddonCompetencyPlansSource>;
 
@@ -62,7 +66,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchLearningPlans();
 
-        this.plans.start(this.splitView);
+        this.plans.start(this.splitView());
     }
 
     /**
@@ -76,7 +80,7 @@ export class AddonCompetencyPlanListPage implements AfterViewInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting learning plans data.');
+            CoreAlerts.showError(error, { default: 'Error getting learning plans data.' });
         }
     }
 

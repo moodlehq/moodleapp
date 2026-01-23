@@ -1,23 +1,33 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
-    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
+@if (inputMode && form) {
+    <span [formGroup]="form">
+        @if (editMode) {
+            <span [core-mark-required]="field.required" class="core-mark-required"></span>
+        }
 
-    <ion-datetime-button datetime="datetime" />
-    <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-            <ion-datetime id="datetime" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
-                [disabled]="searchMode && searchFields && !searchFields['f_'+field.id+'_z']" presentation="date"
-                [showDefaultButtons]="true" />
-        </ng-template>
-    </ion-modal>
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
+        <ion-datetime-button [datetime]="'datetime-' + field.id" />
+        <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+                <ion-datetime [id]="'datetime-' + field.id" [formControlName]="'f_'+field.id" [max]="maxDate" [min]="minDate"
+                    [disabled]="!!searchMode && !!searchFields && !searchFields['f_'+field.id+'_z']" presentation="date"
+                    [showDefaultButtons]="true" />
+            </ng-template>
+        </ion-modal>
+        @if (error && editMode) {
+            <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+        }
 
-    <ion-item *ngIf="searchMode && searchFields" class="ion-text-wrap">
-        <ion-checkbox [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields['f_'+field.id+'_z']">
-            {{ 'addon.mod_data.usedate' | translate }}
-        </ion-checkbox>
-    </ion-item>
-</span>
+        @if (searchMode && searchFields) {
+            <ion-item class="ion-text-wrap">
+                <ion-checkbox [formControlName]="'f_'+field.id+'_z'" [(ngModel)]="searchFields['f_'+field.id+'_z']">
+                    {{ 'addon.mod_data.usedate' | translate }}
+                </ion-checkbox>
+            </ion-item>
+        }
+    </span>
+}
 
-<span *ngIf="displayMode && displayDate">
-    {{ displayDate | coreFormatDate:'strftimedate' }}
-</span>
+@if (displayMode && displayDate) {
+    <span>
+        {{ displayDate | coreFormatDate:'strftimedate' }}
+    </span>
+}

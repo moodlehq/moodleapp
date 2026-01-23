@@ -20,9 +20,10 @@ import {
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the count of comments.
@@ -31,6 +32,9 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
     styleUrl: 'comments.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestroy {
 
@@ -76,7 +80,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     this.undefinedOrEqual(data, 'component') && this.undefinedOrEqual(data, 'itemId') &&
                     this.undefinedOrEqual(data, 'area')) {
 
-                    CoreUtils.ignoreErrors(this.doRefresh());
+                    CorePromiseUtils.ignoreErrors(this.doRefresh());
                 }
             },
             CoreSites.getCurrentSiteId(),
@@ -94,7 +98,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
                     newNumber = newNumber >= 0 ? newNumber : 0;
 
                     // Parse and unparse string.
-                    this.commentsCount = newNumber + '';
+                    this.commentsCount = `${newNumber}`;
                 }
             },
             CoreSites.getCurrentSiteId(),
@@ -180,7 +184,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
         }
 
         CoreNavigator.navigateToSitePath(
-            'comments/' + this.contextLevel + '/' + this.instanceId + '/' + this.component + '/' + this.itemId + '/',
+            `comments/${this.contextLevel}/${this.instanceId}/${this.component}/${this.itemId}/`,
             {
                 params: {
                     area: this.area,

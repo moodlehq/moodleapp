@@ -15,13 +15,14 @@
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PContentData, CoreH5PDependenciesFiles } from './core';
 import { CoreH5PCoreSettings, CoreH5PHelper } from './helper';
 import { CoreH5PStorage } from './storage';
 import { CorePath } from '@singletons/path';
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Equivalent to Moodle's H5P player class.
@@ -138,10 +139,10 @@ export class CoreH5PPlayer {
             html += '<script type="text/javascript" src="' + jsUrl + '"></script>';
         });
 
-        html += '<div class="h5p-iframe-wrapper">' +
-                '<iframe id="h5p-iframe-' + id + '" class="h5p-iframe" data-content-id="' + id + '"' +
-                    'style="height:1px; min-width: 100%" src="about:blank"></iframe>' +
-                '</div></body>';
+        html += `<div class="h5p-iframe-wrapper">
+        <iframe id="h5p-iframe-${id}" class="h5p-iframe" data-content-id="${id}"
+            style="height:1px; min-width: 100%" src="about:blank">
+        </iframe></div></body>`;
 
         const fileEntry = await CoreFile.writeFile(indexPath, html);
 
@@ -175,7 +176,7 @@ export class CoreH5PPlayer {
         const records = await this.h5pCore.h5pFramework.getAllContentData(siteIdentifier);
 
         await Promise.all(records.map(async (record) => {
-            await CoreUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteIdentifier));
+            await CorePromiseUtils.ignoreErrors(this.h5pCore.h5pFS.deleteContentIndex(record.foldername, siteIdentifier));
         }));
     }
 
@@ -191,7 +192,7 @@ export class CoreH5PPlayer {
 
         const data = await this.h5pCore.h5pFramework.getContentDataByUrl(fileUrl, siteId);
 
-        await CoreUtils.allPromises([
+        await CorePromiseUtils.allPromises([
             this.h5pCore.h5pFramework.deleteContentData(data.id, siteId),
 
             this.h5pCore.h5pFS.deleteContentFolder(data.foldername, siteId),
@@ -253,7 +254,7 @@ export class CoreH5PPlayer {
      * @returns Content identifier.
      */
     protected getContentId(id: number): string {
-        return 'cid-' + id;
+        return `cid-${id}`;
     }
 
     /**
@@ -298,7 +299,7 @@ export class CoreH5PPlayer {
             params.state = otherOptions.state;
         }
 
-        const customCssUrl = await CoreUtils.ignoreErrors(CoreH5P.getCustomCssSrc(siteId));
+        const customCssUrl = await CorePromiseUtils.ignoreErrors(CoreH5P.getCustomCssSrc(siteId));
         if (customCssUrl) {
             params.customCssUrl = customCssUrl;
         }
@@ -365,18 +366,18 @@ export class CoreH5PPlayer {
             return '';
         }
 
-        return '<iframe src="' + this.getEmbedUrl(siteUrl, h5pUrl) + '" allowfullscreen="allowfullscreen"></iframe>';
+        return `<iframe src="${this.getEmbedUrl(siteUrl, h5pUrl)}" allowfullscreen="allowfullscreen"></iframe>`;
     }
 
     /**
-     * Get the encoded URL for embeding an H5P content.
+     * Get the encoded URL for embedding an H5P content.
      *
      * @param siteUrl The site URL.
      * @param h5pUrl The URL of the .h5p file.
      * @returns The embed URL.
      */
     protected getEmbedUrl(siteUrl: string, h5pUrl: string): string {
-        return CorePath.concatenatePaths(siteUrl, '/h5p/embed.php') + '?url=' + h5pUrl;
+        return `${CorePath.concatenatePaths(siteUrl, '/h5p/embed.php')}?url=${h5pUrl}`;
     }
 
     /**
@@ -385,7 +386,7 @@ export class CoreH5PPlayer {
      * @returns The HTML code with the resize script.
      */
     protected getResizeCode(): string {
-        return '<script src="' + this.getResizerScriptUrl() + '"></script>';
+        return `<script src="${this.getResizerScriptUrl()}"></script>`;
     }
 
     /**

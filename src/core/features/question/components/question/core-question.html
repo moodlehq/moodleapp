@@ -1,21 +1,27 @@
 <!-- Question contents. -->
-<core-dynamic-component *ngIf="loaded" [component]="componentClass" [data]="data" class="core-question-{{question?.slot}}">
-    <!-- This content will only be shown if there's no component to render the question. -->
-    <p class="ion-padding">{{ 'core.question.errorquestionnotsupported' | translate:{$a: question?.type} }}</p>
-</core-dynamic-component>
+@if (showQuestion) {
+    <core-dynamic-component [component]="componentClass" [data]="data" class="core-question-{{question?.slot}}">
+        <!-- This content will only be shown if there's no component to render the question. -->
+        <p class="ion-padding">{{ 'core.question.errorquestionnotsupported' | translate:{$a: question?.type} }}</p>
+    </core-dynamic-component>
+}
 
 <!-- Sequence check input. -->
-<input *ngIf="seqCheck" type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}">
+@if (seqCheck) {
+    <input type="hidden" name="{{seqCheck.name}}" value="{{seqCheck.value}}">
+}
 
 <!-- Question behaviour components. -->
 <core-dynamic-component *ngFor="let componentClass of behaviourComponents" [component]="componentClass" [data]="data" />
 
 <!-- Question validation error. -->
-<ion-item class="ion-text-wrap core-danger-item" *ngIf="validationError">
-    <ion-label>
-        <p>{{ validationError }}</p>
-    </ion-label>
-</ion-item>
+@if (validationError) {
+    <ion-item class="ion-text-wrap core-danger-item">
+        <ion-label>
+            <p>{{ validationError }}</p>
+        </ion-label>
+    </ion-item>
+}
 
 <!-- Question behaviour buttons. -->
 <ion-button *ngFor="let button of question?.behaviourButtons" class="ion-margin-vertical ion-text-wrap" expand="block"
@@ -25,17 +31,21 @@
 </ion-button>
 
 <!-- Question feedback. -->
-<ion-item class="ion-text-wrap core-question-feedback-container" *ngIf="question && question.feedbackHtml">
-    <ion-label>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml" [contextLevel]="contextLevel"
-            [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-    </ion-label>
-</ion-item>
+@if (question && question.feedbackHtml) {
+    <ion-item class="ion-text-wrap core-question-feedback-container">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.feedbackHtml"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+        </ion-label>
+    </ion-item>
+}
 
 <!-- Question comment. -->
-<ion-item class="ion-text-wrap core-question-comment" *ngIf="question && question.commentHtml">
-    <ion-label>
-        <core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml" [contextLevel]="contextLevel"
-            [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-    </ion-label>
-</ion-item>
+@if (question && question.commentHtml) {
+    <ion-item class="ion-text-wrap core-question-comment">
+        <ion-label>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.commentHtml"
+                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+        </ion-label>
+    </ion-item>
+}

@@ -1,4 +1,4 @@
-@core_course @communication_matrix @app @javascript @lms_from4.4
+@core_course @app @communication @communication_matrix @javascript @lms_from4.4
 Feature: Use custom communication link in course
 
   Background:

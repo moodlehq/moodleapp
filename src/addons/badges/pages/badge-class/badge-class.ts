@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import { AddonBadges, AddonBadgesBadgeClass } from '../../services/badges';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a badge class.
@@ -27,17 +28,20 @@ import { AddonBadges, AddonBadgesBadgeClass } from '../../services/badges';
 @Component({
     selector: 'page-addon-badges-badge-class',
     templateUrl: 'badge-class.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonBadgesBadgeClassPage implements OnInit {
+export default class AddonBadgesBadgeClassPage implements OnInit {
 
+    protected route = inject(ActivatedRoute);
     protected badgeId = 0;
     protected logView: (badge: AddonBadgesBadgeClass) => void;
 
-    badge?: AddonBadgesBadgeClass;
-    badgeLoaded = false;
-    currentTime = 0;
+    readonly badge = signal<AddonBadgesBadgeClass | undefined>(undefined);
+    readonly loaded = signal(false);
 
-    constructor(protected route: ActivatedRoute) {
+    constructor() {
         this.badgeId = CoreNavigator.getRequiredRouteNumberParam('badgeId');
 
         this.logView = CoreTime.once((badge) => {
@@ -52,26 +56,24 @@ export class AddonBadgesBadgeClassPage implements OnInit {
     }
 
     /**
-     * View loaded.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        this.fetchBadgeClass().finally(() => {
-            this.badgeLoaded = true;
-        });
+    async ngOnInit(): Promise<void> {
+        await this.fetchBadgeClass();
+
+        this.loaded.set(true);
     }
 
     /**
      * Fetch the badge class required for the view.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchBadgeClass(): Promise<void> {
         try {
-            this.badge = await AddonBadges.getBadgeClass(this.badgeId);
-
-            this.logView(this.badge);
+            const badge = await AddonBadges.getBadgeClass(this.badgeId);
+            this.badge.set(badge);
+            this.logView(badge);
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Error getting badge data.');
+            CoreAlerts.showError(message, { default: 'Error getting badge data.' });
         }
     }
 
@@ -81,7 +83,7 @@ export class AddonBadgesBadgeClassPage implements OnInit {
      * @param refresher Refresher.
      */
     async refreshBadgeClass(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonBadges.invalidateBadgeClass(this.badgeId));
+        await CorePromiseUtils.ignoreErrors(AddonBadges.invalidateBadgeClass(this.badgeId));
 
         await this.fetchBadgeClass();
 

@@ -1,15 +1,25 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
-    <span *ngIf="editMode" [core-mark-required]="field.required" class="core-mark-required"></span>
-    <ion-select [formControlName]="'f_'+field.id" [placeholder]="'addon.mod_data.menuchoose' | translate"
-        [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate" [interfaceOptions]="{header: field.name}"
-        interface="alert">
-        <ion-select-option *ngIf="!editMode || !field.required" value="">{{ 'addon.mod_data.menuchoose' | translate }}</ion-select-option>
-        <ion-select-option *ngFor="let option of options" [value]="option">
-            <core-format-text [text]="option" contextLevel="module" [contextInstanceId]="database?.coursemodule"
-                [courseId]="database?.course" [wsNotFiltered]="true" />
-        </ion-select-option>
-    </ion-select>
-    <core-input-errors *ngIf="error && editMode" [control]="form.controls['f_'+field.id]" [errorText]="error" />
-</span>
+@if (inputMode && form) {
+    <span [formGroup]="form">
+        @if (editMode) {
+            <span [core-mark-required]="field.required" class="core-mark-required"></span>
+        }
+        <ion-select [formControlName]="'f_'+field.id" [placeholder]="'addon.mod_data.menuchoose' | translate"
+            [cancelText]="'core.cancel' | translate" [okText]="'core.ok' | translate" [interfaceOptions]="{header: field.name}"
+            interface="alert">
+            @if (!editMode || !field.required) {
+                <ion-select-option value="">{{ 'addon.mod_data.menuchoose' | translate }}</ion-select-option>
+            }
+            <ion-select-option *ngFor="let option of options" [value]="option">
+                <core-format-text [text]="option" contextLevel="module" [contextInstanceId]="database?.coursemodule"
+                    [courseId]="database?.course" [wsNotFiltered]="true" />
+            </ion-select-option>
+        </ion-select>
+        @if (error && editMode) {
+            <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+        }
+    </span>
+}
 
-<span *ngIf="displayMode && value && value.content">{{ value.content }}</span>
+@if (displayMode && value && value.content) {
+    <span>{{ value.content }}</span>
+}

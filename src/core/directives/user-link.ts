@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, Input, OnInit, ElementRef } from '@angular/core';
+import { Directive, OnInit, ElementRef, inject, input } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 
 /**
@@ -23,16 +23,10 @@ import { CoreNavigator } from '@services/navigator';
 })
 export class CoreUserLinkDirective implements OnInit {
 
-    @Input() userId?: number; // User id to open the profile.
-    @Input() courseId?: number; // If set, course id to show the user info related to that course.
+    readonly userId = input<number>(); // User id to open the profile.
+    readonly courseId = input<number>(); // If set, course id to show the user info related to that course.
 
-    protected element: HTMLElement;
-
-    constructor(
-        element: ElementRef,
-    ) {
-        this.element = element.nativeElement;
-    }
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
      * Function executed when the component is initialized.
@@ -40,7 +34,8 @@ export class CoreUserLinkDirective implements OnInit {
     ngOnInit(): void {
         this.element.addEventListener('click', (event) => {
             // If the event prevented default action, do nothing.
-            if (event.defaultPrevented || !this.userId) {
+            const userId = this.userId();
+            if (event.defaultPrevented || !userId) {
                 return;
             }
 
@@ -49,8 +44,8 @@ export class CoreUserLinkDirective implements OnInit {
 
             CoreNavigator.navigateToSitePath('user', {
                 params: {
-                    userId: this.userId,
-                    courseId: this.courseId,
+                    userId,
+                    courseId: this.courseId(),
                 },
             });
         });

@@ -26,14 +26,21 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { AddonModData, AddonModDataData } from './data';
 import { AddonModDataHelper } from './data-helper';
 import { AddonModDataOffline, AddonModDataOfflineAction } from './data-offline';
-import { ADDON_MOD_DATA_AUTO_SYNCED, ADDON_MOD_DATA_COMPONENT, AddonModDataAction } from '../constants';
+import {
+    ADDON_MOD_DATA_AUTO_SYNCED,
+    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
+    AddonModDataAction,
+} from '../constants';
 import { CoreText } from '@singletons/text';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
 
 /**
  * Service to sync databases.
@@ -164,8 +171,8 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
      */
     protected async performSyncDatabase(dataId: number, siteId: string): Promise<AddonModDataSyncResult> {
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_DATA_COMPONENT, dataId, siteId),
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_DATA_COMPONENT_LEGACY, dataId, siteId),
         );
 
         const result: AddonModDataSyncResult = {
@@ -175,11 +182,11 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         // Get answers to be sent.
         const offlineActions: AddonModDataOfflineAction[] =
-            await CoreUtils.ignoreErrors(AddonModDataOffline.getDatabaseEntries(dataId, siteId), []);
+            await CorePromiseUtils.ignoreErrors(AddonModDataOffline.getDatabaseEntries(dataId, siteId), []);
 
         if (!offlineActions.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
 
             return result;
         }
@@ -204,18 +211,18 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             offlineEntries[entry.entryid].push(entry);
         });
 
-        const promises = CoreUtils.objectToArray(offlineEntries).map((entryActions) =>
+        const promises = CoreObject.toArray(offlineEntries).map((entryActions) =>
             this.syncEntry(database, entryActions, result, siteId));
 
         await Promise.all(promises);
 
         if (result.updated) {
             // Data has been sent to server. Now invalidate the WS calls.
-            await CoreUtils.ignoreErrors(AddonModData.invalidateContent(database.coursemodule, courseId, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModData.invalidateContent(database.coursemodule, courseId, siteId));
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(dataId, siteId));
 
         return result;
     }
@@ -293,7 +300,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
                 timemodified = entry.entry.timemodified;
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means the entry has been deleted.
                     timemodified = -1;
                 } else {
@@ -325,7 +332,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                 await AddonModData.deleteEntryOnline(entryId, siteId);
                 entryResult.deleted = true;
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
@@ -383,7 +390,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                     await AddonModData.editEntryOnline(entryId, editAction.fields, siteId);
                 }
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
@@ -401,7 +408,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             try {
                 await AddonModData.approveEntryOnline(entryId, approveAction.action == AddonModDataAction.APPROVE, siteId);
             } catch (error) {
-                if (error && CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.
                     entryResult.discardError = CoreErrorHelper.getErrorMessageFromError(error);
                 } else {
@@ -453,7 +460,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                         });
                     }
 
-                    return CoreUtils.allPromises(subPromises);
+                    return CorePromiseUtils.allPromises(subPromises);
                 }));
 
         await Promise.all(promises);
@@ -486,3 +493,15 @@ export type AddonModDataAutoSyncData = {
     offlineEntryId?: number;
     deleted?: boolean;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_DATA_AUTO_SYNCED]: AddonModDataAutoSyncData;
+    }
+}

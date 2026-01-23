@@ -20,6 +20,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseFormatSingleActivityComponent } from '../../components/singleactivity';
 import { makeSingleton } from '@singletons';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Handler to support singleactivity course format.
@@ -83,7 +84,7 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
     /**
      * @inheritdoc
      */
-    async getCourseFormatComponent(): Promise<Type<unknown>> {
+    async getCourseFormatComponent(): Promise<Type<CoreCourseFormatDynamicComponent>> {
         return CoreCourseFormatSingleActivityComponent;
     }
 

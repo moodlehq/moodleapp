@@ -19,11 +19,11 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModLesson } from '../lesson';
-import { ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME, ADDON_MOD_LESSON_PAGE_NAME } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to lesson grade.
@@ -35,7 +35,7 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
     canReview = true;
 
     constructor() {
-        super('AddonModLesson', 'lesson');
+        super(ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME);
     }
 
     /**
@@ -70,21 +70,20 @@ export class AddonModLessonGradeLinkHandlerService extends CoreContentLinksModul
             if (accessInfo.canviewreports) {
                 // User can view reports, go to view the report.
                 CoreNavigator.navigateToSitePath(
-                    ADDON_MOD_LESSON_PAGE_NAME + `/${module.course}/${module.id}/user-retake/${userId}`,
+                    `${ADDON_MOD_LESSON_PAGE_NAME}/${module.course}/${module.id}/user-retake/${userId}`,
                     {
                         siteId,
                     },
                 );
             } else {
                 // User cannot view the report, go to lesson index.
-                CoreCourseHelper.navigateToModule(moduleId, {
+                CoreCourseHelper.navigateToModule(module.id, {
                     courseId: module.course,
-                    sectionId: module.section,
                     siteId,
                 });
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             modal.dismiss();
         }

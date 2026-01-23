@@ -19,9 +19,10 @@ import {
     CoreCourseOptionsHandlerData,
 } from '@features/course/services/course-options-delegate';
 import { CoreCourseAnyCourseData, CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
-import { CoreGradesHelper, GRADES_PAGE_NAME } from '@features/grades/services/grades-helper';
+import { CORE_GRADES_COURSE_OPTION_NAME, GRADES_PAGE_NAME } from '../../constants';
 import { makeSingleton } from '@singletons';
 import { CoreGrades } from '../grades';
+import { CoreGradesHelper } from '../grades-helper';
 
 /**
  * Course nav handler.
@@ -29,7 +30,7 @@ import { CoreGrades } from '../grades';
 @Injectable({ providedIn: 'root' })
 export class CoreGradesCourseOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'CoreGrades';
+    name = CORE_GRADES_COURSE_OPTION_NAME;
     priority = 400;
 
     /**

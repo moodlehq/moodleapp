@@ -1,4 +1,4 @@
-@addon_mod_chat @app @javascript
+@addon_mod_chat @app @mod @mod_chat @javascript @lms_upto4.5
 Feature: Test basic usage of chat in app
   As a student
   I need basic chat functionality to work
@@ -83,7 +83,7 @@ Feature: Test basic usage of chat in app
     Given I entered the chat activity "Test chat name" on course "Course 1" as "student2" in the app
     When I press "Past sessions" in the app
     And I press "Show incomplete sessions" in the app
-    And I press "david student" near "(2)" in the app
+    And I press "david student" in the app
     Then I should find "Hi!" in the app
     And I should find "I am David" in the app
 

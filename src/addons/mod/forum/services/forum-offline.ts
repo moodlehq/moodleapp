@@ -106,9 +106,8 @@ export class AddonModForumOfflineProvider {
             const discussions = await this.getNewDiscussions(forumId, siteId, userId);
 
             return !!discussions.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }
@@ -220,9 +219,8 @@ export class AddonModForumOfflineProvider {
             const replies = await this.getForumReplies(forumId, siteId, userId);
 
             return !!replies.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }
@@ -260,9 +258,8 @@ export class AddonModForumOfflineProvider {
             const replies = await this.getDiscussionReplies(discussionId, siteId, userId);
 
             return !!replies.length;
-        } catch (error) {
+        } catch {
             // No offline data found, return false.
-
             return false;
         }
     }
@@ -342,7 +339,7 @@ export class AddonModForumOfflineProvider {
         const site = await CoreSites.getSite(siteId);
         const siteFolderPath = CoreFile.getSiteFolder(site.getId());
 
-        return CorePath.concatenatePaths(siteFolderPath, 'offlineforum/' + forumId);
+        return CorePath.concatenatePaths(siteFolderPath, `offlineforum/${forumId}`);
     }
 
     /**
@@ -356,7 +353,7 @@ export class AddonModForumOfflineProvider {
     async getNewDiscussionFolder(forumId: number, timeCreated: number, siteId?: string): Promise<string> {
         const folderPath = await this.getForumFolder(forumId, siteId);
 
-        return CorePath.concatenatePaths(folderPath, 'newdisc_' + timeCreated);
+        return CorePath.concatenatePaths(folderPath, `newdisc_${timeCreated}`);
     }
 
     /**
@@ -373,7 +370,7 @@ export class AddonModForumOfflineProvider {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
 
-        return CorePath.concatenatePaths(folderPath, 'reply_' + postId + '_' + userId);
+        return CorePath.concatenatePaths(folderPath, `reply_${postId}_${userId}`);
     }
 
     /**

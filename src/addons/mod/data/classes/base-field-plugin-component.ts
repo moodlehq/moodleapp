@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component } from '@angular/core';
+import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreFormFields } from '@singletons/form';
 import { AddonModDataData, AddonModDataEntryField, AddonModDataField } from '../services/data';
 import { AddonModDataTemplateMode } from '../constants';
+import { toBoolean } from '@/core/transforms/boolean';
 
 /**
  * Base class for component to render a field.
@@ -33,12 +34,12 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     @Input() error?: string; // Error when editing.
     @Input() form?: FormGroup; // Form where to add the form control. Just required for edit and search modes.
     @Input() searchFields?: CoreFormFields; // The search value of all fields.
+    @Input({ transform: toBoolean }) recordHasOffline = false; // Whether the record this field belongs to has offline data.
     @Output() gotoEntry = new EventEmitter<number>(); // Action to perform.
     // Output called when the field is initialized with a value and it didn't have one already.
     @Output() onFieldInit = new EventEmitter<AddonModDataEntryFieldInitialized>();
 
-    constructor(protected fb: FormBuilder) {
-    }
+    protected fb = inject(FormBuilder);
 
     /**
      * Add the form control for the search mode.

@@ -19,8 +19,9 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreOpener } from '@singletons/opener';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that shows instructions to complete the profile.
@@ -28,8 +29,11 @@ import { CoreUserSupport } from '@features/user/services/support';
 @Component({
     selector: 'page-core-user-complete-profile',
     templateUrl: 'complete-profile.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreUserCompleteProfilePage implements OnDestroy {
+export default class CoreUserCompleteProfilePage implements OnDestroy {
 
     editingProfile = false;
     logoutLabel: string;
@@ -93,7 +97,7 @@ export class CoreUserCompleteProfilePage implements OnDestroy {
         this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
             if (event.url.match(/\/user\/preferences.php/)) {
                 // Profile should be complete now.
-                CoreUtils.closeInAppBrowser();
+                CoreOpener.closeInAppBrowser();
                 this.login();
             }
         });

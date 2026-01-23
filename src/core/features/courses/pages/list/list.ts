@@ -16,12 +16,21 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfo } from '@features/courses/services/courses-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreCourseBasicSearchedData, CoreCourses, CoreCoursesProvider } from '../../services/courses';
+import { CoreCourseBasicSearchedData, CoreCourses } from '../../services/courses';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT,
+} from '@features/courses/constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCoursesCourseListItemComponent } from '../../components/course-list-item/course-list-item';
+import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';
+import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';
+import { CoreSharedModule } from '@/core/shared.module';
 
 type CoreCoursesListMode = 'search' | 'all' | 'my';
 
@@ -31,8 +40,14 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
 @Component({
     selector: 'page-core-courses-list',
     templateUrl: 'list.html',
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+        CoreSearchBoxComponent,
+        CoreCoursesCourseListItemComponent,
+    ],
 })
-export class CoreCoursesListPage implements OnInit, OnDestroy {
+export default class CoreCoursesListPage implements OnInit, OnDestroy {
 
     downloadAllCoursesEnabled = false;
 
@@ -73,10 +88,10 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         // Update list if user enrols in a course.
         this.myCoursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
 
-                if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+                if (data.action == CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
                     this.fetchCourses();
                 }
             },
@@ -98,7 +113,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             }
         }, this.currentSiteId);
 
-        this.downloadEnabledObserver = CoreEvents.on(CoreCoursesProvider.EVENT_DASHBOARD_DOWNLOAD_ENABLED_CHANGED, (data) => {
+        this.downloadEnabledObserver = CoreEvents.on(CORE_COURSES_DASHBOARD_DOWNLOAD_ENABLED_CHANGED_EVENT, (data) => {
             this.downloadEnabled = (this.downloadCourseEnabled || this.downloadCoursesEnabled) && data.enabled;
         });
 
@@ -135,11 +150,12 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
 
         const mode = CoreNavigator.getRouteParam<CoreCoursesListMode>('mode') || 'my';
 
-        if (mode == 'search') {
+        if (mode === 'search') {
             this.searchMode = true;
+            this.searchText = CoreNavigator.getRouteParam('searchText') || '';
         }
 
-        if (mode == 'my') {
+        if (mode === 'my') {
             this.showOnlyEnrolled = true;
         }
 
@@ -161,6 +177,9 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             if (this.searchMode) {
                 if (this.searchText) {
                     await this.searchCourses();
+                } else {
+                    this.courses = [];
+                    this.canLoadMore = false;
                 }
             } else {
                 await this.loadCourses(true);
@@ -187,7 +206,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
                     this.loadedCourses = await CoreCourses.getUserCourses();
                 } else {
                     const courses = await CoreCourses.getCoursesByField();
-                    this.loadedCourses = courses.filter((course) => course.id != this.frontpageCourseId);
+                    this.loadedCourses = courses.filter((course) => course.id !== this.frontpageCourseId);
                 }
 
                 this.coursesLoaded = 0;
@@ -207,7 +226,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.logView();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorloadcourses', true);
+            !this.isDestroyed && CoreAlerts.showError(error, { default: Translate.instant('core.courses.errorloadcourses') });
         }
 
     }
@@ -245,6 +264,12 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      * @param text The text to search.
      */
     async search(text: string): Promise<void> {
+        if (text.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         this.searchMode = true;
         this.searchText = text;
         this.courses = [];
@@ -262,12 +287,11 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
     /**
      * Clear search box.
      */
-    clearSearch(): void {
+    protected clearSearch(): void {
         this.searchText = '';
         this.courses = [];
         this.searchPage = 0;
         this.searchTotal = 0;
-        this.searchMode = false;
 
         this.loaded = false;
         this.fetchCourses();
@@ -332,7 +356,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
             this.logSearch?.();
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            !this.isDestroyed && CoreDomUtils.showErrorModalDefault(error, 'core.courses.errorsearching', true);
+            !this.isDestroyed && CoreAlerts.showError(error, { default: Translate.instant('core.courses.errorsearching') });
         }
     }
 
@@ -341,6 +365,7 @@ export class CoreCoursesListPage implements OnInit, OnDestroy {
      */
     toggleEnrolled(): void {
         this.loaded = false;
+        this.searchPage = 0;
         this.fetchCourses();
     }
 

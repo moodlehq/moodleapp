@@ -21,6 +21,7 @@ import { CoreQuestionQuestionParsed, CoreQuestionsAnswers, CoreQuestionState } f
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { AddonQbehaviourDeferredCBMComponent } from '../../component/deferredcbm';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support deferred CBM question behaviour.
@@ -89,12 +90,12 @@ export class AddonQbehaviourDeferredCBMHandlerService implements CoreQuestionBeh
         answers: CoreQuestionsAnswers,
         component: string,
         componentId: string | number,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // First check if the question answer is complete.
         const complete = CoreQuestionDelegate.isCompleteResponse(question, answers, component, componentId);
         if (complete > 0) {
             // Answer is complete, check the user answered CBM too.
-            return answers['-certainty'] ? 1 : 0;
+            return answers['-certainty'] ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
         }
 
         return complete;

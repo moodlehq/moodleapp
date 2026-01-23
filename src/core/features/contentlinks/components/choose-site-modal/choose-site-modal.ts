@@ -14,7 +14,6 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
 import { CoreContentLinksHelper } from '../../services/contentlinks-helper';
@@ -22,6 +21,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -29,7 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-content-links-choose-site-modal',
     templateUrl: 'choose-site-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -81,7 +80,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
             // All sites have the same URL, use the first one.
             this.displaySiteUrl = CoreSitesFactory.makeUnauthenticatedSite(this.sites[0].siteUrl).shouldDisplayInformativeLinks();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.contentlinks.errornosites', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.contentlinks.errornosites') });
             this.closeModal();
         }
 

@@ -20,13 +20,13 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModGlossary, AddonModGlossaryEntry, AddonModGlossaryGlossary } from '../glossary';
 import { AddonModGlossarySync, AddonModGlossarySyncResult } from '../glossary-sync';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
+import { ADDON_MOD_GLOSSARY_COMPONENT_LEGACY, ADDON_MOD_GLOSSARY_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -35,8 +35,8 @@ import { ADDON_MOD_GLOSSARY_COMPONENT } from '../../constants';
 export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModGlossary';
-    modName = 'glossary';
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    modName = ADDON_MOD_GLOSSARY_MODNAME;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 
     /**
@@ -188,10 +188,10 @@ export class AddonModGlossaryPrefetchHandlerService extends CoreCourseActivityPr
 
         // Prefetch data for link handlers.
         promises.push(CoreCourse.getModuleBasicInfo(module.id, { siteId }));
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, 'glossary', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(glossary.id, ADDON_MOD_GLOSSARY_MODNAME, { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }

@@ -19,8 +19,9 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
+import { ADDON_MOD_LESSON_FEATURE_NAME } from '../../constants';
 
 /**
  * Handler for lesson push notifications clicks.
@@ -30,7 +31,7 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
 
     name = 'AddonModLessonPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModLesson';
+    featureName = ADDON_MOD_LESSON_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.

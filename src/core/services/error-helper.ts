@@ -13,15 +13,38 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreText } from '@singletons/text';
+import { CoreCanceledError } from '@classes/errors/cancelederror';
+import { CoreSilentError } from '@classes/errors/silenterror';
+import { CoreNetworkError } from '@classes/errors/network-error';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreErrorHelperService {
+
+    /**
+     * Given an error, add an extra warning to the error message and return the new error message.
+     *
+     * @param error Error object or message.
+     * @param defaultError Message to show if the error is not a string.
+     * @returns New error message.
+     */
+    addDataNotDownloadedError(error: Error | string, defaultError?: string): string {
+        const errorMessage = CoreErrorHelper.getErrorMessageFromError(error) || defaultError || '';
+
+        if (CoreWSError.isWebServiceError(error)) {
+            return errorMessage;
+        }
+
+        // Local error. Add an extra warning.
+        return `${errorMessage}<br><br>${Translate.instant('core.errorsomedatanotdownloaded')}`;
+    }
 
     /**
      * Add some text to an error message.
@@ -112,6 +135,39 @@ export class CoreErrorHelperService {
     }
 
     /**
+     * Get the debug info from an error object.
+     *
+     * @param error Error.
+     * @returns Error debug info, undefined if not found.
+     */
+    getDebugInfoFromError(error?: CoreAnyError): CoreErrorDebug | undefined {
+        if (!error || typeof error === 'string') {
+            return;
+        }
+
+        if ('debug' in error) {
+            return error.debug;
+        }
+
+        // Escape the HTML of debug info so it is displayed as it is in the view.
+        const debugMessages: string[] = [];
+        if ('debuginfo' in error && error.debuginfo) {
+            debugMessages.push(CoreText.escapeHTML(error.debuginfo, false));
+        }
+        if ('backtrace' in error && error.backtrace) {
+            debugMessages.push(CoreText.replaceNewLines(
+                CoreText.escapeHTML(error.backtrace, false),
+                '<br>',
+            ));
+        }
+
+        const debugMessage = debugMessages.join('<br><br>');
+        if (debugMessage) {
+            return { details: debugMessage };
+        }
+    }
+
+    /**
      * Get the error message from an error object.
      *
      * @param error Error.
@@ -156,6 +212,68 @@ export class CoreErrorHelperService {
         const element = doc.body.querySelector<HTMLElement>('.errorbox .errormessage');
 
         return element?.innerText.trim() ?? '';
+    }
+
+    /**
+     * Check whether an error is an error caused because the user canceled an action.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a canceled error.
+     */
+    isCanceledError(error: CoreAnyError): boolean {
+        return error instanceof CoreCanceledError;
+    }
+
+    /**
+     * Check whether an error is a network error.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a network error.
+     */
+    isNetworkError(error: CoreAnyError): boolean {
+        if (error instanceof CoreNetworkError) {
+            return true;
+        }
+
+        const errorMessage = this.getErrorMessageFromError(error);
+
+        return errorMessage === Translate.instant('core.networkerrormsg') ||
+            errorMessage === Translate.instant('core.fileuploader.errormustbeonlinetoupload');
+    }
+
+    /**
+     * Check whether an error is a silent error that shouldn't be displayed to the user.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a silent error.
+     */
+    isSilentError(error: CoreAnyError): boolean {
+        return error instanceof CoreSilentError;
+    }
+
+    /**
+     * Given a message, check if it's a site unavailable error.
+     *
+     * @param message Message text.
+     * @returns Whether the message is a site unavailable error.
+     */
+    isSiteUnavailableErrorMessage(message: string): boolean {
+        let siteUnavailableMessage = Translate.instant('core.siteunavailablehelp', { site: 'SITEURLPLACEHOLDER' });
+        siteUnavailableMessage = CoreText.escapeForRegex(siteUnavailableMessage);
+        siteUnavailableMessage = siteUnavailableMessage.replace('SITEURLPLACEHOLDER', '.*');
+
+        return new RegExp(siteUnavailableMessage).test(message);
+    }
+
+    /**
+     * Log an unhandled error.
+     *
+     * @param message Message to contextualize the error.
+     * @param error Error to log.
+     */
+    logUnhandledError(message: string, error: unknown): void {
+       // eslint-disable-next-line no-console
+       console.error(`Unhandled error: ${message}`, error);
     }
 
 }

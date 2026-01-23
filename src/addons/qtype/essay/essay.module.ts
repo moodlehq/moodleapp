@@ -12,33 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { AddonQtypeEssayHandler } from './services/handlers/essay';
-import { AddonQtypeEssayComponent } from './component/essay';
 
 @NgModule({
-    declarations: [
-        AddonQtypeEssayComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-        CoreEditorComponentsModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreQuestionDelegate.registerHandler(AddonQtypeEssayHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonQtypeEssayComponent,
+        provideAppInitializer(() => {
+            CoreQuestionDelegate.registerHandler(AddonQtypeEssayHandler.instance);
+        }),
     ],
 })
 export class AddonQtypeEssayModule {}

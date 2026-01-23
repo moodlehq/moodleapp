@@ -15,7 +15,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import moment from 'moment-timezone';
+import { dayjs } from '@/core/utils/dayjs';
 
 /**
  * Pipe to turn a UNIX timestamp to "time ago".
@@ -49,7 +49,7 @@ export class CoreTimeAgoPipe implements PipeTransform {
             timestamp = numberTimestamp;
         }
 
-        return Translate.instant('core.ago', { $a: moment(timestamp * 1000).fromNow(true) });
+        return Translate.instant('core.ago', { $a: dayjs(timestamp * 1000).fromNow(true) });
     }
 
 }

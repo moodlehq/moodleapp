@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Type } from '@angular/core';
-import { CoreDomUtils } from '@services/utils/dom';
+import { Component, OnInit, Type, inject } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the tag index area.
@@ -26,8 +27,11 @@ import { CoreNavigator } from '@services/navigator';
 @Component({
     selector: 'page-core-tag-index-area',
     templateUrl: 'index-area.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreTagIndexAreaPage implements OnInit {
+export default class CoreTagIndexAreaPage implements OnInit {
 
     tagId = 0;
     tagName = '';
@@ -47,9 +51,7 @@ export class CoreTagIndexAreaPage implements OnInit {
     areaComponent?: Type<unknown>;
     loadMoreError = false;
 
-    constructor(
-        protected route: ActivatedRoute,
-    ) { }
+    protected route = inject(ActivatedRoute);
 
     /**
      * @inheritdoc
@@ -57,6 +59,7 @@ export class CoreTagIndexAreaPage implements OnInit {
     async ngOnInit(): Promise<void> {
         this.route.queryParams.subscribe(async () => {
             this.loaded = false;
+            this.areaComponent = undefined; // Re-calculate area component.
 
             this.tagId = CoreNavigator.getRouteNumberParam('tagId') || this.tagId;
             this.tagName = CoreNavigator.getRouteParam('tagName') || this.tagName;
@@ -129,7 +132,7 @@ export class CoreTagIndexAreaPage implements OnInit {
             this.nextPage = page + 1;
         } catch (error) {
             this.loadMoreError = true; // Set to prevent infinite calls with infinite-loading.
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading tag index');
+            CoreAlerts.showError(error, { default: 'Error loading tag index' });
         }
     }
 

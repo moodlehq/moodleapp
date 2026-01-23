@@ -1,4 +1,4 @@
-@addon_mod_workshop @app @javascript
+@addon_mod_workshop @app @mod @mod_workshop @javascript
 Feature: Test basic usage of workshop activity in app
 
   Background:
@@ -130,7 +130,8 @@ Feature: Test basic usage of workshop activity in app
       | \mod_workshop\event\course_module_viewed | workshop | Test workshop | Course 1 |
 
   Scenario: Prefetch a workshop
-    Given I entered the workshop activity "workshop" on course "Course 1" as "teacher1" in the app
+    Given I entered the course "Course 1" as "teacher1" in the app
+    And I press "workshop" in the app
     When I press "Information" in the app
     And I press "Download" in the app
     And I press "Close" in the app

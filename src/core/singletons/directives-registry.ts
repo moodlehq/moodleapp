@@ -32,9 +32,9 @@ export class CoreDirectivesRegistry {
      * @param instance Directive instance.
      */
     static register(element: Element, instance: unknown): void {
-        const list = this.instances.get(element) ?? [];
+        const list = CoreDirectivesRegistry.instances.get(element) ?? [];
         list.push(instance);
-        this.instances.set(element, list);
+        CoreDirectivesRegistry.instances.set(element, list);
     }
 
     /**
@@ -45,7 +45,7 @@ export class CoreDirectivesRegistry {
      * @returns Directive instance.
      */
     static resolve<T>(element?: Element | null, directiveClass?: DirectiveConstructor<T>): T | null {
-        const list = (element && this.instances.get(element) as T[]) ?? [];
+        const list = (element && CoreDirectivesRegistry.instances.get(element) as T[]) ?? [];
 
         return list.find(instance => !directiveClass || instance instanceof directiveClass) ?? null;
     }
@@ -58,7 +58,7 @@ export class CoreDirectivesRegistry {
      * @returns Directive instances.
      */
     static resolveAll<T>(element?: Element | null, directiveClass?: DirectiveConstructor<T>): T[] {
-        const list = (element && this.instances.get(element) as T[]) ?? [];
+        const list = (element && CoreDirectivesRegistry.instances.get(element) as T[]) ?? [];
 
         return list.filter(instance => !directiveClass || instance instanceof directiveClass) ?? [];
     }
@@ -71,7 +71,7 @@ export class CoreDirectivesRegistry {
      * @returns Directive instance.
      */
     static require<T>(element: Element, directiveClass?: DirectiveConstructor<T>): T {
-        const instance = this.resolve(element, directiveClass);
+        const instance = CoreDirectivesRegistry.resolve(element, directiveClass);
 
         if (!instance) {
             throw new Error('Couldn\'t resolve directive instance');
@@ -91,9 +91,9 @@ export class CoreDirectivesRegistry {
         element: Element | null,
         directiveClass?: DirectiveConstructor<T>,
     ): Promise<void> {
-        const instance = this.resolve(element, directiveClass);
+        const instance = CoreDirectivesRegistry.resolve(element, directiveClass);
         if (!instance) {
-            this.logger.error('No instance registered for element ' + directiveClass, element);
+            CoreDirectivesRegistry.logger.error(`No instance registered for element ${directiveClass}`, element);
 
             return;
         }
@@ -129,7 +129,7 @@ export class CoreDirectivesRegistry {
         }
 
         await Promise.all(elements.map(async element => {
-            const instances = this.resolveAll<T>(element, directiveClass);
+            const instances = CoreDirectivesRegistry.resolveAll<T>(element, directiveClass);
 
             await Promise.all(instances.map(instance => instance.ready()));
         }));
@@ -139,7 +139,7 @@ export class CoreDirectivesRegistry {
 
         // Check if there are new elements now that the found elements are ready (there could be nested elements).
         if (elements.length !== findElements().length) {
-            await this.waitDirectivesReady(element, selector, directiveClass);
+            await CoreDirectivesRegistry.waitDirectivesReady(element, selector, directiveClass);
         }
     }
 
@@ -174,7 +174,7 @@ export class CoreDirectivesRegistry {
             allElements = allElements.concat(elements);
 
             await Promise.all(elements.map(async element => {
-                const instances = this.resolveAll<AsyncDirective>(element, directive.class);
+                const instances = CoreDirectivesRegistry.resolveAll<AsyncDirective>(element, directive.class);
 
                 await Promise.all(instances.map(instance => instance.ready()));
             }));
@@ -191,7 +191,7 @@ export class CoreDirectivesRegistry {
         }, <Element[]> []);
 
         if (allElements.length !== elementsAfterReady.length) {
-            await this.waitMultipleDirectivesReady(element, directives);
+            await CoreDirectivesRegistry.waitMultipleDirectivesReady(element, directives);
         }
     }
 

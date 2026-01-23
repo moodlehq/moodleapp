@@ -18,6 +18,9 @@ import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } 
 import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/submission-delegate';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
+import { CoreSharedModule } from '@/core/shared.module';
+import { getModAssignComponentModules } from '@addons/mod/assign/assign.module';
 
 /**
  * Component that displays an assign submission plugin created using a site plugin.
@@ -26,6 +29,10 @@ import { toBoolean } from '@/core/transforms/boolean';
     selector: 'core-site-plugins-assign-submission',
     templateUrl: 'core-siteplugins-assign-submission.html',
     styles: [':host { display: contents; }'],
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+    ],
 })
 export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 
@@ -39,7 +46,7 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
         // Pass the input and output data to the component.
         this.jsData.assign = this.assign;
         this.jsData.submission = this.submission;
@@ -47,6 +54,8 @@ export class CoreSitePluginsAssignSubmissionComponent extends CoreSitePluginsCom
         this.jsData.configs = this.configs;
         this.jsData.edit = this.edit;
         this.jsData.allowOffline = this.allowOffline;
+
+        this.extraImports = await getModAssignComponentModules();
 
         if (this.plugin) {
             this.getHandlerData(AddonModAssignSubmissionDelegate.getHandlerName(this.plugin.type));

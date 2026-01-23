@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreNavigator } from '@services/navigator';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { Subject } from 'rxjs';
 import { AsyncDirective } from './async-directive';
 import { PageLoadWatcher } from './page-load-watcher';

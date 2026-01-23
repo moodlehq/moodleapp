@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreMimetypeUtils } from '@services/utils/mimetype';
+import { CoreMimetype } from '@singletons/mimetype';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEvents } from '@singletons/events';
@@ -31,8 +29,11 @@ import { CoreScreen } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@singletons/dom';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to accept a site policy.
@@ -40,11 +41,14 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
-    styleUrls: ['site-policy.scss'],
+    styleUrl: 'site-policy.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
+export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
+    readonly content = viewChild.required(IonContent);
 
     siteName?: string;
     isManageAcceptancesAvailable = false;
@@ -72,8 +76,8 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected siteId?: string;
     protected currentSite!: CoreSite;
     protected layoutSubscription?: Subscription;
-
-    constructor(protected elementRef: ElementRef, protected changeDetector: ChangeDetectorRef) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected changeDetector = inject(ChangeDetectorRef);
 
     /**
      * @inheritdoc
@@ -83,7 +87,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         try {
             this.currentSite = CoreSites.getRequiredCurrentSite();
-            this.siteName = (await CoreUtils.ignoreErrors(this.currentSite.getSiteName(), '')) || '';
+            this.siteName = (await CorePromiseUtils.ignoreErrors(this.currentSite.getSiteName(), '')) || '';
         } catch {
             // Not logged in, stop.
             this.cancel();
@@ -132,7 +136,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         try {
             this.sitePoliciesURL = await CorePolicy.getSitePoliciesURL(this.siteId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
+            CoreAlerts.showError(error, { default: 'Error getting site policy.' });
             this.cancel();
 
             return;
@@ -140,9 +144,9 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         // Try to get the mime type.
         try {
-            const mimeType = await CoreUtils.getMimeTypeFromUrl(this.sitePoliciesURL);
+            const mimeType = await CoreMimetype.getMimeTypeFromUrl(this.sitePoliciesURL);
 
-            const extension = CoreMimetypeUtils.getExtension(mimeType, this.sitePoliciesURL);
+            const extension = CoreMimetype.getExtension(mimeType, this.sitePoliciesURL);
             this.showInline = extension == 'html' || extension == 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.
@@ -199,7 +203,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             this.setCurrentPolicy(policy);
             this.policyLoaded = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting site policy.');
+            CoreAlerts.showError(error, { default: 'Error getting site policy.' });
             this.cancel();
         }
     }
@@ -262,11 +266,11 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
         this.pendingPolicies?.forEach(policy => {
             if (policy.optional) {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl<number | undefined>(undefined, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl<number | undefined>(undefined, {
                     validators: Validators.required,
                 }));
             } else {
-                this.policiesForm?.addControl('agreepolicy' + policy.versionid, new FormControl(false, {
+                this.policiesForm?.addControl(`agreepolicy${policy.versionid}`, new FormControl(false, {
                     validators: Validators.requiredTrue,
                     nonNullable: true,
                 }));
@@ -280,9 +284,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async cancel(): Promise<void> {
-        await CoreUtils.ignoreErrors(CoreSites.logout());
-
-        await CoreNavigator.navigate('/login/sites', { reset: true });
+        await CoreSites.logout();
     }
 
     /**
@@ -342,7 +344,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
     protected async checkScroll(): Promise<void> {
         await CoreWait.wait(400);
 
-        const scrollElement = await this.content?.getScrollElement();
+        const scrollElement = await this.content().getScrollElement();
 
         this.hasScroll = !!scrollElement && scrollElement.scrollHeight > scrollElement.clientHeight + 2; // Add 2px of error margin.
     }
@@ -365,12 +367,12 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             // Scroll to the first element with errors.
             const errorFound = await CoreDom.scrollToInputError(
-                this.elementRef.nativeElement,
+                this.element,
             );
 
             if (!errorFound) {
                 // Input not found, show an error modal.
-                CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
             }
 
             return;
@@ -389,7 +391,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
             await this.finishAcceptingPolicies();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error accepting site policies.');
+            CoreAlerts.showError(error, { default: 'Error accepting site policies.' });
         } finally {
             modal.dismiss();
         }
@@ -406,7 +408,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         const acceptances: Record<number, number> = {};
 
         this.pendingPolicies?.forEach(policy => {
-            const control = this.policiesForm?.controls['agreepolicy' + policy.versionid];
+            const control = this.policiesForm?.controls[`agreepolicy${policy.versionid}`];
             if (!control) {
                 return;
             }
@@ -414,7 +416,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             if (policy.optional) {
                 if (control.value === null || control.value === undefined) {
                     // Not answered, this code shouldn't be reached. Display error.
-                    CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                    CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
 
                     return;
                 }
@@ -423,7 +425,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             } else {
                 if (!control.value) {
                     // Not answered, this code shouldn't be reached. Display error.
-                    CoreDomUtils.showErrorModal('core.policy.mustagreetocontinue', true);
+                    CoreAlerts.showError(Translate.instant('core.policy.mustagreetocontinue'));
 
                     return;
                 }
@@ -442,7 +444,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
      */
     protected async finishAcceptingPolicies(): Promise<void> {
         // Invalidate cache since some WS don't return error if site policy is not accepted.
-        await CoreUtils.ignoreErrors(this.currentSite.invalidateWsCache());
+        await CorePromiseUtils.ignoreErrors(this.currentSite.invalidateWsCache());
 
         CoreEvents.trigger(CoreEvents.SITE_POLICY_AGREED, {}, this.siteId);
 
@@ -458,7 +460,7 @@ export class CorePolicySitePolicyPage implements OnInit, OnDestroy {
         event?.preventDefault();
         event?.stopPropagation();
 
-        this.content?.scrollToTop(400);
+        this.content().scrollToTop(400);
     }
 
     /**

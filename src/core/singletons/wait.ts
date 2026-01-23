@@ -20,6 +20,11 @@ import { CorePlatform } from '@services/platform';
  */
 export class CoreWait {
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Wait until the next tick.
      *
@@ -110,6 +115,70 @@ export class CoreWait {
         await CoreWait.wait(50);
 
         return CoreWait.waitForResizeDone(windowWidth, windowHeight, retries+1);
+    }
+
+    /**
+     * Wait for images to load.
+     *
+     * @param element The element to search in.
+     * @returns Promise resolved with a boolean: whether there was any image to load.
+     */
+    static waitForImages(element: HTMLElement): CoreCancellablePromise<boolean> {
+        const imgs = Array.from(element.querySelectorAll('img'));
+
+        if (imgs.length === 0) {
+            return CoreCancellablePromise.resolve(false);
+        }
+
+        let completedImages = 0;
+        let waitedForImages = false;
+        const listeners: WeakMap<Element, () => unknown> = new WeakMap();
+        const imageCompleted = (resolve: (result: boolean) => void) => {
+            completedImages++;
+
+            if (completedImages === imgs.length) {
+                resolve(waitedForImages);
+            }
+        };
+
+        return new CoreCancellablePromise<boolean>(
+            resolve => {
+                for (const img of imgs) {
+                    if (!img || img.complete) {
+                        imageCompleted(resolve);
+
+                        continue;
+                    }
+
+                    waitedForImages = true;
+
+                    // Wait for image to load or fail.
+                    const imgCompleted = (): void => {
+                        img.removeEventListener('load', imgCompleted);
+                        img.removeEventListener('error', imgCompleted);
+
+                        imageCompleted(resolve);
+                    };
+
+                    img.addEventListener('load', imgCompleted);
+                    img.addEventListener('error', imgCompleted);
+
+                    listeners.set(img, imgCompleted);
+                }
+            },
+            () => {
+                imgs.forEach(img => {
+                    const listener = listeners.get(img);
+
+                    if (!listener) {
+                        return;
+                    }
+
+                    img.removeEventListener('load', listener);
+                    img.removeEventListener('error', listener);
+                });
+            },
+        );
     }
 
 }

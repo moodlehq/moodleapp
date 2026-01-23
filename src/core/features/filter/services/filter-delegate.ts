@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, ViewContainerRef } from '@angular/core';
+import { Injectable, ViewContainerRef, inject } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions, CoreFilterStateValue } from './filter';
@@ -81,12 +81,9 @@ export interface CoreFilterHandler extends CoreDelegateHandler {
 @Injectable({ providedIn: 'root' })
 export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
+    protected defaultHandler = inject(CoreFilterDefaultHandler);
     protected featurePrefix = 'CoreFilterDelegate_';
     protected handlerNameProperty = 'filterName';
-
-    constructor(protected defaultHandler: CoreFilterDefaultHandler) {
-        super('CoreFilterDelegate');
-    }
 
     /**
      * @inheritdoc
@@ -107,25 +104,27 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      */
     async filterText(
         text: string,
-        filters?: CoreFilterFilter[],
-        options?: CoreFilterFormatTextOptions,
+        filters: CoreFilterFilter[] = [],
+        options: CoreFilterFormatTextOptions = {},
         skipFilters?: string[],
         siteId?: string,
     ): Promise<string> {
+        if (!filters.length) {
+            return this.removeNolinkTags(text);
+        }
 
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             // No enabled filters, return the text.
-            return text;
+            return this.removeNolinkTags(text);
         }
 
         const site = await CoreSites.getSite(siteId);
 
-        filters = filters || [];
-        options = options || {};
-
         for (let i = 0; i < filters.length; i++) {
+
             const filter = filters[i];
             if (!this.isEnabledAndShouldApply(filter, options, site, skipFilters)) {
                 continue;
@@ -140,14 +139,21 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
 
                 text = newText || text;
             } catch (error) {
-                this.logger.error('Error applying filter' + filter.filter, error);
+                this.logger.error(`Error applying filter${filter.filter}`, error);
             }
         }
 
-        // Remove <nolink> tags for XHTML compatibility.
-        text = text.replace(/<\/?nolink>/gi, '');
+        return this.removeNolinkTags(text);
+    }
 
-        return text;
+    /**
+     * Remove <nolink> tags for XHTML compatibility.
+     *
+     * @param text The text to process.
+     * @returns The text with <nolink> tags removed.
+     */
+    protected removeNolinkTags(text: string): string {
+        return text.replace(/<\/?nolink>/gi, '');
     }
 
     /**
@@ -201,7 +207,8 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
     ): Promise<void> {
 
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             return;
         }
@@ -224,7 +231,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
                     [container, filter, options, viewContainerRef, component, componentId, siteId],
                 );
             } catch (error) {
-                this.logger.error('Error handling HTML' + filter.filter, error);
+                this.logger.error(`Error handling HTML${filter.filter}`, error);
             }
         }
     }
@@ -276,7 +283,8 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
      */
     async shouldBeApplied(filters: CoreFilterFilter[], options: CoreFilterFormatTextOptions, site?: CoreSite): Promise<boolean> {
         // Wait for filters to be initialized.
-        const enabled = await this.handlersInitPromise;
+        await this.waitForReady();
+        const enabled = this.hasHandlers(true);
         if (!enabled) {
             return false;
         }

@@ -12,17 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-    Component,
-    Input,
-    OnInit,
-    OnDestroy,
-    ElementRef,
-    ViewContainerRef,
-    ViewChild,
-} from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ElementRef, ViewContainerRef, inject, viewChild } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
@@ -45,7 +36,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
  * Example usage:
  *
  * <core-navbar-buttons slot="end">
- *     <ion-button [class.hidden]="!buttonShown" [ariaLabel]="Do something" (click)="action()">
+ *     <ion-button fill="clear" [class.hidden]="!buttonShown" [ariaLabel]="Do something" (click)="action()">
  *         <ion-icon name="funnel" slot="icon-only" aria-hidden="true"></ion-icon>
  *     </ion-button>
  * </core-navbar-buttons>
@@ -53,11 +44,11 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 @Component({
     selector: 'core-navbar-buttons',
     template: '<ng-content/><template #contextMenuContainer>-</template>',
-    styleUrls: ['navbar-buttons.scss'],
+    styleUrl: 'navbar-buttons.scss',
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
-    @ViewChild('contextMenuContainer', { read: ViewContainerRef }) container!: ViewContainerRef;
+    readonly container = viewChild.required('contextMenuContainer', { read: ViewContainerRef });
 
     // If the hidden input is true, hide all buttons.
     // eslint-disable-next-line @angular-eslint/no-input-rename
@@ -69,7 +60,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
         this.showHideAllElements();
     }
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected allButtonsHidden = false;
     protected forceHidden = false;
     protected logger: CoreLogger;
@@ -77,8 +68,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
     protected mergedContextMenu?: CoreContextMenuComponent;
     protected createdMainContextMenuElement?: HTMLElement;
 
-    constructor(element: ElementRef) {
-        this.element = element.nativeElement;
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreNavBarButtonsComponent');
 
         CoreDirectivesRegistry.register(this.element, this);
@@ -89,7 +79,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         try {
-            const header = await this.searchHeader();
+            const header = await CoreDom.findIonHeaderFromElement(this.element);
             if (header) {
                 // Search the right buttons container (start, end or any).
                 let selector = 'ion-buttons';
@@ -100,7 +90,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
                     slot = this.element.parentElement.getAttribute('slot');
                 }
                 if (slot) {
-                    selector += '[slot="' + slot + '"]';
+                    selector += `[slot="${slot}"]`;
                 }
 
                 const buttonsContainer = header.querySelector<HTMLIonButtonsElement>(selector);
@@ -109,7 +99,7 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
 
                     const prepend = this.element.hasAttribute('prepend');
 
-                    this.movedChildren = CoreDomUtils.moveChildren(this.element, buttonsContainer, prepend);
+                    this.movedChildren = CoreDom.moveChildren(this.element, buttonsContainer, prepend);
                     this.showHideAllElements();
 
                     // Make sure that context-menu is always at the end of buttons if any.
@@ -185,48 +175,11 @@ export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {
      * @returns Created component.
      */
     protected createMainContextMenu(): CoreContextMenuComponent {
-        const componentRef = this.container.createComponent(CoreContextMenuComponent);
+        const componentRef = this.container().createComponent(CoreContextMenuComponent);
 
         this.createdMainContextMenuElement = componentRef.location.nativeElement;
 
         return componentRef.instance;
-    }
-
-    /**
-     * Search the ion-header where the buttons should be added.
-     *
-     * @returns Promise resolved with the header element.
-     */
-    protected async searchHeader(): Promise<HTMLIonHeaderElement> {
-        await CoreDom.waitToBeInDOM(this.element);
-        let parentPage: HTMLElement | null = this.element;
-
-        while (parentPage && parentPage.parentElement) {
-            const content = parentPage.closest<HTMLIonContentElement>('ion-content');
-            if (content) {
-                // Sometimes ion-page class is not yet added by the ViewController, wait for content to render.
-                await content.componentOnReady();
-            }
-
-            parentPage = parentPage.parentElement.closest('.ion-page, .ion-page-hidden, .ion-page-invisible');
-
-            // Check if the page has a header. If it doesn't, search the next parent page.
-            let header  = parentPage?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
-
-            if (header && getComputedStyle(header).display !== 'none') {
-                return header;
-            }
-
-            // Find using content if any.
-            header = content?.parentElement?.querySelector<HTMLIonHeaderElement>(':scope > ion-header');
-
-            if (header && getComputedStyle(header).display !== 'none') {
-                return header;
-            }
-        }
-
-        // Header not found, reject.
-        throw Error('Header not found.');
     }
 
     /**

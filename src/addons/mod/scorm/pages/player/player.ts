@@ -14,13 +14,11 @@
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
-import { CoreMainMenuPage } from '@features/mainmenu/pages/menu/menu';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModScormDataModel12 } from '../../classes/data-model-12';
 import {
@@ -35,15 +33,18 @@ import { AddonModScormHelper, AddonModScormTOCScoWithIcon } from '../../services
 import { AddonModScormSync } from '../../services/scorm-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
-    ADDON_MOD_SCORM_COMPONENT,
     AddonModScormMode,
     ADDON_MOD_SCORM_GO_OFFLINE_EVENT,
     ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT,
     ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT,
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
+    ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
 import { CoreWait } from '@singletons/wait';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that allows playing a SCORM.
@@ -51,8 +52,11 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-addon-mod-scorm-player',
     templateUrl: 'player.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModScormPlayerPage implements OnInit, OnDestroy {
+export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     title?: string; // Title.
     scorm!: AddonModScormScorm; // The SCORM object.
@@ -89,10 +93,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
     protected launchPrevObserver?: CoreEventObserver;
     protected goOfflineObserver?: CoreEventObserver;
 
-    constructor(
-        protected mainMenuPage: CoreMainMenuPage,
-    ) {}
-
     /**
      * @inheritdoc
      */
@@ -107,8 +107,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
             this.initialScoId = CoreNavigator.getRouteNumberParam('scoId');
             this.siteId = CoreSites.getRequiredCurrentSite().getId();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -129,7 +128,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 try {
                     await this.setStartTime(this.currentSco.id);
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('addon.mod_scorm.errorgetscorm') });
                 }
             }
 
@@ -219,7 +218,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 try {
                     AddonModScormHelper.convertAttemptToOffline(this.scorm, this.attempt);
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
+                    CoreAlerts.showError(error, { default: Translate.instant('core.error') });
                 }
 
                 this.refreshToc();
@@ -311,8 +310,6 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     /**
      * Fetch data needed to play the SCORM.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchData(): Promise<void> {
         if (!this.scorm) {
@@ -345,7 +342,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
             this.userData = data;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_scorm.errorgetscorm') });
         }
     }
 
@@ -501,7 +498,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
                 await AddonModScorm.saveTracks(sco.id, this.attempt, tracks, this.scorm, true);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.error', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.error') });
             }
         } finally {
             // Refresh TOC, some prerequisites might have changed.
@@ -540,11 +537,11 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      */
     protected async refreshToc(): Promise<void> {
         try {
-            await CoreUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(this.scorm.id));
+            await CorePromiseUtils.ignoreErrors(AddonModScorm.invalidateAllScormData(this.scorm.id));
 
             await this.fetchToc();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_scorm.errorgetscorm', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_scorm.errorgetscorm') });
         }
     }
 
@@ -561,7 +558,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
         const tracks = [{
             element: 'x.start.time',
-            value: String(CoreTimeUtils.timestamp()),
+            value: String(CoreTime.timestamp()),
         }];
 
         await AddonModScorm.saveTracks(scoId, this.attempt, tracks, this.scorm, this.offline);
@@ -571,7 +568,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
         }
 
         // New online attempt created, update cached data about online attempts.
-        await CoreUtils.ignoreErrors(AddonModScorm.getAttemptCount(this.scorm.id, {
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.getAttemptCount(this.scorm.id, {
             cmId: this.cmId,
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
@@ -581,7 +578,7 @@ export class AddonModScormPlayerPage implements OnInit, OnDestroy {
      * Log event.
      */
     protected async logEvent(scoId: number): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));
+        await CorePromiseUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));
 
         let url = '/mod/scorm/player.php';
         if (this.scorm.popup) {

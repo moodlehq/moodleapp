@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @javascript @lms_upto4.3
+@addon_mod_quiz @app @mod @mod_quiz @javascript @lms_upto4.3
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
@@ -132,7 +132,9 @@ Feature: Attempt a quiz in app
     And I should find "Duration" in the app
     And I should find "Marks" in the app
     And I should find "Grade" in the app
-    And I should find "Question 1" in the app
+
+    When I press "Show all questions on one page" in the app
+    Then I should find "Question 1" in the app
     And I should find "Question 2" in the app
 
   Scenario: Attempt a quiz (all question types)

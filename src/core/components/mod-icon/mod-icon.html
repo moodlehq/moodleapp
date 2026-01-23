@@ -1,3 +1,6 @@
-<img *ngIf="!isLocalUrl()" [url]="iconUrl()" core-external-content alt="" [component]="linkIconWithComponent() ? modname : null"
-    [componentId]="linkIconWithComponent() ? componentId : null" (error)="loadFallbackIcon()">
-<img *ngIf="isLocalUrl()" [src]="iconUrl()" (error)="loadFallbackIcon()" alt="">
+@if (isLocalUrl()) {
+    <img [src]="iconUrl()" (error)="loadFallbackIcon()" alt="" aria-hidden="true">
+} @else {
+    <img [url]="iconUrl()" core-external-content alt="" aria-hidden="true" [component]="linkIconWithComponent() ? computedModName() : null"
+        [componentId]="linkIconWithComponent() ? componentId() : null" (error)="loadFallbackIcon()">
+}

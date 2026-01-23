@@ -22,10 +22,10 @@ import {
     OnInit,
     Output,
     SimpleChange,
-    ViewChild,
+    inject,
+    viewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -45,7 +45,7 @@ import { CoreSync } from '@services/sync';
 import { CoreText } from '@singletons/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreForms } from '@singletons/form';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
@@ -53,11 +53,20 @@ import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussi
 import { CoreDom } from '@singletons/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CorePopovers } from '@services/popovers';
-import { CoreLoadings } from '@services/loadings';
+import { CorePopovers } from '@services/overlays/popovers';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSFile } from '@services/ws';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { AccordionGroupCustomEvent } from '@ionic/angular';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -65,7 +74,14 @@ import { CoreWSFile } from '@services/ws';
 @Component({
     selector: 'addon-mod-forum-post',
     templateUrl: 'post.html',
-    styleUrls: ['post.scss'],
+    styleUrl: 'post.scss',
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+        CoreEditorRichTextEditorComponent,
+    ],
 })
 export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges {
 
@@ -86,7 +102,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Input({ transform: toBoolean }) highlight = false;
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
-    @ViewChild('replyFormEl') formElement!: ElementRef;
+    readonly formElement = viewChild<ElementRef>('replyFormEl');
 
     messageControl = new FormControl<string | null>(null);
 
@@ -98,10 +114,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     optionsMenuEnabled = false;
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
-
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -115,14 +128,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     ngOnInit(): void {
         this.tagsEnabled = CoreTag.areTagsAvailableInSite();
-        this.uniqueId = this.post.id > 0 ? 'reply' + this.post.id : 'edit' + this.post.parentid;
+        this.uniqueId = this.post.id > 0 ? `reply${this.post.id}` : `edit${this.post.parentid}`;
 
+        // This re string is deprecated in Moodle from 5.0 (MDL-83230). This means we're not going to add this string anymore.
+        // In the future we should not check "Re: " or it's translation is included in the subject.
         const reTranslated = Translate.instant('addon.mod_forum.re');
+
         this.displaySubject = !this.parentSubject ||
-            (this.post.subject != this.parentSubject && this.post.subject != `Re: ${this.parentSubject}` &&
-                this.post.subject != `${reTranslated} ${this.parentSubject}`);
-        this.defaultReplySubject = this.post.replysubject || ((this.post.subject.startsWith('Re: ') ||
-            this.post.subject.startsWith(reTranslated)) ? this.post.subject : `${reTranslated} ${this.post.subject}`);
+            (this.post.subject !== this.parentSubject && this.post.subject !== `Re: ${this.parentSubject}` &&
+                this.post.subject !== `${reTranslated} ${this.parentSubject}`);
+
+        this.defaultReplySubject = this.post.subject;
 
         if (this.post.id < 0) {
             this.optionsMenuEnabled = true;
@@ -136,12 +152,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         if (changes.leavingPage && this.leavingPage) {
             // Download all courses is enabled now, initialize it.
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
         }
     }
 
@@ -153,7 +169,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         this.analyticsLogEvent('mod_forum_delete_post', `/mod/forum/post.php?delete=${this.post.id}`);
 
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.mod_forum.deletesure');
+            await CoreAlerts.confirmDelete(Translate.instant('addon.mod_forum.deletesure'));
 
             const modal = await CoreLoadings.show('core.deleting', true);
 
@@ -179,11 +195,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                     translateMessage: true,
                 });
             } catch (error) {
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
             } finally {
                 modal.dismiss();
             }
-        } catch (error) {
+        } catch {
             // Do nothing.
         }
     }
@@ -230,7 +246,6 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         // Show advanced fields if any of them has not the default value.
         this.advanced = this.formData.files.length > 0;
-
         if (!isEditing || !postId || postId <= 0) {
             this.preparePostData = undefined;
         }
@@ -362,7 +377,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.analyticsLogEvent('mod_forum_update_discussion_post', `/mod/forum/post.php?edit=${this.post.id}`);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_forum.errorgetpost', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_forum.errorgetpost') });
         } finally {
             modal.dismiss();
         }
@@ -382,13 +397,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      */
     async send(): Promise<void> {
         if (!this.formData.subject) {
-            CoreDomUtils.showErrorModal('addon.mod_forum.erroremptysubject', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_forum.erroremptysubject'));
 
             return;
         }
 
         if (!this.formData.message) {
-            CoreDomUtils.showErrorModal('addon.mod_forum.erroremptymessage', true);
+            CoreAlerts.showError(Translate.instant('addon.mod_forum.erroremptymessage'));
 
             return;
         }
@@ -475,15 +490,13 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
             this.onPostChange.emit();
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(
-                error,
-                isEditOnline ? 'addon.mod_forum.couldnotupdate' : 'addon.mod_forum.couldnotadd',
-                true,
-            );
+            CoreAlerts.showError(error, {
+                default: Translate.instant(isEditOnline ? 'addon.mod_forum.couldnotupdate' : 'addon.mod_forum.couldnotadd'),
+            });
         } finally {
             modal.dismiss();
         }
@@ -504,7 +517,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         }
 
         // Use prepare post for edition to avoid re-uploading all files.
-        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreUtils.isFileEntry(file));
+        let filesToKeep = files.filter((file): file is CoreWSFile => !CoreFileUtils.isFileEntry(file));
         let removedFiles: { filepath: string; filename: string }[] | undefined;
 
         if (previousAttachments.length && !filesToKeep.length) {
@@ -553,7 +566,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             return { attachments, saveOffline: false };
         } catch (error) {
             // Cannot upload them in online, save them in offline.
-            if (!this.forum.id || CoreUtils.isWebServiceError(error)) {
+            if (!this.forum.id || CoreWSError.isWebServiceError(error)) {
                 // Cannot store them in offline. Reject.
                 throw error;
             }
@@ -574,10 +587,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // Reset data.
             this.setFormData();
 
-            CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -586,20 +599,22 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
      * Discard offline reply.
      */
     async discardOfflineReply(): Promise<void> {
+        if (this.post.parentid === undefined) {
+            return;
+        }
+
         try {
-            await CoreDomUtils.showDeleteConfirm();
+            await CoreAlerts.confirmDelete(Translate.instant('core.areyousure'));
 
             const promises: Promise<void>[] = [];
 
-            promises.push(AddonModForumOffline.deleteReply(this.post.parentid!));
+            promises.push(AddonModForumOffline.deleteReply(this.post.parentid));
 
             if (this.forum.id) {
-                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid!).catch(() => {
-                    // Ignore errors, maybe there are no files.
-                }));
+                promises.push(AddonModForumHelper.deleteReplyStoredFiles(this.forum.id, this.post.parentid));
             }
 
-            await CoreUtils.ignoreErrors(Promise.all(promises));
+            await CorePromiseUtils.allPromisesIgnoringErrors(promises);
 
             // Reset data.
             this.setFormData();
@@ -607,7 +622,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             this.onPostChange.emit();
 
             this.unblockOperation();
-        } catch (error) {
+        } catch {
             // Cancelled.
         }
     }
@@ -620,10 +635,10 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Show or hide advanced form fields.
+     * Function called when advanced accordion is toggled.
      */
-    toggleAdvanced(): void {
-        this.advanced = !this.advanced;
+    onAdvancedChanged(event: AccordionGroupCustomEvent<string>): void {
+        this.advanced = event.detail.value === 'advanced';
     }
 
     /**
@@ -635,13 +650,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Confirm discard changes if any.
-     *
-     * @returns Promise resolved if the user confirms or data was not changed and rejected otherwise.
      */
     protected async confirmDiscard(): Promise<void> {
         if (AddonModForumHelper.hasPostDataChanged(this.formData, this.originalData)) {
             // Show confirmation if some data has been modified.
-            await CoreDomUtils.showConfirm(Translate.instant('core.confirmloss'));
+            await CoreAlerts.confirm(Translate.instant('core.confirmloss'));
         }
 
         this.unblockOperation();
@@ -661,13 +674,11 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Scroll to reply/edit form.
-     *
-     * @returns Promise resolved when done.
      */
     protected async scrollToForm(): Promise<void> {
         await CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
-            '#addon-forum-reply-edit-form-' + this.uniqueId,
+            this.element,
+            `#addon-forum-reply-edit-form-${this.uniqueId}`,
         );
     }
 

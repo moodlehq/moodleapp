@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, model, output, signal } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component that show a combo select button (combobox).
@@ -26,45 +29,55 @@ import { toBoolean } from '@/core/transforms/boolean';
  *
  * Example using modal:
  *
- * <core-combobox interface="modal" (onChange)="selectedChanged($event)" [modalOptions]="modalOptions"
+ * <core-combobox interface="modal" (selectionChange)="selectedChanged($event)" [modalOptions]="modalOptions"
  *      icon="fas-folder" [label]="'core.course.section' | translate">
  *      <span slot="text">selection</span>
  * </core-combobox>
  *
  * Example using popover:
  *
- * <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (onChange)="selectedChanged()">
+ * <core-combobox [label]="'core.show' | translate" [selection]="selectedFilter" (selectionChange)="selectedChanged()">
  *      <ion-select-option value="1">1</ion-select-option>
  * </core-combobox>
  */
 @Component({
     selector: 'core-combobox',
     templateUrl: 'core-combobox.html',
-    styleUrls: ['combobox.scss'],
+    styleUrl: 'combobox.scss',
     providers: [
         {
             provide: NG_VALUE_ACCESSOR,
-            multi:true,
+            multi: true,
             useExisting: CoreComboboxComponent,
         },
+    ],
+    imports: [
+        CoreBaseModule,
+        CoreFaIconDirective,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFormatTextDirective,
     ],
 })
 export class CoreComboboxComponent implements ControlValueAccessor {
 
-    @Input() interface: 'popover' | 'modal' = 'popover';
-    @Input() label = Translate.instant('core.show'); // Aria label.
-    @Input({ transform: toBoolean }) disabled = false;
-    @Input() selection = '';
-    @Output() onChange = new EventEmitter<unknown>(); // Will emit an event the value changed.
+    readonly interface = input<'popover' | 'modal'>('popover');
+    readonly label = input(Translate.instant('core.show')); // Aria label.
+    readonly disabled = model(false);
+    readonly selection = model('');
 
     // Additional options when interface modal is selected.
-    @Input() icon?: string; // Icon for modal interface.
-    @Input() modalOptions?: ModalOptions; // Will emit an event the value changed.
-    @Input() listboxId = '';
+    readonly icon = input<string>(); // Icon for modal interface.
+    readonly modalOptions = input<ModalOptions>(); // Will emit an event the value changed.
+    readonly listboxId = input<string>('');
 
-    expanded = false;
+    /**
+     * @deprecated since 5.1. Use (selectionChange) instead.
+     */
+    readonly onChange = output<unknown>(); // Will emit an event the value changed.
 
-    protected touched = false;
+    readonly expanded = signal(false);
+
+    protected readonly touched = signal(false);
     protected formOnChange?: (value: unknown) => void;
     protected formOnTouched?: () => void;
 
@@ -72,7 +85,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      * @inheritdoc
      */
     writeValue(selection: string): void {
-        this.selection = selection;
+        this.selection.set(selection);
     }
 
     /**
@@ -93,7 +106,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      * @inheritdoc
      */
     setDisabledState(disabled: boolean): void {
-        this.disabled = disabled;
+        this.disabled.set(disabled);
     }
 
     /**
@@ -103,7 +116,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      */
     onValueChanged(selection: unknown): void {
         this.touch();
-        this.onChange.emit(selection);
+        this.onChange.emit(selection); // eslint-disable-line @typescript-eslint/no-deprecated
         this.formOnChange?.(selection);
     }
 
@@ -115,19 +128,21 @@ export class CoreComboboxComponent implements ControlValueAccessor {
     async openModal(): Promise<void> {
         this.touch();
 
-        if (this.expanded || !this.modalOptions) {
+        const modalOptions = this.modalOptions();
+        if (this.expanded() || !modalOptions) {
             return;
         }
-        this.expanded = true;
 
-        if (this.listboxId) {
-            this.modalOptions.id = this.listboxId;
-        }
+        this.expanded.set(true);
 
-        const data = await CoreModals.openModal(this.modalOptions);
-        this.expanded = false;
+        const data = await CoreModals.openModal<string>({
+            ...modalOptions,
+            id: this.listboxId() || modalOptions.id,
+        });
+        this.expanded.set(false);
 
         if (data) {
+            this.selection.set(data);
             this.onValueChanged(data);
         }
     }
@@ -136,11 +151,11 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      * Mark as touched.
      */
     protected touch(): void {
-        if (this.touched) {
+        if (this.touched()) {
             return;
         }
 
-        this.touched = true;
+        this.touched.set(true);
         this.formOnTouched?.();
     }
 

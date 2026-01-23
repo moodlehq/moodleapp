@@ -14,18 +14,20 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { CoreWSError } from '@classes/errors/wserror';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
+import { makeSingleton } from '@singletons';
 import { AddonModSurveyOffline } from './survey-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_SURVEY_COMPONENT } from '../constants';
+import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for surveys.
@@ -51,8 +53,8 @@ export class AddonModSurveyProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getQuestionsCacheKey(surveyId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -72,7 +74,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getQuestionsCacheKey(surveyId: number): string {
-        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'questions:' + surveyId;
+        return `${AddonModSurveyProvider.ROOT_CACHE_KEY}questions:${surveyId}`;
     }
 
     /**
@@ -82,46 +84,7 @@ export class AddonModSurveyProvider {
      * @returns Cache key.
      */
     protected getSurveyCacheKey(courseId: number): string {
-        return AddonModSurveyProvider.ROOT_CACHE_KEY + 'survey:' + courseId;
-    }
-
-    /**
-     * Get a survey data.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the survey is retrieved.
-     */
-    protected async getSurveyDataByKey(
-        courseId: number,
-        key: string,
-        value: number,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModSurveySurvey> {
-        const site = await CoreSites.getSite(options.siteId);
-
-        const params: AddonModSurveyGetSurveysByCoursesWSParams = {
-            courseids: [courseId],
-        };
-
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getSurveyCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_SURVEY_COMPONENT,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-        };
-
-        const response =
-            await site.read<AddonModSurveyGetSurveysByCoursesWSResponse>('mod_survey_get_surveys_by_courses', params, preSets);
-
-        const currentSurvey = response.surveys.find((survey) => survey[key] == value);
-        if (currentSurvey) {
-            return currentSurvey;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return `${AddonModSurveyProvider.ROOT_CACHE_KEY}survey:${courseId}`;
     }
 
     /**
@@ -132,20 +95,24 @@ export class AddonModSurveyProvider {
      * @param options Other options.
      * @returns Promise resolved when the survey is retrieved.
      */
-    getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'coursemodule', cmId, options);
-    }
+    async getSurvey(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
+        const site = await CoreSites.getSite(options.siteId);
 
-    /**
-     * Get a survey by ID.
-     *
-     * @param courseId Course ID.
-     * @param id Survey ID.
-     * @param options Other options.
-     * @returns Promise resolved when the survey is retrieved.
-     */
-    getSurveyById(courseId: number, id: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModSurveySurvey> {
-        return this.getSurveyDataByKey(courseId, 'id', id, options);
+        const params: AddonModSurveyGetSurveysByCoursesWSParams = {
+            courseids: [courseId],
+        };
+
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getSurveyCacheKey(courseId),
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_SURVEY_COMPONENT_LEGACY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+        };
+
+        const response =
+            await site.read<AddonModSurveyGetSurveysByCoursesWSResponse>('mod_survey_get_surveys_by_courses', params, preSets);
+
+        return CoreCourseModuleHelper.getActivityByCmId(response.surveys, cmId);
     }
 
     /**
@@ -154,7 +121,6 @@ export class AddonModSurveyProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID of the module.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -173,9 +139,9 @@ export class AddonModSurveyProvider {
             return;
         }));
 
-        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT, moduleId));
+        promises.push(CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_SURVEY_COMPONENT_LEGACY, moduleId));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -183,7 +149,6 @@ export class AddonModSurveyProvider {
      *
      * @param surveyId Survey ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateQuestions(surveyId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -196,7 +161,6 @@ export class AddonModSurveyProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSurveyData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -219,7 +183,7 @@ export class AddonModSurveyProvider {
         await CoreCourseLogHelper.log(
             'mod_survey_view_survey',
             params,
-            ADDON_MOD_SURVEY_COMPONENT,
+            ADDON_MOD_SURVEY_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -267,7 +231,7 @@ export class AddonModSurveyProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -311,24 +275,13 @@ type AddonModSurveyViewSurveyWSParams = {
 /**
  * Survey returned by WS mod_survey_get_surveys_by_courses.
  */
-export type AddonModSurveySurvey = {
-    id: number; // Survey id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Survey name.
-    intro?: string; // The Survey intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModSurveySurvey = CoreCourseModuleStandardElements & {
     template?: number; // Survey type.
     days?: number; // Days.
     questions?: string; // Question ids.
     surveydone?: number; // Did I finish the survey?.
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
-    section?: number; // Course section id.
-    visible?: number; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**
@@ -338,10 +291,10 @@ export type AddonModSurveyQuestion = {
     id: number; // Question id.
     text: string; // Question text.
     shorttext: string; // Question short text.
-    multi: string; // Subquestions ids.
+    multi: string | null; // Subquestions ids.
     intro: string; // The question intro.
     type: number; // Question type.
-    options: string; // Question options.
+    options: string | null; // Question options.
     parent: number; // Parent question (for subquestions).
 };
 

@@ -2,6 +2,8 @@ ion-action-sheet {
     --button-color: var(--ion-text-color);
     --button-color-selected: var(--ion-text-color);
 
+    @include core-focus-inset-outline();
+
     .action-sheet-title {
         --color: var(--ion-text-color);
         font-weight: bold;
@@ -33,6 +35,11 @@ ion-action-sheet {
             box-shadow: var(--drop-shadow-top, none);
         }
     }
+
+    // We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
+    &[class] {
+        touch-action: pinch-zoom;
+    }
 }
 
 // File uploader.
@@ -46,4 +53,11 @@ ion-action-sheet {
     opacity: 0;
     z-index: 100;
     cursor: pointer;
+}
+
+// We need [class] to increase the specificity. See: https://ionicframework.com/docs/api/action-sheet#theming
+.action-sheet-button.select-interface-option[class] {
+    &, &.ion-focused, &.ion-activated {
+        color: var(--text-color);
+    }
 }

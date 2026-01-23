@@ -15,14 +15,19 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreMainMenuHandler, CoreMainMenuHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
-import { AddonNotifications, AddonNotificationsProvider } from '../notifications';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
+import { AddonNotifications } from '../notifications';
+import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
+import {
+    ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
+    ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
+    ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
+} from '@addons/notifications/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -30,15 +35,13 @@ import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHandler {
 
-    static readonly PAGE_NAME = 'notifications';
-
     name = 'AddonNotifications';
     priority = 600;
 
     protected handlerData: CoreMainMenuHandlerData = {
         icon: 'notifications-outline',  // Changed for Aspire School - more modern icon
         title: 'addon.notifications.notifications',
-        page: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
+        page: ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
         class: 'addon-notifications-handler',
         showBadge: true,
         badge: '',
@@ -50,11 +53,11 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
      * Initialize the handler.
      */
     initialize(): void {
-        CoreEvents.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
+        CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, (data) => {
             this.updateBadge(data.siteId);
         });
 
-        CoreEvents.on(AddonNotificationsProvider.READ_CRON_EVENT, (data) => {
+        CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, (data) => {
             this.updateBadge(data.siteId);
         });
 
@@ -120,7 +123,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
             CorePushNotifications.updateAddonCounter(AddonNotificationsMainMenuHandlerService.name, unreadCountData.count, siteId);
 
             CoreEvents.trigger(
-                CoreMainMenuProvider.MAIN_MENU_HANDLER_BADGE_UPDATED,
+                MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
                 {
                     handler: AddonNotificationsMainMenuHandlerService.name,
                     value: unreadCountData.count,

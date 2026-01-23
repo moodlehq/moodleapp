@@ -30,8 +30,21 @@ ion-modal {
         }
     }
 
-    &.modal-sheet::part(handle) {
-        background: var(--core-header-buttons-color);
+    &.core-bootstrap-modal {
+        --height: auto;
+        --background: transparent;
+        --max-height: 100%;
+        --overflow: scroll;
+    }
+
+    &.modal-sheet {
+        .ion-page {
+            --ion-safe-area-top: 0px;
+            padding-bottom: var(--ion-safe-area-bottom);
+        }
+        &::part(handle) {
+            background: var(--core-header-buttons-color);
+        }
     }
 
     &.core-modal-fullscreen::part(content) {
@@ -75,7 +88,11 @@ ion-modal {
 
     &.core-modal-lateral {
         --ion-safe-area-left: 0px;
-        --ion-safe-area-right: 0px;
+        --ion-safe-area-right: var(--root-safe-area-right, 0px);
+        @include rtl() {
+            --ion-safe-area-right: 0px;
+            --ion-safe-area-left: var(--root-safe-area-left, 0px);
+        }
 
         --height: 100% !important;
         --width: calc(100% - var(--modal-lateral-margin));
@@ -121,5 +138,21 @@ ion-modal {
             height: 100%;
             justify-content: space-between;
         }
+    }
+
+    &.core-modal-auto-height {
+        --height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+
+        .content-auto-height {
+            max-height: 80vh;
+            overflow: auto;
+        }
+    }
+
+    &::part(backdrop) {
+        touch-action: pinch-zoom;
     }
 }

@@ -15,11 +15,15 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilder';
+import { CoreSharedModule } from '@/core/shared.module';
 
 @Component({
     selector: 'core-report-builder-report-column',
     templateUrl: './report-column.html',
-    styleUrls: ['./report-column.scss'],
+    styleUrl: './report-column.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreReportBuilderReportColumnComponent {
 

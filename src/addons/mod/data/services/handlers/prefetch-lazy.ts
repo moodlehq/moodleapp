@@ -19,14 +19,16 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreObject } from '@singletons/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
 import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
 import { ContextLevel } from '@/core/constants';
 import { AddonModDataPrefetchHandlerService } from '@addons/mod/data/services/handlers/prefetch';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { ADDON_MOD_DATA_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch databases.
@@ -62,7 +64,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
             });
         });
 
-        return CoreUtils.objectToArray(uniqueEntries);
+        return CoreObject.toArray(uniqueEntries);
     }
 
     /**
@@ -132,7 +134,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         let files: CoreWSFile[] = [];
 
         entries.forEach((entry) => {
-            CoreUtils.objectToArray(entry.contents).forEach((content) => {
+            CoreObject.toArray(entry.contents).forEach((content) => {
                 files = files.concat(<CoreWSFile[]>content.files);
             });
         });
@@ -151,7 +153,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const data = await CoreUtils.ignoreErrors(AddonModData.getDatabase(courseId, module.id));
+        const data = await CorePromiseUtils.ignoreErrors(AddonModData.getDatabase(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, data);
     }
@@ -185,7 +187,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         const accessData = await AddonModData.getDatabaseAccessInformation(database.id, { cmId: module.id });
         // Check if database is restricted by time.
         if (!accessData.timeavailable) {
-            const time = CoreTimeUtils.timestamp();
+            const time = CoreTime.timestamp();
 
             // It is restricted, checking times.
             if (database.timeavailablefrom && time < database.timeavailablefrom) {
@@ -257,10 +259,10 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         });
 
         // Add Basic Info to manage links.
-        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, 'data', { siteId }));
+        promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, ADDON_MOD_DATA_MODNAME, { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }

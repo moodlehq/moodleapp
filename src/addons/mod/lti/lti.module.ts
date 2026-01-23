@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -27,8 +27,8 @@ import { ADDON_MOD_LTI_PAGE_NAME } from './constants';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_LTI_PAGE_NAME,
-        loadChildren: () => import('./lti-lazy.module'),
+        path: `${ADDON_MOD_LTI_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 
@@ -37,18 +37,14 @@ const routes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(routes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModLtiModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLtiIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModLtiListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModLtiPrefetchHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModLtiModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLtiIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModLtiListLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModLtiPrefetchHandler.instance);
 
-                AddonModLtiHelper.watchPendingCompletions();
-            },
-        },
+            AddonModLtiHelper.watchPendingCompletions();
+        }),
     ],
 })
 export class AddonModLtiModule {}

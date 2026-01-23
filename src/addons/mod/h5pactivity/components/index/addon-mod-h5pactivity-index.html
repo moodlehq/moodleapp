@@ -1,22 +1,25 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     <core-context-menu>
-        <core-context-menu-item *ngIf="h5pActivity && h5pActivity.enabletracking && accessInfo && !accessInfo.canreviewattempts"
-            [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate" (action)="viewMyAttempts()"
-            iconAction="fas-chart-bar" />
-        <core-context-menu-item *ngIf="canViewAllAttempts" [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate"
-            (action)="viewAllAttempts()" iconAction="fas-chart-bar" />
+        @if (h5pActivity && h5pActivity.enabletracking && accessInfo && !accessInfo.canreviewattempts) {
+            <core-context-menu-item [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate"
+                (action)="viewMyAttempts()" iconAction="fas-chart-bar" />
+        }
+        @if (canViewAllAttempts) {
+            <core-context-menu-item [priority]="1000" [content]="'addon.mod_h5pactivity.attempts_report' | translate"
+                (action)="viewAllAttempts()" iconAction="fas-chart-bar" />
+        }
 
         @if (courseContentsPage) {
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
         }
     </core-context-menu>
 
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     }
 </core-navbar-buttons>
 
@@ -27,49 +30,73 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
-    <!-- Offline disabled. -->
-    <ion-card class="core-warning-card" *ngIf="!siteCanDownload && playing">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label>
-                {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
-            </ion-label>
-        </ion-item>
-    </ion-card>
+    <!-- User tried to play in offline a package that must be played in online. -->
+    @if (triedToPlay && !isOnline() && (!siteCanDownload || hasMissingDependencies)) {
+        <ion-card class="core-warning-card">
+            <ion-item>
+                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                <ion-label>
+                    @if (!siteCanDownload) {
+                        {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
+                    } @else {
+                        {{ 'core.course.activitynotavailableoffline' | translate }} {{ 'core.needinternettoaccessit' | translate }}
+                    }
+                </ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
     <!-- Preview mode. -->
-    <ion-card class="core-warning-card" *ngIf="accessInfo && !trackComponent">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label>
-                {{ 'addon.mod_h5pactivity.previewmode' | translate }}
-            </ion-label>
-        </ion-item>
-    </ion-card>
+    @if (accessInfo && !accessInfo.cansubmit) {
+        <ion-card class="core-info-card">
+            <ion-item>
+                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                <ion-label>
+                    {{ 'addon.mod_h5pactivity.previewmode' | translate }}
+                </ion-label>
+            </ion-item>
+        </ion-card>
+    }
 
-    <ion-list *ngIf="deployedFile && !playing">
-        <ion-item class="ion-text-wrap" *ngIf="stateMessage">
-            <ion-label>{{ stateMessage | translate }}</ion-label>
-        </ion-item>
+    <!-- TODO: Once MDL-85566 is fixed, display trackingdisabled warning if user cannot submit and tracking is disabled. -->
 
-        <!-- Button to download the package. -->
-        <ion-button *ngIf="!downloading && needsDownload" class="ion-text-wrap ion-margin" expand="block" (click)="downloadAndPlay($event)">
-            {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
-        </ion-button>
+    @if (deployedFile && !playing) {
+        <ion-list>
+            @if (stateMessage) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>{{ stateMessage | translate }}</ion-label>
+                </ion-item>
+            }
 
-        <!-- Download progress. -->
-        <ion-item class="ion-text-center" *ngIf="downloading">
-            <ion-label>
-                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                <p class="item-heading" *ngIf="progressMessage">{{ progressMessage | translate }}</p>
-                <core-progress-bar *ngIf="showPercentage" [progress]="percentage" [a11yText]="progressMessage" />
-            </ion-label>
-        </ion-item>
-    </ion-list>
+            <!-- Button to download the package. -->
+            @if (!downloading && needsDownload) {
+                <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="downloadAndPlayManually($event)">
+                    {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
+                </ion-button>
+            }
 
-    <core-h5p-iframe *ngIf="playing" [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
-        [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
-        [state]="contentState" />
+            <!-- Download progress. -->
+            @if (downloading) {
+                <ion-item class="ion-text-center">
+                    <ion-label>
+                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                        @if (progressMessage) {
+                            <p class="item-heading">{{ progressMessage | translate }}</p>
+                        }
+                        @if (showPercentage) {
+                            <core-progress-bar [progress]="percentage" [a11yText]="progressMessage" />
+                        }
+                    </ion-label>
+                </ion-item>
+            }
+        </ion-list>
+    }
+
+    @if (playing) {
+        <core-h5p-iframe [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
+            [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
+            [state]="contentState" [component]="component" [componentId]="componentId" [fileTimemodified]="deployedFile?.timemodified" />
+    }
 </core-loading>
 
 <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />

@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild, ChangeDetectorRef, OnInit, Type } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, OnInit, Type, inject, viewChild } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
-import { CoreCourse } from '@features/course/services/course';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { AddonModDataComponentsCompileModule } from '../../components/components-compile.module';
+
 import {
     AddonModData,
     AddonModDataData,
@@ -37,12 +36,19 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays the view entry page.
@@ -50,14 +56,21 @@ import {
 @Component({
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+    ],
 })
-export class AddonModDataEntryPage implements OnInit, OnDestroy {
+export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
-    @ViewChild(IonContent) content?: IonContent;
-    @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
+    readonly content = viewChild.required(IonContent);
+    readonly comments = viewChild(CoreCommentsCommentsComponent);
 
-    protected entryId?: number;
+    protected entryId = 0;
     protected syncObserver: CoreEventObserver; // It will observe the sync auto event.
     protected entryChangedObserver: CoreEventObserver; // It will observe the changed entry event.
     protected fields: Record<number, AddonModDataField> = {};
@@ -65,13 +78,14 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     protected sortBy = 0;
     protected sortDirection = 'DESC';
     protected logView: () => void;
+    private cdr = inject(ChangeDetectorRef);
 
     moduleId = 0;
     courseId!: number;
     offset?: number;
     title = '';
     moduleName = 'data';
-    component = ADDON_MOD_DATA_COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
     entryLoaded = false;
     renderingEntry = false;
     loadingComments = false;
@@ -86,7 +100,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     showComments = false;
     entryHtml = '';
     siteId: string;
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
     jsData?: {
         fields: Record<number, AddonModDataField>;
         entries: Record<number, AddonModDataEntry>;
@@ -100,10 +114,8 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
     isPullingToRefresh = false; // Whether the last fetching of data was started by a pull-to-refresh action
     commentsEnabled = false;
 
-    constructor(
-        private cdr: ChangeDetectorRef,
-    ) {
-        this.moduleName = CoreCourse.translateModuleName('data');
+    constructor() {
+        this.moduleName = CoreCourseModuleHelper.translateModuleName('data');
         this.siteId = CoreSites.getCurrentSiteId();
 
         // Refresh data if this discussion is synchronized automatically.
@@ -112,7 +124,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 return;
             }
 
-            if ((data.entryId == this.entryId || data.offlineEntryId == this.entryId) && this.database?.id == data.dataId) {
+            if ((data.entryId === this.entryId || data.offlineEntryId === this.entryId) && this.database?.id === data.dataId) {
                 if (data.deleted) {
                     // If deleted, go back.
                     CoreNavigator.back();
@@ -126,7 +138,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         // Refresh entry on change.
         this.entryChangedObserver = CoreEvents.on(ADDON_MOD_DATA_ENTRY_CHANGED, (data) => {
-            if (data.entryId == this.entryId && this.database?.id == data.dataId) {
+            if (data.entryId === this.entryId && this.database?.id === data.dataId) {
                 if (data.deleted) {
                     // If deleted, go back.
                     CoreNavigator.back();
@@ -147,7 +159,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         try {
             this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
-            this.entryId = CoreNavigator.getRouteNumberParam('entryId') || undefined;
+            this.entryId = CoreNavigator.getRequiredRouteNumberParam('entryId');
             this.title = CoreNavigator.getRouteParam<string>('title') || '';
             this.selectedGroup = CoreNavigator.getRouteNumberParam('group') || 0;
             this.offset = CoreNavigator.getRouteNumberParam('offset');
@@ -155,12 +167,13 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             const sortBy = Number(CoreNavigator.getRouteParam('sortBy'));
             this.sortBy = isNaN(sortBy) ? this.sortBy : sortBy;
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
         }
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.commentsEnabled = CoreComments.areCommentsEnabledInSite();
 
@@ -182,7 +195,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.title = this.database.name || this.title;
 
             this.fieldsArray = await AddonModData.getFields(this.database.id, { cmId: this.moduleId });
-            this.fields = CoreUtils.arrayToObject(this.fieldsArray, 'id');
+            this.fields = CoreArray.toObject(this.fieldsArray, 'id');
 
             await this.setEntryFromOffset();
 
@@ -216,7 +229,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             this.showComments = actions.comments;
 
             const entries: Record<number, AddonModDataEntry> = {};
-            entries[this.entryId!] = this.entry!;
+            entries[this.entryId] = this.entry!;
 
             // Pass the input data to the component.
             this.jsData = {
@@ -235,9 +248,9 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
                 return this.refreshAllData(isPtr);
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
-            this.content?.scrollToTop();
+            this.content().scrollToTop();
             this.entryLoaded = true;
         }
     }
@@ -250,7 +263,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      */
     async gotoEntry(offset: number): Promise<void> {
         this.offset = offset;
-        this.entryId = undefined;
+        this.entryId = 0;
         this.entry = undefined;
         this.entryLoaded = false;
         this.logView = CoreTime.once(() => this.performLogView()); // Log again after loading data.
@@ -269,14 +282,15 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
 
         promises.push(AddonModData.invalidateDatabaseData(this.courseId));
         if (this.database) {
-            promises.push(AddonModData.invalidateEntryData(this.database.id, this.entryId!));
+            promises.push(AddonModData.invalidateEntryData(this.database.id, this.entryId));
             promises.push(CoreGroups.invalidateActivityGroupInfo(this.database.coursemodule));
             promises.push(AddonModData.invalidateEntriesData(this.database.id));
             promises.push(AddonModData.invalidateFieldsData(this.database.id));
 
-            if (this.database.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && this.comments) {
+            const comments = this.comments();
+            if (this.database.comments && this.entry && this.entry.id > 0 && this.commentsEnabled && comments) {
                 // Refresh comments. Don't add it to promises because we don't want the comments fetch to block the entry fetch.
-                this.comments.doRefresh().catch(() => {
+                comments.doRefresh().catch(() => {
                     // Ignore errors.
                 });
             }
@@ -311,7 +325,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
         this.selectedGroup = groupId;
         this.offset = undefined;
         this.entry = undefined;
-        this.entryId = undefined;
+        this.entryId = 0;
         this.entryLoaded = false;
 
         await this.fetchEntryData();
@@ -323,7 +337,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * @returns Resolved when done.
      */
     protected async setEntryFromOffset(): Promise<void> {
-        if (this.offset === undefined && this.entryId !== undefined) {
+        if (this.offset === undefined && this.entryId !== 0) {
             // Entry id passed as navigation parameter instead of the offset.
             // We don't display next/previous buttons in this case.
             this.hasNext = false;
@@ -421,7 +435,7 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
      * Function called when rating is updated online.
      */
     ratingUpdated(): void {
-        AddonModData.invalidateEntryData(this.database!.id, this.entryId!);
+        AddonModData.invalidateEntryData(this.database!.id, this.entryId);
     }
 
     /**
@@ -432,10 +446,10 @@ export class AddonModDataEntryPage implements OnInit, OnDestroy {
             return;
         }
 
-        await CoreUtils.ignoreErrors(AddonModData.logView(this.database.id));
+        await CorePromiseUtils.ignoreErrors(AddonModData.logView(this.database.id));
 
         // Store module viewed because this page also updates recent accessed items block.
-        CoreCourse.storeModuleViewed(this.courseId, this.moduleId);
+        CoreCourseModuleHelper.storeModuleViewed(this.courseId, this.moduleId);
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.VIEW_ITEM,

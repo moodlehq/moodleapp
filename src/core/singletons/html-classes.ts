@@ -29,6 +29,11 @@ export class CoreHTMLClasses {
     protected static readonly MOODLEAPP_VERSION_PREFIX = 'moodleapp-';
     protected static readonly MOODLE_SITE_THEME_PREFIX = 'theme-site-';
 
+    // Avoid creating singleton instances.
+    private constructor() {
+        // Nothing to do.
+    }
+
     /**
      * Initialize HTML classes.
      */
@@ -37,7 +42,7 @@ export class CoreHTMLClasses {
         CoreHTMLClasses.toggleModeClass('development', CoreConstants.BUILD.isDevelopment);
         CoreHTMLClasses.addVersionClass(
             CoreHTMLClasses.MOODLEAPP_VERSION_PREFIX,
-            CoreConstants.CONFIG.versionname.replace('-dev', ''),
+            CoreConstants.CONFIG.versionname,
         );
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -75,8 +80,8 @@ export class CoreHTMLClasses {
         parts[2] = parts[2] || '0';
 
         CoreHTMLClasses.toggleModeClass(prefix + parts[0], true);
-        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1], true);
-        CoreHTMLClasses.toggleModeClass(prefix + parts[0] + '-' + parts[1] + '-' + parts[2], true);
+        CoreHTMLClasses.toggleModeClass(`${prefix + parts[0]  }-${parts[1]}`, true);
+        CoreHTMLClasses.toggleModeClass(`${prefix + parts[0]  }-${parts[1]}-${parts[2]}`, true);
     }
 
     /**
@@ -84,7 +89,7 @@ export class CoreHTMLClasses {
      *
      * @param prefixes Prefixes of the class mode to be removed.
      */
-    protected static removeModeClasses(prefixes: string[]): void {
+    static removeModeClasses(prefixes: string[]): void {
         for (const modeClass of CoreHTMLClasses.getModeClasses()) {
             if (!prefixes.some((prefix) => modeClass.startsWith(prefix))) {
                 continue;
@@ -101,10 +106,10 @@ export class CoreHTMLClasses {
      */
     static addSiteClasses(siteInfo: CoreSiteInfo | CoreSiteInfoResponse): void {
         // Add version classes to html tag.
-        this.removeSiteClasses();
+        CoreHTMLClasses.removeSiteClasses();
 
-        this.addVersionClass(CoreHTMLClasses.MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(siteInfo.release || ''));
-        this.addSiteUrlClass(siteInfo.siteurl);
+        CoreHTMLClasses.addVersionClass(CoreHTMLClasses.MOODLE_VERSION_PREFIX, CoreSites.getReleaseNumber(siteInfo.release || ''));
+        CoreHTMLClasses.addSiteUrlClass(siteInfo.siteurl);
 
         if (siteInfo.theme) {
             CoreHTMLClasses.toggleModeClass(CoreHTMLClasses.MOODLE_SITE_THEME_PREFIX + siteInfo.theme, true);
@@ -116,7 +121,7 @@ export class CoreHTMLClasses {
      */
     static removeSiteClasses(): void {
         // Remove version classes from html tag.
-        this.removeModeClasses(
+        CoreHTMLClasses.removeModeClasses(
             [
                 CoreHTMLClasses.MOODLE_VERSION_PREFIX,
                 CoreHTMLClasses.MOODLE_SITE_URL_PREFIX,
@@ -150,7 +155,7 @@ export class CoreHTMLClasses {
             const trailing = new RegExp('/+$');
             const path = parsedUrl.path.replace(leading, '').replace(trailing, '');
             if (path) {
-                className += '--' + path.replace(/\//g, '-') || '';
+                className += `--${path.replace(/\//g, '-')}`;
             }
         }
 
@@ -161,7 +166,7 @@ export class CoreHTMLClasses {
      * Convenience function to add site url to html classes.
      */
     static addSiteUrlClass(siteUrl: string): void {
-        const className = this.urlToClassName(siteUrl);
+        const className = CoreHTMLClasses.urlToClassName(siteUrl);
 
         CoreHTMLClasses.toggleModeClass(CoreHTMLClasses.MOODLE_SITE_URL_PREFIX + className, true);
     }

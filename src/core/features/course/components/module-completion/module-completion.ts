@@ -15,15 +15,14 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
-import {
-    CoreCourseModuleCompletionStatus,
-} from '@features/course/services/course';
-import { CorePopovers } from '@services/popovers';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
+import { CorePopovers } from '@services/overlays/popovers';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUser } from '@features/user/services/user';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to handle activity completion. It shows a checkbox with the current status, and allows manually changing
@@ -37,7 +36,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
-    styleUrls: ['module-completion.scss'],
+    styleUrl: 'module-completion.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreCourseModuleCompletionComponent
     extends CoreCourseModuleCompletionBaseComponent
@@ -59,8 +61,7 @@ export class CoreCourseModuleCompletionComponent
             return;
         }
 
-        const hasConditions = !this.completion.isautomatic || (this.completion.details?.length || 0) > 0;
-        this.showCompletionInfo = hasConditions && (this.showCompletionConditions || this.showManualCompletion);
+        this.showCompletionInfo = this.showCompletionConditions || this.showManualCompletion;
         if (!this.showCompletionInfo) {
             return;
         }
@@ -103,10 +104,10 @@ export class CoreCourseModuleCompletionComponent
                     },
                 };
                 const setByLangKey = this.completion.state ? 'completion_setby:manual:done' : 'completion_setby:manual:markdone';
-                this.accessibleDescription = Translate.instant('core.course.' + setByLangKey, setByData);
+                this.accessibleDescription = Translate.instant(`core.course.${setByLangKey}`, setByData);
             } else {
                 const langKey = this.completion.state ? 'completion_manual:aria:done' : 'completion_manual:aria:markdone';
-                this.accessibleDescription = Translate.instant('core.course.' + langKey, { $a: this.moduleName });
+                this.accessibleDescription = Translate.instant(`core.course.${langKey}`, { $a: this.moduleName });
             }
         }
     }

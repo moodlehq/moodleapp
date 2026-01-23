@@ -20,7 +20,7 @@ import { AddonQtypeDdMarkerQuestion } from './ddmarker';
  */
 export class AddonQtypeDdMarkerGraphicsApi {
 
-    protected readonly NS = 'http://www.w3.org/2000/svg';
+    protected static readonly NS = 'http://www.w3.org/2000/svg';
     protected dropZone?: SVGSVGElement;
 
     constructor(protected instance: AddonQtypeDdMarkerQuestion) { }
@@ -33,7 +33,7 @@ export class AddonQtypeDdMarkerGraphicsApi {
      * @returns The new shape.
      */
     addShape(shapeAttribs: {type: string; color: string}, styles: {[name: string]: number | string}): SVGElement {
-        const shape = document.createElementNS(this.NS, shapeAttribs.type);
+        const shape = document.createElementNS(AddonQtypeDdMarkerGraphicsApi.NS, shapeAttribs.type);
         shape.setAttribute('fill', shapeAttribs.color);
         shape.setAttribute('fill-opacity', '0.5');
         shape.setAttribute('stroke', 'black');
@@ -61,18 +61,18 @@ export class AddonQtypeDdMarkerGraphicsApi {
 
         const position = CoreDom.getRelativeElementPosition(bgImg, ddArea);
 
-        dropZones.style.left = position.x + 'px';
-        dropZones.style.top = position.y + 'px';
-        dropZones.style.width = bgImg.width + 'px';
-        dropZones.style.height = bgImg.height + 'px';
+        dropZones.style.left = `${position.x}px`;
+        dropZones.style.top = `${position.y}px`;
+        dropZones.style.width = `${bgImg.width}px`;
+        dropZones.style.height = `${bgImg.height}px`;
 
-        markerTexts.style.left = position.x + 'px';
-        markerTexts.style.top = position.y + 'px';
-        markerTexts.style.width = bgImg.width + 'px';
-        markerTexts.style.height = bgImg.height + 'px';
+        markerTexts.style.left = `${position.x}px`;
+        markerTexts.style.top = `${position.y}px`;
+        markerTexts.style.width = `${bgImg.width}px`;
+        markerTexts.style.height = `${bgImg.height}px`;
 
         if (!this.dropZone) {
-            this.dropZone = <SVGSVGElement> document.createElementNS(this.NS, 'svg');
+            this.dropZone = <SVGSVGElement> document.createElementNS(AddonQtypeDdMarkerGraphicsApi.NS, 'svg');
             dropZones.appendChild(this.dropZone);
         } else {
             // Remove all children.
@@ -81,8 +81,8 @@ export class AddonQtypeDdMarkerGraphicsApi {
             }
         }
 
-        this.dropZone.style.width = bgImg.width + 'px';
-        this.dropZone.style.height = bgImg.height + 'px';
+        this.dropZone.style.width = `${bgImg.width}px`;
+        this.dropZone.style.height = `${bgImg.height}px`;
 
         this.instance.shapes = [];
     }

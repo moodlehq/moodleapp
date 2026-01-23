@@ -25,122 +25,125 @@
 
     <core-loading [hideUntil]="loaded()">
         @if (showMyEntriesToggle) {
-        <ion-item class="ion-text-wrap">
-            <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">
-                {{ 'addon.blog.showonlyyourentries' | translate }}
-            </ion-toggle>
-        </ion-item>
+            <ion-item class="ion-text-wrap">
+                <ion-toggle [(ngModel)]="onlyMyEntries" (ionChange)="onlyMyEntriesToggleChanged(onlyMyEntries)">
+                    {{ 'addon.blog.showonlyyourentries' | translate }}
+                </ion-toggle>
+            </ion-item>
         }
 
         @if (hasOfflineDataToSync()) {
-        <ion-card class="core-warning-card">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'core.hasdatatosync' | translate:{ $a: 'addon.blog.blog' | translate } }}</ion-label>
-            </ion-item>
-        </ion-card>
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.hasdatatosync' | translate:{ $a: 'addon.blog.blog' | translate } }}</ion-label>
+                </ion-item>
+            </ion-card>
         }
 
         @for (entry of entries; track getEntryTemplateId(entry)) {
-        <div class="entry ion-padding-start ion-padding-top ion-padding-end" [id]="getEntryTemplateId(entry)">
-            <div class="entry-subject flex ion-text-wrap ion-justify-content-between ion-align-items-center">
-                <h3>
-                    <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
-                        [courseId]="entry.courseid" />
-                    @if (entry.userid === currentUserId && entry.publishTranslated === 'publishtonoone') {
-                    <span class="entry-draft">
-                        <ion-badge color="warning"> {{ 'addon.blog.publishtonoone' | translate }} </ion-badge>
-                    </span>
+            <div class="entry ion-padding-start ion-padding-top ion-padding-end" [id]="getEntryTemplateId(entry)">
+                <div class="entry-subject flex ion-text-wrap ion-justify-content-between ion-align-items-center">
+                    <h3>
+                        <core-format-text [text]="entry.subject" [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId"
+                            [courseId]="entry.courseid" [sanitize]="entryHasOfflineData(entry)" />
+                        @if (entry.userid === currentUserId && entry.publishTranslated === 'publishtonoone') {
+                            <span class="entry-draft">
+                                <ion-badge color="warning"> {{ 'addon.blog.publishtonoone' | translate }} </ion-badge>
+                            </span>
+                        }
+
+                        @if (entryHasOfflineData(entry)) {
+                            <span class="entry-draft">
+                                <ion-badge color="light">
+                                    <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
+                                    {{ 'core.notsent' | translate }}
+                                </ion-badge>
+                            </span>
+                        }
+                    </h3>
+
+                    @if (entry.userid === currentUserId && optionsAvailable && !entry.deleted) {
+                        <ion-button fill="clear" [ariaLabel]="'core.displayoptions' | translate"
+                            (click)="showEntryActionsPopover($event, entry)" class="entry-options">
+                            <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
+                        </ion-button>
                     }
 
-                    @if (!getEntryId(entry) || entry.updatedOffline) {
-                    <span class="entry-draft">
-                        <ion-badge color="light">
-                            <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
-                            {{ 'core.notsent' | translate }}
-                        </ion-badge>
-                    </span>
+                    @if (entry.deleted) {
+                        <ion-button slot="end" fill="clear" color="danger" (click)="undoDelete(entry)"
+                            [ariaLabel]="'core.restore' | translate">
+                            <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
                     }
-                </h3>
-
-                @if (entry.userid === currentUserId && optionsAvailable && !entry.deleted) {
-                <ion-button fill="clear" [ariaLabel]="'core.displayoptions' | translate" (click)="showEntryActionsPopover($event, entry)"
-                    class="entry-options">
-                    <ion-icon slot="icon-only" aria-hidden="true" name="ellipsis-vertical" />
-                </ion-button>
-                }
-
-                @if (entry.deleted) {
-                <ion-button slot="end" fill="clear" color="danger" (click)="undoDelete(entry)" [ariaLabel]="'core.restore' | translate">
-                    <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-                }
-            </div>
-
-            <div class="entry-creation-info flex ion-align-items-center">
-                <div class="entry-avatar">
-                    <core-user-avatar [user]="entry.user" [courseId]="entry.courseid" />
                 </div>
 
-                @if (entry.user?.fullname && entry.created) {
-                <span [innerHTML]="'core.bynameondate' | translate: {
+                <div class="entry-creation-info flex ion-align-items-center">
+                    <div class="entry-avatar">
+                        <core-user-avatar [user]="entry.user" [courseId]="entry.courseid" />
+                    </div>
+
+                    @if (entry.user?.fullname && entry.created) {
+                        <span [innerHTML]="'core.bynameondate' | translate: {
                     '$a': { name: '<strong>' + entry.user?.fullname + '</strong>', date: (entry.created | coreDateDayOrTime) }
                 }"></span>
-                } @else if (!entry.user?.fullname && entry.created) {
-                <span>{{ entry.created | coreDateDayOrTime }}</span>
-                }
-            </div>
-
-            <div class="entry-summary" [collapsible-item]="64">
-                <div class="ion-margin-bottom">
-                    <core-format-text [text]="entry.summary" [component]="component" [componentId]="getEntryId(entry)"
-                        [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid" />
+                    } @else if (!entry.user?.fullname && entry.created) {
+                        <span>{{ entry.created | coreDateDayOrTime }}</span>
+                    }
                 </div>
 
-                @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
-                <ion-item class="ion-text-wrap" lines="none">
-                    <ion-label>
-                        <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
-                        <core-tag-list [tags]="entry.tags" />
-                    </ion-label>
-                </ion-item>
+                <div class="entry-summary" [collapsible-item]="64">
+                    <div class="ion-margin-bottom">
+                        <core-format-text [text]="entry.summary" [component]="component" [componentId]="getEntryId(entry)"
+                            [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="entry.courseid"
+                            [sanitize]="entryHasOfflineData(entry)" />
+                    </div>
+
+                    @if (tagsEnabled && entry.tags && entry.tags!.length > 0) {
+                        <ion-item class="ion-text-wrap" lines="none">
+                            <ion-label>
+                                <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                                <core-tag-list [tags]="entry.tags" />
+                            </ion-label>
+                        </ion-item>
+                    }
+
+                    <core-files [files]="entry.attachmentfiles" [component]="component"
+                        [componentId]="getEntryId(entry) ?? entry.created" />
+
+                    @if (entry.uniquehash) {
+                        <ion-item [href]="entry.uniquehash" core-link [detail]="true" lines="none">
+                            <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
+                        </ion-item>
+                    }
+                </div>
+
+                @if (entry.lastmodified > entry.created || (entry.userid === currentUserId && entry.publishstate !== 'draft')) {
+                    <ion-item class="entry-last-modification" lines="none">
+                        @if (entry.lastmodified > entry.created) {
+                            <ion-note class="flex ion-align-items-center" slot="start">
+                                <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
+                                {{ entry.lastmodified | coreTimeAgo }}
+                            </ion-note>
+                        }
+
+                        @if (entry.userid === currentUserId && entry.publishstate !== 'draft') {
+                            <ion-badge class="entry-visibility-permission" color="success" slot="end">
+                                <ion-icon name="fas-eye" />
+                                {{ 'addon.blog.' + entry.publishTranslated | translate }}
+                            </ion-badge>
+                        }
+                    </ion-item>
                 }
 
-                <core-files [files]="entry.attachmentfiles" [component]="component" [componentId]="getEntryId(entry) ?? entry.created" />
-
-                @if (entry.uniquehash) {
-                <ion-item [href]="entry.uniquehash" core-link [detail]="true" lines="none">
-                    <ion-label>{{ 'addon.blog.linktooriginalentry' | translate }}</ion-label>
-                </ion-item>
+                @if (getEntryId(entry) && commentsEnabled) {
+                    <core-comments [component]="this.component" [itemId]="getEntryId(entry)" area="format_blog" [instanceId]="entry.userid"
+                        contextLevel="user" [showItem]="true" [courseId]="entry.courseid" [title]="entry.subject" />
                 }
+
             </div>
-
-            @if (entry.lastmodified > entry.created || (entry.userid === currentUserId && entry.publishstate !== 'draft')) {
-            <ion-item class="entry-last-modification" lines="none">
-                @if (entry.lastmodified > entry.created) {
-                <ion-note class="flex ion-align-items-center" slot="start">
-                    <ion-icon name="fas-clock" [attr.aria-label]="'core.lastmodified' | translate" />
-                    {{ entry.lastmodified | coreTimeAgo }}
-                </ion-note>
-                }
-
-                @if (entry.userid === currentUserId && entry.publishstate !== 'draft') {
-                <ion-badge class="entry-visibility-permission" color="success" slot="end">
-                    <ion-icon name="fas-eye" />
-                    {{ 'addon.blog.' + entry.publishTranslated | translate }}
-                </ion-badge>
-                }
-            </ion-item>
-            }
-
-            @if (getEntryId(entry) && commentsEnabled) {
-            <core-comments [component]="this.component" [itemId]="getEntryId(entry)" area="format_blog" [instanceId]="entry.userid"
-                contextLevel="user" [showItem]="true" [courseId]="entry.courseid" />
-            }
-
-        </div>
         } @empty {
-        <core-empty-box icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate" />
+            <core-empty-box icon="far-newspaper" [message]="'addon.blog.noentriesyet' | translate" />
         }
 
         <core-infinite-loading [enabled]="canLoadMore" (action)="loadMore($event)" [error]="loadMoreError" />
@@ -149,12 +152,12 @@
 
     <!-- Create a blog entry. -->
     @if ((filter.userid === currentUserId || showMyEntriesToggle) && loaded() && optionsAvailable) {
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
-        <ion-fab-button (click)="createNewEntry()" [attr.aria-label]="'addon.blog.addnewentry' | translate">
-            <ion-icon name="fas-pen-to-square" aria-hidden="true" />
-            <span class="sr-only">{{ 'addon.blog.addnewentry' | translate }}</span>
-        </ion-fab-button>
-    </ion-fab>
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button (click)="createNewEntry()" [attr.aria-label]="'addon.blog.addnewentry' | translate">
+                <ion-icon name="fas-pen-to-square" aria-hidden="true" />
+                <span class="sr-only">{{ 'addon.blog.addnewentry' | translate }}</span>
+            </ion-fab-button>
+        </ion-fab>
     }
 
 </ion-content>

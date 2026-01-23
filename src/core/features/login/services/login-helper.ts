@@ -21,12 +21,11 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWS, CoreWSExternalWarning } from '@services/ws';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreObject } from '@singletons/object';
 import { CoreConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { CoreError } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
@@ -56,11 +55,16 @@ import {
     IDENTITY_PROVIDERS_FEATURE_NAME,
     IDENTITY_PROVIDER_FEATURE_NAME_PREFIX,
 } from '../constants';
-import { LazyRoutesModule } from '@/app/app-routing.module';
-import { CoreSiteError, CoreSiteErrorDebug } from '@classes/errors/siteerror';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
+import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreSSO } from '@singletons/sso';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CorePrompts } from '@services/overlays/prompts';
 
 /**
  * Helper provider that provides some common features regarding authentication.
@@ -131,34 +135,13 @@ export class CoreLoginHelperProvider {
         const currentSite = CoreSites.getCurrentSite();
 
         if (
-            !CoreApp.isSSOAuthenticationOngoing() &&
+            !CoreSSO.isSSOAuthenticationOngoing() &&
             currentSite?.isLoggedOut() &&
             CoreNavigator.isCurrent('/login/reconnect')
         ) {
             // User must reauthenticate but he closed the InAppBrowser without doing so, logout him.
             CoreSites.logout();
         }
-    }
-
-    /**
-     * Open a browser to perform SSO login.
-     *
-     * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @param service The service to use. If not defined, core service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
-     * @returns Promise resolved when done or if user cancelled.
-     * @deprecated since 4.3. Use openBrowserForSSOLogin instead.
-     */
-    async confirmAndOpenBrowserForSSOLogin(
-        siteUrl: string,
-        typeOfLogin: TypeOfLogin,
-        service?: string,
-        launchUrl?: string,
-        redirectData?: CoreRedirectPayload,
-    ): Promise<void> {
-        this.openBrowserForSSOLogin(siteUrl, typeOfLogin, service, launchUrl, redirectData);
     }
 
     /**
@@ -171,7 +154,7 @@ export class CoreLoginHelperProvider {
     async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
-            CoreUtils.openInApp(siteConfig.forgottenpasswordurl);
+            CoreOpener.openInApp(siteConfig.forgottenpasswordurl);
 
             return;
         }
@@ -268,7 +251,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return 'core.mainmenu.' + (config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount');
+        return `core.mainmenu.${config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount'}`;
     }
 
     /**
@@ -305,18 +288,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Get fixed site or sites.
-     *
-     * @returns Fixed site or list of fixed sites.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites or getAvailableSites() instead.
-     */
-    getFixedSites(): string | CoreLoginSiteInfo[] {
-        const notStagingSites = CoreConstants.CONFIG.sites.filter(site => !site.staging);
-
-        return notStagingSites.length === 1 ? notStagingSites[0].url : notStagingSites;
-    }
-
-    /**
      * Get Available sites (includes staging sites if are enabled). It doesn't include demo mode site.
      *
      * @returns Available sites.
@@ -347,7 +318,7 @@ export class CoreLoginHelperProvider {
         if (!siteConfig) {
             return [];
         }
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         if (this.isFeatureDisabled(IDENTITY_PROVIDERS_FEATURE_NAME, siteConfig)) {
             // Identity providers are disabled, return an empty list.
             return [];
@@ -364,7 +335,7 @@ export class CoreLoginHelperProvider {
                 if (
                     provider.url &&
                     (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
-                    !this.isFeatureDisabled( // eslint-disable-line deprecation/deprecation
+                    !this.isFeatureDisabled( // eslint-disable-line @typescript-eslint/no-deprecated
                         IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id,
                         siteConfig,
                     )
@@ -384,7 +355,7 @@ export class CoreLoginHelperProvider {
      * @returns Valid identity providers.
      */
     async getValidIdentityProvidersForSite(site: CoreUnauthenticatedSite): Promise<CoreSiteIdentityProvider[]> {
-        const siteConfig = await CoreUtils.ignoreErrors(site.getPublicConfig());
+        const siteConfig = await CorePromiseUtils.ignoreErrors(site.getPublicConfig());
         if (!siteConfig) {
             return [];
         }
@@ -402,7 +373,7 @@ export class CoreLoginHelperProvider {
             siteConfig.identityproviders.forEach((provider) => {
                 const urlParams = CoreUrl.extractUrlParams(provider.url);
 
-                if (provider.url && (provider.url.indexOf(httpsUrl) != -1 || provider.url.indexOf(httpUrl) != -1) &&
+                if (provider.url && (provider.url.indexOf(httpsUrl) !== -1 || provider.url.indexOf(httpUrl) !== -1) &&
                         !site.isFeatureDisabled(IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
                     validProviders.push(provider);
                 }
@@ -413,29 +384,40 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Finds an identity provider from a list of providers based on the given OAuth ID.
+     *
+     * @param providers Array of identity providers.
+     * @param oauthId The OAuth ID to match against the providers' URLs.
+     * @returns The identity provider that matches the given OAuth ID, or undefined if no match is found.
+     */
+    findIdentityProvider(providers: CoreSiteIdentityProvider[], oauthId?: number): CoreSiteIdentityProvider | undefined {
+        if (!oauthId) {
+            return;
+        }
+
+        return providers.find(provider => Number(CoreUrl.extractUrlParams(provider.url).id) === oauthId);
+    }
+
+    /**
      * Go to the page to add a new site.
      * If a fixed URL is configured, go to credentials instead.
      *
      * @param setRoot True to set the new page as root, false to add it to the stack.
      * @param showKeyboard Whether to show keyboard in the new page. Only if no fixed URL set.
-     * @returns Promise resolved when done.
      */
     async goToAddSite(setRoot = false, showKeyboard = false): Promise<void> {
-        let path = '/login/sites';
-        let params: Params = { openAddSite: true , showKeyboard };
-
         if (CoreSites.isLoggedIn()) {
-            const willReload = await CoreSites.logoutForRedirect(CoreConstants.NO_SITE_ID, {
-                redirectPath: path,
-                redirectOptions: { params },
+            // Logout first.
+            await CoreSites.logout({
+                siteId: CoreConstants.NO_SITE_ID,
+                redirectPath: '/login/sites',
+                redirectOptions: { params: { openAddSite: true , showKeyboard } },
             });
 
-            if (willReload) {
-                return;
-            }
-        } else {
-            [path, params] = await this.getAddSiteRouteInfo(showKeyboard);
+            return;
         }
+
+        const [path, params] = await this.getAddSiteRouteInfo(showKeyboard);
 
         await CoreNavigator.navigate(path, { params, reset: setRoot });
     }
@@ -474,22 +456,11 @@ export class CoreLoginHelperProvider {
      * @param privateToken User's private token.
      * @param oauthId OAuth ID. Only if the authentication was using an OAuth method.
      * @returns Promise resolved when the user is authenticated with the token.
+     * @deprecated since 5.0. This is now handled by CoreCustomURLSchemes.
      */
     handleSSOLoginAuthentication(siteUrl: string, token: string, privateToken?: string, oauthId?: number): Promise<string> {
         // Always create a new site to prevent overriding data if another user credentials were introduced.
         return CoreSites.newSite(siteUrl, token, privateToken, true, oauthId);
-    }
-
-    /**
-     * Check if the app is configured to use several fixed URLs.
-     *
-     * @returns Whether there are several fixed URLs.
-     * @deprecated since 4.2. Use CoreConstants.CONFIG.sites.length > 1 instead.
-     */
-    async hasSeveralFixedSites(): Promise<boolean> {
-        const sites = await this.getAvailableSites();
-
-        return sites.length > 1;
     }
 
     /**
@@ -500,7 +471,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isEmailSignupDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME, config);
     }
 
@@ -513,22 +484,12 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isFeatureDisabled(feature: string, config?: CoreSitePublicConfigResponse): boolean {
-       // eslint-disable-next-line deprecation/deprecation
+       // eslint-disable-next-line @typescript-eslint/no-deprecated
        const disabledFeatures = this.getDisabledFeatures(config);
 
-        const regEx = new RegExp('(,|^)' + feature + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${feature}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
-    }
-
-    /**
-     * Check if the app is configured to use a fixed URL (only 1).
-     *
-     * @returns Whether there is 1 fixed URL.
-     * @deprecated since 4.2. Use isSingleFixedSite instead.
-     */
-    isFixedUrlSet(): boolean {
-        return CoreConstants.CONFIG.sites.filter(site => !site.staging).length === 1;
     }
 
     /**
@@ -550,7 +511,7 @@ export class CoreLoginHelperProvider {
      * @deprecated since 4.4. Please use isFeatureDisabled in a site instance.
      */
     isForgottenPasswordDisabled(config?: CoreSitePublicConfigResponse): boolean {
-        // eslint-disable-next-line deprecation/deprecation
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME, config);
     }
 
@@ -637,7 +598,7 @@ export class CoreLoginHelperProvider {
         launchUrl?: string,
         redirectData?: CoreRedirectPayload,
     ): Promise<boolean> {
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
 
@@ -659,12 +620,12 @@ export class CoreLoginHelperProvider {
             });
 
             // Always open it in browser because the user might have the session stored in there.
-            CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+            CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
             CoreApp.closeApp();
 
             return true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+            CoreAlerts.showError(error, { default: 'Error opening browser' });
         } finally {
             modal.dismiss();
         }
@@ -696,16 +657,16 @@ export class CoreLoginHelperProvider {
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
             if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-                CoreUtils.openInApp(loginUrl, {
+                CoreOpener.openInApp(loginUrl, {
                     clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
                     closebuttoncaption: Translate.instant('core.login.cancel'),
                 });
             } else {
-                CoreUtils.openInBrowser(loginUrl, { showBrowserWarning: false });
+                CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
                 CoreApp.closeApp();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error opening browser');
+            CoreAlerts.showError(error, { default: 'Error opening browser' });
         } finally {
             modal.dismiss();
         }
@@ -716,14 +677,17 @@ export class CoreLoginHelperProvider {
      *
      * @param siteUrl Site URL to construct change password URL.
      * @param error Error message.
-     * @returns Promise resolved when done.
      */
     async openChangePassword(siteUrl: string, error: string): Promise<void> {
-        const alert = await CoreDomUtils.showAlert(Translate.instant('core.notice'), error, undefined, 3000);
+        const alert = await CoreAlerts.show({
+            header: Translate.instant('core.notice'),
+            message: error,
+            autoCloseTime: 3000,
+        });
 
         await alert.onDidDismiss();
 
-        CoreUtils.openInApp(siteUrl + '/login/change_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/change_password.php`);
     }
 
     /**
@@ -732,7 +696,7 @@ export class CoreLoginHelperProvider {
      * @param siteUrl URL of the site.
      */
     openForgottenPassword(siteUrl: string): void {
-        CoreUtils.openInApp(siteUrl + '/login/forgot_password.php');
+        CoreOpener.openInApp(`${siteUrl}/login/forgot_password.php`);
     }
 
     /**
@@ -742,7 +706,6 @@ export class CoreLoginHelperProvider {
      * @param path The relative path of the URL to open.
      * @param alertMessage The key of the message to display before opening the in app browser.
      * @param invalidateCache Whether to invalidate site's cache (e.g. when the user is forced to change password).
-     * @returns Promise resolved when done.
      */
     async openInAppForEdit(siteId: string, path: string, alertMessage?: string, invalidateCache?: boolean): Promise<void> {
         if (!siteId || siteId !== CoreSites.getCurrentSiteId()) {
@@ -766,8 +729,8 @@ export class CoreLoginHelperProvider {
 
             // Open change password.
             if (alertMessage) {
-                alertMessage = Translate.instant(alertMessage) + '<br>' +
-                    Translate.instant('core.redirectingtosite');
+                alertMessage = `${Translate.instant(alertMessage)}<br>${
+                    Translate.instant('core.redirectingtosite')}`;
             }
 
             try {
@@ -824,23 +787,23 @@ export class CoreLoginHelperProvider {
     ): Promise<string> {
 
         service = service || CoreConstants.CONFIG.wsservice;
-        launchUrl = launchUrl || siteUrl + '/admin/tool/mobile/launch.php';
+        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         const passport = Math.random() * 1000;
-        let loginUrl = launchUrl + '?service=' + service;
 
-        loginUrl += '&passport=' + passport;
-        loginUrl += '&urlscheme=' + CoreConstants.CONFIG.customurlscheme;
+        const additionalParams = Object.assign(urlParams || {}, {
+            service,
+            passport,
+            urlscheme: CoreConstants.CONFIG.customurlscheme,
+        });
 
-        if (urlParams) {
-            loginUrl = CoreUrl.addParamsToUrl(loginUrl, urlParams);
-        }
+        const loginUrl = CoreUrl.addParamsToUrl(launchUrl, additionalParams);
 
-        // Store the siteurl and passport in CoreConfigProvider for persistence.
-        // We are "configuring" the app to wait for an SSO. CoreConfigProvider shouldn't be used as a temporary storage.
+        // Store the siteurl and passport in CoreConfig for persistence.
+        // We are "configuring" the app to wait for an SSO. CoreConfig shouldn't be used as a temporary storage.
         await CoreConfig.set(CoreConstants.LOGIN_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
-            siteUrl: siteUrl,
-            passport: passport,
+            siteUrl,
+            passport,
             ...redirectData,
             ssoUrlParams: urlParams || {},
         }));
@@ -860,11 +823,11 @@ export class CoreLoginHelperProvider {
         const params: Record<string, string> = {};
 
         if (username) {
-            params.username = username.trim();
+            params.username = username.trim().toLowerCase();
         }
 
         if (email) {
-            params.email = email.trim();
+            params.email = email.trim().toLowerCase();
         }
 
         return CoreWS.callAjax('core_auth_request_password_reset', params, { siteUrl });
@@ -874,7 +837,6 @@ export class CoreLoginHelperProvider {
      * Function that should be called when the session expires. Reserved for core use.
      *
      * @param data Data received by the SESSION_EXPIRED event.
-     * @returns Promise resolved when done.
      */
     async sessionExpired(data: CoreEventSessionExpiredData & CoreEventSiteData): Promise<void> {
         const siteId = data?.siteId;
@@ -908,7 +870,7 @@ export class CoreLoginHelperProvider {
                     return;
                 }
 
-                await CoreUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
+                await CorePromiseUtils.ignoreErrors(CoreNavigator.navigate('/login/reconnect', {
                     params: {
                         siteId,
                         ...redirectData,
@@ -920,7 +882,7 @@ export class CoreLoginHelperProvider {
             // Error checking site.
             if (currentSite.isLoggedOut()) {
                 // Site is logged out, show error and logout the user.
-                CoreDomUtils.showErrorModalDefault(error, 'core.networkerrormsg', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.networkerrormsg') });
                 CoreSites.logout();
             }
         } finally {
@@ -941,17 +903,6 @@ export class CoreLoginHelperProvider {
         }
 
         return true;
-    }
-
-    /**
-     * Check if a confirm should be shown to open a SSO authentication.
-     *
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @returns True if confirm modal should be shown, false otherwise.
-     * @deprecated since 4.3. Not used anymore. See shouldSkipCredentialsScreenOnSSO.
-     */
-    shouldShowSSOConfirm(typeOfLogin: TypeOfLogin): boolean {
-        return !this.isSSOEmbeddedBrowser(typeOfLogin) && !this.shouldSkipCredentialsScreenOnSSO();
     }
 
     /**
@@ -980,10 +931,10 @@ export class CoreLoginHelperProvider {
      * @param site Site instance.
      * @param debug Error debug information.
      */
-    async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreSiteErrorDebug): Promise<void> {
+    async showAppUnsupportedModal(siteUrl: string, site?: CoreUnauthenticatedSite, debug?: CoreErrorDebug): Promise<void> {
         const siteName = await site?.getSiteName() ?? siteUrl;
 
-        await CoreDomUtils.showAlertWithOptions({
+        await CoreAlerts.show({
             header: Translate.instant('core.login.unsupportedsite'),
             message: Translate.instant('core.login.unsupportedsitemessage', { site: siteName }),
             buttons: [
@@ -1005,10 +956,10 @@ export class CoreLoginHelperProvider {
      * @param siteUrl Site url.
      * @param debug Error debug information.
      */
-    async openInBrowserFallback(siteUrl: string, debug?: CoreSiteErrorDebug): Promise<void> {
+    async openInBrowserFallback(siteUrl: string, debug?: CoreErrorDebug): Promise<void> {
         CoreEvents.trigger(APP_UNSUPPORTED_CHURN, { siteUrl, debug });
 
-        await CoreUtils.openInBrowser(siteUrl, { showBrowserWarning: false });
+        await CoreOpener.openInBrowser(siteUrl, { showBrowserWarning: false });
     }
 
     /**
@@ -1017,7 +968,7 @@ export class CoreLoginHelperProvider {
     protected showInvalidLoginModal(error: CoreError): void {
         const errorDetails = error instanceof CoreSiteError ? error.debug?.details : null;
 
-        CoreDomUtils.showErrorModal(errorDetails ?? error.message);
+        CoreAlerts.showError(errorDetails ?? error.message);
     }
 
     /**
@@ -1028,7 +979,7 @@ export class CoreLoginHelperProvider {
     protected showWorkplaceNoticeModal(message: string): void {
         const link = CoreApp.getAppStoreUrl({ android: 'com.moodle.workplace', ios: 'id1470929705' });
 
-        CoreDomUtils.showDownloadAppNoticeModal(message, link);
+        CoreAlerts.showDownloadAppNotice(message, link);
     }
 
     /**
@@ -1043,7 +994,7 @@ export class CoreLoginHelperProvider {
 
         const link = CoreApp.getAppStoreUrl(storesConfig);
 
-        CoreDomUtils.showDownloadAppNoticeModal(message, link);
+        CoreAlerts.showDownloadAppNotice(message, link);
     }
 
     /**
@@ -1055,7 +1006,7 @@ export class CoreLoginHelperProvider {
      * @param password User password. If not set the button to resend email will not be shown.
      */
     protected async showNotConfirmedModal(siteUrl: string, email?: string, username?: string, password?: string): Promise<void> {
-        const title = Translate.instant('core.login.mustconfirm');
+        const header = Translate.instant('core.login.mustconfirm');
         let message: string;
         let canResend = false;
         if (email) {
@@ -1071,21 +1022,22 @@ export class CoreLoginHelperProvider {
 
         if (!canResend) {
             // Just display an informative alert.
-            await CoreDomUtils.showAlert(title, message);
+            await CoreAlerts.show({ header, message });
 
             return;
         }
 
-        const okText = Translate.instant('core.login.resendemail');
-        const cancelText = Translate.instant('core.close');
-
         try {
             // Ask the user if he wants to resend the email.
-            await CoreDomUtils.showConfirm(message, title, okText, cancelText);
+            await CoreAlerts.confirm(message, {
+                header,
+                okText: Translate.instant('core.login.resendemail'),
+                cancelText: Translate.instant('core.close'),
+            });
 
             // Call the WS to resend the confirmation email.
             const modal = await CoreLoadings.show('core.sending', true);
-            const data = { username, password };
+            const data = { username: username?.toLowerCase(), password };
             const preSets = { siteUrl };
 
             try {
@@ -1104,12 +1056,12 @@ export class CoreLoginHelperProvider {
                 }
 
                 const message = Translate.instant('core.login.emailconfirmsentsuccess');
-                CoreDomUtils.showAlert(Translate.instant('core.success'), message);
+                CoreAlerts.show({ header: Translate.instant('core.success'), message });
             } finally {
                 modal.dismiss();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -1177,7 +1129,7 @@ export class CoreLoginHelperProvider {
                 this.showInvalidLoginModal(error);
                 break;
             default:
-                CoreDomUtils.showErrorModal(error);
+                CoreAlerts.showError(error);
                 break;
         }
     }
@@ -1230,8 +1182,8 @@ export class CoreLoginHelperProvider {
                 ssoUrlParams: data.ssoUrlParams,
             };
         } else {
-            this.logger.debug('Invalid signature in the URL request yours: ' + params[0] + ' mine: '
-                + signature + ' for passport ' + passport);
+            this.logger.debug(`Invalid signature in the URL request yours: ${params[0]} mine: ${
+                 signature } for passport ${passport}`);
 
             throw new CoreError(Translate.instant('core.unexpectederror'));
         }
@@ -1248,8 +1200,6 @@ export class CoreLoginHelperProvider {
 
     /**
      * Start waiting when opening a browser/IAB.
-     *
-     * @returns Promise resolved when the app is resumed.
      */
     async waitForBrowser(): Promise<void> {
         if (!this.waitingForBrowser) {
@@ -1294,7 +1244,7 @@ export class CoreLoginHelperProvider {
             (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
                 !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
 
-            return qrCodeType == CoreSiteQRCodeType.QR_CODE_LOGIN;
+            return qrCodeType === CoreSiteQRCodeType.QR_CODE_LOGIN;
         }
 
         return false;
@@ -1302,8 +1252,6 @@ export class CoreLoginHelperProvider {
 
     /**
      * Show instructions to scan QR code.
-     *
-     * @returns Promise resolved if the user accepts to scan QR.
      */
     async showScanQRInstructions(): Promise<void> {
         const dontShowWarning = await CoreConfig.get(FAQ_QRCODE_INFO_DONE, 0);
@@ -1313,18 +1261,16 @@ export class CoreLoginHelperProvider {
 
         const message = Translate.instant(
             'core.login.faqwhereisqrcodeanswer',
-            { $image: '<div class="text-center">'+ FAQ_QRCODE_IMAGE_HTML + '</div>' },
+            { $image: `<div class="text-center">${FAQ_QRCODE_IMAGE_HTML}</div>` },
         );
         const header = Translate.instant('core.login.faqwhereisqrcode');
 
         try {
-            const dontShowAgain = await CoreDomUtils.showPrompt(
-                message,
+            const dontShowAgain = await CorePrompts.show(message, 'checkbox', {
                 header,
-                Translate.instant('core.dontshowagain'),
-                'checkbox',
-                { okText: Translate.instant('core.next'), cancelText: Translate.instant('core.cancel') },
-            );
+                placeholderOrLabel: Translate.instant('core.dontshowagain'),
+                buttons: [{ text: Translate.instant('core.ok') }],
+            });
 
             if (dontShowAgain) {
                 CoreConfig.set(FAQ_QRCODE_INFO_DONE, 1);
@@ -1337,8 +1283,6 @@ export class CoreLoginHelperProvider {
 
     /**
      * Scan a QR code and tries to authenticate the user using custom URL scheme.
-     *
-     * @returns Promise resolved when done.
      */
     async scanQR(): Promise<void> {
         // Scan for a QR code.
@@ -1352,9 +1296,9 @@ export class CoreLoginHelperProvider {
         const scheme = CoreUrl.getUrlProtocol(text);
 
         if (scheme && scheme != 'http' && scheme != 'https') {
-            CoreDomUtils.showErrorModal(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
         } else {
-            CoreDomUtils.showErrorModal('core.login.errorqrnoscheme', true);
+            CoreAlerts.showError(Translate.instant('core.login.errorqrnoscheme'));
         }
     }
 
@@ -1364,7 +1308,7 @@ export class CoreLoginHelperProvider {
      * @returns Promise resolved with account list.
      */
     async getAccountsList(): Promise<CoreAccountsList> {
-        const sites = await CoreUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
+        const sites = await CorePromiseUtils.ignoreErrors(CoreSites.getSortedSites(), [] as CoreSiteBasicInfo[]);
 
         const accountsList: CoreAccountsList = {
             sameSite: [],
@@ -1382,7 +1326,7 @@ export class CoreLoginHelperProvider {
 
         // Add site counter and classify sites.
         await Promise.all(sites.map(async (site) => {
-            site.badge = await CoreUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+            site.badge = await CorePromiseUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
 
             if (site.id === currentSiteId) {
                 accountsList.currentSite = site;
@@ -1399,7 +1343,7 @@ export class CoreLoginHelperProvider {
             return;
         }));
 
-        accountsList.otherSites = CoreUtils.objectToArray(otherSites);
+        accountsList.otherSites = CoreObject.toArray(otherSites);
 
         return accountsList;
     }
@@ -1409,7 +1353,6 @@ export class CoreLoginHelperProvider {
      *
      * @param accountsList Account list.
      * @param site Site to be deleted.
-     * @returns Resolved when done.
      */
     async deleteAccountFromList(accountsList: CoreAccountsList, site: CoreSiteBasicInfo): Promise<void> {
         await CoreSites.deleteSite(site.id);
@@ -1451,8 +1394,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Reconnect page route module.
      */
-    async getReconnectRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-reconnect-lazy.module').then(m => m.CoreLoginReconnectLazyModule);
+    getReconnectPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/reconnect/reconnect');
     }
 
     /**
@@ -1460,8 +1403,8 @@ export class CoreLoginHelperProvider {
      *
      * @returns Credentials page route module.
      */
-    async getCredentialsRouteModule(): Promise<LazyRoutesModule> {
-        return import('@features/login/login-credentials-lazy.module').then(m => m.CoreLoginCredentialsLazyModule);
+    getCredentialsPage(): LazyDefaultStandaloneComponent {
+        return import('@features/login/pages/credentials/credentials');
     }
 
     /**
@@ -1627,7 +1570,7 @@ export type AuthEmailSignupProfileField = {
     name?: string; // Profield field name.
     datatype?: string; // Profield field datatype.
     description?: string; // Profield field description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     categoryid?: number; // Profield field category id.
     categoryname?: string; // Profield field category name.
     sortorder?: number; // Profield field sort order.
@@ -1637,7 +1580,7 @@ export type AuthEmailSignupProfileField = {
     forceunique?: number; // Profield field unique.
     signup?: number; // Profield field in signup form.
     defaultdata?: string; // Profield field default data.
-    defaultdataformat: number; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    defaultdataformat: CoreTextFormat; // Defaultdata format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     param1?: string; // Profield field settings.
     param2?: string; // Profield field settings.
     param3?: string; // Profield field settings.
@@ -1708,7 +1651,7 @@ declare module '@singletons/events' {
      */
     export interface CoreEventsData {
         [ALWAYS_SHOW_LOGIN_FORM_CHANGED]: { value: number };
-        [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreSiteErrorDebug };
+        [APP_UNSUPPORTED_CHURN]: { siteUrl: string; debug?: CoreErrorDebug };
     }
 
 }

@@ -26,7 +26,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { AddonModDataOffline } from '../../services/data-offline';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 import { AddonModDataActionsMenuItem } from '../actionsmenu/actionsmenu';
 import {
     ADDON_MOD_DATA_ENTRY_CHANGED,
@@ -34,6 +34,9 @@ import {
     AddonModDataAction,
     AddonModDataTemplateMode,
 } from '../../constants';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a database action.
@@ -41,6 +44,11 @@ import {
 @Component({
     selector: 'addon-mod-data-action',
     templateUrl: 'addon-mod-data-action.html',
+    imports: [
+        CoreSharedModule,
+        CoreCommentsCommentsComponent,
+        CoreTagListComponent,
+    ],
 })
 export class AddonModDataActionComponent implements OnInit {
 

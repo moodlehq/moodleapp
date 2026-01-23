@@ -12,5 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_PAGE_COMPONENT = 'mmaModPage';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
+
+export const ADDON_MOD_PAGE_COMPONENT = 'AddonModPage';
+export const ADDON_MOD_PAGE_COMPONENT_LEGACY = 'mmaModPage';
 export const ADDON_MOD_PAGE_PAGE_NAME = 'mod_page';
+export const ADDON_MOD_PAGE_MODNAME = 'page';
+
+export const ADDON_MOD_PAGE_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_PAGE_COMPONENT;

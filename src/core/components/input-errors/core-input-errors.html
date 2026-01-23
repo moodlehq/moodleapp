@@ -1,22 +1,37 @@
-<ng-container *ngIf="control && control.dirty && !control.valid">
-    <ng-container *ngFor="let error of errorKeys">
-        <div *ngIf="control.hasError(error)" class="core-input-error">
-            <ng-container *ngIf="error !== 'pattern'">
-                <span *ngIf="errorMessages && errorMessages[error]">
-                    <ion-icon *ngIf="error === 'required'" name="fas-circle-exclamation" aria-hidden="true" />
-                    {{ errorMessages[error] | translate }}
-                </span>
-                <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max">
-                    {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
-                </span>
-                <span *ngIf="(!errorMessages || !errorMessages[error]) && error === 'min' && control.errors?.min">
-                    {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors!.min.min} }}
-                </span>
-            </ng-container>
-            <ng-container *ngIf="error === 'pattern' && getPatternErrorMessage() as errorMessage">
-                <span>{{ errorMessage | translate }}</span>
-            </ng-container>
-        </div>
-    </ng-container>
-</ng-container>
-<div *ngIf="errorText" class="core-input-error" aria-live="assertive">{{ errorText }}</div>
+@if (control && control.dirty && !control.valid) {
+
+    @for (error of errorKeys; track error) {
+
+        @if (control.hasError(error)) {
+            <div class="core-input-error">
+                @if (error !== 'pattern') {
+
+                    @if (errorMessages && errorMessages[error]) {
+                        <span>
+                            @if (error === 'required') {
+                                <ion-icon name="fas-circle-exclamation" aria-hidden="true" />
+                            }
+                            {{ errorMessages[error] | translate }}
+                        </span>
+                    } @else if ((!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max) {
+                        <span>
+                            {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}
+                        </span>
+                    } @else if ((!errorMessages || !errorMessages[error]) && error === 'min' && control.errors?.min) {
+                        <span>
+                            {{ 'core.login.invalidvaluemin' | translate:{$a: control.errors!.min.min} }}
+                        </span>
+                    }
+
+                } @else {
+                    @if (getPatternErrorMessage(); as errorMessage) {
+                        <span>{{ errorMessage | translate }}</span>
+                    }
+                }
+            </div>
+        }
+    }
+}
+@if (errorText) {
+    <div class="core-input-error" aria-live="assertive">{{ errorText }}</div>
+}

@@ -77,6 +77,9 @@ export class CoreUnauthenticatedSite {
         { old: /_mmaModWorkshop/g, new: '_AddonModWorkshop' },
         { old: /remoteAddOn_/g, new: 'sitePlugin_' },
         { old: /AddonNotes:addNote/g, new: 'AddonNotes:notes' },
+        { old: /CoreMainMenuDelegate_AddonCompetency/g, new: 'CoreUserDelegate_AddonCompetency' },
+        { old: /CoreMainMenuDelegate_AddonPrivateFiles/g, new: 'CoreUserDelegate_AddonPrivateFiles' },
+        { old: /CoreMainMenuDelegate_CoreGrades/g, new: 'CoreUserDelegate_CoreGrades' },
     ];
 
     /**
@@ -163,7 +166,7 @@ export class CoreUnauthenticatedSite {
     }
 
     /**
-     * Check whether the app should use the local logo instead of the remote one.
+     * Check whether the app should use the local logo instead or the remote one.
      *
      * @returns Whether local logo is forced.
      */
@@ -180,10 +183,34 @@ export class CoreUnauthenticatedSite {
     getLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
         config = config ?? this.publicConfig;
         if (!config || this.forcesLocalLogo()) {
-            return 'assets/img/login_logo.png';
+            return;
         }
 
-        return config.logourl || config.compactlogourl || 'assets/img/login_logo.png';
+        return config.logourl || config.compactlogourl || undefined;
+    }
+
+    /**
+     * Check show top logo mode.
+     *
+     * @returns The top logo mode.
+     */
+    getShowTopLogo(): 'online' | 'offline' | 'hidden' {
+        return this.isDemoModeSite() ? 'hidden' : CoreConstants.CONFIG.showTopLogo;
+    }
+
+    /**
+     * Get logo URL from a site public config.
+     *
+     * @param config Site public config.
+     * @returns Logo URL.
+     */
+    getTopLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
+        config = config ?? this.publicConfig;
+        if (!config || this.getShowTopLogo() !== 'online') {
+            return;
+        }
+
+        return config.logourl || config.compactlogourl || undefined;
     }
 
     /**
@@ -195,7 +222,7 @@ export class CoreUnauthenticatedSite {
      * @returns URL with params.
      */
     createSiteUrl(path: string, params?: Record<string, unknown>, anchor?: string): string {
-        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, anchor);
+        return CoreUrl.addParamsToUrl(CorePath.concatenatePaths(this.siteUrl, path), params, { anchor });
     }
 
     /**
@@ -221,7 +248,7 @@ export class CoreUnauthenticatedSite {
      * Get the public config of this site.
      *
      * @param options Options.
-     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWSProvider.callAjax.
+     * @returns Promise resolved with public config. Rejected with an object if error, see CoreWS.callAjax.
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
         const ignoreCache = options.readingStrategy === CoreSitesReadingStrategy.ONLY_NETWORK ||
@@ -379,7 +406,7 @@ export class CoreUnauthenticatedSite {
             return false;
         }
 
-        const regEx = new RegExp('(,|^)' + CoreText.escapeForRegex(name) + '(,|$)', 'g');
+        const regEx = new RegExp(`(,|^)${CoreText.escapeForRegex(name)}(,|$)`, 'g');
 
         return !!disabledFeatures.match(regEx);
     }
@@ -389,7 +416,22 @@ export class CoreUnauthenticatedSite {
      *
      * @returns Disabled features.
      */
-    protected getDisabledFeatures(): string | undefined {
+    protected getDisabledFeatures(): string {
+        const siteDisabledFeatures = this.getSiteDisabledFeatures() || undefined; // If empty string, use undefined.
+        const appDisabledFeatures = CoreConstants.CONFIG.disabledFeatures;
+
+        return [
+            ...(siteDisabledFeatures?.split(',') || []),
+            ...(appDisabledFeatures?.split(',') || []),
+        ].join(',');
+    }
+
+    /**
+     * Get disabled features string configured in the site.
+     *
+     * @returns Disabled features.
+     */
+    protected getSiteDisabledFeatures(): string | undefined {
         return this.publicConfig?.tool_mobile_disabledfeatures;
     }
 

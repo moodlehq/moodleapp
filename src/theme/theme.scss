@@ -10,56 +10,33 @@
  */
 
 /* Global variables */
-@import "globals.scss";
+@import "globals";
 
 /* Application styles */
-@import "theme.design-system.scss";
-@import "theme.custom.scss";
-@import "theme.base.scss";
+@import "theme.design-system";
+@import "theme.custom";
+@import "theme.base";
 
 /* Components */
-@import "components/collapsible-header.scss";
-@import "components/collapsible-item.scss";
-@import "components/error-accordion.scss";
-@import "components/format-text.scss";
-@import "components/iframe.scss";
-@import "components/mod-label.scss";
-@import "components/rubrics.scss";
-@import "components/table.scss";
-@import "components/videojs.scss";
+@import "components/language";
+@import "components/collapsible-header";
+@import "components/collapsible-item";
+@import "components/error-accordion";
+@import "components/reading-mode";
+@import "components/format-text";
+@import "components/iframe";
+@import "components/mod-label";
+@import "components/rubrics";
+@import "components/table";
+@import "components/videojs";
+
+/* Animations */
+@import "animations/show-hide";
+@import "animations/slide";
 
 /* Ionic components overrides */
-@import "components/ion-accordion.scss";
-@import "components/ion-action-sheet.scss";
-@import "components/ion-alert.scss";
-@import "components/ion-avatar.scss";
-@import "components/ion-back-button.scss";
-@import "components/ion-badge.scss";
-@import "components/ion-button.scss";
-@import "components/ion-card.scss";
-@import "components/ion-checkbox.scss";
-@import "components/ion-chip.scss";
-@import "components/ion-content.scss";
-@import "components/ion-datetime.scss";
-@import "components/ion-fab.scss";
-@import "components/ion-header.scss";
-@import "components/ion-icon.scss";
-@import "components/ion-input.scss";
-@import "components/ion-item.scss";
-@import "components/ion-item-divider.scss";
-@import "components/ion-modal.scss";
-@import "components/ion-loading.scss";
-@import "components/ion-note.scss";
-@import "components/ion-popover.scss";
-@import "components/ion-radio.scss";
-@import "components/ion-searchbar.scss";
-@import "components/ion-select.scss";
-@import "components/ion-spinner.scss";
-@import "components/ion-toast.scss";
-@import "components/swiper.scss";
+@import "components/ionic";
 
-/* Some styles from 3rd party libraries. */
-@import "components/bootstrap/utilities/screenreaders.scss";
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -85,6 +62,6 @@
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
-/* @import '@ionic/angular/css/palettes/dark.always.css'; */
-/* @import '@ionic/angular/css/palettes/dark.class.css'; */
-/* @import '@ionic/angular/css/palettes/dark.system.css'; */
+/* @import '@ionic/angular/css/palettes/dark.always'; */
+/* @import '@ionic/angular/css/palettes/dark.class'; */
+/* @import '@ionic/angular/css/palettes/dark.system'; */

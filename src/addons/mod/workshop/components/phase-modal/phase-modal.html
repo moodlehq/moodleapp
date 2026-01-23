@@ -16,34 +16,51 @@
             <ion-item-divider [attr.aria-current]="workshopPhase === phase.code ? 'page' : 'false'">
                 <ion-label>
                     <h2>{{ phase.title }}</h2>
-                    <p class="ion-text-wrap" *ngIf="workshopPhase === phase.code">
-                        {{ 'addon.mod_workshop.userplancurrentphase' | translate }}
-                    </p>
+                    @if (workshopPhase === phase.code) {
+                        <p class="ion-text-wrap">
+                            {{ 'addon.mod_workshop.userplancurrentphase' | translate }}
+                        </p>
+                    }
                 </ion-label>
             </ion-item-divider>
-            <ion-item class="ion-text-wrap" *ngIf="phase.switchUrl" [href]="phase.switchUrl" [detail]="false" core-link [capture]="false">
-                <ion-icon slot="start" name="fas-right-left" aria-hidden="true" />
-                <ion-label>
-                    <p>{{ 'addon.mod_workshop.switchphase' + phase.code | translate }}</p>
-                </ion-label>
-                <ion-icon slot="end" name="fas-up-right-from-square" aria-hidden="true" />
-            </ion-item>
+            @if (phase.switchUrl) {
+                <ion-item class="ion-text-wrap" [href]="phase.switchUrl" [detail]="false" core-link [capture]="false">
+                    <ion-icon slot="start" name="fas-right-left" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'addon.mod_workshop.switchphase' + phase.code | translate }}</p>
+                    </ion-label>
+                    <ion-icon slot="end" name="fas-up-right-from-square" aria-hidden="true" />
+                </ion-item>
+            }
             <ion-item class="ion-text-wrap" *ngFor="let task of phase.tasks"
                 [class.item-dimmed]="phase.code !== workshopPhase || (task.code === 'submit' && !showSubmit)" (click)="runTask(task)"
                 [detail]="false" button>
-                <ion-icon slot="start" name="far-circle" *ngIf="task.completed === null"
-                    [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
-                <ion-icon slot="start" name="fas-circle-xmark" color="danger" *ngIf="task.completed === ''"
-                    [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
-                <ion-icon slot="start" name="fas-circle-info" color="info" *ngIf="task.completed === 'info'"
-                    [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
-                <ion-icon slot="start" name="fas-circle-check" color="success" *ngIf="task.completed === '1'"
-                    [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                @switch (task.completed) {
+                    @case (null) {
+                        <ion-icon slot="start" name="far-circle" [attr.aria-label]="'addon.mod_workshop.tasktodo' | translate" />
+                    }
+                    @case ('') {
+                        <ion-icon slot="start" name="fas-circle-xmark" color="danger"
+                            [attr.aria-label]="'addon.mod_workshop.taskfail' | translate" />
+                    }
+                    @case ('info') {
+                        <ion-icon slot="start" name="fas-circle-info" color="info"
+                            [attr.aria-label]="'addon.mod_workshop.taskinfo' | translate" />
+                    }
+                    @case ('1') {
+                        <ion-icon slot="start" name="fas-circle-check" color="success"
+                            [attr.aria-label]="'addon.mod_workshop.taskdone' | translate" />
+                    }
+                }
                 <ion-label>
                     <p class="item-heading ion-text-wrap">{{task.title}}</p>
-                    <p *ngIf="task.details" [innerHTML]="task.details"></p>
+                    @if (task.details) {
+                        <p [innerHTML]="task.details"></p>
+                    }
                 </ion-label>
-                <ion-icon slot="end" *ngIf="task.link && task.code !== 'submit'" name="fas-up-right-from-square" aria-hidden="true" />
+                @if (task.link && task.code !== 'submit') {
+                    <ion-icon slot="end" name="fas-up-right-from-square" aria-hidden="true" />
+                }
             </ion-item>
         </ng-container>
     </ion-list>

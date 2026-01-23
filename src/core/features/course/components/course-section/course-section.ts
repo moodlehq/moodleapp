@@ -13,7 +13,6 @@
 // limitations under the License.
 import {
     Component,
-    HostBinding,
     Input,
     OnInit,
     Output,
@@ -23,12 +22,13 @@ import {
     CoreCourseSection,
 } from '@features/course/services/course-helper';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '../components.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseViewedModulesDBRecord } from '@features/course/services/database/course';
-import { CoreCourseModuleCompletionStatus, sectionContentIsModule } from '@features/course/services/course';
+import { sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
+import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
+import { CoreCourseModuleComponent } from '../module/module';
 
 /**
  * Component to display course section.
@@ -37,11 +37,13 @@ import { CoreCourseFormatDelegate } from '@features/course/services/format-deleg
     selector: 'core-course-section',
     templateUrl: 'course-section.html',
     styleUrl: 'course-section.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCourseComponentsModule,
+        CoreCourseModuleComponent,
     ],
+    host: {
+        '[class]': 'collapsible ? "collapsible" : "non-collapsible"',
+    },
 })
 export class CoreCourseSectionComponent implements OnInit {
 

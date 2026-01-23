@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, ElementRef, OnChanges, SimpleChange, EventEmitter, OnDestroy } from '@angular/core';
+import { Component, Input, Output, OnChanges, SimpleChange, EventEmitter, OnDestroy, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -21,7 +21,6 @@ import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { DownloadStatus } from '@/core/constants';
@@ -31,6 +30,8 @@ import { CoreH5PCore, CoreH5PDisplayOptions } from '../../classes/core';
 import { CoreH5PHelper } from '../../classes/helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an iframe with an H5P package.
@@ -38,6 +39,9 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
 
@@ -49,6 +53,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     @Input({ transform: toBoolean }) enableInAppFullscreen = false; // Whether to enable our custom in-app fullscreen feature.
     @Input() saveFreq?: number; // Save frequency (in seconds) if enabled.
     @Input() state?: string; // Initial content state.
+    @Input() component?: string; // Component the file is linked to.
+    @Input() componentId?: string | number; // Component ID.
+    @Input() fileTimemodified?: number; // The timemodified of the file.
     @Output() onIframeUrlSet = new EventEmitter<{src: string; online: boolean}>();
     @Output() onIframeLoaded = new EventEmitter<void>();
 
@@ -62,10 +69,9 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     protected subscription: Subscription;
     protected iframeLoadedOnce = false;
 
-    constructor(
-        public elementRef: ElementRef,
-        router: Router,
-    ) {
+    constructor() {
+        const router = inject(Router);
+
         this.logger = CoreLogger.getInstance('CoreH5PIframeComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -85,7 +91,7 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
         // If it's already playing don't change it.
@@ -136,16 +142,15 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             } else {
                 // Never allow downloading in the app. This will only work if the user is allowed to change the params.
                 const src = this.onlinePlayerUrl.replace(
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=1',
-                    CoreH5PCore.DISPLAY_OPTION_DOWNLOAD + '=0',
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=1`,
+                    `${CoreH5PCore.DISPLAY_OPTION_DOWNLOAD}=0`,
                 );
 
                 // Add the preventredirect param so the user can authenticate.
                 this.iframeSrc = CoreUrl.addParamsToUrl(src, { preventredirect: false });
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading H5P package.', true);
-
+            CoreAlerts.showError(error, { default: 'Error loading H5P package.' });
         } finally {
             CoreH5PHelper.addResizerScript();
             this.onIframeUrlSet.emit({ src: this.iframeSrc!, online: !!localUrl });
@@ -174,14 +179,19 @@ export class CoreH5PIframeComponent implements OnChanges, OnDestroy {
             );
 
             return url;
-        } catch (error) {
+        } catch {
             // Index file doesn't exist, probably deleted because a lib was updated. Try to create it again.
             try {
                 const path = await CoreFilepool.getInternalUrlByUrl(this.siteId, this.fileUrl!);
 
                 const file = await CoreFile.getFile(path);
 
-                await CoreH5PHelper.saveH5P(this.fileUrl!, file, this.siteId);
+                await CoreH5PHelper.saveH5P(this.fileUrl!, file, {
+                    siteId: this.siteId,
+                    component: this.component,
+                    componentId: this.componentId,
+                    timemodified: this.fileTimemodified,
+                });
 
                 // File treated. Try to get the index file URL again.
                 const url = await CoreH5P.h5pPlayer.getContentIndexFileUrl(

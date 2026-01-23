@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -30,8 +30,8 @@ import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
 
 const routes: Routes = [
     {
-        path: ADDON_MOD_SURVEY_PAGE_NAME,
-        loadChildren: () => import('./survey-lazy.module'),
+        path: `${ADDON_MOD_SURVEY_PAGE_NAME}/:courseId/:cmId`,
+        loadComponent: () => import('./pages/index/index'),
     },
 ];
 
@@ -45,18 +45,14 @@ const routes: Routes = [
             useValue: [ADDON_MOD_SURVEY_OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
+        provideAppInitializer(() => {
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+            CoreCronDelegate.register(getCronHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModSurveyModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModSurveyIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModSurveyListLinkHandler.instance);
-            },
-        },
+            CoreCourseModuleDelegate.registerHandler(AddonModSurveyModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModSurveyIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModSurveyListLinkHandler.instance);
+        }),
     ],
 })
 export class AddonModSurveyModule {}

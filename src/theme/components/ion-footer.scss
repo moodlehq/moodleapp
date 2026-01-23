@@ -1,0 +1,25 @@
+@import "../helpers/helpers";
+
+ion-footer {
+    background-color: var(--contrast-background);
+    @include padding-horizontal(var(--ion-safe-area-left), var(--ion-safe-area-right));
+
+    > ion-toolbar:only-child {
+        top: 1px;
+    }
+
+    &.gray-with-border {
+        background-color: var(--core-footer-gray-background);
+        border-top: 1px solid var(--core-footer-gray-border);
+    }
+
+    > *:not([slot]) {
+        --ion-safe-area-left: 0px;
+        --ion-safe-area-right: 0px;
+    }
+
+    // Remove footer bottom shadow (Android only).
+    &.md {
+        clip-path: inset(-12px 0px 0px 0px);
+    }
+}

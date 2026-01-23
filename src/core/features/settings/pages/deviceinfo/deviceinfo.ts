@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, computed, Signal } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { Device, Translate, NgZone } from '@singletons';
+import { Device, Translate } from '@singletons';
 import { CoreLang } from '@services/lang';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { Subscription } from 'rxjs';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig } from '@services/config';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork, CoreNetworkConnectionType } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@singletons/text';
+import { GestureDetail } from '@ionic/angular';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -51,8 +52,8 @@ interface CoreSettingsDeviceInfo {
     locationHref?: string;
     deviceType: string;
     screen?: string;
-    networkStatus: string;
-    wifiConnection: string;
+    isOnline: Signal<boolean>;
+    wifiConnection: Signal<boolean>;
     cordovaVersion?: string;
     platform?: string;
     osVersion?: string;
@@ -69,9 +70,12 @@ interface CoreSettingsDeviceInfo {
 @Component({
     selector: 'page-core-app-settings-deviceinfo',
     templateUrl: 'deviceinfo.html',
-    styleUrls: ['deviceinfo.scss'],
+    styleUrl: 'deviceinfo.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsDeviceInfoPage implements OnDestroy {
+export default class CoreSettingsDeviceInfoPage {
 
     deviceInfo: CoreSettingsDeviceInfo;
     deviceOsTranslated?: string;
@@ -83,8 +87,6 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
     protected devOptionsForced = false;
     protected devOptionsClickTimeout?: number;
 
-    protected onlineObserver?: Subscription;
-
     constructor() {
         const navigator = window.navigator;
 
@@ -93,8 +95,8 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
             versionCode: CoreConstants.CONFIG.versioncode,
             compilationTime: CoreConstants.BUILD.compilationTime || 0,
             lastCommit: CoreConstants.BUILD.lastCommitHash || '',
-            networkStatus: CoreNetwork.isOnline() ? 'online' : 'offline',
-            wifiConnection: CoreNetwork.isWifi() ? 'yes' : 'no',
+            isOnline: CoreNetwork.onlineSignal,
+            wifiConnection: computed(() => CoreNetwork.connectionTypeSignal() === CoreNetworkConnectionType.WIFI),
             localNotifAvailable: CoreLocalNotifications.isPluginAvailable() ? 'yes' : 'no',
             pushId: CorePushNotifications.getPushId(),
             deviceType: '',
@@ -106,8 +108,7 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         }
 
         if (window.screen) {
-            this.deviceInfo.screen = window.innerWidth + 'x' + window.innerHeight +
-                ' (' + window.screen.width + 'x' + window.screen.height + ')';
+            this.deviceInfo.screen = `${window.innerWidth}x${window.innerHeight} (${window.screen.width}x${window.screen.height})`;
         }
 
         if (CorePlatform.isMobile()) {
@@ -168,14 +169,6 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.deviceInfo.siteId = currentSite?.getId();
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
 
-        // Refresh online status when changes.
-        this.onlineObserver = CoreNetwork.onChange().subscribe(() => {
-            // Execute the callback in the Angular zone, so change detection doesn't stop working.
-            NgZone.run(() => {
-                this.deviceInfo.networkStatus = CoreNetwork.isOnline() ? 'online' : 'offline';
-            });
-        });
-
         this.asyncInit();
     }
 
@@ -197,18 +190,16 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        if (CoreFile.isAvailable()) {
-            const basepath = await CoreFile.getBasePath();
-            this.deviceInfo.fileSystemRoot = basepath;
-            this.fsClickable = CoreFile.usesHTMLAPI();
-        }
+        const basepath = await CoreFile.getBasePath();
+        this.deviceInfo.fileSystemRoot = basepath;
+        this.fsClickable = CoreFile.usesHTMLAPI();
 
         const showDevOptionsOnConfig = await CoreConfig.get('showDevOptions', 0);
         this.devOptionsForced = CoreConstants.enableDevTools();
         this.showDevOptions = this.devOptionsForced || showDevOptionsOnConfig == 1;
 
         const publicKey = this.deviceInfo.pushId ?
-            await CoreUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
+            await CorePromiseUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
             undefined;
         this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
     }
@@ -218,6 +209,12 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      */
     copyInfo(): void {
         CoreText.copyToClipboard(JSON.stringify(this.deviceInfo));
+        const deviceInfo = {
+            ...this.deviceInfo,
+            isOnline: this.deviceInfo.isOnline(),
+            wifiConnection: this.deviceInfo.wifiConnection(),
+        };
+        CoreText.copyToClipboard(JSON.stringify(deviceInfo));
     }
 
     /**
@@ -225,18 +222,11 @@ export class CoreSettingsDeviceInfoPage implements OnDestroy {
      *
      * @param e Event.
      */
-    copyItemInfo(e: Event): void {
-        const el = <Element>e.target;
+    copyItemInfo(e: GestureDetail): void {
+        const el = <Element>e.event.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
         text && CoreText.copyToClipboard(text);
-    }
-
-    /**
-     * Page destroyed.
-     */
-    ngOnDestroy(): void {
-        this.onlineObserver && this.onlineObserver.unsubscribe();
     }
 
     /**

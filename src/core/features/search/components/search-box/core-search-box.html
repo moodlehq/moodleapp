@@ -1,25 +1,30 @@
-<form (ngSubmit)="submitForm($event)" role="search" #searchForm>
-    <ion-input [ariaLabel]="placeholder" type="search" name="search" [(ngModel)]="searchText" [placeholder]="placeholder"
-        [autocorrect]="autocorrect" [spellcheck]="spellcheck" [core-auto-focus]="autoFocus" [disabled]="disabled" role="searchbox"
-        (ionFocus)="focus($event)">
-        <ion-button slot="end" fill="clear" type="submit" [ariaLabel]="searchLabel" [disabled]="disabled || !searchText">
+<form (ngSubmit)="submitForm($event)" (focusout)="checkFocus()" role="search" #searchForm>
+    <ion-input [ariaLabel]="placeholder()" type="search" name="search" [(ngModel)]="inputValue" [placeholder]="placeholder()"
+        [autocorrect]="autocorrect()" [spellcheck]="spellcheck()" [core-auto-focus]="autoFocus()" [disabled]="disabled()" role="searchbox"
+        (ionFocus)="focus()">
+        <ion-button slot="end" fill="clear" type="submit" [ariaLabel]="searchLabel()" [disabled]="disabled() || !dirty()">
             <ion-icon name="fas-magnifying-glass" slot="icon-only" aria-hidden="true" />
         </ion-button>
-        <ion-button *ngIf="showClear" slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate"
-            [disabled]="searched === '' || disabled" (click)="clearForm()">
-            <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
-        </ion-button>
+        @if (showClear()) {
+            <ion-button slot="end" fill="clear" [ariaLabel]="'core.clearsearch' | translate"
+                [disabled]="!searchText() && (inputValue() === '' || disabled())" (click)="clearForm()">
+                <ion-icon name="fas-delete-left" slot="icon-only" aria-hidden="true" flip-rtl />
+            </ion-button>
+        }
     </ion-input>
-    <ion-item *ngIf="showLengthAlert" class="core-search-alert text-danger ion-text-wrap" role="alert">
-        <ion-label>
-            {{ 'core.search.err_minlength' | translate : {'$a': {'format': lengthCheck} } }}
-        </ion-label>
-    </ion-item>
-    <ion-list class="core-search-history" [hidden]="!historyShown">
-        <ion-item button class="ion-text-wrap" *ngFor="let item of history" (click)="historyClicked($event, item.searchedtext)" tabindex="0"
-            [detail]="true">
-            <ion-icon name="fas-clock-rotate-left" slot="start" aria-hidden="true" />
-            <ion-label>{{item.searchedtext}}</ion-label>
+    @if (showLengthAlert()) {
+        <ion-item class="core-search-alert text-danger ion-text-wrap" role="alert">
+            <ion-label>
+                {{ 'core.search.err_minlength' | translate : {'$a': {'format': lengthCheck()} } }}
+            </ion-label>
         </ion-item>
+    }
+    <ion-list class="core-search-history" [hidden]="!historyShown()">
+        @for (item of history(); track item.searchedtext) {
+            <ion-item button class="ion-text-wrap" (click)="historyClicked($event, item.searchedtext)" [detail]="true">
+                <ion-icon name="fas-clock-rotate-left" slot="start" aria-hidden="true" />
+                <ion-label>{{item.searchedtext}}</ion-label>
+            </ion-item>
+        }
     </ion-list>
 </form>

@@ -6,14 +6,14 @@
         <ion-icon name="far-share-from-square" slot="icon-only" aria-hidden="true" />
     </ion-button>
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     } @else {
-    <core-context-menu>
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
-    </core-context-menu>
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -55,21 +55,19 @@
                     <p>{{ type }}</p>
                 </ion-label>
             </ion-item>
+        </ion-card>
+    }
 
-            <ng-container *ngIf="!isExternalFile">
-                <ion-item class="ion-text-wrap" *ngIf="readableSize">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.size' | translate }}</p>
-                        <p>{{ readableSize }}</p>
-                    </ion-label>
-                </ion-item>
+    @switch (mode) {
+        @case ('iframe') {
+            <core-iframe [src]="src" />
+        }
 
-                <ion-item class="ion-text-wrap" *ngIf="timecreated > 0">
-                    <ion-label>
-                        <p class="item-heading">{{ 'core.datecreated' | translate }}</p>
-                        <p>{{ timecreated | coreFormatDate }}</p>
-                    </ion-label>
-                </ion-item>
+        @case ('embedded') {
+            <div class="ion-padding">
+                <core-format-text [text]="contentText" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
+            </div>
+        }
 
                 <ion-item class="ion-text-wrap" *ngIf="timemodified > 0">
                     <ion-label>
@@ -103,25 +101,82 @@
         </ion-list>
     </ng-container>
 
-    <div collapsible-footer appearOnBottom *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="mode === 'external'">
-            <ion-button *ngIf="isIOS && (!shouldOpenInBrowser || !isOnline)" expand="block" fill="outline"
-                (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
-                <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
-                {{ 'core.openwith' | translate }}
-            </ion-button>
+                    @if (readableSize) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.size' | translate }}</p>
+                                <p>{{ readableSize }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
 
-            <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
-                <ng-container *ngIf="isStreamedFile">
-                    <ion-icon name="fas-play" slot="start" aria-hidden="true" />
-                    {{ 'core.play' | translate }}
-                </ng-container>
-                <ng-container *ngIf="!isStreamedFile">
-                    <ion-icon name="far-file" slot="start" aria-hidden="true" />
-                    {{ 'addon.mod_resource.openthefile' | translate }}
-                </ng-container>
-            </ion-button>
+                    @if (timecreated > 0) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.datecreated' | translate }}</p>
+                                <p>{{ timecreated | coreFormatDate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+
+                    @if (timemodified > 0) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.lastmodified' | translate }}</p>
+                                <p>{{ timemodified | coreFormatDate }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
+
+                    @if (downloadTimeReadable) {
+                        <ion-item class="ion-text-wrap">
+                            <ion-label>
+                                <p class="item-heading">{{ 'core.lastdownloaded' | translate }}</p>
+                                <p>{{ downloadTimeReadable }}</p>
+                                @if (currentStatus === outdatedStatus) {
+                                    <ion-grid class="addon-mod_resource-outdated">
+                                        <ion-row class="ion-align-items-center">
+                                            <ion-col size="auto">
+                                                <ion-icon color="warning" name="fas-triangle-exclamation" aria-hidden="true" />
+                                            </ion-col>
+                                            <ion-col>
+                                                <p><strong>{{ 'addon.mod_resource.resourcestatusoutdated' | translate }}</strong></p>
+                                            </ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                }
+                            </ion-label>
+                        </ion-item>
+                    }
+                }
+            </ion-list>
+        }
+    }
+
+    @if (!showLoading) {
+        <div collapsible-footer appearOnBottom slot="fixed">
+            @if (mode === 'external') {
+                <div class="list-item-limited-width">
+                    @if (isIOS && (!shouldOpenInBrowser || !isOnline())) {
+                        <ion-button expand="block" fill="outline" (click)="open(openFileAction.OPEN_WITH)" class="ion-margin ion-text-wrap">
+                            <ion-icon name="far-share-from-square" slot="start" aria-hidden="true" />
+                            {{ 'core.openwith' | translate }}
+                        </ion-button>
+                    }
+
+                    <ion-button expand="block" (click)="open(openFileAction.OPEN)" class="ion-margin ion-text-wrap">
+                        @if (isStreamedFile) {
+                            <ion-icon name="fas-play" slot="start" aria-hidden="true" />
+                            {{ 'core.play' | translate }}
+                        } @else {
+                            <ion-icon name="far-file" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_resource.openthefile' | translate }}
+
+                        }
+                    </ion-button>
+                </div>
+            }
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
         </div>
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+    }
 </core-loading>

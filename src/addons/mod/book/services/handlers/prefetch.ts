@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
-import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
+import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_COMPONENT_LEGACY, ADDON_MOD_BOOK_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch books.
@@ -28,9 +28,9 @@ import { ADDON_MOD_BOOK_COMPONENT } from '../../constants';
 @Injectable({ providedIn: 'root' })
 export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefetchHandlerBase {
 
-    name = 'AddonModBook';
-    modName = 'book';
-    component = ADDON_MOD_BOOK_COMPONENT;
+    name = ADDON_MOD_BOOK_COMPONENT;
+    modName = ADDON_MOD_BOOK_MODNAME;
+    component = ADDON_MOD_BOOK_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^entries$/;
 
     /**
@@ -46,7 +46,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
 
         promises.push(super.downloadOrPrefetch(module, courseId, prefetch));
         // Ignore errors since this WS isn't available in some Moodle versions.
-        promises.push(CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id)));
+        promises.push(CorePromiseUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id)));
         await Promise.all(promises);
     }
 
@@ -58,7 +58,7 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      * @returns Promise resolved with list of intro files.
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const book = await CoreUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id));
+        const book = await CorePromiseUtils.ignoreErrors(AddonModBook.getBook(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, book);
     }
@@ -68,7 +68,6 @@ export class AddonModBookPrefetchHandlerService extends CoreCourseResourcePrefet
      *
      * @param moduleId The module ID.
      * @param courseId Course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number): Promise<void> {
         await AddonModBook.invalidateContent(moduleId, courseId);

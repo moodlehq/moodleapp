@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, OnInit } from '@angular/core';
+import { Directive, OnInit, inject } from '@angular/core';
 import { CoreLang } from '@services/lang';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { IonDatetime } from '@ionic/angular';
 
 /**
@@ -25,7 +25,7 @@ import { IonDatetime } from '@ionic/angular';
 })
 export class CoreIonDatetimeDirective implements OnInit {
 
-    constructor(protected datetime: IonDatetime) {}
+    protected datetime = inject(IonDatetime);
 
     /**
      * @inheritdoc
@@ -55,7 +55,7 @@ export class CoreIonDatetimeDirective implements OnInit {
             return;
         }
 
-        const startingDay = await CoreUser.getStartingWeekDay();
+        const startingDay = await CoreUserPreferences.getStartingWeekDay();
         this.datetime.firstDayOfWeek = startingDay;
     }
 

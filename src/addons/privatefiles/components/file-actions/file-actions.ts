@@ -13,26 +13,23 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 
 @Component({
     selector: 'addon-privatefiles-file-actions',
-    styleUrl: './file-actions.scss',
+    styleUrl: 'file-actions.scss',
     templateUrl: 'file-actions.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
-    imports: [CoreSharedModule],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonPrivateFilesFileActionsComponent extends CoreModalComponent<AddonPrivateFilesFileActionsComponentParams> {
 
-    @Input({ required: false }) isDownloaded = false;
-    @Input({ required: true }) filename = '';
-    @Input({ required: true }) icon = '';
-
-    constructor(elementRef: ElementRef<HTMLElement>) {
-        super(elementRef);
-    }
+    readonly isDownloaded = input(false);
+    readonly filename = input.required<string>();
+    readonly icon = input.required<string>();
 
 }
 

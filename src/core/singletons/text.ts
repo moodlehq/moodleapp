@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Clipboard, Translate } from '@singletons';
-import { CoreToasts } from '@services/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
@@ -40,7 +40,7 @@ export class CoreText {
         }
 
         if (text.slice(-1) != '/') {
-            return text + '/';
+            return `${text}/`;
         }
 
         return text;
@@ -57,7 +57,7 @@ export class CoreText {
             return text;
         }
 
-        return '/' + text;
+        return `/${text}`;
     }
 
     /**
@@ -111,6 +111,17 @@ export class CoreText {
     }
 
     /**
+     * Convert a camel case text to kebab case.
+     * Example: "myVariableName" -> "my-variable-name".
+     *
+     * @param text The text to convert.
+     * @returns The converted text.
+     */
+    static camelCaseToKebabCase(text: string): string {
+        return text.replace(/[A-Z]/g, letter => '-' + letter.toLowerCase());
+    }
+
+    /**
      * Copies a text to clipboard and shows a toast message.
      *
      * @param text Text to be copied
@@ -124,7 +135,7 @@ export class CoreText {
             virtualInput.innerHTML = text;
             virtualInput.select();
             virtualInput.setSelectionRange(0, 99999);
-            document.execCommand('copy'); // eslint-disable-line deprecation/deprecation
+            document.execCommand('copy'); // eslint-disable-line @typescript-eslint/no-deprecated
         }
 
         // Show toast using ionicLoading.
@@ -209,7 +220,7 @@ export class CoreText {
         if (text === undefined || text === null || (typeof text === 'number' && isNaN(text))) {
             return '';
         } else if (typeof text != 'string') {
-            return '' + text;
+            return `${text}`;
         }
 
         return text
@@ -260,7 +271,7 @@ export class CoreText {
         if (text === undefined || text === null || (typeof text === 'number' && isNaN(text))) {
             return '';
         } else if (typeof text !== 'string') {
-            return '' + text;
+            return `${text}`;
         }
 
         if (doubleEncode) {
@@ -283,10 +294,14 @@ export class CoreText {
      * @returns Formatted text.
      */
     static formatHtmlLines(text: string): string {
+        if (!text) {
+            return '';
+        }
+
         const hasHTMLTags = CoreText.hasHTMLTags(text);
-        if (text.indexOf('<p>') == -1) {
+        if (text.indexOf('<p>') === -1) {
             // Wrap the text in <p> tags.
-            text = '<p>' + text + '</p>';
+            text = `<p>${text}</p>`;
         }
 
         if (!hasHTMLTags) {
@@ -362,7 +377,7 @@ export class CoreText {
             return text;
         }
 
-        const regex = new RegExp('(' + searchText + ')', 'gi');
+        const regex = new RegExp(`(${searchText})`, 'gi');
 
         return text.replace(regex, '<mark class="matchtext">$1</mark>');
     }
@@ -624,9 +639,9 @@ export class CoreText {
      */
     static twoDigits(num: string | number): string {
         if (Number(num) < 10) {
-            return '0' + num;
+            return `0${num}`;
         } else {
-            return '' + num; // Convert to string for coherence.
+            return `${num}`; // Convert to string for coherence.
         }
     }
 
@@ -650,6 +665,19 @@ export class CoreText {
         return Locutus.unserialize<T>(data);
     }
 
+    /**
+     * Check if a string contains any emoji.
+     *
+     * @param text Text to check.
+     * @returns True if contains emoji, false otherwise.
+     */
+    static containsEmoji(text: string): boolean {
+        const base = String.raw`\p{Emoji}(?:\p{EMod}|[\u{E0020}-\u{E007E}]+\u{E007F}|\uFE0F?\u20E3?)`;
+        const regexEmoji = new RegExp(String.raw`\p{RI}{2}|(?![#*\d](?!\uFE0F?\u20E3))${base}(?:\u200D${base})*`, 'gu');
+
+        return regexEmoji.test(text);
+    }
+
 }
 
 /**
@@ -663,4 +691,4 @@ export enum CoreTextFormat {
     FORMAT_MARKDOWN = 4, // Markdown-formatted text http://daringfireball.net/projects/markdown/
 }
 
-export const defaultTextFormat = CoreTextFormat.FORMAT_HTML;
+export const DEFAULT_TEXT_FORMAT = CoreTextFormat.FORMAT_HTML;

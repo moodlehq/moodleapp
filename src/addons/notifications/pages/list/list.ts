@@ -12,21 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
-    AddonNotifications, AddonNotificationsNotificationMessageFormatted, AddonNotificationsProvider,
+    AddonNotifications, AddonNotificationsNotificationMessageFormatted,
 } from '../../services/notifications';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
@@ -34,6 +32,11 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
 import { CoreConstants } from '@/core/constants';
 import { CorePlatform } from '@services/platform';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
+import { ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
 
 /**
  * Page that displays the list of notifications.
@@ -42,10 +45,14 @@ import { CorePlatform } from '@services/platform';
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
     styleUrls: ['list.scss', '../../notifications.scss'],
+    imports: [
+        CoreSharedModule,
+        CoreMainMenuUserButtonComponent,
+    ],
 })
-export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
+export default class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
     notifications!: CoreListItemsManager<AddonNotificationsNotificationMessageFormatted, AddonNotificationsNotificationsSource>;
     fetchMoreNotificationsFailed = false;
     canMarkAllNotificationsAsRead = false;
@@ -71,7 +78,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
 
             this.notifications = new CoreListItemsManager(source, AddonNotificationsListPage);
         } catch(error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -89,9 +96,9 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     async ngAfterViewInit(): Promise<void> {
         await this.fetchInitialNotifications();
 
-        this.notifications.start(this.splitView);
+        this.notifications.start(this.splitView());
 
-        this.cronObserver = CoreEvents.on(AddonNotificationsProvider.READ_CRON_EVENT, () => {
+        this.cronObserver = CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CRON_EVENT, () => {
             if (!this.isCurrentView) {
                 return;
             }
@@ -114,7 +121,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
             this.refreshNotifications();
         });
 
-        this.readObserver = CoreEvents.on(AddonNotificationsProvider.READ_CHANGED_EVENT, (data) => {
+        this.readObserver = CoreEvents.on(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, (data) => {
             if (!data.id) {
                 return;
             }
@@ -161,7 +168,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchNotifications(true);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading notifications');
+            CoreAlerts.showError(error, { default: 'Error loading notifications' });
 
             this.notifications.reset();
         }
@@ -176,7 +183,7 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
         try {
             await this.fetchNotifications(false);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading more notifications');
+            CoreAlerts.showError(error, { default: 'Error loading more notifications' });
 
             this.fetchMoreNotificationsFailed = true;
         }
@@ -192,10 +199,10 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
     async markAllNotificationsAsRead(): Promise<void> {
         this.loadingMarkAllNotificationsAsRead = true;
 
-        await CoreUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.markAllNotificationsAsRead());
 
-        CoreEvents.trigger(AddonNotificationsProvider.READ_CHANGED_EVENT, {
-            time: CoreTimeUtils.timestamp(),
+        CoreEvents.trigger(ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT, {
+            time: CoreTime.timestamp(),
         }, CoreSites.getCurrentSiteId());
 
         await this.refreshNotifications();
@@ -225,8 +232,8 @@ export class AddonNotificationsListPage implements AfterViewInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshNotifications(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
-        await CoreUtils.ignoreErrors(this.fetchNotifications(true));
+        await CorePromiseUtils.ignoreErrors(AddonNotifications.invalidateNotificationsList());
+        await CorePromiseUtils.ignoreErrors(this.fetchNotifications(true));
 
         refresher?.complete();
     }

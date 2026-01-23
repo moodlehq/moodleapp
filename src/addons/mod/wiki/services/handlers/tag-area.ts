@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
-import { CoreTagFeedComponent } from '@features/tag/components/feed/feed';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreTagFeedElement, CoreTagHelper } from '@features/tag/services/tag-helper';
 import { makeSingleton } from '@singletons';
@@ -44,7 +43,9 @@ export class AddonModWikiTagAreaHandlerService implements CoreTagAreaHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreTagFeedComponent } = await import('@features/tag/components/feed/feed');
+
         return CoreTagFeedComponent;
     }
 

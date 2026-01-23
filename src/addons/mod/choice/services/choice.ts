@@ -15,19 +15,20 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite } from '@classes/sites/site';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
+import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
+import { makeSingleton } from '@singletons';
 import { AddonModChoiceOffline } from './choice-offline';
-import { AddonModChoiceAutoSyncData } from './choice-sync';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT, AddonModChoiceShowResults } from '../constants';
+import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, AddonModChoiceShowResults } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSite } from '@classes/sites/site';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for choices.
@@ -36,6 +37,28 @@ import { ADDON_MOD_CHOICE_AUTO_SYNCED, ADDON_MOD_CHOICE_COMPONENT, AddonModChoic
 export class AddonModChoiceProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModChoice:';
+
+    /**
+     * Check if groups are supported in a site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether groups are supported.
+     */
+    async areGroupsSupported(siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return this.areGroupsSupportedInSite(site);
+    }
+
+    /**
+     * Check if groups are supported in a site.
+     *
+     * @param site Site.
+     * @returns Whether groups are supported.
+     */
+    protected areGroupsSupportedInSite(site: CoreSite): boolean {
+        return site.isVersionGreaterEqualThan('5.0');
+    }
 
     /**
      * Check if results can be seen by a student. The student can see the results if:
@@ -121,7 +144,7 @@ export class AddonModChoiceProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -159,7 +182,7 @@ export class AddonModChoiceProvider {
         }
 
         // Invalidate related data.
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateOptions(choiceId, site.id),
             this.invalidateResults(choiceId, site.id),
         ]));
@@ -172,7 +195,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceDataCacheKey(courseId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'choice:' + courseId;
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}choice:${courseId}`;
     }
 
     /**
@@ -182,7 +205,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceOptionsCacheKey(choiceId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'options:' + choiceId;
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}options:${choiceId}`;
     }
 
     /**
@@ -192,48 +215,7 @@ export class AddonModChoiceProvider {
      * @returns Cache key.
      */
     protected getChoiceResultsCacheKey(choiceId: number): string {
-        return AddonModChoiceProvider.ROOT_CACHE_KEY + 'results:' + choiceId;
-    }
-
-    /**
-     * Get a choice with key=value. If more than one is found, only the first will be returned.
-     *
-     * @param courseId Course ID.
-     * @param key Name of the property to check.
-     * @param value Value to search.
-     * @param options Other options.
-     * @returns Promise resolved when the choice is retrieved.
-     */
-    protected async getChoiceByDataKey(
-        courseId: number,
-        key: string,
-        value: unknown,
-        options: CoreSitesCommonWSOptions = {},
-    ): Promise<AddonModChoiceChoice> {
-        const site = await CoreSites.getSite(options.siteId);
-
-        const params: AddonModChoiceGetChoicesByCoursesWSParams = {
-            courseids: [courseId],
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getChoiceDataCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_CHOICE_COMPONENT,
-            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
-        };
-
-        const response = await site.read<AddonModChoiceGetChoicesByCoursesWSResponse>(
-            'mod_choice_get_choices_by_courses',
-            params,
-            preSets,
-        );
-
-        const currentChoice = response.choices.find((choice) => choice[key] == value);
-        if (currentChoice) {
-            return currentChoice;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return `${AddonModChoiceProvider.ROOT_CACHE_KEY}results:${choiceId}`;
     }
 
     /**
@@ -244,20 +226,26 @@ export class AddonModChoiceProvider {
      * @param options Other options.
      * @returns Promise resolved when the choice is retrieved.
      */
-    getChoice(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(courseId, 'coursemodule', cmId, options);
-    }
+    async getChoice(courseId: number, cmId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
+        const site = await CoreSites.getSite(options.siteId);
 
-    /**
-     * Get a choice by ID.
-     *
-     * @param courseId Course ID.
-     * @param choiceId Choice ID.
-     * @param options Other options.
-     * @returns Promise resolved when the choice is retrieved.
-     */
-    getChoiceById(courseId: number, choiceId: number, options: CoreSitesCommonWSOptions = {}): Promise<AddonModChoiceChoice> {
-        return this.getChoiceByDataKey(courseId, 'id', choiceId, options);
+        const params: AddonModChoiceGetChoicesByCoursesWSParams = {
+            courseids: [courseId],
+        };
+        const preSets: CoreSiteWSPreSets = {
+            cacheKey: this.getChoiceDataCacheKey(courseId),
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
+        };
+
+        const response = await site.read<AddonModChoiceGetChoicesByCoursesWSResponse>(
+            'mod_choice_get_choices_by_courses',
+            params,
+            preSets,
+        );
+
+        return CoreCourseModuleHelper.getActivityByCmId(response.choices, cmId);
     }
 
     /**
@@ -276,8 +264,8 @@ export class AddonModChoiceProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_CHOICE_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -298,15 +286,19 @@ export class AddonModChoiceProvider {
      * @param options Other options.
      * @returns Promise resolved with choice results.
      */
-    async getResults(choiceId: number, options: CoreCourseCommonModWSOptions = {}): Promise<AddonModChoiceResult[]> {
+    async getResults(choiceId: number, options: AddonModChoiceGetResultsOptions = {}): Promise<AddonModChoiceResult[]> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModChoiceGetChoiceResultsWSParams = {
             choiceid: choiceId,
         };
+        if (this.areGroupsSupportedInSite(site) && options.groupId !== undefined) {
+            params.groupid = options.groupId;
+        }
+
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getChoiceOptionsCacheKey(choiceId),
-            component: ADDON_MOD_CHOICE_COMPONENT,
+            component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
@@ -325,7 +317,6 @@ export class AddonModChoiceProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateChoiceData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -350,7 +341,7 @@ export class AddonModChoiceProvider {
             this.invalidateChoiceData(courseId),
             this.invalidateOptions(choice.id),
             this.invalidateResults(choice.id),
-            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_CHOICE_COMPONENT, moduleId),
+            CoreFilepool.invalidateFilesByComponent(siteId, ADDON_MOD_CHOICE_COMPONENT_LEGACY, moduleId),
         ]);
     }
 
@@ -359,7 +350,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateOptions(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -372,7 +362,6 @@ export class AddonModChoiceProvider {
      *
      * @param choiceId Choice ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateResults(choiceId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -395,7 +384,7 @@ export class AddonModChoiceProvider {
         return CoreCourseLogHelper.log(
             'mod_choice_view_choice',
             params,
-            ADDON_MOD_CHOICE_COMPONENT,
+            ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -434,7 +423,7 @@ export class AddonModChoiceProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that responses cannot be submitted.
                 throw error;
             }
@@ -463,7 +452,7 @@ export class AddonModChoiceProvider {
         await site.write('mod_choice_submit_choice_response', params);
 
         // Invalidate related data.
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             this.invalidateOptions(choiceId, siteId),
             this.invalidateResults(choiceId, siteId),
         ]));
@@ -491,14 +480,7 @@ export type AddonModChoiceGetChoicesByCoursesWSResponse = {
 /**
  * Choice returned by mod_choice_get_choices_by_courses.
  */
-export type AddonModChoiceChoice = {
-    id: number; // Choice instance id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Choice name.
-    intro: string; // The choice intro.
-    introformat: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModChoiceChoice = CoreCourseModuleStandardElements & {
     publish?: boolean; // If choice is published.
     showresults?: AddonModChoiceShowResults; // 0 never, 1 after answer, 2 after close, 3 always.
     display?: number; // Display mode (vertical, horizontal).
@@ -513,10 +495,6 @@ export type AddonModChoiceChoice = {
     timemodified?: number; // Time of last modification.
     completionsubmit?: boolean; // Completion on user submission.
     showavailable?: boolean; // Show available spaces. @since 3.10
-    section?: number; // Course section id.
-    visible?: boolean; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**
@@ -560,6 +538,7 @@ export type AddonModChoiceOption = {
  */
 export type AddonModChoiceGetChoiceResultsWSParams = {
     choiceid: number; // Choice instance id.
+    groupid?: number; // @since 5.0. Group ID. 0 for all participants, empty for active group.
 };
 
 /**
@@ -603,15 +582,9 @@ export type AddonModChoiceSubmitChoiceResponseWSParams = {
     responses: number[]; // Array of response ids.
 };
 
-declare module '@singletons/events' {
-
-    /**
-     * Augment CoreEventsData interface with events specific to this service.
-     *
-     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
-     */
-    export interface CoreEventsData {
-        [ADDON_MOD_CHOICE_AUTO_SYNCED]: AddonModChoiceAutoSyncData;
-    }
-
-}
+/**
+ * Options of getResults function.
+ */
+export type AddonModChoiceGetResultsOptions = CoreCourseCommonModWSOptions & {
+    groupId?: number; // Group id.
+};

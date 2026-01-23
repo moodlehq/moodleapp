@@ -1,7 +1,7 @@
 <ion-header>
     <ion-toolbar>
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>{{ title() }}</h1>
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
@@ -11,3 +11,24 @@
     </ion-toolbar>
 </ion-header>
 <ion-content />
+@if (canEnableTorch() || canSwitchCamera()) {
+    <ion-footer>
+        <ion-row class="ion-align-items-center ion-no-padding">
+            @if (canSwitchCamera()) {
+                <ion-col>
+                    <ion-button expand="block" fill="clear" [ariaLabel]="cameraText()"
+                        (click)="toggleCamera()">
+                        <ion-icon name="fas-camera-rotate" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+            }
+            @if (canEnableTorch()) {
+                <ion-col>
+                    <ion-button expand="block" fill="clear" [ariaLabel]="torchText()" (click)="toggleTorch()">
+                        <ion-icon name="fas-bolt" slot="icon-only" aria-hidden="true" [class.icon-slash]="!torchEnabled()" />
+                    </ion-button>
+                </ion-col>
+            }
+        </ion-row>
+    </ion-footer>
+}

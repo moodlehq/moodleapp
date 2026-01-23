@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, input, output, computed } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
-import { CoreAnimations } from '@components/animations';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
  * Component to show a download button with refresh option, the spinner and the status of it.
@@ -27,47 +29,41 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'core-download-refresh',
     templateUrl: 'core-download-refresh.html',
-    styleUrls: ['download-refresh.scss'],
-    animations: [CoreAnimations.SHOW_HIDE],
+    styleUrl: 'download-refresh.scss',
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
 })
-export class CoreDownloadRefreshComponent implements OnInit {
+export class CoreDownloadRefreshComponent {
 
-    @Input() status?: DownloadStatus; // Download status.
-    @Input() statusesTranslatable?: Partial<CoreDownloadStatusTranslatable>; // Download statuses translatable strings.
-    @Input() statusSubject = ''; // Status subject to use on name filed in the translatable string.
-    @Input({ transform: toBoolean }) enabled = false; // Whether the download is enabled.
-    @Input({ transform: toBoolean }) loading = true; // Force loading status when is not downloading.
-    @Input({ transform: toBoolean }) canTrustDownload = false; // If false, refresh will be shown if downloaded.
-    @Output() action: EventEmitter<boolean>; // Will emit an event when the item clicked.
+    readonly status = input<DownloadStatus>(); // Download status.
+    readonly statusesTranslatable = input<Partial<CoreDownloadStatusTranslatable>>(); // Download statuses translatable strings.
+    readonly statusSubject = input(''); // Status subject to use on name filed in the translatable string.
+    readonly enabled = input(false, { transform: toBoolean }); // Whether the download is enabled.
+    readonly loading = input(true, { transform: toBoolean }); // Force loading status when is not downloading.
+    readonly canTrustDownload = input(false, { transform: toBoolean }); // If false, refresh will be shown if downloaded.
+    readonly action = output<boolean>(); // Will emit an event when the item clicked.
 
     /**
      * @deprecated since 4.5. Use statusesTranslatable instead.
      */
-    @Input() statusTranslatable?: string; // Download status translatable string.
+    readonly statusTranslatable = input<string>(); // Download status translatable string.
 
     statusDownloaded = DownloadStatus.DOWNLOADED;
     statusNotDownloaded = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     statusOutdated = DownloadStatus.OUTDATED;
     statusDownloading = DownloadStatus.DOWNLOADING;
 
-    translates: CoreDownloadStatusTranslatable = {
+    readonly translates = computed<CoreDownloadStatusTranslatable>(() => ({
         downloaded: 'core.downloaded',
         notdownloaded: 'core.download',
         outdated: 'core.refresh',
         downloading: 'core.downloading',
         loading: 'core.loading',
-    };
-
-    constructor() {
-        this.action = new EventEmitter();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.translates = Object.assign(this.translates, this.statusesTranslatable || {});
-    }
+        ...(this.statusesTranslatable() || {}),
+    }));
 
     /**
      * Download clicked.

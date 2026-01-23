@@ -13,14 +13,17 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePromisedValue } from '@classes/promised-value';
 import { QRScanner } from '@features/native/plugins';
-import { CoreModals } from './modals';
+import { CoreModals } from './overlays/modals';
 import { CorePlatform } from './platform';
 import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';
+import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
+import { CoreAlerts } from './overlays/alerts';
+import { CoreHTMLClasses } from '@singletons/html-classes';
 
 /**
  * Handles qr scan services.
@@ -37,7 +40,7 @@ export class CoreQRScanService {
      * @returns Whether the app can scan QR codes.
      */
     canScanQR(): boolean {
-        return CorePlatform.isMobile();
+        return CorePlatform.isMobile() && !!window.QRScanner;
     }
 
     /**
@@ -77,7 +80,7 @@ export class CoreQRScanService {
             try {
                 await CoreCustomURLSchemes.handleCustomURL(text);
             } catch (error) {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreQRScanService');
             }
 
             return;
@@ -92,18 +95,20 @@ export class CoreQRScanService {
      * @returns Promise resolved with the QR string, rejected if error or cancelled.
      */
     async startScanQR(): Promise<string | undefined> {
-        if (!CorePlatform.isMobile()) {
-            return Promise.reject('QRScanner isn\'t available in browser.');
-        }
-
         // Ask the user for permission to use the camera.
         // The scan method also does this, but since it returns an Observable we wouldn't be able to detect if the user denied.
         try {
             const status = await QRScanner.prepare();
 
             if (!status.authorized) {
-                // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
-                throw new Error('The user denied camera access.');
+                if (status.denied && status.canOpenSettings){
+                    await this.askForPermissionWhenDenied();
+
+                    return;
+                } else {
+                    // No access to the camera, reject. In android this shouldn't happen, denying access passes through catch.
+                    throw new Error(Translate.instant('core.viewer.qrscannerdeniedpermissionmessage'));
+                }
             }
 
             if (this.qrScanData && this.qrScanData.deferred) {
@@ -123,7 +128,7 @@ export class CoreQRScanService {
             try {
                 await QRScanner.show();
 
-                document.body.classList.add('core-scanning-qr');
+                CoreHTMLClasses.toggleModeClass('core-scanning-qr', true);
 
                 // Set color-scheme to 'normal', otherwise the camera isn't seen in Android.
                 const colorSchemeMeta = document.querySelector('meta[name="color-scheme"]');
@@ -139,10 +144,44 @@ export class CoreQRScanService {
                 throw error;
             }
         } catch (error) {
+            if (error.code === QRScannerErrorCode.CAMERA_ACCESS_DENIED) {
+                // User denied permission to use the camera.
+                await this.askForPermissionWhenDenied();
+
+                return;
+            }
             // eslint-disable-next-line @typescript-eslint/naming-convention
             error.message = error.message || (error as { _message?: string })._message;
 
             throw error;
+        }
+    }
+
+    /**
+     * Prompts the user to grant permission for QR scanning if previously denied.
+     *
+     * Displays a confirmation dialog informing the user about the denied permission,
+     * with options to open the device settings or cancel. If the user chooses to open
+     * settings, the app permission settings are opened. If the user cancels, a
+     * `CoreCanceledError` is thrown.
+     *
+     * @returns Resolves when the user responds to the prompt.
+     */
+    protected async askForPermissionWhenDenied(): Promise<void> {
+        try {
+            await CoreAlerts.confirm(
+                Translate.instant('core.viewer.qrscannerdeniedpermissionmessage'),
+                {
+                    header: Translate.instant('core.viewer.qrscannerdeniedpermissiontitle'),
+                    okText: Translate.instant('core.opensettings'),
+                    cancelText: Translate.instant('core.cancel'),
+                },
+            );
+
+            QRScanner.openSettings();
+        } catch {
+            // User canceled.
+            throw new CoreCanceledError('');
         }
     }
 
@@ -159,7 +198,7 @@ export class CoreQRScanService {
         }
 
         // Hide camera preview.
-        document.body.classList.remove('core-scanning-qr');
+        CoreHTMLClasses.toggleModeClass('core-scanning-qr', false);
 
         // Set color-scheme to the initial value.
         document.querySelector('meta[name="color-scheme"]')?.setAttribute('content', this.initialColorSchemeContent);
@@ -178,6 +217,89 @@ export class CoreQRScanService {
         }
 
         delete this.qrScanData;
+    }
+
+    /**
+     * Check if the QR scanner camera light can be enabled.
+     *
+     * @returns Whether the QR scanner camera light can be enabled.
+     */
+    async canEnableLight(): Promise<boolean> {
+        const status = await QRScanner.getStatus();
+
+        return !!status.canEnableLight;
+    }
+
+    /**
+     * Check if the QR scanner can switch camera.
+     *
+     * @returns Whether the QR scanner can switch camera.
+     */
+    async canSwitchCamera(): Promise<boolean> {
+        const status = await QRScanner.getStatus();
+
+        return !!status.canChangeCamera;
+    }
+
+    /**
+     * Toggle the light of the camera.
+     *
+     * @param enable Whether to enable or disable the light.
+     * @returns Whether the light is enabled or not after toggling.
+     */
+    async toggleLight(enable?: boolean): Promise<boolean> {
+        if (enable === undefined) {
+            let status = await QRScanner.getStatus();
+
+            status = status.lightEnabled
+                ? await QRScanner.disableLight()
+                : await QRScanner.enableLight();
+
+            return !!status.lightEnabled;
+        } else {
+            const status = enable
+                ? await QRScanner.enableLight()
+                : await QRScanner.disableLight();
+
+            return !!status.lightEnabled;
+        }
+    }
+
+     /**
+      * Toggle the camera of the phone.
+      *
+      * @returns The current camera being used after toggling.
+      */
+    async toggleCamera(): Promise<number> {
+        let status = await QRScanner.getStatus();
+
+        status = status.currentCamera === QRScannerCamera.FRONT_CAMERA
+            ? await QRScanner.useBackCamera()
+            : await QRScanner.useFrontCamera();
+
+        return status.currentCamera ?? QRScannerCamera.FRONT_CAMERA;
+    }
+
+    /**
+     * Check if the light is enabled.
+     *
+     * @returns Whether the light is enabled or not.
+     */
+    async isLightEnabled(): Promise<boolean> {
+        const status = await QRScanner.getStatus();
+
+        return !!status.lightEnabled;
+    }
+
+    /**
+     * Get the current camera being used by the QR scanner.
+     *
+     * @returns The current camera.
+     */
+    async getCurrentCamera(): Promise<QRScannerCamera> {
+        const status = await QRScanner.getStatus();
+
+        return status.currentCamera ?? QRScannerCamera.FRONT_CAMERA;
     }
 
 }

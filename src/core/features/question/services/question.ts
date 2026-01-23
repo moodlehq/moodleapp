@@ -17,8 +17,8 @@ import { Injectable } from '@angular/core';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreArray } from '@singletons/array';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CorePath } from '@singletons/path';
@@ -37,6 +37,7 @@ import {
     QUESTION_NEEDS_GRADING_STATE_CLASSES,
     QUESTION_TODO_STATE_CLASSES,
 } from '@features/question/constants';
+import { CoreObject } from '@singletons/object';
 
 const QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
 const STATES: Record<string, CoreQuestionState> = {
@@ -150,7 +151,7 @@ export class CoreQuestionProvider {
      */
     compareAllAnswers(prevAnswers: Record<string, unknown>, newAnswers: Record<string, unknown>): boolean {
         // Get all the keys.
-        const keys = CoreUtils.mergeArraysWithoutDuplicates(Object.keys(prevAnswers), Object.keys(newAnswers));
+        const keys = CoreArray.mergeWithoutDuplicates(Object.keys(prevAnswers), Object.keys(newAnswers));
 
         // Check that all the keys have the same value on both objects.
         for (const i in keys) {
@@ -158,7 +159,7 @@ export class CoreQuestionProvider {
 
             // Ignore extra answers like sequencecheck or certainty.
             if (!this.isExtraAnswer(key[0])) {
-                if (!CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, key)) {
+                if (!CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, key)) {
                     return false;
                 }
             }
@@ -323,7 +324,7 @@ export class CoreQuestionProvider {
      * @returns Question component ID.
      */
     getQuestionComponentId(question: CoreQuestionQuestionParsed, componentId: string | number): string {
-        return componentId + '_' + question.questionnumber;
+        return `${componentId}_${question.questionnumber}`;
     }
 
     /**
@@ -339,7 +340,7 @@ export class CoreQuestionProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         const siteFolderPath = CoreFile.getSiteFolder(siteId);
-        const questionFolderPath = 'offlinequestion/' + type + '/' + component + '/' + componentId;
+        const questionFolderPath = `offlinequestion/${type}/${component}/${componentId}`;
 
         return CorePath.concatenatePaths(siteFolderPath, questionFolderPath);
     }
@@ -516,7 +517,7 @@ export class CoreQuestionProvider {
         timemodified?: number,
         siteId?: string,
     ): Promise<void> {
-        timemodified = timemodified || CoreTimeUtils.timestamp();
+        timemodified = timemodified || CoreTime.timestamp();
 
         const db = await CoreSites.getSiteDb(siteId);
         const promises: Promise<unknown>[] = [];

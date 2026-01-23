@@ -31,10 +31,6 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
 
     protected handlerNameProperty = 'component';
 
-    constructor() {
-        super('CorePluginFileDelegate');
-    }
-
     /**
      * React to a file being deleted.
      *
@@ -271,20 +267,18 @@ export class CorePluginFileDelegateService extends CoreDelegate<CorePluginFileHa
      *
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
-     * @param onProgress Function to call on progress.
+     * @param options Options.
      * @returns Promise resolved when done.
      */
     async treatDownloadedFile(
         fileUrl: string,
         file: FileEntry,
-        siteId?: string,
-        onProgress?: CoreFilepoolOnProgressCallback,
+        options: CorePluginFileTreatDownloadedFileOptions = {},
     ): Promise<void> {
         const handler = this.getHandlerForFile({ fileurl: fileUrl });
 
         if (handler && handler.treatDownloadedFile) {
-            await handler.treatDownloadedFile(fileUrl, file, siteId, onProgress);
+            await handler.treatDownloadedFile(fileUrl, file, options);
         }
     }
 
@@ -378,16 +372,14 @@ export interface CorePluginFileHandler extends CoreDelegateHandler {
      *
      * @param fileUrl The file URL used to download the file.
      * @param file The file entry of the downloaded file.
-     * @param siteId Site ID. If not defined, current site.
-     * @param onProgress Function to call on progress.
+     * @param options Options.
      * @returns Promise resolved when done.
      */
     treatDownloadedFile?(
         fileUrl: string,
         file: FileEntry,
-        siteId?: string,
-        onProgress?: CoreFilepoolOnProgressCallback):
-    Promise<void>;
+        options?: CorePluginFileTreatDownloadedFileOptions,
+    ): Promise<void>;
 }
 
 /**
@@ -411,4 +403,15 @@ export type CorePluginFileDownloadableResult = {
 export type CoreFileSizeSum = {
     size: number; // Sum of file sizes.
     total: boolean; // False if any file size is not available.
+};
+
+/**
+ * Options for treatDownloadedFile.
+ */
+export type CorePluginFileTreatDownloadedFileOptions<T = unknown> = {
+    siteId?: string; // Site ID. If not defined, current site.
+    onProgress?: CoreFilepoolOnProgressCallback<T>; // Function to call on progress.
+    component?: string; // The component to link the file to.
+    componentId?: string | number; // An ID to use in conjunction with the component.
+    timemodified?: number; // The timemodified of the file.
 };

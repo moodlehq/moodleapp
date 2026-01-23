@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { AddonBlockRecentlyAccessedItemsComponent } from '../components/recentlyaccesseditems/recentlyaccesseditems';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 
@@ -30,7 +29,9 @@ export class AddonBlockRecentlyAccessedItemsHandlerService extends CoreBlockBase
     /**
      * @inheritdoc
      */
-    getDisplayData(): CoreBlockHandlerData{
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockRecentlyAccessedItemsComponent } =
+            await import('../components/recentlyaccesseditems/recentlyaccesseditems');
 
         return {
             title: 'addon.block_recentlyaccesseditems.pluginname',

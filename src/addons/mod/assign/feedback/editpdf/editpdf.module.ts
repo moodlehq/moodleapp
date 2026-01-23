@@ -12,30 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { AddonModAssignFeedbackEditPdfHandler } from './services/handler';
-import { AddonModAssignFeedbackEditPdfComponent } from './component/editpdf';
-import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
 
 @NgModule({
-    declarations: [
-        AddonModAssignFeedbackEditPdfComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackEditPdfHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModAssignFeedbackEditPdfComponent,
+        provideAppInitializer(() => {
+            AddonModAssignFeedbackDelegate.registerHandler(AddonModAssignFeedbackEditPdfHandler.instance);
+        }),
     ],
 })
 export class AddonModAssignFeedbackEditPdfModule {}

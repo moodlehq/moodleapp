@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, input, OnDestroy, OnInit, signal } from '@angular/core';
+import { QRScannerCamera } from '@features/native/plugins/qrscanner';
+import { CoreErrorHelper } from '@services/error-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreQRScan } from '@services/qrscan';
-import { CoreDomUtils } from '@services/utils/dom';
 import { ModalController, Translate } from '@singletons';
 
 /**
@@ -24,22 +26,51 @@ import { ModalController, Translate } from '@singletons';
 @Component({
     selector: 'core-viewer-qr-scanner',
     templateUrl: 'qr-scanner.html',
-    standalone: true,
+    styleUrl: 'qr-scanner.scss',
     imports: [
         CoreSharedModule,
     ],
 })
 export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 
-    @Input() title?: string; // Page title.
+    readonly title = input(Translate.instant('core.viewer.qrscannertitle'));
+
+    readonly canEnableTorch = signal(false);
+    readonly canSwitchCamera = signal(false);
+    readonly torchEnabled = signal(false);
+    readonly camera = signal(QRScannerCamera.FRONT_CAMERA);
+
+    readonly torchText = computed(() =>
+        this.torchEnabled()
+            ? Translate.instant('core.viewer.qrscannerturnofftorch')
+            : Translate.instant('core.viewer.qrscannerturnontorch'));
+
+    readonly cameraText = computed(() =>
+        this.camera() === QRScannerCamera.FRONT_CAMERA
+            ? Translate.instant('core.viewer.qrscannerswitchtorearcamera')
+            : Translate.instant('core.viewer.qrscannerswitchtofrontcamera'));
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.title = this.title || Translate.instant('core.scanqr');
-
         try {
+            if (!CoreQRScan.canScanQR()) {
+                return Promise.reject('QRScanner isn\'t available in your device.');
+            }
+
+            this.canEnableTorch.set(await CoreQRScan.canEnableLight());
+            this.canSwitchCamera.set(await CoreQRScan.canSwitchCamera());
+
+            if (this.canSwitchCamera()) {
+                // Set initial camera.
+                this.camera.set(await CoreQRScan.getCurrentCamera());
+            }
+
+            if (this.canEnableTorch()) {
+                // Set initial torch state.
+                this.torchEnabled.set(await CoreQRScan.isLightEnabled());
+            }
 
             let text = await CoreQRScan.startScanQR();
 
@@ -48,9 +79,9 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
 
             this.closeModal(text);
         } catch (error) {
-            if (!CoreDomUtils.isCanceledError(error)) {
+            if (!CoreErrorHelper.isCanceledError(error)) {
                 // Show error and stop scanning.
-                CoreDomUtils.showErrorModalDefault(error, 'An error occurred.');
+                CoreAlerts.showError(error, { default: 'An error occurred while scanning the QR code.' });
                 CoreQRScan.stopScanQR();
             }
 
@@ -80,6 +111,30 @@ export class CoreViewerQRScannerComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         // If this code is reached and scan hasn't been stopped yet it means the user clicked the back button, cancel.
         CoreQRScan.stopScanQR();
+    }
+
+    /**
+     * Toggle the light of the camera.
+     */
+    async toggleTorch(): Promise<void> {
+        this.torchEnabled.set(await CoreQRScan.toggleLight());
+    }
+
+    /**
+     * Toggle the camera.
+     */
+    async toggleCamera(): Promise<void> {
+        this.camera.set(await CoreQRScan.toggleCamera());
+
+        const canEnableTorch = await CoreQRScan.canEnableLight();
+        this.canEnableTorch.set(canEnableTorch);
+
+        if (!canEnableTorch) {
+            // The new camera doesn't support torch, make sure it's disabled.
+            await CoreQRScan.toggleLight(false);
+        } else {
+            this.torchEnabled.set(await CoreQRScan.isLightEnabled());
+        }
     }
 
 }

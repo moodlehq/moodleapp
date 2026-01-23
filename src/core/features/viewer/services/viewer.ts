@@ -15,16 +15,26 @@
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { ModalOptions } from '@ionic/angular';
-import { CoreModals } from '@services/modals';
+import { CoreConfig } from '@services/config';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
+import {
+    CORE_READING_MODE_SETTINGS,
+    CoreViewerReadingModeThemes,
+    CoreViewerReadingModeThemesType,
+    CORE_READING_MODE_DEFAULT_SETTINGS,
+} from '../constants';
 
 /**
  * Viewer services.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreViewerService {
+
+    protected readingModeEnabledOnEnter = false;
+    protected readingModeInstancesCounter = 0;
 
     /**
      * View an image in a modal.
@@ -97,6 +107,98 @@ export class CoreViewerService {
         await CoreNavigator.navigateToSitePath('viewer/iframe', { params: { title, url, autoLogin } });
     }
 
+    /**
+     * Get reading mode settings.
+     *
+     * @returns Reading mode settings.
+     */
+    async getReadingModeSettings(): Promise<CoreViewerReadingModeSettings> {
+        return CoreConfig.getJSON<CoreViewerReadingModeSettings>(CORE_READING_MODE_SETTINGS, CORE_READING_MODE_DEFAULT_SETTINGS);
+    }
+
+    /**
+     * Load and apply reading mode settings.
+     */
+    async loadReadingModeSettings(): Promise<void> {
+        const settings = await this.getReadingModeSettings();
+
+        this.applyReadingModeSettings(settings);
+    }
+
+    /**
+     * Apply the reading mode settings to the DOM.
+     *
+     * @param settings Settings to apply.
+     */
+    protected applyReadingModeSettings(settings: CoreViewerReadingModeSettings): void {
+        document.body.style.setProperty('--reading-mode-zoom', `${settings.zoom}%`);
+        document.body.style.setProperty('--reading-mode-width', `${(100 / settings.zoom) * 100}%`);
+        Object.values(CoreViewerReadingModeThemes).forEach((theme) => {
+            document.body.classList.remove(`core-reading-mode-theme-${theme}`);
+        });
+        document.body.classList.add(`core-reading-mode-theme-${settings.theme}`);
+        document.body.classList.toggle('core-reading-mode-multimedia-hidden', !settings.showMultimedia);
+    }
+
+    /**
+     * Save reading mode settings.
+     *
+     * @param settings Settings to save.
+     */
+    async setReadingModeSettings(settings: CoreViewerReadingModeSettings): Promise<void> {
+        await CoreConfig.setJSON(CORE_READING_MODE_SETTINGS, settings);
+
+        this.applyReadingModeSettings(settings);
+    }
+
+    /**
+     * Set whether reading mode was enabled on enter.
+     *
+     * @param enabled Whether reading mode was enabled on enter.
+     */
+    setReadingModeEnabledOnEnter(enabled: boolean): void {
+        this.readingModeEnabledOnEnter = enabled;
+    }
+
+    /**
+     * Increase the reading mode counter.
+     * This should be only called by the reading mode directive.
+     */
+    increaseReadingModeCounter(): void {
+        this.readingModeInstancesCounter++;
+    }
+
+    /**
+     * Decrease the reading mode counter.
+     * If the counter goes below 0, it will be set to 0.
+     * This should be only called by the reading mode directive.
+     */
+    decreaseReadingModeCounter(): void {
+        this.readingModeInstancesCounter--;
+
+        if (this.readingModeInstancesCounter < 0) {
+            this.readingModeInstancesCounter = 0;
+        }
+    }
+
+    /**
+     * Check if reading mode was enabled on enter.
+     *
+     * @returns Whether reading mode was enabled on enter.
+     */
+    isReadingModeEnabledOnEnter(): boolean {
+        return this.readingModeEnabledOnEnter;
+    }
+
+    /**
+     * Check if reading mode is enabled.
+     *
+     * @returns Whether reading mode is enabled.
+     */
+    isReadingModeEnabled(): boolean {
+        return this.readingModeEnabledOnEnter && this.readingModeInstancesCounter > 0;
+    }
+
 }
 export const CoreViewer = makeSingleton(CoreViewerService);
 
@@ -113,4 +215,10 @@ export type CoreViewerTextOptions = {
     courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     displayCopyButton?: boolean; // Whether to display a button to copy the text.
     modalOptions?: Partial<ModalOptions>; // Modal options.
+};
+
+export type CoreViewerReadingModeSettings = {
+    zoom: number; // Zoom level.
+    showMultimedia: boolean; // Show images and multimedia.
+    theme: CoreViewerReadingModeThemesType; // Theme to use.
 };

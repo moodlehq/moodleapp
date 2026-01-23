@@ -15,10 +15,10 @@
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CoreMainMenuLocalizedCustomItem } from '@features/mainmenu/services/mainmenu';
 import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
-import { OpenFileAction } from '@services/utils/utils';
+import { OpenFileAction } from '@singletons/opener';
 import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@features/login/services/login-helper';
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
-import { ToastDuration } from '@services/toasts';
+import { ToastDuration } from '@services/overlays/toasts';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -53,11 +53,12 @@ export interface EnvironmentConfig {
     enableonboarding: boolean;
     forceColorScheme: CoreColorScheme;
     forceLoginLogo: boolean;
+    showTopLogo: 'online' | 'offline' | 'hidden';
     ioswebviewscheme: string;
     appstores: Record<string, string>;
     displayqroncredentialscreen?: boolean;
     displayqronsitescreen?: boolean;
-    forceOpenLinksIn: 'app' | 'browser';
+    forceOpenLinksIn?: 'app' | 'browser';
     iOSDefaultOpenFileAction?: OpenFileAction;
     customMainMenuItems?: CoreMainMenuLocalizedCustomItem[];
     feedbackFormUrl?: string | false;
@@ -77,4 +78,6 @@ export interface EnvironmentConfig {
     hideInformativeLinks?: boolean; // Whether to hide informative links.
     iconsPrefixes?: Record<string, Record<string, string[]>>; // Prefixes for custom font icons (located in src/assets/fonts).
     clearIABSessionWhenAutoLogin?: 'android' | 'ios' | 'all'; // Clear the session every time a new IAB is opened with auto-login.
+    disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
+    collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
 }

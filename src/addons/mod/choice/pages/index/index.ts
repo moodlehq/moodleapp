@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModChoiceIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a choice.
@@ -22,9 +23,13 @@ import { AddonModChoiceIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-choice-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModChoiceIndexComponent,
+    ],
 })
-export class AddonModChoiceIndexPage extends CoreCourseModuleMainActivityPage<AddonModChoiceIndexComponent> {
+export default class AddonModChoiceIndexPage extends CoreCourseModuleMainActivityPage<AddonModChoiceIndexComponent> {
 
-    @ViewChild(AddonModChoiceIndexComponent) activityComponent?: AddonModChoiceIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModChoiceIndexComponent);
 
 }

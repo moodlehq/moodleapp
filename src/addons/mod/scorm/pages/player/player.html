@@ -9,23 +9,31 @@
             </h1>
         </ion-title>
         <ion-buttons slot="end">
-            <core-button-with-spinner *ngIf="showToc" [loading]="loadingToc">
-                <ion-button fill="clear" *ngIf="toc.length" (click)="openToc()" [ariaLabel]="'addon.mod_scorm.toc' | translate"
-                    aria-haspopup="true">
-                    <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-            </core-button-with-spinner>
+            @if (showToc) {
+                <core-button-with-spinner [loading]="loadingToc">
+                    @if (toc.length) {
+                        <ion-button fill="clear" (click)="openToc()" [ariaLabel]="'addon.mod_scorm.toc' | translate" aria-haspopup="true">
+                            <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    }
+                </core-button-with-spinner>
+            }
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <core-iframe *ngIf="loaded" id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
-            [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+        @if (loaded) {
+            <core-iframe id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
+                [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+        }
 
-        <p *ngIf="!src && errorMessage">{{ errorMessage | translate }}</p>
+        @if (!src && errorMessage) {
+            <p>{{ errorMessage | translate }}</p>
+        }
     </core-loading>
 
-    <core-navigation-bar collapsible-footer appearOnBottom *ngIf="loaded && navigationItems.length > 1" [items]="navigationItems"
-        (action)="loadSco($event)" slot="fixed" />
+    @if (loaded && navigationItems.length > 1) {
+        <core-navigation-bar collapsible-footer appearOnBottom [items]="navigationItems" (action)="loadSco($event)" slot="fixed" />
+    }
 </ion-content>

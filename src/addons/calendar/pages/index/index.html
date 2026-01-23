@@ -5,7 +5,9 @@
         </ion-buttons>
         <ion-title>
             <h1>{{ 'addon.calendar.calendar' | translate }}</h1>
-            <p *ngIf="!showCalendar" class="subheading">{{ 'addon.calendar.upcomingevents' | translate }}</p>
+            @if (!showCalendar) {
+                <p class="subheading">{{ 'addon.calendar.upcomingevents' | translate }}</p>
+            }
         </ion-title>
         <ion-buttons slot="end">
             <ion-button fill="clear" (click)="openFilter()" [ariaLabel]="'core.filter' | translate">
@@ -24,7 +26,7 @@
                     iconAction="fas-calendar-days" (action)="toggleDisplay()" />
                 <core-context-menu-item [priority]="600" [content]="'core.settings.settings' | translate" (action)="openSettings()"
                     iconAction="fas-gears" />
-                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline" [priority]="400"
+                <core-context-menu-item [hidden]="!loaded || !hasOffline || !isOnline()" [priority]="400"
                     [content]="'core.settings.synchronizenow' | translate" (action)="doRefresh(undefined, $event, true)"
                     [iconAction]="syncIcon" [closeOnClick]="false" />
             </core-context-menu>
@@ -38,12 +40,16 @@
     </ion-refresher>
 
     <!-- There is data to be synchronized -->
-    <ion-card class="core-warning-card" *ngIf="hasOffline">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
-        </ion-item>
-    </ion-card>
+    @if (hasOffline) {
+        <div class="list-item-limited-width">
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendar' | translate} }}</ion-label>
+                </ion-item>
+            </ion-card>
+        </div>
+    }
 
     <!-- Aspire School Events Section -->
     <div class="aspire-school-events" *ngIf="!showCalendar">
@@ -198,10 +204,12 @@
     <addon-calendar-upcoming-events *ngIf="loadUpcoming" [hidden]="showCalendar" [filter]="filter" (onEventClicked)="gotoEvent($event)" />
 
     <!-- Create a calendar event. -->
-    <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end" *ngIf="canCreate">
-        <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
-            <ion-icon name="fas-plus" aria-hidden="true" />
-            <span class="sr-only">{{ 'addon.calendar.newevent' | translate }}</span>
-        </ion-fab-button>
-    </ion-fab>
+    @if (canCreate) {
+        <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
+            <ion-fab-button (click)="openEdit()" [attr.aria-label]="'addon.calendar.newevent' | translate">
+                <ion-icon name="fas-plus" aria-hidden="true" />
+                <span class="sr-only">{{ 'addon.calendar.newevent' | translate }}</span>
+            </ion-fab-button>
+        </ion-fab>
+    }
 </ion-content>

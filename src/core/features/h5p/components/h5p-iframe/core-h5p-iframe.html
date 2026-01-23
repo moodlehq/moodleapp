@@ -1,5 +1,6 @@
-<core-loading [hideUntil]="iframeSrc" [fullscreen]="false">
-    <core-iframe *ngIf="iframeSrc" [src]="iframeSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="iframeLoaded()"
-        [showFullscreenOnToolbar]="enableInAppFullscreen" [autoFullscreenOnRotate]="enableInAppFullscreen" />
-    <script *ngIf="resizeScript && iframeSrc" type="text/javascript" [src]="resizeScript"></script>
+<core-loading [hideUntil]="!!iframeSrc" [fullscreen]="false">
+    @if (iframeSrc) {
+        <core-iframe [src]="iframeSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="iframeLoaded()"
+            [showFullscreenOnToolbar]="enableInAppFullscreen" [autoFullscreenOnRotate]="enableInAppFullscreen" />
+    }
 </core-loading>

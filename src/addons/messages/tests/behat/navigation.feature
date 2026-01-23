@@ -1,4 +1,4 @@
-@addon_messages @app @javascript
+@addon_messages @app @core @core_message @javascript
 Feature: Test messages navigation in the app
 
   Background:
@@ -26,14 +26,14 @@ Feature: Test messages navigation in the app
     And I press "Send" in the app
     Then I should find "Hi there" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     And I press "User info" in the app
     Then I should find "Details" in the app
 
     When I press "Message" in the app
     Then I should find "Hi there" in the app
 
-    When I press "Display options" in the app
+    When I press the page context menu button in the app
     Then I should not find "User info" in the app
 
     When I close the popup in the app

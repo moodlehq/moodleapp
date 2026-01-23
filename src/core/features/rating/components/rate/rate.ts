@@ -23,11 +23,12 @@ import {
 } from '@features/rating/services/rating';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays the user rating select.
@@ -35,6 +36,9 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-rating-rate',
     templateUrl: 'core-rating-rate.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreRatingRateComponent implements OnChanges, OnDestroy {
 
@@ -158,7 +162,7 @@ export class CoreRatingRateComponent implements OnChanges, OnDestroy {
                 this.onUpdate.emit();
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             modal.dismiss();
         }

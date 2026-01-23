@@ -33,13 +33,20 @@ import {
 } from './assign-offline';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetwork } from '@services/network';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
-import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT } from '../constants';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
+    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_MODNAME,
+} from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync assigns.
@@ -47,7 +54,7 @@ import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_COMPONENT } from '../con
 @Injectable({ providedIn: 'root' })
 export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvider<AddonModAssignSyncResult> {
 
-    protected componentTranslatableString = 'assign';
+    protected componentTranslatableString = ADDON_MOD_ASSIGN_MODNAME;
 
     constructor() {
         super('AddonModAssignSyncProvider');
@@ -61,7 +68,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      * @returns Sync ID.
      */
     getGradeSyncId(assignId: number, userId: number): string {
-        return 'assignGrade#' + assignId + '#' + userId;
+        return `assignGrade#${assignId}#${userId}`;
     }
 
     /**
@@ -168,12 +175,12 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         // Verify that assign isn't blocked.
         if (CoreSync.isBlocked(ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId)) {
-            this.logger.debug('Cannot sync assign ' + assignId + ' because it is blocked.');
+            this.logger.debug(`Cannot sync assign ${assignId} because it is blocked.`);
 
             throw new CoreSyncBlockedError(Translate.instant('core.errorsyncblocked', { $a: this.componentTranslate }));
         }
 
-        this.logger.debug('Try to sync assign ' + assignId + ' in site ' + siteId);
+        this.logger.debug(`Try to sync assign ${assignId} in site ${siteId}`);
 
         const syncPromise = this.performSyncAssign(assignId, siteId);
 
@@ -189,8 +196,8 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
      */
     protected async performSyncAssign(assignId: number, siteId: string): Promise<AddonModAssignSyncResult> {
         // Sync offline logs.
-        await CoreUtils.ignoreErrors(
-            CoreCourseLogHelper.syncActivity(ADDON_MOD_ASSIGN_COMPONENT, assignId, siteId),
+        await CorePromiseUtils.ignoreErrors(
+            CoreCourseLogHelper.syncActivity(ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assignId, siteId),
         );
 
         const result: AddonModAssignSyncResult = {
@@ -207,7 +214,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         if (!submissions.length && !grades.length) {
             // Nothing to sync.
-            await CoreUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
+            await CorePromiseUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
 
             return result;
         }
@@ -246,15 +253,15 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
         }));
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
 
         if (result.updated) {
             // Data has been sent to server. Now invalidate the WS calls.
-            await CoreUtils.ignoreErrors(AddonModAssign.invalidateContent(assign.cmid, courseId, siteId));
+            await CorePromiseUtils.ignoreErrors(AddonModAssign.invalidateContent(assign.cmid, courseId, siteId));
         }
 
         // Sync finished, set sync time.
-        await CoreUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
+        await CorePromiseUtils.ignoreErrors(this.setSyncTime(assignId, siteId));
 
         // All done, return the result.
         return result;
@@ -272,7 +279,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId: string,
     ): Promise<AddonModAssignSubmissionsGradingDBRecordFormatted[]> {
         // If no offline data found, return empty array.
-        return CoreUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissionsGrade(assignId, siteId), []);
+        return CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissionsGrade(assignId, siteId), []);
     }
 
     /**
@@ -287,7 +294,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         siteId: string,
     ): Promise<AddonModAssignSubmissionsDBRecordFormatted[]> {
         // If no offline data found, return empty array.
-        return CoreUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissions(assignId, siteId), []);
+        return CorePromiseUtils.ignoreErrors(AddonModAssignOffline.getAssignSubmissions(assignId, siteId), []);
     }
 
     /**
@@ -315,11 +322,11 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             siteId,
         };
 
-        const status = await AddonModAssign.getSubmissionStatus(assign.id, options);
+        const status = await AddonModAssign.getSubmissionStatus(assign, options);
 
         const submission = AddonModAssign.getSubmissionObjectFromAttempt(assign, status.lastattempt);
 
-        if (submission && submission.timemodified != offlineData.onlinetimemodified) {
+        if (submission && submission.timemodified !== offlineData.onlinetimemodified) {
             // The submission was modified in Moodle, discard the submission.
             this.addOfflineDataDeletedWarning(
                 warnings,
@@ -331,24 +338,28 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
         }
 
         try {
-            if (Object.keys(offlineData.plugindata).length == 0) {
+            // In case no plugin data and no submission statement (true or false) the submission has been removed.
+            if (Object.keys(offlineData.plugindata).length === 0 &&
+                (offlineData.submissionstatement === undefined || offlineData.submissionstatement === null)) {
                 await AddonModAssign.removeSubmissionOnline(assign.id, offlineData.userid, siteId);
             } else {
-                if (submission?.plugins) {
-                    // Prepare plugins data.
-                    await Promise.all(submission.plugins.map((plugin) =>
-                        AddonModAssignSubmissionDelegate.preparePluginSyncData(
-                            assign,
-                            submission,
-                            plugin,
-                            offlineData,
-                            pluginData,
-                            siteId,
-                        )));
-                }
+                if (Object.keys(offlineData.plugindata).length > 0) {
+                    if (submission?.plugins) {
+                        // Prepare plugins data.
+                        await Promise.all(submission.plugins.map((plugin) =>
+                            AddonModAssignSubmissionDelegate.preparePluginSyncData(
+                                assign,
+                                submission,
+                                plugin,
+                                offlineData,
+                                pluginData,
+                                siteId,
+                            )));
+                    }
 
-                // Now save the submission.
-                await AddonModAssign.saveSubmissionOnline(assign.id, pluginData, siteId);
+                    // Now save the submission.
+                    await AddonModAssign.saveSubmissionOnline(assign.id, pluginData, siteId);
+                }
 
                 if (assign.submissiondrafts && offlineData.submitted) {
                     // The user submitted the assign manually. Submit it for grading.
@@ -357,9 +368,9 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Submission data sent, update cached data. No need to block the user for this.
-            AddonModAssign.getSubmissionStatus(assign.id, options);
+            AddonModAssign.getSubmissionStatus(assign, options);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
                 throw error;
             }
@@ -441,7 +452,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             ));
         }
 
-        const status = await AddonModAssign.getSubmissionStatus(assign.id, options);
+        const status = await AddonModAssign.getSubmissionStatus(assign, options);
 
         const timemodified = (status.feedback && (status.feedback.gradeddate || status.feedback.grade?.timemodified)) || 0;
 
@@ -502,15 +513,16 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             let promises: Promise<void | AddonModAssignGetSubmissionStatusWSResponse>[] = [];
             if (status.feedback && status.feedback.plugins) {
                 promises = status.feedback.plugins.map((plugin) =>
+                    // eslint-disable-next-line @typescript-eslint/no-deprecated
                     AddonModAssignFeedbackDelegate.discardPluginFeedbackData(assign.id, userId, plugin, siteId));
             }
 
             // Update cached data.
-            promises.push(AddonModAssign.getSubmissionStatus(assign.id, options));
+            promises.push(AddonModAssign.getSubmissionStatus(assign, options));
 
-            await CoreUtils.allPromises(promises);
+            await CorePromiseUtils.allPromises(promises);
         } catch (error) {
-            if (!error || !CoreUtils.isWebServiceError(error)) {
+            if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
                 throw error;
             }
@@ -535,7 +547,7 @@ export type AddonModAssignSyncResult = CoreSyncResult & {
 };
 
 /**
- * Data passed to AUTO_SYNCED event.
+ * Data passed to ADDON_MOD_ASSIGN_AUTO_SYNCED event.
  */
 export type AddonModAssignAutoSyncData = {
     assignId: number;
@@ -544,9 +556,23 @@ export type AddonModAssignAutoSyncData = {
 };
 
 /**
- * Data passed to MANUAL_SYNCED event.
+ * Data passed to ADDON_MOD_ASSIGN_MANUAL_SYNCED event.
  */
 export type AddonModAssignManualSyncData = AddonModAssignAutoSyncData & {
     context: string;
     submitId?: number;
 };
+
+declare module '@singletons/events' {
+
+    /**
+     * Augment CoreEventsData interface with events specific to this service.
+     *
+     * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
+     */
+    export interface CoreEventsData {
+        [ADDON_MOD_ASSIGN_MANUAL_SYNCED]: AddonModAssignManualSyncData;
+        [ADDON_MOD_ASSIGN_AUTO_SYNCED]: AddonModAssignAutoSyncData;
+    }
+
+}

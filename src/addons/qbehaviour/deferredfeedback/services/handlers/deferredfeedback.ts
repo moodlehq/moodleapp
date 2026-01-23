@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestionBehaviourHandler, CoreQuestionQuestionWithAnswers } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDBRecord } from '@features/question/services/database/question';
@@ -80,7 +81,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
         let dbQuestion: CoreQuestionDBRecord | CoreQuestionQuestionWithAnswers = question;
         try {
             dbQuestion = await CoreQuestion.getQuestion(component, attemptId, question.slot, siteId);
-        } catch (error) {
+        } catch {
             // No entry found, use the original data.
         }
 
@@ -134,7 +135,7 @@ export class AddonQbehaviourDeferredFeedbackHandlerService implements CoreQuesti
         }
 
         // Answers have changed. Now check if the response is complete and calculate the new state.
-        let complete: number;
+        let complete: QuestionCompleteGradableResponse;
         let newState: string;
 
         if (isCompleteFn) {
@@ -190,7 +191,7 @@ export type isCompleteResponseFunction = (
     answers: CoreQuestionsAnswers,
     component: string,
     componentId: string | number,
-) => number;
+) => QuestionCompleteGradableResponse;
 
 /**
  * Check if two responses are the same.

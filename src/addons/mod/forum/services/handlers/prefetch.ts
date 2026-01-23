@@ -21,11 +21,11 @@ import { CoreWSFile } from '@services/ws';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroups, CoreGroupsProvider } from '@services/groups';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { AddonModForumSync, AddonModForumSyncResult } from '../forum-sync';
 import { makeSingleton } from '@singletons';
 import { CoreCourses } from '@features/courses/services/courses';
-import { ADDON_MOD_FORUM_COMPONENT } from '../../constants';
+import { ADDON_MOD_FORUM_COMPONENT_LEGACY, ADDON_MOD_FORUM_MODNAME } from '../../constants';
 
 /**
  * Handler to prefetch forums.
@@ -34,8 +34,8 @@ import { ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefetchHandlerBase {
 
     name = 'AddonModForum';
-    modName = 'forum';
-    component = ADDON_MOD_FORUM_COMPONENT;
+    modName = ADDON_MOD_FORUM_MODNAME;
+    component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     updatesNames = /^configuration$|^.*files$|^discussions$/;
 
     /**
@@ -54,7 +54,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             files = files.concat(this.getPostsFiles(posts));
 
             return files;
-        } catch (error) {
+        } catch {
             // Forum not found, return empty list.
             return [];
         }
@@ -172,10 +172,9 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
      *
      * @param moduleId The module ID.
      * @param courseId The course ID the module belongs to.
-     * @returns Promise resolved when the data is invalidated.
      */
-    invalidateContent(moduleId: number, courseId: number): Promise<void> {
-        return AddonModForum.invalidateContent(moduleId, courseId);
+    async invalidateContent(moduleId: number, courseId: number): Promise<void> {
+        await AddonModForum.invalidateContent(moduleId, courseId);
     }
 
     /**
@@ -251,7 +250,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
         promises.push(AddonModForum.getAccessInformation(forum.id, modOptions));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CoreUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
 
         await Promise.all(promises);
     }
@@ -282,7 +281,7 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
 
             if (mode !== CoreGroupsProvider.SEPARATEGROUPS && mode !== CoreGroupsProvider.VISIBLEGROUPS) {
                 // Activity doesn't use groups. Prefetch canAddDiscussionToAll to determine if user can pin/attach.
-                await CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options));
+                await CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options));
 
                 return;
             }
@@ -291,11 +290,11 @@ export class AddonModForumPrefetchHandlerService extends CoreCourseActivityPrefe
             const result = await CoreGroups.getActivityAllowedGroups(forum.cmid, undefined, siteId);
             await Promise.all(
                 result.groups.map(
-                    async (group) => CoreUtils.ignoreErrors(
+                    async (group) => CorePromiseUtils.ignoreErrors(
                         AddonModForum.canAddDiscussion(forum.id, group.id, options),
                     ),
                 ).concat(
-                    CoreUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options)),
+                    CorePromiseUtils.ignoreErrors(AddonModForum.canAddDiscussionToAll(forum.id, options)),
                 ),
             );
         } catch (error) {

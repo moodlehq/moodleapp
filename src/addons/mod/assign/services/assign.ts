@@ -17,15 +17,14 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreSite } from '@classes/sites/site';
 import { CoreInterceptor } from '@classes/interceptor';
 import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { makeSingleton, Translate } from '@singletons';
-import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
+import { makeSingleton } from '@singletons';
+import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetwork } from '@services/network';
-import { CoreUtils } from '@services/utils/utils';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
@@ -35,17 +34,21 @@ import { CoreFormFields } from '@singletons/form';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreIonicColorNames } from '@singletons/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { ContextLevel } from '@/core/constants';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import {
-    ADDON_MOD_ASSIGN_AUTO_SYNCED,
-    ADDON_MOD_ASSIGN_COMPONENT,
+    ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
     ADDON_MOD_ASSIGN_GRADED_EVENT,
-    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
     ADDON_MOD_ASSIGN_STARTED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_REMOVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMISSION_SAVED_EVENT,
     ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT,
+    AddonModAssignAttemptReopenMethodValues,
+    AddonModAssignGradingStates,
+    AddonModAssignSubmissionStatusValues,
 } from '../constants';
+import { CoreTextFormat } from '@singletons/text';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreUserDescriptionExporter } from '@features/user/services/user';
 
 declare module '@singletons/events' {
 
@@ -60,8 +63,6 @@ declare module '@singletons/events' {
         [ADDON_MOD_ASSIGN_SUBMITTED_FOR_GRADING_EVENT]: AddonModAssignSubmittedForGradingEventData;
         [ADDON_MOD_ASSIGN_GRADED_EVENT]: AddonModAssignGradedEventData;
         [ADDON_MOD_ASSIGN_STARTED_EVENT]: AddonModAssignStartedEventData;
-        [ADDON_MOD_ASSIGN_MANUAL_SYNCED]: AddonModAssignManualSyncData;
-        [ADDON_MOD_ASSIGN_AUTO_SYNCED]: AddonModAssignAutoSyncData;
     }
 
 }
@@ -80,16 +81,16 @@ export class AddonModAssignProvider {
      * This function doesn't check if the submission is empty, it should be checked before calling this function.
      *
      * @param assign Assignment instance.
-     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @param lastAttempt Last Attempt of the submission.
      * @returns Whether it can submit.
      */
-    canSubmitOffline(assign: AddonModAssignAssign, submissionStatus: AddonModAssignGetSubmissionStatusWSResponse): boolean {
-        if (!this.isSubmissionOpen(assign, submissionStatus)) {
+    canSubmitOffline(assign: AddonModAssignAssign, lastAttempt: AddonModAssignSubmissionAttempt): boolean {
+        if (!this.isSubmissionOpen(assign, lastAttempt)) {
             return false;
         }
 
-        const userSubmission = submissionStatus.lastattempt?.submission;
-        const teamSubmission = submissionStatus.lastattempt?.teamsubmission;
+        const userSubmission = lastAttempt?.submission;
+        const teamSubmission = lastAttempt?.teamsubmission;
 
         if (teamSubmission) {
             if (teamSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
@@ -98,7 +99,7 @@ export class AddonModAssignProvider {
             } else if (userSubmission && userSubmission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // The user has already clicked the submit button on the team submission.
                 return false;
-            } else if (assign.preventsubmissionnotingroup && !submissionStatus.lastattempt?.submissiongroup) {
+            } else if (assign.preventsubmissionnotingroup && !lastAttempt?.submissiongroup) {
                 return false;
             }
         } else if (userSubmission) {
@@ -162,7 +163,7 @@ export class AddonModAssignProvider {
      */
     protected async getAssignmentByField(
         courseId: number,
-        key: string,
+        key: 'id' | 'cmid',
         value: number,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<AddonModAssignAssign> {
@@ -191,8 +192,8 @@ export class AddonModAssignProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -250,7 +251,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentCacheKey(courseId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assignment:' + courseId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}assignment:${courseId}`;
     }
 
     /**
@@ -274,8 +275,8 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentUserMappingsCacheKey(assignId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -303,7 +304,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentUserMappingsCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'usermappings:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}usermappings:${assignId}`;
     }
 
     /**
@@ -321,7 +322,7 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getAssignmentGradesCacheKey(assignId),
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -350,7 +351,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getAssignmentGradesCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'assigngrades:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}assigngrades:${assignId}`;
     }
 
     /**
@@ -383,13 +384,13 @@ export class AddonModAssignProvider {
             return;
         }
 
-        if (status == AddonModAssignGradingStates.GRADED
-                || status == AddonModAssignGradingStates.NOT_GRADED
-                || status == AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
-            return 'addon.mod_assign.' + status;
+        if (status === AddonModAssignGradingStates.GRADED
+                || status === AddonModAssignGradingStates.NOT_GRADED
+                || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
+            return `addon.mod_assign.${status}`;
         }
 
-        return 'addon.mod_assign.markingworkflowstate' + status;
+        return `addon.mod_assign.markingworkflowstate${status}`;
     }
 
     /**
@@ -499,8 +500,8 @@ export class AddonModAssignProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionsCacheKey(assignId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -528,18 +529,18 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected getSubmissionsCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'submissions:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}submissions:${assignId}`;
     }
 
     /**
      * Get information about an assignment submission status for a given user.
      *
-     * @param assignId Assignment instance id.
+     * @param assign Assignment instance.
      * @param options Other options.
      * @returns Promise always resolved with the user submission status.
      */
     async getSubmissionStatus(
-        assignId: number,
+        assign: AddonModAssignAssign,
         options: AddonModAssignSubmissionStatusOptions = {},
     ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
         console.log('[AddonModAssign] getSubmissionStatus called for assignId:', assignId);
@@ -570,7 +571,7 @@ export class AddonModAssignProvider {
 
         const fixedParams = this.fixSubmissionStatusParams(site, options.userId, options.groupId, options.isBlind);
         const params: AddonModAssignGetSubmissionStatusWSParams = {
-            assignid: assignId,
+            assignid: assign.id,
             userid: fixedParams.userId,
         };
         if (fixedParams.groupId) {
@@ -579,21 +580,43 @@ export class AddonModAssignProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getSubmissionStatusCacheKey(
-                assignId,
+                assign.id,
                 fixedParams.userId,
                 fixedParams.groupId,
                 fixedParams.isBlind,
             ),
             getCacheUsingCacheKey: true,
-            filter: options.filter,
-            rewriteurls: options.filter,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
-            // Don't cache when getting text without filters.
-            // @todo Change this to support offline editing.
-            saveToCache: options.filter,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
+            ...CoreSites.getFilterPresets(options.filter),
         };
+
+        if (options.checkFetchOriginal !== false && fixedParams.userId === site.getUserId()) {
+            // Getting own submission. Fetch original if there is a submission and can be edited.
+            preSets.fetchOriginalToo = async (response: AddonModAssignGetSubmissionStatusWSResponse) => {
+                if (!response.lastattempt?.canedit) {
+                    return false;
+                }
+
+                const submission = this.getSubmissionObjectFromAttempt(assign, response.lastattempt);
+                if (!submission || this.isNewOrReopenedSubmission(submission.status)) {
+                    // It's a new submission, no submission data to fetch.
+                    return false;
+                }
+
+                const unsupportedPlugins = await this.getUnsupportedEditPlugins(submission.plugins ?? []);
+                if (unsupportedPlugins.length > 0) {
+                    return false;
+                }
+
+                const canPluginsContainFilters = await Promise.all((submission.plugins ?? []).map(
+                    plugin => AddonModAssignSubmissionDelegate.canPluginContainFiltersWhenEditing(assign, submission, plugin),
+                ));
+
+                return canPluginsContainFilters.some(canContainFilters => canContainFilters);
+            };
+        }
 
         return site.read<AddonModAssignGetSubmissionStatusWSResponse>('mod_assign_get_submission_status', params, preSets);
     }
@@ -612,7 +635,7 @@ export class AddonModAssignProvider {
     ): Promise<AddonModAssignGetSubmissionStatusWSResponse> {
         options.cmId = options.cmId || assign.cmid;
 
-        const response = await this.getSubmissionStatus(assign.id, options);
+        const response = await this.getSubmissionStatus(assign, options);
 
         const userSubmission = this.getSubmissionObjectFromAttempt(assign, response.lastattempt);
         if (userSubmission) {
@@ -625,7 +648,7 @@ export class AddonModAssignProvider {
         };
 
         try {
-            return await this.getSubmissionStatus(assign.id, newOptions);
+            return await this.getSubmissionStatus(assign, newOptions);
         } catch {
             // Error, return the first result even if it doesn't have the user submission.
             return response;
@@ -691,6 +714,16 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Given a submission status, check if it's a new or reopened submission.
+     *
+     * @param status Submission status.
+     * @returns Whether it's a new or reopened submission.
+     */
+    isNewOrReopenedSubmission(status: AddonModAssignSubmissionStatusValues): boolean {
+        return status === AddonModAssignSubmissionStatusValues.NEW || status === AddonModAssignSubmissionStatusValues.REOPENED;
+    }
+
+    /**
      * List the participants for a single assignment, with some summary info about their submissions.
      *
      * @param assignId Assignment id.
@@ -716,8 +749,8 @@ export class AddonModAssignProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.listParticipantsCacheKey(assignId, groupId),
-            updateFrequency: CoreSite.FREQUENCY_OFTEN,
-            component: ADDON_MOD_ASSIGN_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.OFTEN,
+            component: ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
@@ -743,7 +776,7 @@ export class AddonModAssignProvider {
      * @returns Cache key.
      */
     protected listParticipantsPrefixCacheKey(assignId: number): string {
-        return AddonModAssignProvider.ROOT_CACHE_KEY + 'participants:' + assignId;
+        return `${AddonModAssignProvider.ROOT_CACHE_KEY}participants:${assignId}`;
     }
 
     /**
@@ -751,7 +784,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -764,7 +796,6 @@ export class AddonModAssignProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentData(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -777,7 +808,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentUserMappingsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -790,7 +820,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAssignmentGradesData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -804,7 +833,6 @@ export class AddonModAssignProvider {
      * @param moduleId The module ID.
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateContent(moduleId: number, courseId: number, siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
@@ -828,7 +856,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -844,7 +871,6 @@ export class AddonModAssignProvider {
      * @param groupId Group Id (empty for all participants).
      * @param isBlind Whether blind marking is enabled or not.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateSubmissionStatusData(
         assignId: number,
@@ -869,7 +895,6 @@ export class AddonModAssignProvider {
      *
      * @param assignId Assignment instance id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateListParticipantsData(assignId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -881,16 +906,15 @@ export class AddonModAssignProvider {
      * Check if a submission is open. This function is based on Moodle's submissions_open.
      *
      * @param assign Assignment instance.
-     * @param submissionStatus Submission status returned by getSubmissionStatus.
+     * @param lastAttempt Last Attempt fot he submission.
      * @returns Whether submission is open.
      */
-    isSubmissionOpen(assign: AddonModAssignAssign, submissionStatus?: AddonModAssignGetSubmissionStatusWSResponse): boolean {
-        if (!assign || !submissionStatus) {
+    isSubmissionOpen(assign: AddonModAssignAssign, lastAttempt?: AddonModAssignSubmissionAttempt): boolean {
+        if (!assign || !lastAttempt) {
             return false;
         }
 
-        const time = CoreTimeUtils.timestamp();
-        const lastAttempt = submissionStatus.lastattempt;
+        const time = CoreTime.timestamp();
         const submission = this.getSubmissionObjectFromAttempt(assign, lastAttempt);
 
         let dateOpen = true;
@@ -949,7 +973,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_submission_status',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -970,7 +994,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_grading_table',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -991,7 +1015,7 @@ export class AddonModAssignProvider {
         await CoreCourseLogHelper.log(
             'mod_assign_view_assign',
             params,
-            ADDON_MOD_ASSIGN_COMPONENT,
+            ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
             assignid,
             siteId,
         );
@@ -1001,10 +1025,13 @@ export class AddonModAssignProvider {
      * Returns if a submissions needs to be graded.
      *
      * @param submission Submission.
-     * @param assignId Assignment ID.
+     * @param assign Assignment.
      * @returns Promise resolved with boolean: whether it needs to be graded or not.
      */
-    async needsSubmissionToBeGraded(submission: AddonModAssignSubmissionFormatted, assignId: number): Promise<boolean> {
+    async needsSubmissionToBeGraded(
+        submission: AddonModAssignSubmissionFormatted,
+        assign: AddonModAssignAssign,
+    ): Promise<boolean> {
         if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
             return false;
         }
@@ -1021,7 +1048,7 @@ export class AddonModAssignProvider {
         }
 
         // We need more data to decide that.
-        const response = await this.getSubmissionStatus(assignId, {
+        const response = await this.getSubmissionStatus(assign, {
             userId: submission.submitid,
             isBlind: !!submission.blindid,
         });
@@ -1040,7 +1067,6 @@ export class AddonModAssignProvider {
      * @param assignId Assign ID.
      * @param courseId Course ID the assign belongs to.
      * @param pluginData Data to save.
-     * @param allowOffline Whether to allow offline usage.
      * @param timemodified The time the submission was last modified in online.
      * @param allowsDrafts Whether the assignment allows submission drafts.
      * @param userId User ID. If not defined, site's current user.
@@ -1051,7 +1077,6 @@ export class AddonModAssignProvider {
         assignId: number,
         courseId: number,
         pluginData: AddonModAssignSavePluginData,
-        allowOffline: boolean,
         timemodified: number,
         allowsDrafts = false,
         userId?: number,
@@ -1075,7 +1100,7 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (allowOffline && !CoreNetwork.isOnline()) {
+        if (!CoreNetwork.isOnline()) {
             // App is offline, store the action.
             return storeOffline();
         }
@@ -1087,7 +1112,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (allowOffline && error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1197,7 +1222,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1305,7 +1330,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1409,8 +1434,7 @@ export class AddonModAssignProvider {
             return false;
         };
 
-        if (submission.status === AddonModAssignSubmissionStatusValues.NEW ||
-                submission.status == AddonModAssignSubmissionStatusValues.REOPENED) {
+        if (this.isNewOrReopenedSubmission(submission.status)) {
             // The submission was created offline and not synced, just delete the offline submission.
             await AddonModAssignOffline.deleteSubmission(assign.id, submission.userid, siteId);
 
@@ -1446,7 +1470,7 @@ export class AddonModAssignProvider {
 
             return true;
         } catch (error) {
-            if (error && !CoreUtils.isWebServiceError(error)) {
+            if (error && !CoreWSError.isWebServiceError(error)) {
                 // Couldn't connect to server, store in offline.
                 return storeOffline();
             } else {
@@ -1503,11 +1527,11 @@ export const AddonModAssign = makeSingleton(AddonModAssignProvider);
 /**
  * Options to pass to get submission status.
  */
-export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptions & {
+export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptionsWithFilter & {
     userId?: number; // User Id (empty for current user).
     groupId?: number; // Group Id (empty for all participants).
     isBlind?: boolean; // If blind marking is enabled or not.
-    filter?: boolean; // True to filter WS response and rewrite URLs, false otherwise. Defaults to true.
+    checkFetchOriginal?: boolean; // Whether to check if we need to fetch the original data (unfiltered). Defaults to true.
 };
 
 /**
@@ -1543,14 +1567,14 @@ export type AddonModAssignAssign = {
     requiresubmissionstatement: number; // Student must accept submission statement.
     preventsubmissionnotingroup?: number; // Prevent submission not in group.
     submissionstatement?: string; // Submission statement formatted.
-    submissionstatementformat?: number; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     configs: AddonModAssignConfig[]; // Configuration settings.
     intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
     activity?: string; // @since 4.0. Description of activity.
-    activityformat?: number; // @since 4.0. Format of activity.
+    activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
     activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
     timelimit?: number; // @since 4.0. Time limit to complete assigment.
     submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
@@ -1615,7 +1639,7 @@ export type AddonModAssignPlugin = {
         name: string; // Field name.
         description: string; // Field description.
         text: string; // Field value.
-        format: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        format: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     }[];
 };
 
@@ -1694,46 +1718,11 @@ type AddonModAssignListParticipantsWSResponse = AddonModAssignParticipant[];
 /**
  * Participant returned by mod_assign_list_participants.
  */
-export type AddonModAssignParticipant = {
-    id: number; // ID of the user.
-    username?: string; // The username.
-    firstname?: string; // The first name(s) of the user.
-    lastname?: string; // The family name of the user.
-    fullname: string; // The fullname of the user.
-    email?: string; // Email address.
-    address?: string; // Postal address.
-    phone1?: string; // Phone 1.
-    phone2?: string; // Phone 2.
-    icq?: string; // Icq number.
-    skype?: string; // Skype id.
-    yahoo?: string; // Yahoo id.
-    aim?: string; // Aim id.
-    msn?: string; // Msn number.
-    department?: string; // Department.
-    institution?: string; // Institution.
-    idnumber?: string; // The idnumber of the user.
-    interests?: string; // User interests (separated by commas).
-    firstaccess?: number; // First access to the site (0 if never).
-    lastaccess?: number; // Last access to the site (0 if never).
-    suspended?: boolean; // Suspend user account, either false to enable user login or true to disable it.
-    description?: string; // User profile description.
-    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    city?: string; // Home city of the user.
-    url?: string; // URL of the user.
-    country?: string; // Home country code of the user, such as AU or CZ.
+export type AddonModAssignParticipant = Omit<CoreUserDescriptionExporter,
+    'auth'|'confirmed'|'lang'|'calendartype'|'theme'|'timezone'|'mailformat'|'profileimageurlsmall'|'profileimageurl'> & {
     profileimageurlsmall?: string; // User image profile URL - small version.
     profileimageurl?: string; // User image profile URL - big version.
-    customfields?: { // User custom fields (also known as user profile fields).
-        type: string; // The type of the custom field - text field, checkbox...
-        value: string; // The value of the custom field.
-        displayvalue: string; // @since 4.2.Formatted value of the custom field.
-        name: string; // The name of the custom field.
-        shortname: string; // The shortname of the custom field - to be able to build the field class in the code.
-    }[];
-    preferences?: { // Users preferences.
-        name: string; // The name of the preferences.
-        value: string; // The value of the preference.
-    }[];
+
     recordid?: number; // @since 3.7. Record id.
     groups?: { // User groups.
         id: number; // Group id.
@@ -1816,7 +1805,7 @@ export type AddonModAssignGetSubmissionStatusWSResponse = {
             activity?: CoreWSExternalFile[]; // Activity attachments files.
         };
         activity?: string; // Text of activity.
-        activityformat?: number; // Format of activity.
+        activityformat?: CoreTextFormat; // Format of activity.
     };
     warnings?: CoreWSExternalWarning[];
 };
@@ -1999,41 +1988,3 @@ export type AddonModAssignGradedEventData = AddonModAssignSubmittedForGradingEve
 export type AddonModAssignStartedEventData = {
     assignmentId: number;
 };
-
-/**
- * Submission status.
- * Constants on LMS starting with ASSIGN_SUBMISSION_STATUS_
- */
-export enum AddonModAssignSubmissionStatusValues {
-    SUBMITTED = 'submitted',
-    DRAFT = 'draft',
-    NEW = 'new',
-    REOPENED = 'reopened',
-    // Added by App Statuses.
-    NO_ATTEMPT = 'noattempt',
-    NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
-    NO_SUBMISSION = 'nosubmission',
-    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-}
-
-/**
- * Grading status.
- * Constants on LMS starting with ASSIGN_GRADING_STATUS_
- */
-export enum AddonModAssignGradingStates {
-    GRADED = 'graded',
-    NOT_GRADED = 'notgraded',
-    // Added by App Statuses.
-    MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
-    GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
-}
-
-/**
- * Reopen attempt methods.
- * Constants on LMS starting with ASSIGN_ATTEMPT_REOPEN_METHOD_
- */
-export enum AddonModAssignAttemptReopenMethodValues {
-    NONE = 'none',
-    MANUAL = 'manual',
-    UNTILPASS = 'untilpass',
-}

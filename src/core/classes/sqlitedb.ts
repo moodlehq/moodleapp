@@ -354,7 +354,6 @@ export class SQLiteDB {
      * Create a table if it doesn't exist from a schema.
      *
      * @param table Table schema.
-     * @returns Promise resolved when success.
      */
     async createTableFromSchema(table: SQLiteDBTableSchema): Promise<void> {
         await this.createTable(table.name, table.columns, table.primaryKeys, table.uniqueKeys, table.foreignKeys, table.tableCheck);
@@ -364,7 +363,6 @@ export class SQLiteDB {
      * Create several tables if they don't exist from a list of schemas.
      *
      * @param tables List of table schema.
-     * @returns Promise resolved when success.
      */
     async createTablesFromSchema(tables: SQLiteDBTableSchema[]): Promise<void> {
         const promises = tables.map(table => this.createTableFromSchema(table));
@@ -429,7 +427,6 @@ export class SQLiteDB {
      * Drop a table if it exists.
      *
      * @param name The table name.
-     * @returns Promise resolved when success.
      */
     async dropTable(name: string): Promise<void> {
         await this.execute(`DROP TABLE IF EXISTS ${name}`);
@@ -437,8 +434,8 @@ export class SQLiteDB {
 
     /**
      * Execute a SQL query.
-     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
-     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API.
+     * Please notice that the rows property in the result cannot be converted to an array using Array.from().
      *
      * @param sql SQL query to execute.
      * @param params Query parameters.
@@ -451,11 +448,9 @@ export class SQLiteDB {
 
     /**
      * Execute a set of SQL queries. This operation is atomic.
-     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API. Please take into account that
-     * these query will be run in SQLite (Mobile) and Web SQL (desktop), so your query should work in both environments.
+     * IMPORTANT: Use this function only if you cannot use any of the other functions in this API.
      *
      * @param sqlStatements SQL statements to execute.
-     * @returns Promise resolved with the result.
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async executeBatch(sqlStatements: (string | string[] | any)[]): Promise<void> {
@@ -725,30 +720,34 @@ export class SQLiteDB {
      *
      * @param table The database table.
      * @param data A data object with values for one or more fields in the record.
+     * @param replace Whether to use INSERT OR REPLACE instead of INSERT.
      * @returns Array with the SQL query and the params.
      */
-    protected getSqlInsertQuery(table: string, data: SQLiteDBRecordValues): SQLiteDBQueryParams {
+    protected getSqlInsertQuery(table: string, data: SQLiteDBRecordValues, replace: boolean): SQLiteDBQueryParams {
         this.formatDataToInsert(data);
 
         const keys = Object.keys(data);
         const fields = keys.join(',');
         const questionMarks = ',?'.repeat(keys.length).substring(1);
+        const insertOrReplace = replace ? 'INSERT OR REPLACE' : 'INSERT';
 
         return {
-            sql: `INSERT OR REPLACE INTO ${table} (${fields}) VALUES (${questionMarks})`,
+            sql: `${insertOrReplace} INTO ${table} (${fields}) VALUES (${questionMarks})`,
             params: Object.values(data),
         };
     }
 
     /**
      * Insert a record into a table and return the "rowId" field.
+     * If replace is false, will throw an error if the record already exists.
      *
      * @param table The database table to be inserted into.
      * @param data A data object with values for one or more fields in the record.
+     * @param replace Whether to use INSERT OR REPLACE instead of INSERT. Defaults to true.
      * @returns Promise resolved with new rowId. Please notice this rowId is internal from SQLite.
      */
-    async insertRecord(table: string, data: SQLiteDBRecordValues): Promise<number> {
-        const sqlAndParams = this.getSqlInsertQuery(table, data);
+    async insertRecord(table: string, data: SQLiteDBRecordValues, replace = true): Promise<number> {
+        const sqlAndParams = this.getSqlInsertQuery(table, data, replace);
         const result = await this.execute(sqlAndParams.sql, sqlAndParams.params);
 
         return result.insertId;
@@ -759,15 +758,14 @@ export class SQLiteDB {
      *
      * @param table The database table to be inserted into.
      * @param dataObjects List of objects to be inserted.
-     * @returns Promise resolved when done.
      */
     async insertRecords(table: string, dataObjects: SQLiteDBRecordValues[]): Promise<void> {
-        if (!Array.isArray(dataObjects)) {
-            throw new CoreError('Invalid parameter supplied to insertRecords, it should be an array.');
+        if (!dataObjects.length) {
+            return;
         }
 
         const statements = dataObjects.map((dataObject) => {
-            const statement = this.getSqlInsertQuery(table, dataObject);
+            const statement = this.getSqlInsertQuery(table, dataObject, true);
 
             return [statement.sql, statement.params];
         });
@@ -780,7 +778,7 @@ export class SQLiteDB {
      *
      * @param table The database table to be inserted into.
      * @param source The database table to get the records from.
-     * @returns Promise resolved when done.
+     * @deprecated since 5.0. Will be protected in the future.
      */
     async insertRecordsFrom(
         table: string,
@@ -788,7 +786,7 @@ export class SQLiteDB {
     ): Promise<void> {
         const records = await this.getAllRecords<SQLiteDBRecordValues>(source);
 
-        await Promise.all(records.map((record) => this.insertRecord(table, record)));
+        await Promise.all(records.map((record) => this.insertRecord(table, record, true)));
     }
 
     /**
@@ -798,7 +796,6 @@ export class SQLiteDB {
      * @param oldTable Old table name.
      * @param newTable New table name.
      * @param mapCallback Mapping callback to migrate each record.
-     * @returns Resolved when done.
      */
     async migrateTable(
         oldTable: string,
@@ -824,6 +821,7 @@ export class SQLiteDB {
             await Promise.all(promises);
         } else {
             // No changes needed.
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             await this.insertRecordsFrom(newTable, oldTable);
         }
 
@@ -862,8 +860,6 @@ export class SQLiteDB {
 
     /**
      * Open the database. Only needed if it was closed before, a database is automatically opened when created.
-     *
-     * @returns Promise resolved when open.
      */
     async open(): Promise<void> {
         await this.db.open();
@@ -871,10 +867,10 @@ export class SQLiteDB {
 
     /**
      * Test whether a record exists in a table where all the given conditions met.
+     * Will throw an error if the record does not exist.
      *
      * @param table The table to check.
      * @param conditions The conditions to build the where clause. Must not contain numeric indexes.
-     * @returns Promise resolved if exists, rejected otherwise.
      */
     async recordExists(table: string, conditions?: SQLiteDBRecordValues): Promise<void> {
         const record = await this.getRecord(table, conditions);
@@ -885,11 +881,11 @@ export class SQLiteDB {
 
     /**
      * Test whether any records exists in a table which match a particular WHERE clause.
+     * Will throw an error if no records are found.
      *
      * @param table The table to query.
      * @param select A fragment of SQL to be used in a where clause in the SQL call.
      * @param params An array of sql parameters.
-     * @returns Promise resolved if exists, rejected otherwise.
      */
     async recordExistsSelect(table: string, select: string = '', params: SQLiteDBRecordValue[] = []): Promise<void> {
         const record = await this.getRecordSelect(table, select, params);
@@ -900,10 +896,10 @@ export class SQLiteDB {
 
     /**
      * Test whether a SQL SELECT statement returns any records.
+     * Will throw an error if no records are found.
      *
      * @param sql The SQL query returning one row with one column.
      * @param params An array of sql parameters.
-     * @returns Promise resolved if exists, rejected otherwise.
      */
     async recordExistsSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<void> {
         const record = await this.getRecordSql(sql, params);
@@ -913,10 +909,10 @@ export class SQLiteDB {
     }
 
     /**
-     * Test whether a table exists..
+     * Test whether a table exists.
+     * Will throw an error if the table does not exist.
      *
      * @param name The table name.
-     * @returns Promise resolved if exists, rejected otherwise.
      */
     async tableExists(name: string): Promise<void> {
         // eslint-disable-next-line @typescript-eslint/naming-convention

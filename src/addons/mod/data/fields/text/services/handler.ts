@@ -22,7 +22,6 @@ import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModDataFieldTextComponent } from '../component/text';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldTextComponent } = await import('../component/text');
+
         return AddonModDataFieldTextComponent;
     }
 
@@ -45,7 +46,7 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
      * @inheritdoc
      */
     getFieldSearchData(field: AddonModDataField, inputData: CoreFormFields): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         if (inputData[fieldName]) {
             return [{
@@ -66,7 +67,7 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
         originalFieldData: AddonModDataEntryField, // eslint-disable-line @typescript-eslint/no-unused-vars
     ): AddonModDataSubfieldData[] {
 
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [{
             fieldid: field.id,
@@ -82,7 +83,7 @@ export class AddonModDataFieldTextHandlerService implements AddonModDataFieldHan
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         const input = inputData[fieldName] ?? '';
         const content = originalFieldData?.content ?? '';
 

@@ -21,12 +21,11 @@
     }
 
     // Redefine window.open.
+    const originalWindowOpen = window.open;
     window.open = function(url, name, specs) {
         if (name == '_self') {
-            // Link should be loaded in the same frame.
-            location.href = toAbsolute(url);
-
-            return;
+            // Link will be opened in the same frame, no need to treat it.
+            return originalWindowOpen(url, name, specs);
         }
 
         getRootWindow(window).postMessage({
@@ -34,7 +33,7 @@
             context: 'iframe',
             action: 'window_open',
             frameUrl: location.href,
-            url: url,
+            url: toAbsolute(url),
             name: name,
             specs: specs,
         }, '*');
@@ -164,23 +163,18 @@
             return;
         }
 
-        const linkScheme = getUrlScheme(link.href);
-        const pageScheme = getUrlScheme(location.href);
-        const isTargetSelf = !link.target || link.target == '_self';
+        if (!link.target || link.target == '_self') {
+            // Link needs to be opened in the same iframe. This is already handled properly, we don't need to do anything else.
+            // Links opened in the same iframe won't be captured by the app.
+            return;
+        }
 
-        if (!link.href || linkScheme == 'javascript') {
+        if (!link.href || getUrlScheme(link.href) == 'javascript') {
             // Links with no URL and Javascript links are ignored.
             return;
         }
 
         event.preventDefault();
-
-        if (isTargetSelf && (isLocalFileUrlScheme(linkScheme) || !isLocalFileUrlScheme(pageScheme))) {
-            // Link should be loaded in the same frame. Don't do it if link is online and frame is local.
-            location.href = toAbsolute(link.href);
-
-            return;
-        }
 
         getRootWindow(window).postMessage({
             environment: 'moodleapp',

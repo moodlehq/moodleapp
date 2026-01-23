@@ -13,18 +13,14 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Coordinates } from '@awesome-cordova-plugins/geolocation';
-
-import { CoreApp } from '@services/app';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
-import { Geolocation, makeSingleton } from '@singletons';
-import { CoreUtils } from './utils/utils';
-import { CorePlatform } from './platform';
-import { CoreSilentError } from '@classes/errors/silenterror';
-import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreError } from '@classes/errors/error';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
-import { CoreNative } from '@features/native/services/native';
+import { CoreUrl } from '@singletons/url';
 
+/**
+ * @deprecated since 5.0. Geo location is no longer available in the app.
+ */
 @Injectable({ providedIn: 'root' })
 export class CoreGeolocationProvider {
 
@@ -39,190 +35,72 @@ export class CoreGeolocationProvider {
      *
      * @throws {CoreGeolocationError}
      * @returns Promise resolved with the geolocation coordinates.
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
-    async getCoordinates(): Promise<Coordinates> {
-        try {
-            this.logger.log('Getting coordinates.');
-            await this.authorizeLocation();
-            await this.enableLocation();
-            this.logger.log('Getting coordinates: authorized and enabled.');
-
-            const result = await Geolocation.getCurrentPosition({
-                enableHighAccuracy: true,
-                timeout: 30000,
-            });
-            this.logger.log('Coordinates retrieved');
-
-            return result.coords;
-        } catch (error) {
-            this.logger.log('Error getting coordinates.', error);
-
-            if (this.isCordovaPermissionDeniedError(error)) {
-                throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
-            }
-
-            throw error;
-        }
+    async getCoordinates(): Promise<void> {
+        throw new CoreError(Translate.instant('core.locationnolongeravailable', {
+            howToObtain: Translate.instant('core.howtoobtaincoordinates', {
+                url: CoreUrl.buildMapsURL(),
+            }),
+        }));
     }
 
     /**
      * Make sure that using device location has been authorized and ask for permission if it hasn't.
      *
-     * @throws {CoreGeolocationError}
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
     async authorizeLocation(): Promise<void> {
-        await this.doAuthorizeLocation();
+        return;
     }
 
     /**
      * Make sure that location is enabled and open settings to enable it if necessary.
      *
-     * @throws {CoreGeolocationError}
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
     async enableLocation(): Promise<void> {
-        const diagnostic = CoreNative.plugin('diagnostic');
-
-        if (!diagnostic) {
-            return;
-        }
-
-        let locationEnabled = await diagnostic.isLocationEnabled();
-
-        if (locationEnabled) {
-            // Location is enabled.
-            return;
-        }
-
-        if (!CorePlatform.isIOS()) {
-            diagnostic.switchToLocationSettings();
-            await CoreApp.waitForResume(30000);
-
-            locationEnabled = await diagnostic.isLocationEnabled();
-        }
-
-        if (!locationEnabled) {
-            throw new CoreGeolocationError(CoreGeolocationErrorReason.LOCATION_NOT_ENABLED);
-        }
-    }
-
-    /**
-     * Recursive implementation of authorizeLocation method, protected to avoid exposing the failOnDeniedOnce parameter.
-     *
-     * @param failOnDeniedOnce Throw an exception if the permission has been denied once.
-     * @throws {CoreGeolocationError}
-     */
-    protected async doAuthorizeLocation(failOnDeniedOnce: boolean = false): Promise<void> {
-        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
-
-        if (!diagnostic) {
-            return;
-        }
-
-        const authorizationStatus = await diagnostic.getLocationAuthorizationStatus();
-        this.logger.log(`Authorize location: status ${authorizationStatus}`);
-
-        switch (authorizationStatus) {
-            case diagnostic.permissionStatus.granted:
-            case diagnostic.permissionStatus.grantedWhenInUse:
-                // Location is authorized.
-                return;
-
-            case diagnostic.permissionStatus.deniedOnce:
-                if (failOnDeniedOnce) {
-                    throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
-                }
-
-            // Fall through.
-            case diagnostic.permissionStatus.notRequested:
-                this.logger.log('Request location authorization.');
-                await this.requestLocationAuthorization();
-                this.logger.log('Location authorization granted.');
-                await CoreApp.waitForResume(500);
-                await this.doAuthorizeLocation(true);
-
-                return;
-            default:
-                throw new CoreGeolocationError(CoreGeolocationErrorReason.PERMISSION_DENIED);
-        }
-    }
-
-    /**
-     * Check whether an error was caused by a PERMISSION_DENIED from the cordova plugin.
-     *
-     * @param error Error.
-     * @returns If error is a permission denied error.
-     */
-    protected isCordovaPermissionDeniedError(error?: CoreAnyError | GeolocationPositionError): boolean {
-        return !!error &&
-            typeof error == 'object' &&
-            'code' in error &&
-            'PERMISSION_DENIED' in error &&
-            error.code === error.PERMISSION_DENIED;
+        return;
     }
 
     /**
      * Prechecks if it can request location services.
      *
      * @returns If location can be requested.
+     * @deprecated since 5.0. Geo location is no longer available in the app.
      */
     async canRequest(): Promise<boolean> {
-        const diagnostic = CoreNative.plugin('diagnostic');
-
-        if (diagnostic) {
-            return CoreUtils.promiseWorks(diagnostic.getLocationAuthorizationStatus());
-        }
-
         return false;
-    }
-
-    /**
-     * Request and return the location authorization status for the application.
-     */
-    protected async requestLocationAuthorization(): Promise<void> {
-        if (!CorePlatform.isIOS()) {
-            await CoreNative.plugin('diagnostic')?.requestLocationAuthorization();
-
-            return;
-        }
-
-        // In iOS, the modal disappears when the screen is locked and the promise never ends. Treat that case.
-        return new Promise((resolve, reject) => {
-            // Don't display an error if app is sent to the background, just finish the process.
-            const unsubscribe = CoreSubscriptions.once(CorePlatform.pause, () => reject(new CoreSilentError()));
-            CoreNative.plugin('diagnostic')?.requestLocationAuthorization()
-                .then(() => resolve(), reject).finally(() => unsubscribe());
-        });
     }
 
 }
 
-export const CoreGeolocation = makeSingleton(CoreGeolocationProvider);
+/**
+ * @deprecated since 5.0. Geo location is no longer available in the app.
+ */
+export const CoreGeolocation = makeSingleton(CoreGeolocationProvider); // eslint-disable-line @typescript-eslint/no-deprecated
 
+/**
+ * @deprecated since 5.0. Geo location is no longer available in the app.
+ */
 export enum CoreGeolocationErrorReason {
     PERMISSION_DENIED = 'permission-denied',
     LOCATION_NOT_ENABLED = 'location-not-enabled',
 }
 
+/**
+ * @deprecated since 5.0. Geo location is no longer available in the app.
+ */
 export class CoreGeolocationError extends CoreError {
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     reason: CoreGeolocationErrorReason;
 
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     constructor(reason: CoreGeolocationErrorReason) {
         super(`GeolocationError: ${reason}`);
 
         this.reason = reason;
     }
 
-}
-
-/**
- * Imported interface type from Web api.
- * https://developer.mozilla.org/en-US/docs/Web/API/GeolocationPositionError
- */
-interface GeolocationPositionError {
-    code: number;
-    message: string;
-    PERMISSION_DENIED: number; // eslint-disable-line @typescript-eslint/naming-convention
-    POSITION_UNAVAILABLE: number; // eslint-disable-line @typescript-eslint/naming-convention
-    TIMEOUT: number; // eslint-disable-line @typescript-eslint/naming-convention
 }

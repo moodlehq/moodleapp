@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { CoreCronDelegate } from '@services/cron';
@@ -21,14 +21,15 @@ import { CoreMainMenuRoutingModule } from '@features/mainmenu/mainmenu-routing.m
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
-import { AddonNotificationsMainMenuHandler, AddonNotificationsMainMenuHandlerService } from './services/handlers/mainmenu';
+import { AddonNotificationsMainMenuHandler } from './services/handlers/mainmenu';
 import { AddonNotificationsCronHandler } from './services/handlers/cron';
 import { AddonNotificationsPushClickHandler } from './services/handlers/push-click';
-import { AddonNotificationsSettingsHandler, AddonNotificationsSettingsHandlerService } from './services/handlers/settings';
+import { AddonNotificationsSettingsHandler } from './services/handlers/settings';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { AddonNotificationsPreferencesLinkHandler } from './services/handlers/preferences-link';
 import { AddonNotificationsLinkHandler } from './services/handlers/notifications-link';
+import { ADDONS_NOTICATIONS_MAIN_PAGE_NAME, ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from './constants';
 
 /**
  * Get notifications services.
@@ -47,14 +48,14 @@ export async function getNotificationsServices(): Promise<Type<unknown>[]> {
 
 const routes: Routes = [
     {
-        path: AddonNotificationsMainMenuHandlerService.PAGE_NAME,
-        loadChildren: () => import('./notifications-lazy.module').then(m => m.AddonNotificationsLazyModule),
+        path: ADDONS_NOTICATIONS_MAIN_PAGE_NAME,
+        loadChildren: () => import('./notifications-lazy.module'),
     },
 ];
 const preferencesRoutes: Routes = [
     {
-        path: AddonNotificationsSettingsHandlerService.PAGE_NAME,
-        loadChildren: () => import('./notifications-settings-lazy.module').then(m => m.AddonNotificationsSettingsLazyModule),
+        path: ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME,
+        loadComponent: () => import('@addons/notifications/pages/settings/settings'),
     },
 ];
 
@@ -65,20 +66,16 @@ const preferencesRoutes: Routes = [
         CoreSitePreferencesRoutingModule.forChild(preferencesRoutes),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
-                CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
-                CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonNotificationsLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonNotificationsPreferencesLinkHandler.instance);
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(AddonNotificationsMainMenuHandler.instance);
+            CoreCronDelegate.register(AddonNotificationsCronHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonNotificationsPushClickHandler.instance);
+            CoreSettingsDelegate.registerHandler(AddonNotificationsSettingsHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonNotificationsLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonNotificationsPreferencesLinkHandler.instance);
 
-                AddonNotificationsMainMenuHandler.initialize();
-            },
-        },
+            AddonNotificationsMainMenuHandler.initialize();
+        }),
     ],
 })
 export class AddonNotificationsModule {}

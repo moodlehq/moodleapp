@@ -14,6 +14,7 @@
 
 import { Component, Input } from '@angular/core';
 import { CoreQuestionQuestionForView } from '@features/question/services/question';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a question card.
@@ -22,6 +23,9 @@ import { CoreQuestionQuestionForView } from '@features/question/services/questio
     selector: 'addon-mod-quiz-question-card',
     templateUrl: 'question-card.html',
     styleUrl: 'question-card.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModQuizQuestionCardComponent {
 

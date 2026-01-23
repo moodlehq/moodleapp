@@ -16,8 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModScorm,
@@ -33,6 +32,8 @@ import {
 } from './scorm';
 import { AddonModScormOffline } from './scorm-offline';
 import { AddonModScormMode } from '../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 // List of elements we want to ignore when copying attempts (they're calculated).
 const elementsToIgnore = [
@@ -71,7 +72,7 @@ export class AddonModScormHelperProvider {
             scorm.packagesize = size;
         }
 
-        return CoreDomUtils.confirmDownloadSize({ size: size, total: true });
+        return CoreAlerts.confirmDownloadSize({ size: size, total: true });
     }
 
     /**
@@ -86,7 +87,7 @@ export class AddonModScormHelperProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Get data from the online attempt.
-        const onlineData = await CoreUtils.ignoreErrors(
+        const onlineData = await CorePromiseUtils.ignoreErrors(
             AddonModScorm.getScormUserData(scorm.id, attempt, { cmId: scorm.coursemodule, siteId }),
         );
 
@@ -97,7 +98,7 @@ export class AddonModScormHelperProvider {
 
         // The SCORM API might have written some data to the offline attempt already.
         // We don't want to override it with cached online data.
-        const offlineData = await CoreUtils.ignoreErrors(
+        const offlineData = await CorePromiseUtils.ignoreErrors(
             AddonModScormOffline.getScormUserData(scorm.id, attempt, undefined, siteId),
         );
 
@@ -143,7 +144,7 @@ export class AddonModScormHelperProvider {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         // Try to get data from online attempts.
-        const userData = await CoreUtils.ignoreErrors(
+        const userData = await CorePromiseUtils.ignoreErrors(
             this.searchOnlineAttemptUserData(scorm.id, lastOnline, { cmId: scorm.coursemodule, siteId }),
         );
 

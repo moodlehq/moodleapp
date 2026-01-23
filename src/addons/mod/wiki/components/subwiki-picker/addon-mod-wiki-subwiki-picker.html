@@ -1,18 +1,24 @@
 <ion-content>
     <ion-list>
         <ng-container *ngFor="let group of subwikis">
-            <ion-item-divider *ngIf="group.label">
-                <ion-label>
-                    <core-format-text [text]="group.label" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true"
-                        class="item-heading" />
-                </ion-label>
-            </ion-item-divider>
+            @if (group.label) {
+                <ion-item-divider>
+                    <ion-label>
+                        <p class="item-heading">
+                            <core-format-text [text]="group.label" contextLevel="course" [contextInstanceId]="courseId"
+                                [wsNotFiltered]="true" />
+                        </p>
+                    </ion-label>
+                </ion-item-divider>
+            }
             <ion-item class="ion-text-wrap" *ngFor="let subwiki of group.subwikis" (click)="openSubwiki(subwiki)" button
                 [attr.aria-current]="isSubwikiSelected(subwiki) ? 'page' : 'false'" [detail]="false">
                 <ion-label>
                     <core-format-text [text]="subwiki.name" contextLevel="course" [contextInstanceId]="courseId" [wsNotFiltered]="true" />
                 </ion-label>
-                <ion-icon *ngIf="isSubwikiSelected(subwiki)" name="fas-check" slot="end" aria-hidden="true" />
+                @if (isSubwikiSelected(subwiki)) {
+                    <ion-icon name="fas-check" slot="end" aria-hidden="true" />
+                }
             </ion-item>
         </ng-container>
     </ion-list>

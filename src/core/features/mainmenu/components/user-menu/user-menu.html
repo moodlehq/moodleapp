@@ -152,9 +152,10 @@
                 <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
             </ion-item>
 
-            <ion-item button *ngFor="let handler of accountHandlers; let first = first" class="ion-text-wrap"
+            <ion-item button *ngFor="let handler of accountHandlers; let first = first"
                 (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-account-menu-handler', handler.class || '', first ? 'core-user-menu-separator' : '']"
+                [class]="['ion-text-wrap', 'core-user-account-menu-handler', handler.class]"
+                [class.core-user-menu-separator]="first"
                 [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [detail]="true">
                 <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
                 <ion-label><p class="item-heading">{{ handler.title | translate }}</p></ion-label>

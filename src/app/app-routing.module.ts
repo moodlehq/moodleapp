@@ -22,7 +22,9 @@ import {
     UrlMatchResult,
     UrlSegment,
     UrlSegmentGroup,
+    DefaultExport,
 } from '@angular/router';
+import { Observable } from 'rxjs';
 
 const modulesRoutes: WeakMap<InjectionToken<unknown>, ModuleRoutes> = new WeakMap();
 
@@ -97,10 +99,24 @@ function buildConditionalUrlMatcher(pathOrMatcher: string | UrlMatcher, conditio
 }
 
 /**
- * Type to declare lazy route modules.
+ * Type to declare lazy route modules. Extracted from Angular's LoadChildrenCallback type.
+ *
+ * @deprecated since 5.0. Now pages are loaded using the loadComponent property. You can use LazyDefaultStandaloneComponent instead.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type LazyRoutesModule = Type<any>;
+export type LazyRoutesModule = Type<any> |
+    Routes |
+    Observable<Type<any> | // eslint-disable-line @typescript-eslint/no-explicit-any
+    Routes |
+    DefaultExport<Type<any>> | // eslint-disable-line @typescript-eslint/no-explicit-any
+    DefaultExport<Routes>> |
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Promise<Type<any> | Routes | DefaultExport<Type<any>> |DefaultExport<Routes>>;
+
+/**
+ * Type to declare lazy standalone component. Extracted from Angular's LoadComponent type with default class.
+ */
+export type LazyDefaultStandaloneComponent = Promise<DefaultExport<Type<unknown>>>;
 
 /**
  * Build url matcher using a regular expression.

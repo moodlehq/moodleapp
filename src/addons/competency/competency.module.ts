@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
@@ -28,8 +28,14 @@ import { Routes } from '@angular/router';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
-import { ADDON_COMPETENCY_LEARNING_PLANS_PAGE, ADDON_COMPETENCY_COMPETENCIES_PAGE } from './constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
+import {
+    ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
+    ADDON_COMPETENCY_COMPETENCIES_PAGE,
+    ADDON_COMPETENCY_SUMMARY_PAGE,
+} from './constants';
+import { conditionalRoutes } from '@/app/app-routing.module';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Get competency services.
@@ -46,25 +52,120 @@ export async function getCompetencyServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Routes for competency learning plans.
+ *
+ * @returns Routes.
+ */
+function getCompetencyLearningPlansRoutes(): Routes {
+    const mobileRoutes: Routes = [
+        {
+            path: '',
+            pathMatch: 'full',
+            loadComponent: () => import('./pages/planlist/planlist'),
+        },
+        {
+            path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+            loadComponent: () => import('./pages/plan/plan'),
+        },
+        {
+            path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId`,
+            loadComponent: () => import('./pages/competency/competency'),
+        },
+    ];
+
+    const tabletRoutes: Routes = [
+        {
+            path: '',
+            loadComponent: () => import('./pages/planlist/planlist'),
+            loadChildren: () => [
+                {
+                    path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+                    loadComponent: () => import('./pages/plan/plan'),
+                },
+            ],
+        },
+        {
+            path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+            loadComponent: () => import('./pages/competencies/competencies'),
+            loadChildren: () => [
+                {
+                    path: ':competencyId',
+                    loadComponent: () => import('./pages/competency/competency'),
+                },
+            ],
+        },
+    ];
+
+    return [
+        ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+        ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        {
+            path: `:planId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}/:competencyId/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
+            loadComponent: () => import('./pages/competencysummary/competencysummary'),
+        },
+    ];
+}
+
+/**
+ * Routes for competency course details.
+ *
+ * @returns Routes.
+ */
+function getCompetencyCourseDetailsRoutes(): Routes {
+    const mobileRoutes: Routes = [
+        {
+            path: '',
+            loadComponent: () => import('./pages/coursecompetencies/coursecompetencies'),
+        },
+        {
+            path: ':competencyId',
+            loadComponent: () => import('./pages/competency/competency'),
+        },
+    ];
+
+    const tabletRoutes: Routes = [
+        {
+            path: '',
+            loadComponent: () => import('./pages/competencies/competencies'),
+            loadChildren: () => [
+                {
+                    path: ':competencyId',
+                    loadComponent: () => import('./pages/competency/competency'),
+                },
+            ],
+        },
+    ];
+
+    return [
+        ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+        ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        {
+            path: `:competencyId/${ADDON_COMPETENCY_SUMMARY_PAGE}`,
+            loadComponent: () => import('./pages/competencysummary/competencysummary'),
+        },
+    ];
+}
+
 const mainMenuChildrenRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_LEARNING_PLANS_PAGE,
-        loadChildren: () => import('./competency-learning-plans-lazy.module').then(m => m.AddonCompetencyLearningPlansLazyModule),
+        loadChildren: () => getCompetencyLearningPlansRoutes(),
     },
     {
-        path: `${COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
+        path: `${CORE_COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        loadChildren: () => getCompetencyCourseDetailsRoutes(),
     },
     {
-        path: `${COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
-        loadChildren: () => import('./competency-course-details-lazy.module').then(m => m.AddonCompetencyCourseDetailsLazyModule),
+        path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
+        loadChildren: () => getCompetencyCourseDetailsRoutes(),
     },
 ];
 
 const courseIndexRoutes: Routes = [
     {
         path: ADDON_COMPETENCY_COMPETENCIES_PAGE,
-        loadChildren: () => import('./competency-course-contents-lazy.module').then(m => m.AddonCompetencyCourseContentsLazyModule),
+        loadComponent: () => import('./pages/coursecompetencies/coursecompetencies'),
     },
 ];
 
@@ -74,19 +175,15 @@ const courseIndexRoutes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: courseIndexRoutes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
-                CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyCompetencyLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyPlanLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyPlansLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCompetencyUserCompetencyLinkHandler.instance);
+            CoreUserDelegate.registerHandler(AddonCompetencyUserHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(AddonCompetencyCourseOptionHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonCompetencyPushClickHandler.instance);
+        }),
     ],
 })
 export class AddonCompetencyModule {}

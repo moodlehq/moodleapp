@@ -13,8 +13,8 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="activityComponent?.showLoading || activityComponent?.mode === 'iframe'"
-        (ionRefresh)="activityComponent?.doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="activityComponent()?.showLoading || activityComponent()?.mode === 'iframe'"
+        (ionRefresh)="activityComponent()?.doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
 

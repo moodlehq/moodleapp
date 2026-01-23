@@ -1,4 +1,4 @@
-@addon_mod_quiz @app @javascript @lms_from4.4
+@addon_mod_quiz @app @mod @mod_quiz @javascript @lms_from4.4
 Feature: Attempt a quiz in app
   As a student
   In order to demonstrate what I know
@@ -75,7 +75,7 @@ Feature: Attempt a quiz in app
       | TF13     | 11   |
 
     # TODO rewrite using generators.
-    And I am on the "Course 1" "core_question > course question bank" page logged in as teacher1
+    And I am on the "Quiz 2" "mod_quiz > question bank" page logged in as teacher1
     And I add a "Embedded answers (Cloze)" question filling the form with:
       | Question name        | multianswer                                     |
       | Question text        | {1:SHORTANSWER:=Berlin} is the capital of Germany.  |
@@ -137,7 +137,9 @@ Feature: Attempt a quiz in app
     And I should find "0 out of 1" within "Cognition" "ion-item" in the app
     And I should find "0/2" within "Marks" "ion-item" in the app
     And I should find "0 out of 100" within "Grade" "ion-item" in the app
-    And I should find "Question 1" in the app
+
+    When I press "Show all questions on one page" in the app
+    Then I should find "Question 1" in the app
     And I should find "Question 2" in the app
     And the following events should have been logged for "student1" in the app:
       | name                                   | activity | activityname | course   | other        |

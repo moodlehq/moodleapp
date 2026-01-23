@@ -1,143 +1,187 @@
 <div class="addon-mod_forum-post">
-    <ng-container *ngIf="!formData.isEditing || !showForm">
+    @if (!formData.isEditing || !showForm) {
+
         <ion-card-header class="ion-text-wrap ion-no-padding" id="addon-mod_forum-post-{{post.id}}">
             <ion-item class="ion-text-wrap" [class.highlight]="highlight">
                 <ion-label>
-                    <div class="addon-mod-forum-post-title" *ngIf="displaySubject">
-                        <h2 class="ion-text-wrap">
-                            <ion-icon name="fas-map-pin" *ngIf="discussion && !post.parentid && discussion.pinned"
-                                [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
-                            <ion-icon name="fas-star" class="addon-forum-star" [attr.aria-label]="'addon.mod_forum.favourites' | translate"
-                                *ngIf="discussion && !post.parentid && !discussion.pinned && discussion.starred" />
-                            <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"
-                                [courseId]="courseId" />
-                        </h2>
-                        <ion-note *ngIf="trackPosts && post.unread" class="ion-float-end ion-padding-start ion-text-end"
-                            [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                            <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
-                        </ion-note>
-                        <ion-button *ngIf="optionsMenuEnabled" fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
-                            (click)="showOptionsMenu($event)">
-                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    </div>
-                    <div class="addon-mod-forum-post-info">
-                        <core-user-avatar *ngIf="post.author && post.author.fullname" [user]="post.author" slot="start"
-                            [courseId]="courseId" />
-                        <div class="addon-mod-forum-post-author">
-                            <span *ngIf="post.author && post.author.fullname" class="core-discussionusername">
-                                {{ post.author.fullname }}
-                            </span>
-                            <div *ngIf="post.author && post.author.groups">
-                                <p *ngFor="let group of post.author.groups" class="core-groupname">
-                                    <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
-                                    <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId"
-                                        [wsNotFiltered]="true" />
-                                </p>
-                            </div>
-                            <p *ngIf="post.timecreated">{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
-                            <p *ngIf="!post.timecreated">
-                                <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
-                            </p>
+                    @if (displaySubject) {
+                        <div class="addon-mod-forum-post-title">
+                            <h2 class="ion-text-wrap">
+                                @if (discussion && !post.parentid) {
+                                    @if (discussion.pinned) {
+                                        <ion-icon name="fas-map-pin" [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
+                                    } @else if (discussion.starred) {
+                                        <ion-icon name="fas-star" class="addon-forum-star"
+                                            [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
+                                    }
+                                }
+                                <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"
+                                    [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
+                            </h2>
+                            @if (trackPosts && post.unread) {
+                                <ion-note class="ion-float-end ion-padding-start ion-text-end"
+                                    [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                                    <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
+                                </ion-note>
+                            }
+                            @if (optionsMenuEnabled) {
+                                <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
+                                    (click)="showOptionsMenu($event)">
+                                    <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            }
                         </div>
-                        <ng-container *ngIf="!displaySubject">
-                            <ion-note *ngIf="trackPosts && post.unread" class="ion-float-end ion-padding-start ion-text-end"
-                                [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                                <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
-                            </ion-note>
-                            <ion-button *ngIf="optionsMenuEnabled" fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
-                                (click)="showOptionsMenu($event)">
-                                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                            </ion-button>
-                        </ng-container>
+                    }
+                    <div class="addon-mod-forum-post-info">
+                        @if (post.author && post.author.fullname) {
+                            <core-user-avatar [user]="post.author" slot="start" [courseId]="courseId" />
+                        }
+                        <div class="addon-mod-forum-post-author">
+                            @if (post.author && post.author.fullname) {
+                                <span class="core-discussionusername">
+                                    {{ post.author.fullname }}
+                                </span>
+                            }
+                            @if (post.author && post.author.groups) {
+                                <div>
+                                    <p *ngFor="let group of post.author.groups" class="core-groupname">
+                                        <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
+                                        <core-format-text [text]="group.name" contextLevel="course" [contextInstanceId]="courseId"
+                                            [wsNotFiltered]="true" />
+                                    </p>
+                                </div>
+                            }
+                            @if (post.timecreated) {
+                                <p>{{post.timecreated * 1000 | coreFormatDate: "strftimerecentfull"}}</p>
+                            } @else {
+                                <p>
+                                    <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'core.notsent' | translate }}
+                                </p>
+                            }
+                        </div>
+
+                        @if (!displaySubject) {
+                            @if (trackPosts && post.unread) {
+                                <ion-note class="ion-float-end ion-padding-start ion-text-end"
+                                    [attr.aria-label]="'addon.mod_forum.unread' | translate">
+                                    <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
+                                </ion-note>
+                            }
+                            @if (optionsMenuEnabled) {
+                                <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
+                                    (click)="showOptionsMenu($event)">
+                                    <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                                </ion-button>
+                            }
+                        }
                     </div>
                 </ion-label>
             </ion-item>
         </ion-card-header>
-        <ion-card-content [class]="post.parentid === 0 ? 'ion-padding-top' : ''">
-            <div class="ion-padding-bottom" *ngIf="post.isprivatereply">
-                <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
-            </div>
+        <ion-card-content [class.ion-padding-top]="post.parentid === 0">
+            @if (post.isprivatereply) {
+                <div class="ion-padding-bottom">
+                    <ion-note color="danger">{{ 'addon.mod_forum.postisprivatereply' | translate }}</ion-note>
+                </div>
+            }
             <core-format-text [component]="component" [componentId]="componentId" [text]="post.message" contextLevel="module"
-                [contextInstanceId]="forum && forum.cmid" [courseId]="courseId" />
-            <p *ngIf="post.haswordcount && post.wordcount">
-                <em>{{ 'core.numwords' | translate: {'$a': post.wordcount} }}</em>
-            </p>
-            <div *ngIf="post.attachments && post.attachments.length > 0">
-                <core-files [files]="post.attachments" [component]="component" [componentId]="componentId" showInline="true" />
-            </div>
+                [contextInstanceId]="forum && forum.cmid" [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
+            @if (post.haswordcount && post.wordcount) {
+                <p>
+                    <em>{{ 'core.numwords' | translate: {'$a': post.wordcount} }}</em>
+                </p>
+            }
+            @if (post.attachments && post.attachments.length > 0) {
+                <div>
+                    <core-files [files]="post.attachments" [component]="component" [componentId]="componentId" [showInline]="true" />
+                </div>
+            }
         </ion-card-content>
         <div class="addon-mod-forum-post-more-info">
-            <ion-item class="ion-text-wrap" *ngIf="tagsEnabled && post.tags && post.tags.length > 0">
-                <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
-                <ion-label>
-                    <core-tag-list [tags]="post.tags" />
-                </ion-label>
-            </ion-item>
-            <core-rating-rate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId"
-                [itemId]="post.id" [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed"
-                [scaleId]="forum.scale" [userId]="post.author.id" (onUpdate)="ratingUpdated()" />
-            <core-rating-aggregate *ngIf="forum && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId"
-                [itemId]="post.id" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" />
+            @if (tagsEnabled && post.tags && post.tags.length > 0) {
+                <ion-item class="ion-text-wrap">
+                    <div slot="start">{{ 'core.tag.tags' | translate }}:</div>
+                    <ion-label>
+                        <core-tag-list [tags]="post.tags" />
+                    </ion-label>
+                </ion-item>
+            }
+            @if (forum && ratingInfo) {
+                <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
+                    [itemSetId]="discussionId" [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale"
+                    [userId]="post.author.id" (onUpdate)="ratingUpdated()" />
+                <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="componentId" [itemId]="post.id"
+                    [courseId]="courseId" [aggregateMethod]="forum.assessed" [scaleId]="forum.scale" />
+            }
 
-            <ion-item *ngIf="post.id > 0 && post.capabilities.reply && !post.isprivatereply"
-                class="ion-no-padding ion-text-end addon-forum-reply-button">
-                <ion-label>
-                    <ion-button fill="clear" size="small" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
-                        [attr.aria-expanded]="formData.replyingTo === post.id" (click)="showReplyForm($event)">
-                        <ion-icon name="fas-reply" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_forum.reply' | translate }}
-                    </ion-button>
-                </ion-label>
-            </ion-item>
+            @if (post.id > 0 && post.capabilities.reply && !post.isprivatereply) {
+                <ion-item class="ion-no-padding ion-text-end addon-forum-reply-button">
+                    <ion-label>
+                        <ion-button fill="clear" size="small" [attr.aria-controls]="'addon-forum-reply-edit-form-' + uniqueId"
+                            [attr.aria-expanded]="formData.replyingTo === post.id" (click)="showReplyForm($event)">
+                            <ion-icon name="fas-reply" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_forum.reply' | translate }}
+                        </ion-button>
+                    </ion-label>
+                </ion-item>
+            }
         </div>
-    </ng-container>
 
-    <form *ngIf="showForm" [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
-        <ion-item class="ion-text-wrap">
-            <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
-                [(ngModel)]="formData.subject" name="subject" [label]="'addon.mod_forum.subject' | translate" />
-        </ion-item>
-        <ion-item>
-            <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
-            <core-rich-text-editor elementId="message" contextLevel="module" [control]="messageControl"
-                [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id" [component]="component"
-                [componentId]="componentId" [autoSave]="true" [contextInstanceId]="forum && forum.cmid"
-                [draftExtraParams]="{reply: post.id}" (contentChanged)="onMessageChange($event)" />
-        </ion-item>
-        <ion-item class="ion-text-wrap" *ngIf="accessInfo.canpostprivatereply">
-            <ion-checkbox [(ngModel)]="formData.isprivatereply" name="isprivatereply">
-                {{ 'addon.mod_forum.privatereply' | translate }}
-            </ion-checkbox>
-        </ion-item>
-        <ng-container *ngIf="forum.id && forum.maxattachments > 0">
-            <ion-item button class="divider ion-text-wrap" (click)="toggleAdvanced()" [detail]="false" [attr.aria-expanded]="advanced"
-                [attr.aria-controls]="'addon-forum-reply-edit-form-advanced-' + uniqueId"
-                [attr.aria-label]="(advanced ? 'core.hideadvanced' : 'core.showadvanced') | translate">
-                <ion-icon *ngIf="!advanced" name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true"
-                    class="expandable-status-icon" />
-                <ion-icon *ngIf="advanced" name="fas-chevron-down" slot="start" aria-hidden="true" class="expandable-status-icon" />
-                <ion-label>
-                    <h3 class="item-heading">{{ 'addon.mod_forum.advanced' | translate }}</h3>
-                </ion-label>
+    }
+
+    @if (showForm) {
+        <form [id]="'addon-forum-reply-edit-form-' + uniqueId" #replyFormEl>
+            <ion-item class="ion-text-wrap">
+                <ion-input labelPlacement="stacked" type="text" [placeholder]="'addon.mod_forum.subject' | translate"
+                    [(ngModel)]="formData.subject" name="subject" [label]="'addon.mod_forum.subject' | translate" />
             </ion-item>
-            <div *ngIf="advanced" [id]="'addon-forum-reply-edit-form-advanced-' + uniqueId">
-                <core-attachments [files]="formData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
-                    [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId" />
-            </div>
-        </ng-container>
-        <ion-grid>
-            <ion-row>
-                <ion-col>
-                    <ion-button expand="block" fill="outline" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
-                </ion-col>
-                <ion-col>
-                    <ion-button expand="block" (click)="send()" [disabled]="formData.subject === '' || formData.message === null">
-                        <span *ngIf="formData.isEditing">{{ 'core.savechanges' | translate }}</span>
-                        <span *ngIf="!formData.isEditing">{{ 'addon.mod_forum.posttoforum' | translate }}</span>
-                    </ion-button>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </form>
+            <ion-item>
+                <ion-label position="stacked">{{ 'addon.mod_forum.message' | translate }}</ion-label>
+                <core-rich-text-editor elementId="message" contextLevel="module" [control]="messageControl"
+                    [placeholder]="'addon.mod_forum.replyplaceholder' | translate" [name]="'mod_forum_reply_' + post.id"
+                    [component]="component" [componentId]="componentId" [autoSave]="true" [contextInstanceId]="forum && forum.cmid"
+                    [draftExtraParams]="{reply: post.id}" (contentChanged)="onMessageChange($event)" />
+            </ion-item>
+            @if (accessInfo.canpostprivatereply) {
+                <ion-item class="ion-text-wrap">
+                    <ion-checkbox [(ngModel)]="formData.isprivatereply" name="isprivatereply">
+                        {{ 'addon.mod_forum.privatereply' | translate }}
+                    </ion-checkbox>
+                </ion-item>
+            }
+
+            @if (forum.id && forum.maxattachments > 0) {
+                <ion-accordion-group [value]="advanced ? 'advanced' : ''" (ionChange)="onAdvancedChanged($event)">
+                    <ion-accordion value="advanced" toggleIconSlot="start">
+                        <ion-item slot="header">
+                            <ion-label>
+                                <h3 class="item-heading">{{ 'addon.mod_forum.advanced' | translate }}</h3>
+                            </ion-label>
+                        </ion-item>
+                        <div slot="content">
+                            <core-attachments [files]="formData.files" [maxSize]="forum.maxbytes" [maxSubmissions]="forum.maxattachments"
+                                [component]="component" [componentId]="forum.cmid" [allowOffline]="true" [courseId]="courseId" />
+                        </div>
+                    </ion-accordion>
+                </ion-accordion-group>
+            }
+
+            <ion-grid>
+                <ion-row>
+                    <ion-col>
+                        <ion-button expand="block" fill="outline" (click)="cancel()">{{ 'core.cancel' | translate }}</ion-button>
+                    </ion-col>
+                    <ion-col>
+                        <ion-button expand="block" (click)="send()" [disabled]="formData.subject === '' || formData.message === null">
+                            @if (formData.isEditing) {
+                                <span>{{ 'core.savechanges' | translate }}</span>
+                            } @else {
+                                <span>{{ 'addon.mod_forum.posttoforum' | translate }}</span>
+                            }
+                        </ion-button>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </form>
+    }
 </div>

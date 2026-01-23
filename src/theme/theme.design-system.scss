@@ -1,6 +1,6 @@
-@import "./globals.scss";
-@import "theme.light.scss";
-@import "theme.dark.scss";
+@import "globals";
+@import "theme.light";
+@import "theme.dark";
 
 :root {
     // Add serif fallback font for km language in some devices.
@@ -146,7 +146,7 @@
     --mdl-button-disabled-opacity: 0.6;
     --mdl-input-disabled-opacity: 0.6;
     --mdl-item-disabled-opacity: 0.4;
-    --mdl-placeholder-opacity: 0.6;
+    --mdl-placeholder-opacity: 0.8;
 
     // ***** ACCESSIBILITY ***** //
     --a11y-sizing-minTargetSize: 44px;
@@ -182,8 +182,8 @@
     --ion-card-radius: var(--mdl-shape-borderRadius-lg);
     --ion-card-border-width: 1px;
 
-    --bottom-tabs-size: 48px;
-    --side-tabs-size: 56px;
+    --bottom-tabs-size: 56px;
+    --side-tabs-size: 64px;
 
     --core-header-toolbar-button-image-size: var(--a11y-sizing-minTargetSize);
     --core-header-toolbar-border-width: 0px;
@@ -199,7 +199,7 @@
     --core-combobox-border-width: var(--core-input-border-width);
     --core-combobox-box-shadow: none;
 
-    --core-tab-font-weight-active: var(--mdl-typography-label-fontWeight);
+    --core-tab-font-weight-active: bold;
     --core-tabs-height: 48px;
 
     --core-progressbar-height: 8px;
@@ -231,25 +231,11 @@
 
     --rotate-expandable: rotate(90deg);
 
-    --core-mainpage-sitename-display: none;
-    --core-mainpage-headerlogo-display: none;
     --core-mainpage-headerlogo-maxheight: calc(var(--core-header-toolbar-height) - 16px);
 
-    @if ($core-dashboard-logo) {
-        --core-mainpage-headerlogo-display: inline;
-    } @else {
-        --core-mainpage-sitename-display: inline;
-    }
+    // ***** LINKS ***** //
+    --core-link-decoration: underline;
 }
-
-/** @deprecated since 4.3 **/
-:root {
-    --small-radius: var(--mdl-shape-borderRadius-xs);
-    --medium-radius: var(--mdl-shape-borderRadius-sm);
-    --big-radius: var(--mdl-shape-borderRadius-lg);
-    --huge-radius: var(--mdl-shape-borderRadius-xl);
-}
-
 /** @deprecated since 4.4 **/
 :root {
     --font-size-normal: var(--mdl-typography-fontSize-md);

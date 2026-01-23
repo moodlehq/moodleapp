@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSite } from '@classes/sites/site';
 import { CoreXAPIOffline, CoreXAPIOfflineSaveStatementsOptions } from './offline';
 import { makeSingleton } from '@singletons';
@@ -25,6 +25,7 @@ import { CoreXAPIIRI } from '../classes/iri';
 import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 export const XAPI_STATE_DELETED = 'STATE_DELETED';
 
@@ -34,7 +35,7 @@ export const XAPI_STATE_DELETED = 'STATE_DELETED';
 @Injectable({ providedIn: 'root' })
 export class CoreXAPIProvider {
 
-    static readonly ROOT_CACHE_KEY = 'CoreXAPI:';
+    protected static readonly ROOT_CACHE_KEY = 'CoreXAPI:';
 
     protected logger = CoreLogger.getInstance('CoreXAPIProvider');
 
@@ -110,7 +111,7 @@ export class CoreXAPIProvider {
 
             if (!isNaN(itemId)) {
                 // Delete offline state if it exists.
-                await CoreUtils.ignoreErrors(CoreXAPIOffline.deleteStates(component, {
+                await CorePromiseUtils.ignoreErrors(CoreXAPIOffline.deleteStates(component, {
                     itemId,
                     stateId,
                     registration: options.registration,
@@ -120,7 +121,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that the state cannot be deleted.
                 throw error;
             }
@@ -288,26 +289,12 @@ export class CoreXAPIProvider {
     }
 
     /**
-     * Get URL for XAPI events.
-     *
-     * @param contextId Context ID.
-     * @param type Type (e.g. 'activity').
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
-     * @deprecated since 4.2. Use CoreXAPIIRI.generate instead.
-     */
-    async getUrl(contextId: number, type: string, siteId?: string): Promise<string> {
-        return CoreXAPIIRI.generate(contextId, type, siteId);
-    }
-
-    /**
      * Invalidates a state.
      *
      * @param component Component.
      * @param activityId Activity ID.
      * @param stateId The xAPI state ID.
      * @param options Options.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateState(
         component: string,
@@ -359,7 +346,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that statements cannot be submitted.
                 throw error;
             } else {
@@ -433,7 +420,7 @@ export class CoreXAPIProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // The WebService has thrown an error, this means that state cannot be submitted.
                 throw error;
             }

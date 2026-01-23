@@ -1,15 +1,19 @@
 <!-- Display a loading until the iframe page is loaded. -->
-<core-loading [hideUntil]="!loading && (safeUrl || launchExternalLabel)" />
+<core-loading [hideUntil]="!loading && (!!safeUrl || !!launchExternalLabel)" />
 
 <!--The iframe needs to be outside of core-loading, otherwise the request is canceled while loading. -->
 <!-- Don't add the iframe until safeUrl is set, adding an iframe with null as src causes the iframe to load the whole app. -->
-<ng-container *ngIf="safeUrl && !launchExternalLabel">
-    <core-navbar-buttons slot="end" prepend *ngIf="initialized && showFullscreenOnToolbar && !loading">
-        <ion-button fill="clear" (click)="toggleFullscreen()"
-            [ariaLabel]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
-            <ion-icon [name]="fullscreen ? 'fas-compress' : 'fas-expand'" slot="icon-only" aria-hidden="true" />
-        </ion-button>
-    </core-navbar-buttons>
+@if (safeUrl && !launchExternalLabel) {
+    <div [style.min-width]="'min('+iframeWidth+', 100%)'" [style.min-height]="'min('+iframeHeight+', 100%)'"
+        class="core-iframe-container">
+        @if (initialized && showFullscreenOnToolbar && !loading) {
+            <core-navbar-buttons slot="end" prepend>
+                <ion-button fill="clear" (click)="toggleFullscreen()"
+                    [ariaLabel]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
+                    <ion-icon [name]="fullscreen ? 'fas-compress' : 'fas-expand'" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            </core-navbar-buttons>
+        }
 
     <!-- allowfullscreen cannot be set dynamically using attribute binding, define 2 iframe elements. -->
     <!-- credentialless allows embedding cross-origin content without COEP compliance -->
@@ -28,13 +32,18 @@
         </iframe>
     </ng-container>
 
-    <ion-button *ngIf="!loading && displayHelp" expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"
-        class="core-button-as-link core-iframe-help">
-        {{ 'core.iframehelp' | translate }}
-    </ion-button>
-</ng-container>
+        @if (!loading && displayHelp) {
+            <ion-button expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"
+                class="core-button-as-link core-iframe-help">
+                {{ 'core.iframehelp' | translate }}
+            </ion-button>
+        }
+    </div>
+}
 
 <!-- Iframe content needs to be launched in an external app. -->
-<ion-button *ngIf="launchExternalLabel" expand="block" class="ion-text-wrap ion-margin" (click)="launchExternal()">
-    {{ launchExternalLabel }}
-</ion-button>
+@if (launchExternalLabel) {
+    <ion-button expand="block" class="ion-text-wrap ion-margin" (click)="launchExternal()">
+        {{ launchExternalLabel }}
+    </ion-button>
+}

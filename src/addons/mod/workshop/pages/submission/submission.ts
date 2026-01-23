@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
@@ -22,9 +22,8 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -55,7 +54,14 @@ import {
     AddonModWorkshopAction,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
+import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
+import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreNetwork } from '@services/network';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Page that displays a workshop submission.
@@ -63,12 +69,21 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-workshop-submission-page',
     templateUrl: 'submission.html',
+    imports: [
+        CoreSharedModule,
+        CoreEditorRichTextEditorComponent,
+        AddonModWorkshopAssessmentComponent,
+        AddonModWorkshopAssessmentStrategyComponent,
+        AddonModWorkshopSubmissionComponent,
+    ],
 })
-export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
+export default class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLeave {
 
-    @ViewChild(AddonModWorkshopAssessmentStrategyComponent) assessmentStrategy?: AddonModWorkshopAssessmentStrategyComponent;
+    readonly assessmentStrategy = viewChild(AddonModWorkshopAssessmentStrategyComponent);
 
-    @ViewChild('feedbackFormEl') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('feedbackFormEl');
+
+    readonly phaseClosed = AddonModWorkshopPhase.PHASE_CLOSED;
 
     module!: CoreCourseModuleData;
     workshop!: AddonModWorkshopData;
@@ -94,6 +109,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     evaluateByProfile?: CoreUserProfile;
     feedbackForm: FormGroup; // The form group.
     submissionId!: number;
+    loadFeedbackToEditErrorMessage?: string;
 
     protected workshopId!: number;
     protected currentUserId: number;
@@ -112,16 +128,15 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
     protected syncObserver: CoreEventObserver;
     protected isDestroyed = false;
     protected logView: () => void;
+    protected fb = inject(FormBuilder);
+    protected content = inject(IonContent, { optional: true });
 
-    constructor(
-        protected fb: FormBuilder,
-        @Optional() protected content: IonContent,
-    ) {
+    constructor() {
         this.currentUserId = CoreSites.getCurrentSiteUserId();
         this.siteId = CoreSites.getCurrentSiteId();
 
         this.feedbackForm = new FormGroup({});
-        this.feedbackForm.addControl('published', this.fb.control(''));
+        this.feedbackForm.addControl('published', this.fb.control(false));
         this.feedbackForm.addControl('grade', this.fb.control(''));
         this.feedbackForm.addControl('text', this.fb.control(''));
 
@@ -152,7 +167,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             this.submissionInfo = CoreNavigator.getRequiredRouteParam<AddonModWorkshopSubmissionDataWithOfflineData>('submission');
             this.assessment = CoreNavigator.getRouteParam<AddonModWorkshopSubmissionAssessmentWithFormData>('assessment');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
 
             CoreNavigator.back();
 
@@ -178,15 +193,17 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      * @returns Resolved if we can leave it, rejected if not.
      */
     async canLeave(): Promise<boolean> {
-        const assessmentHasChanged = this.assessmentStrategy?.hasDataChanged();
+        const assessmentStrategy = this.assessmentStrategy();
+        const assessmentHasChanged = await assessmentStrategy?.hasDataChanged();
         if (this.forceLeave || (!this.hasEvaluationChanged() && !assessmentHasChanged)) {
             return true;
         }
 
         // Show confirmation if some data has been modified.
-        await CoreDomUtils.showConfirm(Translate.instant('core.confirmcanceledit'));
+        await CoreAlerts.confirmLeaveWithChanges();
 
-        CoreForms.triggerFormCancelledEvent(this.formElement, this.siteId);
+        CoreForms.triggerFormCancelledEvent(this.formElement(), this.siteId);
+        CoreForms.triggerFormCancelledEvent(assessmentStrategy?.formElement(), this.siteId);
 
         return true;
     }
@@ -200,7 +217,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             access: this.access,
         };
 
-        CoreNavigator.navigate(String(this.submissionId) + '/edit', params);
+        CoreNavigator.navigate(`${this.submissionId}/edit`, params);
     }
 
     /**
@@ -225,8 +242,11 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      */
     protected async fetchSubmissionData(): Promise<void> {
         try {
+            this.canAddFeedback = !this.assessmentId && AddonModWorkshopHelper.canAddFeedback(this.workshop, this.access);
+
             this.submission = await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, {
                 cmId: this.module.id,
+                canEdit: this.userId === this.currentUserId && this.access.modifyingsubmissionallowed,
             });
 
             const promises: Promise<void>[] = [];
@@ -237,9 +257,6 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             this.userId = this.submission.authorid || this.userId;
             this.canEdit = this.currentUserId == this.userId && this.access.cansubmit && this.access.modifyingsubmissionallowed;
             this.canDelete = this.access.candeletesubmissions;
-
-            this.canAddFeedback = !this.assessmentId && this.workshop.phase > AddonModWorkshopPhase.PHASE_ASSESSMENT &&
-                this.workshop.phase < AddonModWorkshopPhase.PHASE_CLOSED && this.access.canoverridegrades;
             this.ownAssessment = undefined;
 
             if (this.access.canviewallassessments) {
@@ -269,6 +286,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                 // Get new data, different that came from stateParams.
                 promises.push(AddonModWorkshop.getAssessment(this.workshopId, this.assessmentId, {
                     cmId: this.module.id,
+                    canAssess: AddonModWorkshopHelper.canEditAssessments(this.workshop, this.access),
                 }).then((assessment) => {
                     // Only allow the student to delete their own submission if it's still editable and hasn't been assessed.
                     if (this.canDelete) {
@@ -297,7 +315,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             if (this.canAddFeedback) {
                 if (!this.isDestroyed) {
                     // Block the workshop.
-                    CoreSync.blockOperation(this.component, this.workshopId);
+                    CoreSync.blockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
                 }
 
                 promises.push(this.fillEvaluationsGrades());
@@ -326,7 +344,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
             this.submission = await AddonModWorkshopHelper.applyOfflineData(this.submission, submissionsActions);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
         }
@@ -364,6 +382,8 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
         } catch {
             // Ignore errors.
             this.hasOffline = false;
+
+            await this.loadFeedbackToEdit();
         } finally {
             this.originalEvaluation.published = this.evaluate.published;
             this.originalEvaluation.text = this.evaluate.text;
@@ -372,6 +392,31 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
             this.feedbackForm.controls['published'].setValue(this.evaluate.published);
             this.feedbackForm.controls['grade'].setValue(this.evaluate.grade.value);
             this.feedbackForm.controls['text'].setValue(this.evaluate.text);
+        }
+    }
+
+    /**
+     * Load submission feedback to edit it (for teachers).
+     */
+    protected async loadFeedbackToEdit(): Promise<void> {
+        if (!this.workshop || !this.evaluate) {
+            return;
+        }
+
+        try {
+            // Retrieve the unfiltered evaluate text to edit it.
+            const submission = await AddonModWorkshopHelper.getSubmissionById(this.workshopId, this.submissionId, {
+                cmId: this.module.id,
+                filter: false,
+                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+            });
+
+            this.evaluate.text = submission.feedbackauthor || '';
+            this.loadFeedbackToEditErrorMessage = undefined;
+        } catch (error) {
+            this.loadFeedbackToEditErrorMessage = !CoreNetwork.isOnline() ?
+                Translate.instant('core.notavailableoffline') :
+                CoreErrorHelper.getErrorMessageFromError(error) || Translate.instant('core.networkerrormsg');
         }
     }
 
@@ -414,15 +459,15 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
         const inputData = this.feedbackForm.value;
 
-        if (this.originalEvaluation.published != inputData.published) {
+        if (this.originalEvaluation.published !== inputData.published) {
             return true;
         }
 
-        if (this.originalEvaluation.text != inputData.text) {
+        if ((this.originalEvaluation.text ?? '') !== (inputData.text ?? '')) {
             return true;
         }
 
-        if (this.originalEvaluation.grade != inputData.grade) {
+        if (this.originalEvaluation.grade !== inputData.grade) {
             return true;
         }
 
@@ -478,9 +523,11 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      * Save the assessment.
      */
     async saveAssessment(): Promise<void> {
-        if (this.assessmentStrategy?.hasDataChanged()) {
+        const assessmentStrategy = this.assessmentStrategy();
+        const assessmentHasChanged = await assessmentStrategy?.hasDataChanged();
+        if (assessmentHasChanged) {
             try {
-                await this.assessmentStrategy.saveAssessment();
+                await assessmentStrategy?.saveAssessment();
                 this.forceLeavePage();
             } catch {
                 // Error, stay on the page.
@@ -533,7 +580,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                 inputData.published,
                 String(inputData.grade),
             );
-            CoreForms.triggerFormSubmittedEvent(this.formElement, !!result, this.siteId);
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), !!result, this.siteId);
 
             await AddonModWorkshop.invalidateSubmissionData(this.workshopId, this.submissionId).finally(() => {
                 const data: AddonModWorkshopSubmissionChangedEventData = {
@@ -544,7 +591,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
                 CoreEvents.trigger(ADDON_MOD_WORKSHOP_SUBMISSION_CHANGED, data, this.siteId);
             });
         } catch (message) {
-            CoreDomUtils.showErrorModalDefault(message, 'Cannot save submission evaluation');
+            CoreAlerts.showError(message, { default: 'Cannot save submission evaluation' });
         } finally {
             modal.dismiss();
         }
@@ -555,7 +602,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
      */
     async deleteSubmission(): Promise<void> {
         try {
-            await CoreDomUtils.showDeleteConfirm('addon.mod_workshop.submissiondeleteconfirm');
+            await CoreAlerts.confirmDelete(Translate.instant('addon.mod_workshop.submissiondeleteconfirm'));
         } catch {
             return;
         }
@@ -569,7 +616,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
 
             await AddonModWorkshop.invalidateSubmissionData(this.workshopId, this.submissionId);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Cannot delete submission');
+            CoreAlerts.showError(error, { default: 'Cannot delete submission' });
         } finally {
             modal.dismiss();
             if (success) {
@@ -636,7 +683,7 @@ export class AddonModWorkshopSubmissionPage implements OnInit, OnDestroy, CanLea
         this.syncObserver?.off();
         this.obsAssessmentSaved?.off();
         // Restore original back functions.
-        CoreSync.unblockOperation(this.component, this.workshopId);
+        CoreSync.unblockOperation(ADDON_MOD_WORKSHOP_COMPONENT, this.workshopId);
     }
 
 }

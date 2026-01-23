@@ -1,4 +1,4 @@
-@core_policy @app @javascript @lms_from4.4
+@core_policy @app @tool @tool_policy @javascript @lms_from4.4
 Feature: Test accepting pending policies on signup
 
   Background:
@@ -21,7 +21,7 @@ Feature: Test accepting pending policies on signup
     But I should not be able to press "Continue" in the app
     And I should not be able to press "User account" in the app
 
-    When I press "Link to site policy agreement" in the app
+    When I press "Site policy agreement" "a" in the app
     And I press "OK" in the app
     Then the app should have opened a browser tab with url "moodle.org"
 
@@ -67,7 +67,7 @@ Feature: Test accepting pending policies on signup
     And I should find "Content opt own page" in the app
     But I should not be able to press "Continue" in the app
 
-    When I press "No thanks, I decline Optional policy own page" in the app
+    When I press "I don't agree to the Optional policy own page" in the app
     And I press "Continue" in the app
     Then I should find "Policy 1 out of 2" in the app
     And I should find "Mandatory policy consent page" in the app
@@ -80,7 +80,7 @@ Feature: Test accepting pending policies on signup
     And I should find "Optional policy consent page" in the app
     And I should find "Summ opt consent page" in the app
     And I should find "Content opt consent page" in the app
-    But I should not find "No thanks, I decline" in the app
+    But I should not find "I don't agree to the" in the app
 
     When I press "Next" in the app
     Then I should find "Please agree to the following policies" in the app

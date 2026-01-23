@@ -16,13 +16,13 @@ import { Injectable } from '@angular/core';
 import { CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModSurvey } from '../survey';
 import { AddonModSurveySync, AddonModSurveySyncResult } from '../survey-sync';
 import { AddonModSurveyPrefetchHandlerService } from '@addons/mod/survey/services/handlers/prefetch';
-import { ADDON_MOD_SURVEY_COMPONENT } from '../../constants';
+import { ADDON_MOD_SURVEY_COMPONENT_LEGACY } from '../../constants';
 
 /**
  * Handler to prefetch surveys.
@@ -34,7 +34,7 @@ export class AddonModSurveyPrefetchHandlerLazyService extends AddonModSurveyPref
      * @inheritdoc
      */
     async getIntroFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<CoreWSFile[]> {
-        const survey = await CoreUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
+        const survey = await CorePromiseUtils.ignoreErrors(AddonModSurvey.getSurvey(courseId, module.id));
 
         return this.getIntroFilesFromInstance(module, survey);
     }
@@ -85,7 +85,7 @@ export class AddonModSurveyPrefetchHandlerLazyService extends AddonModSurveyPref
         const files = this.getIntroFilesFromInstance(module, survey);
 
         // Prefetch files.
-        promises.push(CoreFilepool.addFilesToQueue(siteId, files, ADDON_MOD_SURVEY_COMPONENT, module.id));
+        promises.push(CoreFilepool.addFilesToQueue(siteId, files, ADDON_MOD_SURVEY_COMPONENT_LEGACY, module.id));
 
         // If survey isn't answered, prefetch the questions.
         if (!survey.surveydone) {

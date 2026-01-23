@@ -22,9 +22,8 @@ import { makeSingleton } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreEvents } from '@singletons/events';
 import type videojs from 'video.js';
-
-// eslint-disable-next-line no-duplicate-imports
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
+import { CoreSites } from '@services/sites';
 
 declare module '@singletons/events' {
 
@@ -120,7 +119,7 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = youtubeUrl;
+        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');

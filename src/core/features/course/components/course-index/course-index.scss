@@ -20,10 +20,13 @@ ion-item.item {
         --background: var(--primary-tint);
         --color: var(--gray-900);
         border: 0px;
+        ion-label h2 {
+            font-weight: bold;
+        }
     }
 
     &.item-hightlighted {
-        @include safe-area-border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
+        @include border-start(var(--selected-item-border-width), solid,  var(--selected-item-color));
     }
 
     &.divider.section {
@@ -84,10 +87,42 @@ ion-item.item {
         &[role=button] {
             min-height: auto;
             min-width: auto;
+            @include core-focus-outline();
         }
+    }
+
+    &::part(native) {
+        @include core-focus-inset-outline();
     }
 }
 
 div.core-course-index-subsection {
     @include padding-horizontal(16px, null);
+}
+
+.ripple-parent {
+    position: relative;
+    ion-ripple-effect {
+        z-index: 1;
+    }
+}
+
+:host-context(:root.dark) {
+    ion-item.item {
+        &.item-current {
+            --background: var(--primary-shade);
+            --color: var(--white);
+        }
+
+        &.divider.section {
+            ion-icon.expandable-status-icon {
+                color: var(--white);
+
+                &:hover {
+                    background: var(--primary-tint);
+                    color: var(--gray-900);
+                }
+            }
+        }
+    }
 }

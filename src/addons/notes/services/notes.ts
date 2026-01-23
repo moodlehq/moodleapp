@@ -14,23 +14,24 @@
 
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-
-const ROOT_CACHE_KEY = 'mmaNotes:';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 /**
  * Service to handle notes.
  */
 @Injectable( { providedIn: 'root' } )
 export class AddonNotesProvider {
+
+    protected static readonly ROOT_CACHE_KEY = 'mmaNotes:';
 
     /**
      * Add a note.
@@ -69,7 +70,7 @@ export class AddonNotesProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the message so don't store it.
                 throw error;
             }
@@ -98,7 +99,7 @@ export class AddonNotesProvider {
         const notes: AddonNotesCreateNoteData[] = [
             {
                 courseid: courseId,
-                format: 1,
+                format: DEFAULT_TEXT_FORMAT,
                 publishstate: publishState,
                 text: noteText,
                 userid: userId,
@@ -111,7 +112,7 @@ export class AddonNotesProvider {
             throw new CoreWSError({ message: response[0].errormessage });
         }
 
-        await CoreUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
+        await CorePromiseUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
     }
 
     /**
@@ -172,7 +173,7 @@ export class AddonNotesProvider {
 
             return true;
         } catch (error) {
-            if (CoreUtils.isWebServiceError(error)) {
+            if (CoreWSError.isWebServiceError(error)) {
                 // It's a WebService error, the user cannot send the note so don't store it.
                 throw error;
             }
@@ -199,7 +200,7 @@ export class AddonNotesProvider {
 
         await site.write('core_notes_delete_notes', params);
 
-        CoreUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
+        CorePromiseUtils.ignoreErrors(this.invalidateNotes(courseId, undefined, siteId));
     }
 
     /**
@@ -236,17 +237,17 @@ export class AddonNotesProvider {
                     publishstate: 'personal',
                     courseid: courseId,
                     text: '',
-                    format: 1,
+                    format: DEFAULT_TEXT_FORMAT,
                 },
             ],
         };
         const preSets: CoreSiteWSPreSets = {
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         // Use .read to cache data and be able to check it in offline. This means that, if a user loses the capabilities
         // to add notes, he'll still see the option in the app.
-        return CoreUtils.promiseWorks(site.read('core_notes_create_notes', params, preSets));
+        return CorePromiseUtils.promiseWorks(site.read('core_notes_create_notes', params, preSets));
     }
 
     /**
@@ -257,7 +258,7 @@ export class AddonNotesProvider {
      * @returns Promise resolved with true if enabled, resolved with false or rejected otherwise.
      */
     isPluginViewNotesEnabledForCourse(courseId: number, siteId?: string): Promise<boolean> {
-        return CoreUtils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
+        return CorePromiseUtils.promiseWorks(this.getNotes(courseId, undefined, false, true, siteId));
     }
 
     /**
@@ -267,7 +268,7 @@ export class AddonNotesProvider {
      * @returns Cache key.
      */
     getNotesPrefixCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'notes:' + courseId + ':';
+        return `${AddonNotesProvider.ROOT_CACHE_KEY}notes:${courseId}:`;
     }
 
     /**
@@ -309,7 +310,7 @@ export class AddonNotesProvider {
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotesCacheKey(courseId, userId),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
         };
 
         if (ignoreCache) {
@@ -323,7 +324,7 @@ export class AddonNotesProvider {
 
         const offlineNotes = await AddonNotesOffline.getNotesForCourseAndUser(courseId, userId, siteId);
         offlineNotes.forEach((note: AddonNotesNote) => {
-            const fieldName = note.publishstate + 'notes';
+            const fieldName = `${note.publishstate}notes`;
             if (!notes[fieldName]) {
                 notes[fieldName] = [];
             }
@@ -444,7 +445,7 @@ export type AddonNotesNote = {
     courseid: number; // Id of the course.
     userid: number; // User id.
     content: string; // The content text formated.
-    format: number; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format: CoreTextFormat; // Content format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     created: number; // Time created (timestamp).
     lastmodified: number; // Time of last modification (timestamp).
     usermodified: number; // User id of the creator of this note.
@@ -488,7 +489,7 @@ export type AddonNotesCreateNoteData = {
     courseid: number; // Course id of the note (in Moodle a note can only be created into a course,
     // even for site and personal notes).
     text: string; // The text of the message - text or HTML.
-    format?: number; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    format?: CoreTextFormat; // Text format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     clientnoteid?: string; // Your own client id for the note. If this id is provided, the fail message id will be returned to you.
 };
 

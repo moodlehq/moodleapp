@@ -26,18 +26,28 @@ import {
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSearchGlobalSearchResultComponent } from '@features/search/components/global-search-result/global-search-result';
 
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
+    imports: [
+        CoreSharedModule,
+        CoreSearchBoxComponent,
+        CoreSearchGlobalSearchResultComponent,
+    ],
 })
-export class AddonModForumSearchPage implements OnInit {
+export default class AddonModForumSearchPage implements OnInit {
 
-    loadMoreError: string | null = null;
+    loadMoreError = false;
     searchBanner: string | null = null;
     resultsSource = new CoreSearchGlobalSearchResultsSource('', {});
     forum?: AddonModForumData;
@@ -81,7 +91,7 @@ export class AddonModForumSearchPage implements OnInit {
             this.resultsSource.setFilters(filters);
             this.ready.resolve();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -94,6 +104,12 @@ export class AddonModForumSearchPage implements OnInit {
      * @param query Search query.
      */
     async search(query: string): Promise<void> {
+        if(query.trim() === '') {
+            this.clearSearch();
+
+            return;
+        }
+
         await this.ready;
 
         this.resultsSource.setQuery(query);
@@ -102,9 +118,9 @@ export class AddonModForumSearchPage implements OnInit {
             return;
         }
 
-        await CoreDomUtils.showOperationModals('core.searching', true, async () => {
+        await CoreLoadings.showOperationModals('core.searching', true, async () => {
             await this.resultsSource.reload();
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreSearchGlobalSearch.logViewResults(this.resultsSource.getQuery(), this.resultsSource.getFilters()),
             );
 
@@ -126,8 +142,8 @@ export class AddonModForumSearchPage implements OnInit {
     /**
      * Clear search results.
      */
-    clearSearch(): void {
-        this.loadMoreError = null;
+    protected clearSearch(): void {
+        this.loadMoreError = false;
 
         this.resultsSource.setQuery('');
         this.resultsSource.reset();
@@ -150,8 +166,8 @@ export class AddonModForumSearchPage implements OnInit {
     async loadMoreResults(complete: () => void ): Promise<void> {
         try {
             await this.resultsSource?.load();
-        } catch (error) {
-            this.loadMoreError = CoreDomUtils.getErrorMessage(error);
+        } catch {
+            this.loadMoreError = true;
         } finally {
             complete();
         }

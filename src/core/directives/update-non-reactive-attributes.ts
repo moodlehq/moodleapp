@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 
 /**
  * Directive to observe mutations on some attributes and propagate them inside.
@@ -20,18 +20,17 @@ import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
  *
  * This is necessary in order to update some attributes that are not reactive, for example aria-label.
  *
- * @see https://github.com/ionic-team/ionic-framework/issues/21534
+ * @see https://github.com/ionic-team/ionic-framework/issues/20127
  */
 @Directive({
     selector: 'ion-button',
 })
 export class CoreUpdateNonReactiveAttributesDirective implements OnInit, OnDestroy {
 
-    protected element: HTMLIonButtonElement | HTMLElement;
     protected mutationObserver: MutationObserver;
+    protected element: HTMLIonButtonElement = inject(ElementRef).nativeElement;
 
-    constructor(element: ElementRef<HTMLIonButtonElement>) {
-        this.element = element.nativeElement;
+    constructor() {
         this.mutationObserver = new MutationObserver(() => {
             const button = this.element.shadowRoot?.querySelector('button');
 

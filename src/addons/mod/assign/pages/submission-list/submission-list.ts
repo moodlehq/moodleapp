@@ -12,18 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, viewChild } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
-    AddonModAssignListFilterName,
     AddonModAssignSubmissionForList,
     AddonModAssignSubmissionsSource,
 } from '../../classes/submissions-source';
@@ -33,7 +31,15 @@ import {
     AddonModAssignAutoSyncData,
 } from '../../services/assign-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_ASSIGN_MANUAL_SYNCED } from '../../constants';
+import {
+    ADDON_MOD_ASSIGN_AUTO_SYNCED,
+    ADDON_MOD_ASSIGN_GRADED_EVENT,
+    ADDON_MOD_ASSIGN_MANUAL_SYNCED,
+    ADDON_MOD_ASSIGN_MODNAME,
+    AddonModAssignListFilterName,
+} from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a list of submissions of an assignment.
@@ -41,10 +47,13 @@ import { ADDON_MOD_ASSIGN_AUTO_SYNCED, ADDON_MOD_ASSIGN_GRADED_EVENT, ADDON_MOD_
 @Component({
     selector: 'page-addon-mod-assign-submission-list',
     templateUrl: 'submission-list.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
+export default class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestroy {
 
-    @ViewChild(CoreSplitViewComponent) splitView!: CoreSplitViewComponent;
+    readonly splitView = viewChild.required(CoreSplitViewComponent);
 
     title = '';
     submissions!: CoreListItemsManager<AddonModAssignSubmissionForList, AddonModAssignSubmissionsSource>; // List of submissions
@@ -107,8 +116,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                 AddonModAssignSubmissionListPage,
             );
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -124,11 +132,11 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
     }
 
     get moduleId(): number {
-        return this.submissions.getSource().MODULE_ID;
+        return this.submissions.getSource().moduleId;
     }
 
     get courseId(): number {
-        return this.submissions.getSource().COURSE_ID;
+        return this.submissions.getSource().courseId;
     }
 
     get groupId(): number {
@@ -143,7 +151,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        const selectedStatus = this.submissions.getSource().SELECTED_STATUS;
+        const selectedStatus = this.submissions.getSource().selectedStatus;
         this.title = Translate.instant(
             selectedStatus
                 ? (
@@ -155,7 +163,7 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
         );
 
         this.fetchAssignment(true).finally(() => {
-            this.submissions.start(this.splitView);
+            this.submissions.start(this.splitView());
         });
     }
 
@@ -180,11 +188,11 @@ export class AddonModAssignSubmissionListPage implements AfterViewInit, OnDestro
                     contextname: this.assign.name,
                     subpage: Translate.instant('addon.mod_assign.grading'),
                 }),
-                data: { assignid: this.assign.id, category: 'assign' },
+                data: { assignid: this.assign.id, category: ADDON_MOD_ASSIGN_MODNAME },
                 url: `/mod/assign/view.php?id=${this.assign.cmid}&action=grading`,
             });
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting assigment data.');
+            CoreAlerts.showError(error, { default: 'Error getting assigment data.' });
         }
     }
 

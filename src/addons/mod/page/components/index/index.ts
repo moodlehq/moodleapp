@@ -12,14 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AddonModPagePage, AddonModPage } from '../../services/page';
 import { AddonModPageHelper } from '../../services/page-helper';
-import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
+import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a page.
@@ -27,10 +30,15 @@ import { ADDON_MOD_PAGE_COMPONENT } from '../../constants';
 @Component({
     selector: 'addon-mod-page-index',
     templateUrl: 'addon-mod-page-index.html',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComponent implements OnInit {
 
-    component = ADDON_MOD_PAGE_COMPONENT;
+    component = ADDON_MOD_PAGE_COMPONENT_LEGACY;
     pluginName = 'page';
     contents?: string;
     displayDescription = false;
@@ -39,10 +47,6 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
     page?: AddonModPagePage;
 
     protected fetchContentDefaultError = 'addon.mod_page.errorwhileloadingthepage';
-
-    constructor(@Optional() courseContentsPage?: CoreCourseContentsPage) {
-        super('AddonModPageIndexComponent', courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -107,7 +111,7 @@ export class AddonModPageIndexComponent extends CoreCourseModuleMainResourceComp
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        await CoreUtils.ignoreErrors(AddonModPage.logView(this.module.instance));
+        await CorePromiseUtils.ignoreErrors(AddonModPage.logView(this.module.instance));
 
         this.analyticsLogEvent('mod_page_view_page');
     }

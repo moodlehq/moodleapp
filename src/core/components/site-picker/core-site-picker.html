@@ -1,6 +1,10 @@
-<ion-item *ngIf="sites && sites.length">
-    <ion-select [label]="'core.site' | translate" [(ngModel)]="selectedSite" (ngModelChange)="siteSelected.emit(selectedSite)"
-        interface="action-sheet" [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.site' | translate}">
-        <ion-select-option *ngFor="let site of sites" [value]="site.id">{{ site.fullNameAndSiteName }}</ion-select-option>
-    </ion-select>
-</ion-item>
+@if (sites().length) {
+    <ion-item>
+        <ion-select [label]="'core.site' | translate" [(ngModel)]="selectedSite" (ngModelChange)="siteSelected.emit($event)"
+            interface="action-sheet" [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'core.site' | translate}">
+            @for (site of sites(); track site.id) {
+                <ion-select-option [value]="site.id">{{ site.fullNameAndSiteName }}</ion-select-option>
+            }
+        </ion-select>
+    </ion-item>
+}

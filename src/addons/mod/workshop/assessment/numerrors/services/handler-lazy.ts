@@ -23,7 +23,6 @@ import {
 import { Injectable, Type } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
-import { AddonModWorkshopAssessmentStrategyNumErrorsComponent } from '../component/numerrors';
 import { AddonModWorkshopAssessmentStrategyNumErrorsHandlerService } from './handler';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonModWorkshopAssessmentStrategyNumErrorsComponent } = await import('../component/numerrors');
+
         return AddonModWorkshopAssessmentStrategyNumErrorsComponent;
     }
 
@@ -99,17 +100,17 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService
             if (idx < form.dimenssionscount) {
                 const grade = parseInt(String(currentValues[idx].grade), 10);
                 if (!isNaN(grade) && (grade == 1 || grade == -1)) {
-                    data['grade__idx_' + idx] = grade;
+                    data[`grade__idx_${idx}`] = grade;
                 } else {
-                    errors['grade_' + idx] = Translate.instant('core.required');
+                    errors[`grade_${idx}`] = Translate.instant('core.required');
                     hasErrors = true;
                 }
 
-                data['peercomment__idx_' + idx] = currentValues[idx].peercomment ?? '';
+                data[`peercomment__idx_${idx}`] = currentValues[idx].peercomment ?? '';
 
-                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
-                data['weight__idx_' + idx] = parseInt(field.weight, 10) || 0;
+                data[`gradeid__idx_${idx}`] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data[`dimensionid__idx_${idx}`] = parseInt(field.dimensionid, 10);
+                data[`weight__idx_${idx}`] = parseInt(field.weight, 10) || 0;
             }
         });
 

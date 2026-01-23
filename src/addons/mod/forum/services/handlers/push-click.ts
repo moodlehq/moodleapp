@@ -20,11 +20,12 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 
 import { isSafeNumber } from '@/core/utils/types';
-import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Handler for forum push notifications clicks.
@@ -34,7 +35,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
 
     name = 'AddonModForumPushClickHandler';
     priority = 200;
-    featureName = 'CoreCourseModuleDelegate_AddonModForum';
+    featureName = ADDON_MOD_FORUM_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.
@@ -75,7 +76,7 @@ export class AddonModForumPushClickHandlerService implements CorePushNotificatio
             pageParams.postId = Number(data.postid || contextUrlParams.urlHash.replace('p', ''));
         }
 
-        await CoreUtils.ignoreErrors(
+        await CorePromiseUtils.ignoreErrors(
             AddonModForum.invalidateDiscussionPosts(discussionId, undefined, notification.site),
         );
 

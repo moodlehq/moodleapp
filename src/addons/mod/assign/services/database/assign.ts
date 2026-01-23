@@ -19,7 +19,7 @@ import { CoreSiteSchema } from '@services/sites';
  */
 export const SUBMISSIONS_TABLE = 'addon_mod_assign_submissions';
 export const SUBMISSIONS_GRADES_TABLE = 'addon_mod_assign_submissions_grading';
-export const OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
+export const ADDON_MOD_ASSIGN_OFFLINE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonModAssignOfflineProvider',
     version: 1,
     tables: [

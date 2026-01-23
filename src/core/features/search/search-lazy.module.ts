@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { NgModule, Injector } from '@angular/core';
 import { Routes, ROUTES } from '@angular/router';
-import { CoreSearchGlobalSearchPage } from './pages/global-search/global-search';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 /**
@@ -28,19 +24,11 @@ import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.modu
  */
 function buildRoutes(injector: Injector): Routes {
     return buildTabMainRoutes(injector, {
-        component: CoreSearchGlobalSearchPage,
+        loadComponent: () => import('@features/search/pages/global-search/global-search'),
     });
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreSearchComponentsModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        CoreSearchGlobalSearchPage,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -50,4 +38,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class CoreSearchLazyModule {}
+export default class CoreSearchLazyModule {}

@@ -12,10 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_LESSON_COMPONENT = 'mmaModLesson';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_LESSON_COMPONENT = 'AddonModLesson';
+export const ADDON_MOD_LESSON_COMPONENT_LEGACY = 'mmaModLesson';
 export const ADDON_MOD_LESSON_PAGE_NAME = 'mod_lesson';
+export const ADDON_MOD_LESSON_MODNAME = 'lesson';
 
+export const ADDON_MOD_LESSON_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_LESSON_COMPONENT;
+
+// Events.
 export const ADDON_MOD_LESSON_AUTO_SYNCED = 'addon_mod_lesson_autom_synced';
 export const ADDON_MOD_LESSON_DATA_SENT_EVENT = 'addon_mod_lesson_data_sent';
 
@@ -52,3 +58,8 @@ export const enum AddonModLessonPageSubtype {
 }
 
 export const ADDON_MOD_LESSON_OTHER_ANSWERS = '@#wronganswer#@';
+
+export enum AddonModLessonTab {
+    ATTEMPT = 0,
+    REPORT = 1
+}

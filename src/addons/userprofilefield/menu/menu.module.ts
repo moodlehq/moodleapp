@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldMenuHandler } from './services/handlers/menu';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldMenuComponent } from './component/menu';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldMenuComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldMenuHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonUserProfileFieldMenuComponent,
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldMenuHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldMenuModule {}

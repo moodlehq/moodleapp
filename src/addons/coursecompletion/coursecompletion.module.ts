@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseIndexRoutingModule } from '@features/course/course-routing.module';
@@ -39,7 +39,7 @@ export async function getCourseCompletionServices(): Promise<Type<unknown>[]> {
 const routes: Routes = [
     {
         path: 'coursecompletion',
-        loadChildren: () => import('./coursecompletion-lazy.module').then(m => m.AddonCourseCompletionLazyModule),
+        loadComponent: () => import('./pages/report/report'),
     },
 ];
 
@@ -49,15 +49,11 @@ const routes: Routes = [
         CoreCourseIndexRoutingModule.forChild({ children: routes }),
     ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserDelegate.registerHandler(AddonCourseCompletionUserHandler.instance);
-                CoreCourseOptionsDelegate.registerHandler(AddonCourseCompletionCourseOptionHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonCourseCompletionStatusLinkHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreUserDelegate.registerHandler(AddonCourseCompletionUserHandler.instance);
+            CoreCourseOptionsDelegate.registerHandler(AddonCourseCompletionCourseOptionHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonCourseCompletionStatusLinkHandler.instance);
+        }),
     ],
 })
 export class AddonCourseCompletionModule {}

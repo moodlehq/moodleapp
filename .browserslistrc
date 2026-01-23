@@ -1,0 +1,15 @@
+# This file indicates the platforms supported. These targets will only be polyfilled automatically in CSS,
+# JavaScript polyfills have to be configured manually in `src/polyfills.ts`.
+#
+# In order to see which browsers are supported you can run `npx browserslist` (or visit https://browserslist.dev/).
+#
+# Keep in mind that not all versions of all browsers will be displayed, here's all the versions available:
+# https://caniuse.com/ciu/comparison
+#
+# From time to time, you'll want to update the database by running `npx browserslist@latest --update-db`.
+#
+# More info: https://github.com/browserslist/browserslist
+
+Android >= 93
+iOS >= 15
+Chrome >= 93

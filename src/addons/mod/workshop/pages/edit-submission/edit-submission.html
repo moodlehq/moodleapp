@@ -15,31 +15,37 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="loaded">
-        <form [formGroup]="editForm" *ngIf="workshop" #editFormEl>
-            <ion-item class="ion-text-wrap">
-                <ion-input labelPlacement="stacked" name="title" type="text"
-                    [placeholder]="'addon.mod_workshop.submissiontitle' | translate" formControlName="title">
-                    <div [core-mark-required]="true" slot="label">
-                        {{ 'addon.mod_workshop.submissiontitle' | translate }}
-                    </div>
-                </ion-input>
-            </ion-item>
+        @if (workshop) {
+            <form [formGroup]="editForm" #editFormEl>
+                <ion-item class="ion-text-wrap">
+                    <ion-input labelPlacement="stacked" name="title" type="text"
+                        [placeholder]="'addon.mod_workshop.submissiontitle' | translate" formControlName="title">
+                        <div [core-mark-required]="true" slot="label">
+                            {{ 'addon.mod_workshop.submissiontitle' | translate }}
+                        </div>
+                    </ion-input>
+                </ion-item>
 
-            <ion-item *ngIf="textAvailable">
-                <ion-label position="stacked">
-                    <div [core-mark-required]="textRequired">
-                        {{ 'addon.mod_workshop.submissioncontent' | translate }}
-                    </div>
-                </ion-label>
-                <core-rich-text-editor [control]="editForm.controls['content']" name="content"
-                    [placeholder]="'addon.mod_workshop.submissioncontent' | translate" [component]="component" [componentId]="componentId"
-                    [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id" elementId="content_editor"
-                    [draftExtraParams]="editorExtraParams" />
-            </ion-item>
+                @if (textAvailable) {
+                    <ion-item>
+                        <ion-label position="stacked">
+                            <div [core-mark-required]="textRequired">
+                                {{ 'addon.mod_workshop.submissioncontent' | translate }}
+                            </div>
+                        </ion-label>
+                        <core-rich-text-editor [control]="editForm.controls['content']" name="content"
+                            [placeholder]="'addon.mod_workshop.submissioncontent' | translate" [component]="component"
+                            [componentId]="componentId" [autoSave]="true" contextLevel="module" [contextInstanceId]="module.id"
+                            elementId="content_editor" [draftExtraParams]="editorExtraParams" />
+                    </ion-item>
+                }
 
-            <core-attachments *ngIf="fileAvailable" [files]="attachments" [maxSize]="workshop.maxbytes"
-                [maxSubmissions]="workshop.nattachments" [component]="component" [componentId]="workshop.coursemodule" allowOffline="true"
-                [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course" />
-        </form>
+                @if (fileAvailable) {
+                    <core-attachments [files]="attachments" [maxSize]="workshop.maxbytes" [maxSubmissions]="workshop.nattachments"
+                        [component]="component" [componentId]="workshop.coursemodule" [allowOffline]="true"
+                        [acceptedTypes]="workshop.submissionfiletypes" [required]="fileRequired" [courseId]="workshop.course" />
+                }
+            </form>
+        }
     </core-loading>
 </ion-content>

@@ -16,10 +16,13 @@ import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@singletons/events';
 import { CoreSite } from '@classes/sites/site';
 import { CoreLogger } from '@singletons/logger';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { CorePromisedValue } from './promised-value';
 
 /**
  * Superclass to help creating delegates
  */
+
 export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
     /**
@@ -66,33 +69,20 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     protected updatePromises: {[siteId: string]: {[name: string]: Promise<void>}} = {};
 
     /**
-     * Whether handlers have been initialized.
+     * Subject to subscribe to handlers changes.
      */
-    protected handlersInitialized = false;
+    protected handlersUpdated: Subject<void> = new BehaviorSubject<void>(undefined);
 
     /**
-     * Promise to wait for handlers to be initialized.
-     *
-     * @returns Promise resolved when handlers are enabled.
+     * Handlers loaded flag.
      */
-    protected handlersInitPromise: Promise<boolean>;
-
-    /**
-     * Function to resolve the handlers init promise.
-     */
-    protected handlersInitResolve!: (enabled: boolean) => void;
+    protected handlersLoaded = false;
 
     /**
      * Constructor of the Delegate.
-     *
-     * @param delegateName Delegate name used for logging purposes.
      */
-    constructor(delegateName: string) {
-        this.logger = CoreLogger.getInstance(delegateName);
-
-        this.handlersInitPromise = new Promise((resolve): void => {
-            this.handlersInitResolve = resolve;
-        });
+    constructor() {
+        this.logger = CoreLogger.getInstance(this.constructor.name);
 
         // Update handlers on this cases.
         CoreEvents.on(CoreEvents.LOGIN, () => this.updateHandlers());
@@ -120,6 +110,7 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
     }
 
     /**
+     * Check if handlers are loaded.
      * Execute a certain function in a enabled handler.
      * If the handler isn't found or function isn't defined, call the same function in the default handler.
      *
@@ -199,9 +190,9 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns Function returned value or default value.
      */
     protected hasFunction(handlerName: string, fnName: string, onlyEnabled: boolean = true): boolean {
-        const handler = onlyEnabled ? this.enabledHandlers[handlerName] : this.handlers[handlerName];
+        const handler = this.getHandler(handlerName, onlyEnabled);
 
-        return handler && typeof handler[fnName] == 'function';
+        return handler && typeof handler[fnName] === 'function';
     }
 
     /**
@@ -212,16 +203,17 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns If the handler is registered or not.
      */
     hasHandler(name: string, enabled: boolean = false): boolean {
-        return enabled ? this.enabledHandlers[name] !== undefined : this.handlers[name] !== undefined;
+        return this.getHandler(name, enabled) !== undefined;
     }
 
     /**
-     * Check if the delegate has at least 1 registered handler (not necessarily enabled).
+     * Returns if the delegate has any handler.
      *
-     * @returns If there is at least 1 handler.
+     * @param enabled Check only enabled handlers or all.
+     * @returns True if there's any registered handler, false otherwise.
      */
-    hasHandlers(): boolean {
-        return Object.keys(this.handlers).length > 0;
+    hasHandlers(enabled = false): boolean {
+        return enabled ? !!Object.keys(this.enabledHandlers).length : !!Object.keys(this.handlers).length;
     }
 
     /**
@@ -325,12 +317,15 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * @returns Resolved when done.
      */
     async updateHandlers(): Promise<void> {
+        this.handlersLoaded = false;
+
         const enabled = await this.isEnabled();
 
         if (!enabled) {
             this.logger.debug('Delegate not enabled.');
 
-            this.handlersInitResolve(false);
+            this.handlersLoaded = true;
+            this.handlersUpdated.next();
 
             return;
         }
@@ -355,10 +350,10 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
 
         // Verify that this call is the last one that was started.
         if (this.isLastUpdateCall(now)) {
-            this.handlersInitialized = true;
-            this.handlersInitResolve(true);
-
             this.updateData();
+
+            this.handlersLoaded = true;
+            this.handlersUpdated.next();
         }
     }
 
@@ -366,8 +361,32 @@ export class CoreDelegate<HandlerType extends CoreDelegateHandler> {
      * Update handlers Data.
      * Override this function to update handlers data.
      */
-    updateData(): void {
+    protected updateData(): void {
         // To be overridden.
+    }
+
+    /**
+     * Waits the handlers to be ready.
+     *
+     * @returns Resolved when the handlers are ready.
+     */
+    async waitForReady(): Promise<void> {
+        if (this.handlersLoaded) {
+            return;
+        }
+
+        const promise = new CorePromisedValue<void>();
+
+        const subscription = this.handlersUpdated.subscribe(() => {
+            if (this.handlersLoaded) {
+                // Resolve.
+                promise.resolve();
+
+                subscription?.unsubscribe();
+            }
+        });
+
+        return promise;
     }
 
 }

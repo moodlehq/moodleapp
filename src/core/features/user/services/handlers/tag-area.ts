@@ -16,7 +16,6 @@ import { Injectable, Type } from '@angular/core';
 
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
-import { CoreUserTagAreaComponent } from '@features/user/components/tag-area/tag-area';
 import { CoreTagFeedElement } from '@features/tag/services/tag-helper';
 import { CoreUserBasicData } from '../user';
 import { makeSingleton } from '@singletons';
@@ -81,11 +80,11 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
     }
 
     /**
-     * Get the component to use to display items.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    getComponent(): Type<unknown> | Promise<Type<unknown>> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { CoreUserTagAreaComponent } = await import('../../components/tag-area/tag-area');
+
         return CoreUserTagAreaComponent;
     }
 

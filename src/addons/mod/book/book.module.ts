@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -31,7 +31,16 @@ import { ADDON_MOD_BOOK_PAGE_NAME } from './constants';
 const routes: Routes = [
     {
         path: ADDON_MOD_BOOK_PAGE_NAME,
-        loadChildren: () => import('./book-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/contents',
+                loadComponent: () => import('./pages/contents/contents'),
+            },
+        ],
     },
 ];
 
@@ -45,17 +54,13 @@ const routes: Routes = [
             useValue: [BOOK_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModBookModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBookIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModBookListLinkHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModBookPrefetchHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModBookTagAreaHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModBookModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModBookIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModBookListLinkHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModBookPrefetchHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModBookTagAreaHandler.instance);
+        }),
     ],
 })
 export class AddonModBookModule {}

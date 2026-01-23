@@ -15,8 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicySitePolicy, CorePolicyStatus } from '@features/policy/services/policy';
@@ -26,8 +25,10 @@ import { Subscription } from 'rxjs';
 import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
-import { CoreModals } from '@services/modals';
-import { CoreLoadings } from '@services/loadings';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page to view user acceptances.
@@ -35,9 +36,12 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
-    styleUrls: ['acceptances.scss'],
+    styleUrl: 'acceptances.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
+export default class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
     dataLoaded = false;
     policies: ActiveSitePolicy[] = [];
@@ -90,7 +94,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.canContactDPO = await CoreUtils.ignoreErrors(CoreDataPrivacy.isEnabled(), false);
+        this.canContactDPO = await CorePromiseUtils.ignoreErrors(CoreDataPrivacy.isEnabled(), false);
     }
 
     /**
@@ -132,7 +136,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error getting policies.');
+            CoreAlerts.showError(error, { default: 'Error getting policies.' });
         }
     }
 
@@ -164,9 +168,9 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
      * @param refresher Refresher.
      */
     async refreshAcceptances(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(CorePolicy.invalidateAcceptances());
+        await CorePromiseUtils.ignoreErrors(CorePolicy.invalidateAcceptances());
 
-        await CoreUtils.ignoreErrors(this.fetchAcceptances());
+        await CorePromiseUtils.ignoreErrors(this.fetchAcceptances());
 
         refresher?.complete();
     }
@@ -220,7 +224,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
 
             await this.updatePolicyAcceptance(policy, accept);
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error changing policy status.');
+            CoreAlerts.showError(error, { default: 'Error changing policy status.' });
         } finally {
             modal.dismiss();
         }
@@ -243,7 +247,7 @@ export class CorePolicyAcceptancesPage implements OnInit, OnDestroy {
             }
 
             policy.acceptance = newPolicy.acceptance;
-        } catch (error) {
+        } catch {
             // Error updating the acceptance, calculate it in the app.
             policy.acceptance = {
                 status: accepted ? 1 : 0,

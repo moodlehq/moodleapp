@@ -1,5 +1,7 @@
-<!-- Content to display if no dynamic component. -->
-<ng-content *ngIf="!instance" />
+@if (!instance) {
+    <!-- Content to display if no dynamic component. -->
+    <ng-content />
+}
 
 <!-- Container of the dynamic component -->
 <ng-container #dynamicComponent />

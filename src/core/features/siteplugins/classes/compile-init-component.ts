@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils } from '@services/utils/utils';
+import { CoreObject } from '@singletons/object';
 import { CoreSitePlugins, CoreSitePluginsInitHandlerData } from '../services/siteplugins';
+import { Type } from '@angular/core';
 
 /**
  * Base class for components that will display a component using core-compile-html and want to call a
@@ -23,6 +24,7 @@ export class CoreSitePluginsCompileInitComponent {
 
     content = ''; // Content.
     jsData: Record<string, unknown> = {}; // Data to pass to the component.
+    extraImports: Type<unknown>[] = [];
     protected handlerSchema?: CoreSitePluginsInitHandlerData; // The handler data.
 
     /**
@@ -55,7 +57,7 @@ export class CoreSitePluginsCompileInitComponent {
         // Load first template.
         if (this.handlerSchema.methodTemplates?.length) {
             this.content = this.handlerSchema.methodTemplates[0].html;
-            this.jsData.CONTENT_TEMPLATES = CoreUtils.objectToKeyValueMap(
+            this.jsData.CONTENT_TEMPLATES = CoreObject.toKeyValueMap(
                 this.handlerSchema.methodTemplates,
                 'id',
                 'html',

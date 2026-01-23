@@ -22,12 +22,13 @@ import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModImscp, AddonModImscpImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a IMSCP content.
@@ -35,8 +36,11 @@ import { CoreModals } from '@services/modals';
 @Component({
     selector: 'page-addon-mod-imscp-view',
     templateUrl: 'view.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class AddonModImscpViewPage implements OnInit {
+export default class AddonModImscpViewPage implements OnInit {
 
     title = '';
     cmId!: number;
@@ -61,8 +65,7 @@ export class AddonModImscpViewPage implements OnInit {
             this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
             this.initialItemHref = CoreNavigator.getRouteParam('initialHref');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -118,19 +121,19 @@ export class AddonModImscpViewPage implements OnInit {
             try {
                 await this.loadItemHref(this.currentHref);
             } catch (error) {
-                CoreDomUtils.showErrorModalDefault(error, 'addon.mod_imscp.deploymenterror', true);
+                CoreAlerts.showError(error, { default: Translate.instant('addon.mod_imscp.deploymenterror') });
 
                 return;
             }
 
             if (downloadResult?.failed) {
                 const error = CoreErrorHelper.getErrorMessageFromError(downloadResult.error) || downloadResult.error;
-                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ' ' + error : '');
+                this.warning = Translate.instant('core.errordownloadingsomefiles') + (error ? ` ${error}` : '');
             } else {
                 this.warning = '';
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.loaded = true;
         }
@@ -214,12 +217,12 @@ export class AddonModImscpViewPage implements OnInit {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        await CoreUtils.ignoreErrors(Promise.all([
+        await CorePromiseUtils.ignoreErrors(Promise.all([
             AddonModImscp.invalidateContent(this.cmId, this.courseId),
             CoreCourseModulePrefetchDelegate.invalidateCourseUpdates(this.courseId), // To detect if IMSCP was updated.
         ]));
 
-        await CoreUtils.ignoreErrors(this.fetchContent(true));
+        await CorePromiseUtils.ignoreErrors(this.fetchContent(true));
 
         refresher?.complete();
     }

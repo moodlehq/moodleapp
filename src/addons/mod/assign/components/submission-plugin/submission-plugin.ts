@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChanges, Type, ViewChild  } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Type, viewChild } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import {
     AddonModAssignAssign,
@@ -24,8 +24,9 @@ import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services
 import { AddonModAssignSubmissionDelegate } from '../../services/submission-delegate';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
-import { ADDON_MOD_ASSIGN_COMPONENT } from '../../constants';
+import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '../../constants';
 import { toBoolean } from '@/core/transforms/boolean';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays an assignment submission plugin.
@@ -33,10 +34,13 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-assign-submission-plugin',
     templateUrl: 'addon-mod-assign-submission-plugin.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModAssignSubmissionPluginComponent implements OnChanges {
 
-    @ViewChild(CoreDynamicComponent) dynamicComponent!: CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>;
+    readonly dynamicComponent = viewChild.required(CoreDynamicComponent<AddonModAssignSubmissionPluginBaseComponent>);
 
     @Input({ required: true }) assign!: AddonModAssignAssign; // The assignment.
     @Input({ required: true }) submission!: AddonModAssignSubmission; // The submission.
@@ -48,7 +52,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnChanges {
     data?: AddonModAssignSubmissionPluginData; // Data to pass to the component.
 
     // Data to render the plugin if it isn't supported.
-    component = ADDON_MOD_ASSIGN_COMPONENT;
+    component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
     text = '';
     files: CoreFileEntry[] = [];
     notSupported = false;
@@ -106,7 +110,7 @@ export class AddonModAssignSubmissionPluginComponent implements OnChanges {
      * @returns Promise resolved when done.
      */
     async invalidate(): Promise<void> {
-        await this.dynamicComponent.callComponentMethod('invalidate');
+        await this.dynamicComponent().callComponentMethod('invalidate');
     }
 
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
@@ -32,12 +32,27 @@ import { getPageOrMapLinkHandlerInstance } from './services/handlers/page-or-map
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { AddonModWikiTagAreaHandler } from './services/handlers/tag-area';
-import { ADDON_MOD_WIKI_COMPONENT, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
+import { ADDON_MOD_WIKI_COMPONENT_LEGACY, ADDON_MOD_WIKI_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 const routes: Routes = [
     {
         path: ADDON_MOD_WIKI_PAGE_NAME,
-        loadChildren: () => import('./wiki-lazy.module'),
+        loadChildren: () => [
+            {
+                path: ':courseId/:cmId',
+                redirectTo: ':courseId/:cmId/page/root',
+            },
+            {
+                path: ':courseId/:cmId/page/:hash',
+                loadComponent: () => import('./pages/index/index'),
+            },
+            {
+                path: ':courseId/:cmId/edit',
+                loadComponent: () => import('./pages/edit/edit'),
+                canDeactivate: [canLeaveGuard],
+            },
+        ],
     },
 ];
 
@@ -51,24 +66,20 @@ const routes: Routes = [
             useValue: [OFFLINE_SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreContentLinksDelegate.registerHandler(getCreateLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
-                CoreContentLinksDelegate.registerHandler(getPageOrMapLinkHandlerInstance());
-                CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
-                CoreCronDelegate.register(getCronHandlerInstance());
+        provideAppInitializer(() => {
+            CoreContentLinksDelegate.registerHandler(getCreateLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getEditLinkHandlerInstance());
+            CoreContentLinksDelegate.registerHandler(getPageOrMapLinkHandlerInstance());
+            CoreCourseModulePrefetchDelegate.registerHandler(getPrefetchHandlerInstance());
+            CoreCronDelegate.register(getCronHandlerInstance());
 
-                CoreCourseModuleDelegate.registerHandler(AddonModWikiModuleHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
+            CoreCourseModuleDelegate.registerHandler(AddonModWikiModuleHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWikiIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModWikiListLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModWikiTagAreaHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_WIKI_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModWikiModule {}

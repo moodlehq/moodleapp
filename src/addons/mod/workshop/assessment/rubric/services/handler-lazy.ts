@@ -23,7 +23,6 @@ import {
 import { Injectable, Type } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreFormFields } from '@singletons/form';
-import { AddonModWorkshopAssessmentStrategyRubricComponent } from '../component/rubric';
 import { AddonModWorkshopAssessmentStrategyRubricHandlerService } from './handler';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModWorkshopAssessmentStrategyRubricHandlerLazyService
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonModWorkshopAssessmentStrategyRubricComponent } = await import('../component/rubric');
+
         return AddonModWorkshopAssessmentStrategyRubricComponent;
     }
 
@@ -95,14 +96,14 @@ export class AddonModWorkshopAssessmentStrategyRubricHandlerLazyService
             if (idx < form.dimenssionscount) {
                 const id = parseInt(currentValues[idx].chosenlevelid, 10);
                 if (!isNaN(id) && id >= 0) {
-                    data['chosenlevelid__idx_' + idx] = id;
+                    data[`chosenlevelid__idx_${idx}`] = id;
                 } else {
-                    errors['chosenlevelid_' + idx] = Translate.instant('addon.mod_workshop_assessment_rubric.mustchooseone');
+                    errors[`chosenlevelid_${idx}`] = Translate.instant('addon.mod_workshop_assessment_rubric.mustchooseone');
                     hasErrors = true;
                 }
 
-                data['gradeid__idx_' + idx] = parseInt(form.current[idx].gradeid, 10) || 0;
-                data['dimensionid__idx_' + idx] = parseInt(field.dimensionid, 10);
+                data[`gradeid__idx_${idx}`] = parseInt(form.current[idx].gradeid, 10) || 0;
+                data[`dimensionid__idx_${idx}`] = parseInt(field.dimensionid, 10);
             }
         });
 

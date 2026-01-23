@@ -1,31 +1,49 @@
-<section class="addon-qtype-match-container" *ngIf="question && question.loaded">
-    <ion-item class="ion-text-wrap question-text">
-        <ion-label>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
-                [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-        </ion-label>
-    </ion-item>
-    <ion-item class="ion-text-wrap question-rows" *ngFor="let row of question.rows">
+@if (question && question.loaded) {
+    <section class="addon-qtype-match-container">
+        <ion-item class="ion-text-wrap question-text">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
+        @for (row of question.rows; track row.id) {
+            <ion-item class="ion-text-wrap question-rows">
+                <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled"
+                    [cancelText]="'core.cancel' | translate" [class.addon-qtype-match-correct]="row.correctClass === 'correct'"
+                    [class.addon-qtype-match-incorrect]="row.correctClass === 'incorrect'"
+                    [class.addon-qtype-match-partiallycorrect]="row.correctClass === 'partiallycorrect'">
+                    <div slot="label" class="flex-row ion-text-wrap">
+                        <div>
+                            <core-format-text [component]="component" [componentId]="componentId" [text]="row.text"
+                                [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+                        </div>
+                        @if (row.accessibilityLabel) {
+                            <label class="accesshide" for="{{row.id}}">
+                                {{ row.accessibilityLabel }}
+                            </label>
+                        }
+                    </div>
 
-        <ion-select id="{{row.id}}" [name]="row.name" [(ngModel)]="row.selected" interface="action-sheet" [disabled]="row.disabled"
-            [cancelText]="'core.cancel' | translate"
-            [ngClass]="{'addon-qtype-match-correct': row.isCorrect === 1,'addon-qtype-match-incorrect': row.isCorrect === 0}">
-            <div slot="label" class="flex-row ion-text-wrap">
-                <div>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="row.text" [contextLevel]="contextLevel"
-                        [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
-                </div>
-                <label class="accesshide" for="{{row.id}}" *ngIf="row.accessibilityLabel">
-                    {{ row.accessibilityLabel }}
-                </label>
-            </div>
-            <ion-icon *ngIf="row.isCorrect === 1" class="core-correct-icon" [name]="correctIcon" color="success" slot="start"
-                [attr.aria-label]="'core.question.correct' | translate" />
-            <ion-icon *ngIf="row.isCorrect === 0" class="core-correct-icon" [name]="incorrectIcon" color="danger" slot="start"
-                [attr.aria-label]="'core.question.incorrect' | translate" />
-            <ion-select-option *ngFor="let option of row.options" [value]="option.value">
-                {{option.label}}
-            </ion-select-option>
-        </ion-select>
-    </ion-item>
-</section>
+                    @switch (row.correctClass) {
+                        @case ('correct') {
+                            <ion-icon class="core-correct-icon" [name]="correctIcon" color="success" slot="start"
+                                [attr.aria-label]="'core.question.correct' | translate" />
+                        }
+                        @case ('partiallycorrect') {
+                            <ion-icon class="core-correct-icon" [name]="partialCorrectIcon" color="warning" slot="start"
+                                [attr.aria-label]="'core.question.partiallycorrect' | translate" />
+                        }
+                        @case ('incorrect') {
+                            <ion-icon class="core-correct-icon" [name]="incorrectIcon" color="danger" slot="start"
+                                [attr.aria-label]="'core.question.incorrect' | translate" />
+                        }
+                    }
+
+                    @for (option of row.options; track option.value) {
+                        <ion-select-option [value]="option.value">{{option.label}}</ion-select-option>
+                    }
+                </ion-select>
+            </ion-item>
+        }
+    </section>
+}

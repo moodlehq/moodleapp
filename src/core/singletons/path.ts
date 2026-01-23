@@ -45,8 +45,8 @@ export class CorePath {
         const finalFolderSplit = finalFolder === '' ? [] : finalFolder.split('/');
 
         let firstDiffIndex = initialFolderSplit.length > 0 && finalFolderSplit.length > 0 ?
-            initialFolderSplit.findIndex((value, index) => value !== finalFolderSplit[index]) :
-            0;
+        initialFolderSplit.findIndex((value, index) => value !== finalFolderSplit[index]) :
+        0;
 
         if (firstDiffIndex === -1) {
             // All elements in initial folder are equal. The first diff is the first element in the final folder.
@@ -93,7 +93,7 @@ export class CorePath {
         if (lastCharLeft === '/' && firstCharRight === '/') {
             return leftPath + rightPath.substring(1);
         } else if (lastCharLeft !== '/' && firstCharRight !== '/') {
-            return leftPath + '/' + rightPath;
+            return `${leftPath}/${rightPath}`;
         } else {
             return leftPath + rightPath;
         }
@@ -115,6 +115,47 @@ export class CorePath {
         }
 
         return !ancestorSplit.some((value, index) => value !== pathSplit[index]);
+    }
+
+    /**
+     * Will return the result of resolving a relative path against a current path.
+     * If the relative path is absolute, it will return the relative path.
+     * If the relative path is empty, it will return the current path.
+     *
+     * @param currentPath The current path to resolve against.
+     * @param relativePath The relative path to resolve.
+     * @returns The resolved path.
+     */
+    static resolveRelativePath(currentPath: string, relativePath: string): string {
+        if (!relativePath) {
+            return currentPath;
+        }
+
+        if (relativePath.startsWith('/')) {
+            return relativePath;
+        }
+
+        const currentPathIsAbsolute = currentPath.startsWith('/');
+
+        let currentSegments = currentPath.split('/');
+        // Remove empty segments from the current path.
+        currentSegments = currentSegments.filter((segment) => segment !== '');
+
+        let relativeSegments = relativePath.split('/');
+        relativeSegments = relativeSegments.filter((segment) => segment !== '' && segment !== '.');
+
+        relativeSegments.forEach((segment) => {
+            if (segment === '..') {
+                currentSegments.pop();
+            } else {
+                currentSegments.push(segment);
+            }
+
+        });
+
+        return currentPathIsAbsolute
+            ? `/${currentSegments.join('/')}`
+            : currentSegments.join('/');
     }
 
 }

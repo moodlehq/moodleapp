@@ -16,10 +16,9 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUser, USER_NOREPLY_USER } from '@features/user/services/user';
-import { CoreSite } from '@classes/sites/site';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { CoreTime } from '@singletons/time';
+import { CoreUser } from '@features/user/services/user';
 import { CoreLogger } from '@singletons/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -35,12 +34,10 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [AddonNotificationsProvider.READ_CHANGED_EVENT]: AddonNotificationsReadChangedEvent;
+        [ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT]: AddonNotificationsReadChangedEvent;
     }
 
 }
-
-const ROOT_CACHE_KEY = 'mmaNotifications:';
 
 /**
  * Service to handle notifications.
@@ -48,16 +45,27 @@ const ROOT_CACHE_KEY = 'mmaNotifications:';
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsProvider {
 
-    static readonly READ_CHANGED_EVENT = 'addon_notifications_read_changed_event';
-    static readonly READ_CRON_EVENT = 'addon_notifications_read_cron_event';
-    static readonly PUSH_SIMULATION_COMPONENT = 'AddonNotificationsPushSimulation';
-    static readonly LIST_LIMIT = 20;
+    protected static readonly ROOT_CACHE_KEY = 'mmaNotifications:';
 
-    protected logger: CoreLogger;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT instead.
+     */
+    static readonly READ_CHANGED_EVENT = ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_READ_CRON_EVENT instead.
+     */
+    static readonly READ_CRON_EVENT = ADDONS_NOTIFICATIONS_READ_CRON_EVENT;
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT instead.
+     */
+    static readonly PUSH_SIMULATION_COMPONENT = ADDONS_NOTIFICATIONS_PUSH_SIMULATION_COMPONENT;
 
-    constructor() {
-        this.logger = CoreLogger.getInstance('AddonNotificationsProvider');
-    }
+    /**
+     * @deprecated since 5.0. Use ADDONS_NOTIFICATIONS_LIST_LIMIT instead.
+     */
+    static readonly LIST_LIMIT = ADDONS_NOTIFICATIONS_LIST_LIMIT;
+
+    protected logger = CoreLogger.getInstance('AddonNotificationsProvider');
 
     /**
      * Convert a push notification data to use the same format as the get_messages WS.
@@ -76,15 +84,15 @@ export class AddonNotificationsProvider {
         }
 
         const notificationMessage: AddonNotificationsNotificationMessage = {
-            id: notification.id ?? 0,
-            useridfrom: notification.userfromid ? Number(notification.userfromid) : USER_NOREPLY_USER,
+            id: Number(notification.savedmessageid) || notification.id || 0,
+            useridfrom: notification.userfromid ? Number(notification.userfromid) : CORE_USER_NOREPLY_USER,
             userfromfullname: notification.userfromfullname ?? Translate.instant('core.noreplyname'),
             useridto: notification.usertoid ? Number(notification.usertoid) : (siteInfo?.userid ?? 0),
             usertofullname: siteInfo?.fullname ?? '',
             subject: notification.title ?? '',
             text: message,
             fullmessage: message,
-            fullmessageformat: 1,
+            fullmessageformat: DEFAULT_TEXT_FORMAT,
             fullmessagehtml: message,
             smallmessage: message,
             notification: Number(notification.notif ?? 1),
@@ -107,14 +115,14 @@ export class AddonNotificationsProvider {
      * @param notifications List of notifications.
      * @returns Promise resolved with notifications.
      */
-    protected async formatNotificationsData(
+    async formatNotificationsData(
         notifications: AddonNotificationsNotificationMessage[],
     ): Promise<AddonNotificationsNotificationMessageFormatted[]> {
 
         const promises = notifications.map(async (notificationRaw) => {
             const notification = <AddonNotificationsNotificationMessageFormatted> notificationRaw;
 
-            notification.mobiletext = notification.fullmessagehtml || notification.fullmessage || notification.smallmessage;
+            notification.mobiletext = notification.fullmessagehtml || notification.fullmessage || notification.smallmessage || '';
             notification.moodlecomponent = notification.component;
             notification.notification = 1;
             notification.notif = 1;
@@ -128,7 +136,7 @@ export class AddonNotificationsProvider {
             if (notification.customdata?.courseid) {
                 notification.courseid = <number> notification.customdata.courseid;
             } else if (!notification.courseid) {
-                const courseIdMatch = notification.fullmessagehtml.match(/course\/view\.php\?id=([^"]*)/);
+                const courseIdMatch = notification.fullmessagehtml?.match(/course\/view\.php\?id=([^"]*)/);
                 if (courseIdMatch?.[1]) {
                     notification.courseid = parseInt(courseIdMatch[1], 10);
                 }
@@ -190,7 +198,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getNotificationPreferencesCacheKey(): string {
-        return ROOT_CACHE_KEY + 'notificationPreferences';
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}notificationPreferences`;
     }
 
     /**
@@ -205,7 +213,7 @@ export class AddonNotificationsProvider {
         const site = await CoreSites.getSite(options.siteId);
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getNotificationPreferencesCacheKey(),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
+            updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -224,7 +232,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getNotificationsCacheKey(): string {
-        return ROOT_CACHE_KEY + 'list';
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}list`;
     }
 
     /**
@@ -239,7 +247,7 @@ export class AddonNotificationsProvider {
         options: AddonNotificationsGetNotificationsOptions = {},
     ): Promise<AddonNotificationsNotificationMessageFormatted[]> {
         options.offset = options.offset || 0;
-        options.limit = options.limit || AddonNotificationsProvider.LIST_LIMIT;
+        options.limit = options.limit || ADDONS_NOTIFICATIONS_LIST_LIMIT;
 
         const typeText = read === AddonNotificationsGetReadType.READ ?
             'read' :
@@ -311,13 +319,13 @@ export class AddonNotificationsProvider {
         // Fallback call
         try {
             const unread = await this.getNotificationsWithStatus(AddonNotificationsGetReadType.UNREAD, {
-                limit: AddonNotificationsProvider.LIST_LIMIT + 1,
+                limit: ADDONS_NOTIFICATIONS_LIST_LIMIT + 1,
                 siteId,
             });
 
             return {
-                count: Math.min(unread.length, AddonNotificationsProvider.LIST_LIMIT),
-                hasMore: unread.length > AddonNotificationsProvider.LIST_LIMIT,
+                count: Math.min(unread.length, ADDONS_NOTIFICATIONS_LIST_LIMIT),
+                hasMore: unread.length > ADDONS_NOTIFICATIONS_LIST_LIMIT,
             };
         } catch {
             // Return no notifications if the call fails.
@@ -335,7 +343,7 @@ export class AddonNotificationsProvider {
      * @returns Cache key.
      */
     protected getUnreadNotificationsCountCacheKey(userId: number): string {
-        return `${ROOT_CACHE_KEY}count:${userId}`;
+        return `${AddonNotificationsProvider.ROOT_CACHE_KEY}count:${userId}`;
     }
 
     /**
@@ -350,7 +358,11 @@ export class AddonNotificationsProvider {
             useridto: CoreSites.getCurrentSiteUserId(),
         };
 
-        return site.write<boolean>('core_message_mark_all_notifications_as_read', params);
+        const preSets: CoreSiteWSPreSets = {
+            typeExpected: 'boolean',
+        };
+
+        return site.write<boolean>('core_message_mark_all_notifications_as_read', params, preSets);
     }
 
     /**
@@ -369,7 +381,7 @@ export class AddonNotificationsProvider {
 
         const params: CoreMessageMarkNotificationReadWSParams = {
             notificationid: notificationId,
-            timeread: CoreTimeUtils.timestamp(),
+            timeread: CoreTime.timestamp(),
         };
 
         return site.write<CoreMessageMarkNotificationReadWSResponse>('core_message_mark_notification_read', params);
@@ -379,7 +391,6 @@ export class AddonNotificationsProvider {
      * Invalidate get notification preferences.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when data is invalidated.
      */
     async invalidateNotificationPreferences(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -391,7 +402,6 @@ export class AddonNotificationsProvider {
      * Invalidates notifications list WS calls.
      *
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateNotificationsList(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -499,10 +509,10 @@ export type AddonNotificationsNotificationMessage = {
     useridto: number; // User to id.
     subject: string; // The message subject.
     text: string; // The message text formated.
-    fullmessage: string; // The message.
-    fullmessageformat: number; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    fullmessagehtml: string; // The message in html.
-    smallmessage: string; // The shorten message.
+    fullmessage: string | null; // The message.
+    fullmessageformat: CoreTextFormat | null; // Fullmessage format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    fullmessagehtml: string | null; // The message in html.
+    smallmessage: string | null; // The shorten message.
     notification: number; // Is a notification?.
     contexturl: string | null; // Context URL.
     contexturlname: string | null; // Context URL link name.

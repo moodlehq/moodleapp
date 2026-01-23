@@ -12,3 +12,21 @@ ion-datetime-button p {
 ion-datetime.datetime-disabled {
     opacity: var(--mdl-input-disabled-opacity) !important;
 }
+
+ion-datetime {
+    .ion-datetime-date-title {
+        display: inline;
+    }
+    .ion-datetime-time-title {
+        display: none;
+    }
+}
+
+ion-datetime.datetime-presentation-time {
+    .ion-datetime-date-title {
+        display: none;
+    }
+    .ion-datetime-time-title {
+        display: inline;
+    }
+}

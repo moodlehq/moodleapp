@@ -12,14 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef } from '@angular/core';
+import { Component } from '@angular/core';
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { Translate } from '@singletons';
 import { CoreWait } from '@singletons/wait';
 import { CorePlatform } from '@services/platform';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render an ordering question.
@@ -28,6 +29,9 @@ import { CorePlatform } from '@services/platform';
     selector: 'addon-qtype-ordering',
     templateUrl: 'addon-qtype-ordering.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ordering.scss'],
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<AddonQtypeOrderingQuestionData> {
 
@@ -39,20 +43,20 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         value: '',
     };
 
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeOrderingComponent', elementRef);
-    }
-
     /**
      * @inheritdoc
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -63,6 +67,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         const listContainer = questionElement.querySelector('.sortablelist');
         if (!listContainer) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -76,7 +81,7 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             const itemContentEl = element.querySelector<HTMLElement>('[data-itemcontent]');
             itemContentEl?.querySelector(
                 '.icon.fa-check, .icon.fa-remove, .icon.fa-check-square, .icon.fa-circle-check, .icon.fa-xmark, ' +
-                '.icon.fa-circle-xmark, .icon.fa-square-check, .icon.circle-half-stroke',
+                '.icon.fa-circle-xmark, .icon.fa-square-check, .icon.circle-half-stroke, img.icon[src*="grade_partiallycorrect"]',
             )?.remove();
 
             return {
@@ -98,7 +103,8 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
         // Re-calculate the text of the question, removing the elements that the app already renders.
         questionElement.querySelector('.ablock')?.remove();
         inputEl?.remove();
-        this.question.text = CoreDomUtils.getContentsOfElement(questionElement, '.qtext');
+        this.question.text = CoreDom.getContentsOfElement(questionElement, '.qtext');
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -107,7 +113,10 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
      * @param eventDetail Details of the reorder.
      */
     moveItem(eventDetail: ItemReorderEventDetail): void {
-        if (!this.question?.items) {
+        if (!this.question?.items || eventDetail.from === eventDetail.to) {
+            // No change.
+            eventDetail.complete();
+
             return;
         }
 
@@ -169,14 +178,14 @@ export class AddonQtypeOrderingComponent extends CoreQuestionBaseComponent<Addon
             elementToFocus = movedCard.querySelector<HTMLElement>('[data-action="move-backward"]') ?? target;
         }
 
-        CoreDomUtils.focusElement(elementToFocus);
+        CoreDom.focusElement(elementToFocus);
 
         if (CorePlatform.isIOS()) {
             // In iOS, when the focus is lost VoiceOver automatically focus the element in the same position where the focus was.
             // If that happens, make sure the focus stays in the button we want to focus.
             const reFocus = () => {
                 elementToFocus.removeEventListener('blur', reFocus);
-                CoreDomUtils.focusElement(elementToFocus);
+                CoreDom.focusElement(elementToFocus);
             };
             elementToFocus.addEventListener('blur', reFocus);
             setTimeout(() => {

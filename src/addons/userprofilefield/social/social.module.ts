@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonUserProfileFieldSocialHandler } from './services/handlers/social';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
-import { AddonUserProfileFieldSocialComponent } from './component/social';
-import { CoreSharedModule } from '@/core/shared.module';
 
 @NgModule({
-    declarations: [
-        AddonUserProfileFieldSocialComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldSocialHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonUserProfileFieldSocialComponent,
+        provideAppInitializer(() => {
+            CoreUserProfileFieldDelegate.registerHandler(AddonUserProfileFieldSocialHandler.instance);
+        }),
     ],
 })
 export class AddonUserProfileFieldSocialModule {}

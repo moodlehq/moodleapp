@@ -15,11 +15,8 @@
 import { Injector, NgModule } from '@angular/core';
 import { Routes, ROUTES } from '@angular/router';
 
-import { CoreSharedModule } from '@/core/shared.module';
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreMainMenuProvider } from '@features/mainmenu/services/mainmenu';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
-import { CoreMainMenuMorePage } from '@features/mainmenu/pages/more/more';
+import { MAIN_MENU_MORE_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -29,18 +26,14 @@ import { CoreMainMenuMorePage } from '@features/mainmenu/pages/more/more';
  */
 function buildRoutes(injector: Injector): Routes {
     return buildTabMainRoutes(injector, {
-        component: CoreMainMenuMorePage,
+        loadComponent: () => import('@features/mainmenu/pages/more/more'),
         data: {
-            mainMenuTabRoot: CoreMainMenuProvider.MORE_PAGE_NAME,
+            mainMenuTabRoot: MAIN_MENU_MORE_PAGE_NAME,
         },
     });
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreMainMenuComponentsModule,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -49,8 +42,5 @@ function buildRoutes(injector: Injector): Routes {
             useFactory: buildRoutes,
         },
     ],
-    declarations: [
-        CoreMainMenuMorePage,
-    ],
 })
-export class CoreMainMenuMoreLazyModule {}
+export default class CoreMainMenuMoreLazyModule {}

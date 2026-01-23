@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="end">
+            <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
+                <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+            </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<div class="content-auto-height">
+    <ion-item lines="none">
+        <ion-label class="flex-row">
+            <div id="readingmode-range-label">{{ 'core.settings.fontsize' | translate }}</div>
+        </ion-label>
+        <div slot="end">{{settings.zoom}}% @if (defaultZoom) { {{ 'core.viewer.default' | translate }} }</div>
+    </ion-item>
+    <ion-item lines="full">
+        <ion-range aria-labelledby="readingmode-range-label" [min]="minTextSizeZoom" [max]="maxTextSizeZoom"
+            [step]="textSizeZoomStep" [value]="settings.zoom" (ionInput)="changeTextSizeZoom($event.detail.value)">
+            <ion-button slot="start" fill="clear" [ariaLabel]="'core.viewer.decreasetextsize' | translate"
+                (click)="changeTextSizeZoom(settings.zoom - textSizeZoomStep)">
+                <ion-icon name="fas-font" slot="icon-only" aria-hidden="true" class="zoom-decrease" />
+            </ion-button>
+            <ion-button slot="end" fill="clear" [ariaLabel]="'core.viewer.increasetextsize' | translate"
+                (click)="changeTextSizeZoom(settings.zoom + textSizeZoomStep)">
+                <ion-icon name="fas-font" slot="icon-only" aria-hidden="true" class="zoom-increase" />
+            </ion-button>
+        </ion-range>
+    </ion-item>
+    <ion-item>
+        <ion-label>
+            {{ 'core.viewer.theme' | translate }}
+        </ion-label>
+    </ion-item>
+    <ion-radio-group [(ngModel)]="settings.theme" (ionChange)="onSettingChange()">
+        @for (theme of themes; track $index; let last = $last;) {
+            <ion-item class="ion-text-wrap" [lines]="last ? 'full': 'none'">
+                <ion-radio [value]="theme" class="reading-theme">
+                    <div class="preview {{theme}}">Aa</div> {{ 'core.viewer.readingtheme'+theme | translate }}
+                </ion-radio>
+            </ion-item>
+        }
+    </ion-radio-group>
+    <ion-item class="ion-text-wrap" (ionChange)="onSettingChange()" lines="full">
+        <ion-toggle [(ngModel)]="settings.showMultimedia">
+            <p class="item-heading">{{ 'core.viewer.showmedia' | translate }}</p>
+        </ion-toggle>
+    </ion-item>
+    <ion-button (click)="exit()" fill="outline" expand="block" class="ion-margin ion-text-wrap">
+        <ion-icon name="fas-book-open-reader" slot="start" aria-hidden="true" class="icon-slash" />
+        {{ 'core.viewer.exitreadingmode' | translate }}
+    </ion-button>
+</div>

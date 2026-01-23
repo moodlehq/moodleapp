@@ -12,23 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
-import { CoreDomUtils } from '@services/utils/dom';
+import { CoreDom } from '@singletons/dom';
 import { CoreFormFields } from '@singletons/form';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModLesson,
     AddonModLessonAttemptsOverviewsAttemptWSData,
+    AddonModLessonGetAccessInformationWSResponse,
     AddonModLessonGetPageDataWSResponse,
+    AddonModLessonLessonWSData,
 } from './lesson';
-import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { AddonModLessonPageSubtype } from '../constants';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CoreError } from '@classes/errors/error';
+import { CorePrompts } from '@services/overlays/prompts';
+import { CoreSites } from '@services/sites';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 
 /**
  * Helper service that provides some features for quiz.
@@ -36,9 +42,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 @Injectable({ providedIn: 'root' })
 export class AddonModLessonHelperProvider {
 
-    constructor(
-        protected formBuilder: FormBuilder,
-    ) {}
+    protected formBuilder = inject(FormBuilder);
 
     /**
      * Given the HTML of next activity link, format it to extract the href and the text.
@@ -540,7 +544,7 @@ export class AddonModLessonHelperProvider {
             if (hasGrade) {
                 data.grade = Translate.instant('core.percentagenumber', { $a: retake.grade });
             }
-            data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
+            data.timestart = CoreTime.userDate(retake.timestart * 1000);
             if (includeDuration) {
                 data.duration = CoreTime.formatTime(retake.timeend - retake.timestart);
             }
@@ -548,11 +552,11 @@ export class AddonModLessonHelperProvider {
             // The user has not completed the retake.
             data.grade = Translate.instant('addon.mod_lesson.notcompleted');
             if (retake.timestart) {
-                data.timestart = CoreTimeUtils.userDate(retake.timestart * 1000);
+                data.timestart = CoreTime.userDate(retake.timestart * 1000);
             }
         }
 
-        return Translate.instant('addon.mod_lesson.retakelabel' + (includeDuration ? 'full' : 'short'), data);
+        return Translate.instant(`addon.mod_lesson.retakelabel${includeDuration ? 'full' : 'short'}`, data);
     }
 
     /**
@@ -592,9 +596,100 @@ export class AddonModLessonHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Remove the question text.
-        CoreDomUtils.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
+        CoreDom.removeElement(element, '.generalbox:not(.feedback):not(.correctanswer)');
 
         return element.innerHTML.trim();
+    }
+
+    /**
+     * Get the lesson password if needed. If not stored, it can ask the user to enter it.
+     *
+     * @param lessonId Lesson ID.
+     * @param options Other options.
+     * @returns Promise resolved when done.
+     */
+    async getLessonPassword(
+        lessonId: number,
+        options: AddonModLessonGetPasswordOptions = {},
+    ): Promise<AddonModLessonGetPasswordResult> {
+
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        // Get access information to check if password is needed.
+        const accessInfo = await AddonModLesson.getAccessInformation(lessonId, options);
+
+        if (!accessInfo.preventaccessreasons.length) {
+            // Password not needed.
+            return { accessInfo };
+        }
+
+        const passwordNeeded = accessInfo.preventaccessreasons.length == 1 &&
+            AddonModLesson.isPasswordProtected(accessInfo);
+
+        if (!passwordNeeded) {
+            // Lesson cannot be played, reject.
+            throw new CoreError(accessInfo.preventaccessreasons[0].message);
+        }
+
+        // The lesson requires a password. Check if there is one in DB.
+        let password = await CorePromiseUtils.ignoreErrors(AddonModLesson.getStoredPassword(lessonId));
+
+        if (password) {
+            try {
+                return await this.validatePassword(lessonId, accessInfo, password, options);
+            } catch {
+                // Error validating it.
+            }
+        }
+
+        // Ask for the password if allowed.
+        if (!options.askPassword) {
+            // Cannot ask for password, reject.
+            throw new CoreError(accessInfo.preventaccessreasons[0].message);
+        }
+
+        // Create and show the modal.
+        const response = await CorePrompts.promptPassword({
+            title: 'addon.mod_lesson.enterpassword',
+            placeholder: 'core.login.password',
+            submit: 'addon.mod_lesson.continue',
+        });
+        password = response.password;
+
+        return this.validatePassword(lessonId, accessInfo, password, options);
+    }
+
+    /**
+     * Validate the password.
+     *
+     * @param lessonId Lesson ID.
+     * @param accessInfo Lesson access info.
+     * @param password Password to check.
+     * @param options Other options.
+     * @returns Promise resolved when done.
+     */
+    protected async validatePassword(
+        lessonId: number,
+        accessInfo: AddonModLessonGetAccessInformationWSResponse,
+        password: string,
+        options: CoreCourseCommonModWSOptions = {},
+    ): Promise<AddonModLessonGetPasswordResult> {
+
+        options.siteId = options.siteId || CoreSites.getCurrentSiteId();
+
+        const lesson = await AddonModLesson.getLessonWithPassword(lessonId, {
+            password,
+            ...options, // Include all options.
+        });
+
+        // Password is ok, store it and return the data.
+        await AddonModLesson.storePassword(lesson.id, password, options.siteId);
+
+        return {
+            password,
+            lesson,
+            accessInfo,
+        };
     }
 
 }
@@ -748,4 +843,20 @@ export type AddonModLessonActivityLink = {
     formatted: boolean;
     label: string;
     href: string;
+};
+
+/**
+ * Options to pass to get lesson password.
+ */
+export type AddonModLessonGetPasswordOptions = CoreCourseCommonModWSOptions & {
+    askPassword?: boolean; // True if we should ask for password if needed, false otherwise.
+};
+
+/**
+ * Result of getLessonPassword.
+ */
+export type AddonModLessonGetPasswordResult = {
+    password?: string;
+    lesson?: AddonModLessonLessonWSData;
+    accessInfo: AddonModLessonGetAccessInformationWSResponse;
 };

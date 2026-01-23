@@ -12,16 +12,18 @@
 </ion-header>
 <ion-content>
     <form [formGroup]="form" name="contactDPO" (ngSubmit)="send($event)">
-        <ion-item *ngIf="email">
-            <ion-label>
-                <p class="item-heading">
-                    {{ 'core.dataprivacy.replyto' | translate }}
-                </p>
-                <p>{{ email }}</p>
-            </ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-textarea labelPlacement="floating" placeholder="{{ 'core.dataprivacy.message' | translate }}" rows="5"
+        @if (email) {
+            <ion-item>
+                <ion-label>
+                    <p class="item-heading">
+                        {{ 'core.dataprivacy.replyto' | translate }}
+                    </p>
+                    <p>{{ email }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        <ion-item  lines="none">
+            <ion-textarea labelPlacement="stacked" placeholder="{{ 'core.dataprivacy.message' | translate }}" rows="5"
                 [(ngModel)]="message" name="text" [required]="true" formControlName="message">
                 <div [core-mark-required]="true" slot="label">
                     {{ 'core.dataprivacy.message' | translate }}

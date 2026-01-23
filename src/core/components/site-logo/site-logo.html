@@ -1,0 +1,30 @@
+@if (showLogo && logoLoaded) {
+    <div class="core-logo-container">
+        @if (siteLogo) {
+            <img [url]="siteLogo" class="core-logo" [alt]="'core.login.logoof' | translate: { $a: siteName }" core-external-content
+                [siteId]="siteId" (onLoad)="imageLoaded($event)" [hidden]="logoError">
+        }
+        @if (!siteLogo || logoError) {
+            <img [src]="fallbackLogo" class="core-logo core-logo-fallback" [alt]="'core.login.logoof' | translate: { $a: appName }">
+        }
+    </div>
+}
+
+@if (showSiteName && siteName) {
+    @switch (siteNameMode) {
+        @case ('p') {
+            <p class="ion-no-margin ion-no-padding core-logo-sitename">
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
+            </p>
+        }
+        @case ('') {
+            <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-logo-sitename"
+                [siteId]="siteId" />
+        }
+        @case ('h2') {
+            <h2 class="ion-margin-top ion-no-padding core-logo-sitename">
+                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" [siteId]="siteId" />
+            </h2>
+        }
+    }
+}

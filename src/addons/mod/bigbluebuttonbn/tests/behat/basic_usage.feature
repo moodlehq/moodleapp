@@ -1,4 +1,4 @@
-@addon_mod_bigbluebuttonbn @mod_bigbluebuttonbn @app @javascript
+@addon_mod_bigbluebuttonbn @app @mod @mod_bigbluebuttonbn @javascript
 Feature: Test basic usage of BBB activity in app
   In order to join a BBB meeting while using the mobile app
   As a student
@@ -25,7 +25,8 @@ Feature: Test basic usage of BBB activity in app
       | bigbluebuttonbn | BBB 1 | Test BBB description | C1     | bbb1     | 0    | ## 1 January 2050 00:00 ## | 0                          |
       | bigbluebuttonbn | BBB 2 | Test BBB description | C1     | bbb2     | 0    | 0                          | ## 1 January 2000 00:00 ## |
       | bigbluebuttonbn | BBB 3 | Test BBB description | C1     | bbb3     | 0    | ## 1 January 2000 00:00 ## | ## 1 January 2050 00:00 ## |
-    And I entered the bigbluebuttonbn activity "BBB 1" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "BBB 1" in the app
     Then I should find "The session has not started yet." in the app
     And I should find "Saturday, 1 January 2050, 12:00 AM" within "Open" "ion-item" in the app
 
@@ -107,7 +108,8 @@ Feature: Test basic usage of BBB activity in app
       | bigbluebuttonbn | Room & recordings | C1     | bbb1     | 0    |
       | bigbluebuttonbn | Room only         | C1     | bbb2     | 1    |
       | bigbluebuttonbn | Recordings only   | C1     | bbb3     | 2    |
-    And I entered the bigbluebuttonbn activity "Room & recordings" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Room & recordings" in the app
     Then I should find "This room is ready. You can join the session now." in the app
     And I should be able to press "Join session" in the app
     And I should find "Recordings" in the app
@@ -171,5 +173,7 @@ Feature: Test basic usage of BBB activity in app
     When I press "Presentation" in the app
     And I press "OK" in the app
     And I switch to the browser tab opened by the app
-    And I log in as "student1"
-    Then I should see "The recording URL is invalid"
+    # This part fails due to an issue in LSM.
+    # @TODO Uncomment when MDL-85704 is solved
+    # And I log in as "student1"
+    # Then I should see "The recording URL is invalid"

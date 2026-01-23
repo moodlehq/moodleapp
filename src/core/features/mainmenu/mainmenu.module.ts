@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 import { authGuard } from '@features/mainmenu/guards/auth';
 
@@ -38,6 +38,32 @@ export async function getMainMenuServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+/**
+ * Get main menu exported objects.
+ *
+ * @returns Main menu exported objects.
+ */
+export async function getMainMenuExportedObjects(): Promise<Record<string, unknown>> {
+    const {
+        MAIN_MENU_NUM_MAIN_HANDLERS,
+        MAIN_MENU_ITEM_MIN_WIDTH,
+        MAIN_MENU_MORE_PAGE_NAME,
+        MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
+        MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+
+    } = await import('@features/mainmenu/constants');
+
+    /* eslint-disable @typescript-eslint/naming-convention */
+    return {
+        MAIN_MENU_NUM_MAIN_HANDLERS,
+        MAIN_MENU_ITEM_MIN_WIDTH,
+        MAIN_MENU_MORE_PAGE_NAME,
+        MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
+        MAIN_MENU_VISIBILITY_UPDATED_EVENT,
+    };
+    /* eslint-enable @typescript-eslint/naming-convention */
+}
+
 const appRoutes: Routes = [
     {
         path: '',
@@ -46,25 +72,21 @@ const appRoutes: Routes = [
     },
     {
         path: 'main',
-        loadChildren: () => import('./mainmenu-lazy.module').then(m => m.CoreMainMenuLazyModule),
+        loadChildren: () => import('./mainmenu-lazy.module'),
         canActivate: [authGuard],
     },
     {
         path: 'reload',
-        loadChildren: () => import('./mainmenu-reload-lazy.module').then( m => m.CoreMainMenuReloadLazyModule),
+        loadComponent: () => import('@features/mainmenu/pages/reload/reload'),
     },
 ];
 
 @NgModule({
     imports: [AppRoutingModule.forChild(appRoutes)],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreMainMenuDelegate.registerHandler(CoreMainMenuHomeHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreMainMenuDelegate.registerHandler(CoreMainMenuHomeHandler.instance);
+        }),
     ],
 })
 export class CoreMainMenuModule {}

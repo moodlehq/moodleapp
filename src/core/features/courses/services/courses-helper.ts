@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import {
     CoreCourseAnyCourseData,
@@ -26,13 +26,15 @@ import {
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalFile } from '@services/ws';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
-import moment from 'moment-timezone';
+import { CoreCourseCompletion } from '@features/course/services/course-completion';
+import { dayjs } from '@/core/utils/dayjs';
 import { of, firstValueFrom } from 'rxjs';
 import { zipIncludingComplete } from '@/core/utils/rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
-import { LazyRoutesModule } from '@/app/app-routing.module';
 import { CoreSite } from '@classes/sites/site';
+import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
+import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;
@@ -61,22 +63,20 @@ export class CoreCoursesHelperProvider {
             shortname: Translate.instant('core.fulllistofcourses'),
             categoryid: -1,
             summary: '',
-            summaryformat: 1,
+            summaryformat: DEFAULT_TEXT_FORMAT,
         });
 
         let categoryId: number | undefined;
         if (courseId) {
             // Search the course to get the category.
-            const course = courses.find((course) => course.id == courseId);
+            const course = courses.find((course) => course.id === courseId);
 
-            if (course) {
-                categoryId = course.categoryid;
-            }
+            categoryId = course?.categoryid;
         }
 
         return {
-            courses: courses,
-            categoryId: categoryId,
+            courses,
+            categoryId,
         };
     }
 
@@ -107,12 +107,10 @@ export class CoreCoursesHelperProvider {
      *
      * @param courses List of courses.
      * @returns Promise resolved when done.
+     * @deprecated since 5.0. Use loadCourseColorAndImage instead.
      */
     async loadCoursesColorAndImage(courses: CoreCourseSearchedData[]): Promise<void> {
-        if (!courses.length) {
-            return;
-        }
-
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         await Promise.all(courses.map((course) => this.loadCourseColorAndImage(course)));
     }
 
@@ -124,11 +122,11 @@ export class CoreCoursesHelperProvider {
      * @param loadCategoryNames Whether load category names or not.
      * @returns Promise resolved when done.
      */
-    loadCoursesExtraInfo(
+    async loadCoursesExtraInfo(
         courses: CoreEnrolledCourseDataWithExtraInfo[],
         loadCategoryNames: boolean = false,
     ): Promise<CoreEnrolledCourseDataWithExtraInfo[]> {
-        return firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
+        return await firstValueFrom(this.loadCoursesExtraInfoObservable(courses, loadCategoryNames));
     }
 
     /**
@@ -157,7 +155,7 @@ export class CoreCoursesHelperProvider {
 
         // Get the extra data for the courses.
         return CoreCourses.getCoursesByFieldObservable('ids', courseIds, options).pipe(map(coursesInfosArray => {
-            const coursesInfo = CoreUtils.arrayToObject(coursesInfosArray, 'id');
+            const coursesInfo = CoreArray.toObject(coursesInfosArray, 'id');
 
             courses.forEach((course) => {
                 this.loadCourseExtraInfo(course, coursesInfo[course.id], loadCategoryNames);
@@ -172,7 +170,7 @@ export class CoreCoursesHelperProvider {
      *
      * @returns course colors RGB.
      */
-    protected async loadCourseSiteColors(): Promise<(string | undefined)[]> {
+    async getCourseSiteColors(): Promise<(string | undefined)[]> {
         const site = CoreSites.getRequiredCurrentSite();
         const siteId = site.getId();
 
@@ -191,7 +189,7 @@ export class CoreCoursesHelperProvider {
         try {
             const configs = await site.getConfig();
             for (let x = 0; x < 10; x++) {
-                colors[x] = configs['core_admin_coursecolor' + (x + 1)] || undefined;
+                colors[x] = configs[`core_admin_coursecolor${x + 1}`] || undefined;
             }
 
             this.courseSiteColors[siteId] = colors;
@@ -206,27 +204,25 @@ export class CoreCoursesHelperProvider {
      * Loads the color of the course or the thumb image.
      *
      * @param course Course data.
+     * @deprecated since 5.1. Not used anymore, use CoreCourseImageComponent component instead.
      */
     async loadCourseColorAndImage(course: CoreCourseWithImageAndColor): Promise<void> {
-        // Moodle 4.1 downwards geopatterns are embedded in b64 in only some WS, remote them to keep it coherent.
+        // Moodle 4.1 downwards geopatterns are embedded in b64 in only some WS, remove them to keep it coherent.
         if (course.courseimage?.startsWith('data')) {
             course.courseimage = undefined;
         }
 
         if (course.courseimage !== undefined) {
-            course.courseImage = course.courseimage; // @deprecated since 4.3 use courseimage instead.
-
             return;
         }
 
         if (course.overviewfiles && course.overviewfiles[0]) {
             course.courseimage = course.overviewfiles[0].fileurl;
-            course.courseImage = course.courseimage; // @deprecated since 4.3 use courseimage instead.
 
             return;
         }
 
-        const colors = await this.loadCourseSiteColors();
+        const colors = await this.getCourseSiteColors();
 
         course.colorNumber = course.id % 10;
         course.color = colors.length ? colors[course.colorNumber] : undefined;
@@ -242,14 +238,14 @@ export class CoreCoursesHelperProvider {
      * @param options Options.
      * @returns Courses filled with options.
      */
-    getUserCoursesWithOptions(
+    async getUserCoursesWithOptions(
         sort: string = 'fullname',
         slice: number = 0,
         filter?: string,
         loadCategoryNames: boolean = false,
         options: CoreSitesCommonWSOptions = {},
     ): Promise<CoreEnrolledCourseDataWithExtraInfoAndOptions[]> {
-        return firstValueFrom(this.getUserCoursesWithOptionsObservable({
+        return await firstValueFrom(this.getUserCoursesWithOptionsObservable({
             sort,
             slice,
             filter,
@@ -365,7 +361,7 @@ export class CoreCoursesHelperProvider {
             return of(course);
         }
 
-        if (!this.isCompletionEnabledInCourse(course)) {
+        if (!CoreCourseCompletion.isCompletionEnabledInCourse(course)) {
             // Completion is disabled for this course, there is no need to fetch the completion status.
             return of(course);
         }
@@ -402,7 +398,7 @@ export class CoreCoursesHelperProvider {
         }
 
         // Calculate the end date to use for display classification purposes, incorporating the grace period, if any.
-        const endDate = moment(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
+        const endDate = dayjs(course.enddate * 1000).add(gradePeriodAfter, 'days').valueOf();
 
         return endDate < Date.now();
     }
@@ -420,35 +416,35 @@ export class CoreCoursesHelperProvider {
         gradePeriodAfter = 0,
         gradePeriodBefore = 0,
     ): boolean {
-        if (this.isPastCourse(course, gradePeriodAfter) || !course.startdate) {
+        if (!course.startdate || this.isPastCourse(course, gradePeriodAfter)) {
             return false;
         }
 
         // Calculate the start date to use for display classification purposes, incorporating the grace period, if any.
-        const startDate = moment(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
+        const startDate = dayjs(course.startdate * 1000).subtract(gradePeriodBefore, 'days').valueOf();
 
         return startDate > Date.now();
     }
 
     /**
-     * Retrieves my courses page module.
+     * Retrieves my courses page.
      *
-     * @returns My courses page module.
+     * @returns My courses page.
      */
-    async getMyRouteModule(): Promise<LazyRoutesModule> {
-        return import('../courses-my-lazy.module').then(m => m.CoreCoursesMyLazyModule);
+    getMyPage(): LazyDefaultStandaloneComponent {
+        return import('@features/courses/pages/my/my');
     }
 
     /**
      * Check whether completion is available in a certain course.
-     * This is a temporary function to be used until we move AddonCourseCompletion to core folder (MOBILE-4537).
      *
      * @param course Course.
      * @param site Site. If not defined, use current site.
      * @returns True if available.
+     * @deprecated since 5.1. Use CoreCourseCompletion.isCompletionEnabledInCourse instead.
      */
     isCompletionEnabledInCourse(course: CoreCourseAnyCourseData, site?: CoreSite): boolean {
-        return AddonCourseCompletion.isCompletionEnabledInCourse(course, site);
+        return CoreCourseCompletion.isCompletionEnabledInCourse(course, site);
     }
 
 }
@@ -461,9 +457,8 @@ export const CoreCoursesHelper = makeSingleton(CoreCoursesHelperProvider);
 export type CoreCourseWithImageAndColor = {
     id: number; // Course id.
     overviewfiles?: CoreWSExternalFile[];
-    colorNumber?: number; // Color index number.
-    color?: string; // Color RGB.
-    courseImage?: string; // Course thumbnail. @deprecated since 4.3, use courseimage instead.
+    colorNumber?: number; // Color index number. @deprecated since 5.1, use CoreCourseImageComponent instead.
+    color?: string; // Color RGB. @deprecated since 5.1, use CoreCourseImageComponent instead.
     courseimage?: string; // Course thumbnail.
 };
 

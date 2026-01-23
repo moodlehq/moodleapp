@@ -17,10 +17,10 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_FEEDBACK_FEATURE_NAME, ADDON_MOD_FEEDBACK_PAGE_NAME, AddonModFeedbackIndexTabName } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Content links handler for a feedback analysis.
@@ -30,7 +30,7 @@ import { CoreLoadings } from '@services/loadings';
 export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModFeedbackAnalysisLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModFeedback';
+    featureName = ADDON_MOD_FEEDBACK_FEATURE_NAME;
     pattern = /\/mod\/feedback\/analysis\.php.*([&?]id=\d+)/;
 
     /**
@@ -55,7 +55,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                     );
 
                     await CoreNavigator.navigateToSitePath(
-                        ADDON_MOD_FEEDBACK_PAGE_NAME + `/${module.course}/${module.id}`,
+                        `${ADDON_MOD_FEEDBACK_PAGE_NAME}/${module.course}/${module.id}`,
                         {
                             params: {
                                 module,
@@ -65,7 +65,7 @@ export class AddonModFeedbackAnalysisLinkHandlerService extends CoreContentLinks
                         },
                     );
                 } catch (error) {
-                    CoreDomUtils.showErrorModalDefault(error, 'Error opening link.');
+                    CoreAlerts.showError(error, { default: 'Error opening link.' });
                 } finally {
                     modal.dismiss();
                 }

@@ -50,10 +50,6 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
 
     protected handlerNameProperty = 'type';
 
-    constructor() {
-        super('CoreTagAreaDelegate');
-    }
-
     /**
      * @inheritdoc
      */
@@ -81,7 +77,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
      * @returns Promise resolved with the area items, or undefined if not found.
      */
     async parseContent(component: string, itemType: string, content: string): Promise<unknown[] | undefined> {
-        const type = component + '/' + itemType;
+        const type = `${component}/${itemType}`;
 
         return this.executeFunctionOnEnabled(type, 'parseContent', [content]);
     }
@@ -94,7 +90,7 @@ export class CoreTagAreaDelegateService extends CoreDelegate<CoreTagAreaHandler>
      * @returns The component (or promise resolved with component) to use, undefined if not found.
      */
     async getComponent(component: string, itemType: string): Promise<Type<unknown> | undefined> {
-        const type = component + '/' + itemType;
+        const type = `${component}/${itemType}`;
 
         return this.executeFunctionOnEnabled(type, 'getComponent');
     }

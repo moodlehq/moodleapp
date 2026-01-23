@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChange, ViewChild, Output, EventEmitter, Type } from '@angular/core';
+import { Component, OnChanges, SimpleChange, Type, viewChild } from '@angular/core';
 
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
-import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCourseModuleCompletionData, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourse } from '@features/course/services/course';
 import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -30,18 +31,14 @@ import type { CoreCourseModuleMainActivityComponent } from '@features/course/cla
 @Component({
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
-    styleUrls: ['single-activity.scss'],
+    styleUrl: 'single-activity.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreCourseFormatSingleActivityComponent implements OnChanges {
+export class CoreCourseFormatSingleActivityComponent extends CoreCourseFormatDynamicComponent implements OnChanges {
 
-    @Input() course?: CoreCourseAnyCourseData; // The course to render.
-    @Input() sections?: CoreCourseSection[]; // List of course sections.
-    @Input() initialSectionId?: number; // The section to load first (by ID).
-    @Input() initialSectionNumber?: number; // The section to load first (by number).
-    @Input() moduleId?: number; // The module ID to scroll to. Must be inside the initial selected section.
-    @Output() completionChanged = new EventEmitter<CoreCourseModuleCompletionData>(); // Notify when any module completion changes.
-
-    @ViewChild(CoreDynamicComponent) dynamicComponent?: CoreDynamicComponent<CoreCourseModuleMainActivityComponent>;
+    readonly dynamicComponent = viewChild(CoreDynamicComponent<CoreCourseModuleMainActivityComponent>);
 
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string | number, unknown> = {}; // Data to pass to the component.
@@ -85,7 +82,7 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
             return;
         }
 
-        await this.dynamicComponent?.callComponentMethod('doRefresh', refresher);
+        await this.dynamicComponent()?.callComponentMethod('doRefresh', refresher);
 
         if (this.course) {
             const courseId = this.course.id;
@@ -97,14 +94,14 @@ export class CoreCourseFormatSingleActivityComponent implements OnChanges {
      * User entered the page that contains the component.
      */
     ionViewDidEnter(): void {
-        this.dynamicComponent?.callComponentMethod('ionViewDidEnter');
+        this.dynamicComponent()?.callComponentMethod('ionViewDidEnter');
     }
 
     /**
      * User left the page that contains the component.
      */
     ionViewDidLeave(): void {
-        this.dynamicComponent?.callComponentMethod('ionViewDidLeave');
+        this.dynamicComponent()?.callComponentMethod('ionViewDidLeave');
     }
 
 }

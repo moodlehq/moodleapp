@@ -18,14 +18,14 @@ import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/suppo
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@singletons/events';
 import { CoreSubscriptions } from '@singletons/subscriptions';
 import { AlertButton } from '@ionic/angular';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreOpener } from '@singletons/opener';
 
 /**
  * Handle site support.
@@ -41,10 +41,12 @@ export class CoreUserSupportService {
     async contact(options: CoreUserSupportContactOptions = {}): Promise<void> {
         const supportConfig = options.supportConfig ?? CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const supportPageUrl = supportConfig.getSupportPageUrl();
-        const autoLoginUrl = await CoreSites.getCurrentSite()?.getAutoLoginUrl(supportPageUrl, false);
-        const browser = CoreUtils.openInApp(autoLoginUrl ?? supportPageUrl);
+        const currentSite = CoreSites.getCurrentSite();
+        const browser = await (currentSite ?
+            currentSite.openInAppWithAutoLogin(supportPageUrl) :
+            CoreOpener.openInApp(supportPageUrl));
 
-        if (supportPageUrl.endsWith('/user/contactsitesupport.php')) {
+        if (browser && supportPageUrl.endsWith('/user/contactsitesupport.php')) {
             this.populateSupportForm(browser, options.subject, options.message);
             this.listenSupportFormSubmission(browser, supportConfig.getSupportPageLang());
         }
@@ -79,7 +81,7 @@ export class CoreUserSupportService {
 
         buttons.push(Translate.instant('core.close'));
 
-        CoreDomUtils.showAlertWithOptions({
+        CoreAlerts.show({
             header: Translate.instant('core.help'),
             message,
             buttons,
@@ -121,6 +123,10 @@ export class CoreUserSupportService {
      * @param lang Language used in the support page.
      */
     protected async listenSupportFormSubmission(browser: InAppBrowserObject, lang: string | null): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
         const appSuccessMessage = Translate.instant('core.user.supportmessagesent');
         const lmsSuccessMessage = lang && await CoreLang.getMessage('core.user.supportmessagesent', lang);
         const subscription = browser.on('loadstop').subscribe(async () => {
@@ -139,7 +145,7 @@ export class CoreUserSupportService {
             }
 
             browser.close();
-            CoreDomUtils.showAlert(undefined, appSuccessMessage);
+            CoreAlerts.show({ message: appSuccessMessage });
         });
 
         CoreEvents.once(CoreEvents.IAB_EXIT, () => subscription.unsubscribe());

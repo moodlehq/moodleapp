@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 import type { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays info about an unsupported module.
@@ -23,24 +23,14 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 @Component({
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
-    styleUrls: ['unsupported-module.scss'],
+    styleUrl: 'unsupported-module.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreCourseUnsupportedModuleComponent implements OnInit {
+export class CoreCourseUnsupportedModuleComponent {
 
     @Input() courseId?: number; // The course to module belongs to (unused).
     @Input() module?: CoreCourseModuleData; // The module to render.
-
-    isDisabledInSite = false; // It is implicit than if not disabled it will be unsupported.
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        if (!this.module) {
-            return;
-        }
-
-        this.isDisabledInSite = CoreCourseModuleDelegate.isModuleDisabledInSite(this.module.modname);
-    }
 
 }

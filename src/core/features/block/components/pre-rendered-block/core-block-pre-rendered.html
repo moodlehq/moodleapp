@@ -1,22 +1,28 @@
-<ion-item-divider class="ion-text-wrap" *ngIf="title" [sticky]="true">
-    <ion-label>
-        <h2>
-            <core-format-text [text]="title | translate" contextLevel="block" [contextInstanceId]="block.instanceid"
-                [courseId]="courseId" />
-        </h2>
-    </ion-label>
-</ion-item-divider>
-<core-loading [hideUntil]="loaded" [fullscreen]="false">
-    <ion-item *ngIf="block.contents?.content" class="ion-text-wrap core-block-content">
+@if (title) {
+    <ion-item-divider class="ion-text-wrap" [sticky]="true">
         <ion-label>
-            <core-format-text [text]="block.contents?.content" contextLevel="block" [contextInstanceId]="block.instanceid"
-                [courseId]="courseId" />
+            <h2>
+                <core-format-text [text]="title | translate" contextLevel="block" [contextInstanceId]="block.instanceid"
+                    [courseId]="courseId" />
+            </h2>
         </ion-label>
-    </ion-item>
-    <ion-item *ngIf="block.contents?.footer" class="ion-text-wrap core-block-footer">
-        <ion-label>
-            <core-format-text [text]="block.contents?.footer" contextLevel="block" [contextInstanceId]="block.instanceid"
-                [courseId]="courseId" />
-        </ion-label>
-    </ion-item>
+    </ion-item-divider>
+}
+<core-loading [hideUntil]="loaded" [fullscreen]="false" placeholderType="column" placeholderHeight="120px" [placeholderLimit]="1">
+    @if (block.contents?.content) {
+        <ion-item class="ion-text-wrap core-block-content">
+            <ion-label>
+                <core-format-text [text]="block.contents?.content" contextLevel="block" [contextInstanceId]="block.instanceid"
+                    [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
+    }
+    @if (block.contents?.footer) {
+        <ion-item class="ion-text-wrap core-block-footer">
+            <ion-label>
+                <core-format-text [text]="block.contents?.footer" contextLevel="block" [contextInstanceId]="block.instanceid"
+                    [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
+    }
 </core-loading>

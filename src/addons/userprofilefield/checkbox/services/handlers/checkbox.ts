@@ -19,7 +19,6 @@ import { CoreUserProfileField } from '@features/user/services/user';
 import { CoreUserProfileFieldHandler, CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton } from '@singletons';
-import { AddonUserProfileFieldCheckboxComponent } from '../../component/checkbox';
 
 /**
  * Checkbox user profile field handlers.
@@ -54,7 +53,7 @@ export class AddonUserProfileFieldCheckboxHandlerService implements CoreUserProf
         registerAuth: string,
         formValues: CoreFormFields,
     ): Promise<CoreUserProfileFieldHandlerData | undefined> {
-        const name = 'profile_field_' + field.shortname;
+        const name = `profile_field_${field.shortname}`;
 
         if (formValues[name] !== undefined) {
             return {
@@ -66,12 +65,11 @@ export class AddonUserProfileFieldCheckboxHandlerService implements CoreUserProf
     }
 
     /**
-     * Return the Component to use to display the user profile field.
-     * It's recommended to return the class of the component, but you can also return an instance of the component.
-     *
-     * @returns The component (or promise resolved with component) to use, undefined if not found.
+     * @inheritdoc
      */
-    getComponent(): Type<unknown> | Promise<Type<unknown>> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonUserProfileFieldCheckboxComponent } = await import('../../component/checkbox');
+
         return AddonUserProfileFieldCheckboxComponent;
     }
 

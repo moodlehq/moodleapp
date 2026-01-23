@@ -16,57 +16,60 @@ import { mock, mockSingleton } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
 import { CorePlatform } from '@services/platform';
-import { DomSanitizer } from '@singletons';
 
 describe('CoreUrl singleton', () => {
 
     const config = { platform: 'android' };
 
     beforeEach(() => {
-        mockSingleton(CorePlatform, [], { isAndroid: () => config.platform === 'android' });
-        mockSingleton(DomSanitizer, [], { bypassSecurityTrustUrl: url => url });
+        mockSingleton(CorePlatform, [], {
+            isAndroid: () => config.platform === 'android',
+            isIOS: () => config.platform === 'ios',
+        });
     });
 
-    it('builds address URL for Android platforms', () => {
+    it('builds maps URL for Android platforms', () => {
         // Arrange
         const address = 'Moodle Spain HQ';
+        const coordinates = { latitude: 41.914853, longitude: 1.6853498 };
 
         config.platform = 'android';
 
         // Act
-        const url = CoreUrl.buildAddressURL(address);
+        const defaultUrl = CoreUrl.buildMapsURL();
+        const queryUrl = CoreUrl.buildMapsURL({ query: address });
+        const coordinatesUrl = CoreUrl.buildMapsURL({ coordinates });
 
         // Assert
-        expect(url).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CorePlatform.isAndroid).toHaveBeenCalled();
+        expect(defaultUrl).toEqual('geo:');
+        expect(queryUrl).toEqual('geo:0,0?q=Moodle%20Spain%20HQ');
+        expect(coordinatesUrl).toEqual('geo:41.914853,1.685350');
     });
 
-    it('builds address URL for non-Android platforms', () => {
+    it('builds maps URL for iOS platforms', () => {
         // Arrange
         const address = 'Moodle Spain HQ';
+        const coordinates = { latitude: 41.914853, longitude: 1.6853498 };
 
         config.platform = 'ios';
 
         // Act
-        const url = CoreUrl.buildAddressURL(address);
+        const defaultUrl = CoreUrl.buildMapsURL();
+        const queryUrl = CoreUrl.buildMapsURL({ query: address });
+        const coordinatesUrl = CoreUrl.buildMapsURL({ coordinates });
 
         // Assert
-        expect(url).toEqual('http://maps.google.com?q=Moodle%20Spain%20HQ');
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
-        expect(CorePlatform.isAndroid).toHaveBeenCalled();
+        expect(defaultUrl).toEqual('http://maps.apple.com?q');
+        expect(queryUrl).toEqual('http://maps.apple.com?q=Moodle%20Spain%20HQ');
+        expect(coordinatesUrl).toEqual('https://maps.apple.com/?ll=41.914853,1.685350&near=41.914853,1.685350');
     });
 
-    it('doesn\'t build address if it\'s already a URL', () => {
-        const address = 'https://moodle.org';
+    it('doesn\'t build maps URL if query is already a URL', () => {
+        const query = 'https://moodle.org';
 
-        const url = CoreUrl.buildAddressURL(address);
+        const url = CoreUrl.buildMapsURL({ query });
 
-        expect(url).toEqual(address);
-
-        expect(DomSanitizer.bypassSecurityTrustUrl).toHaveBeenCalled();
+        expect(url).toEqual(query);
     });
 
     it('adds www if missing', () => {
@@ -83,55 +86,50 @@ describe('CoreUrl singleton', () => {
         expect(url).toEqual('https://moodle.org');
     });
 
-    it('adds params to URL without params', () => {
-        const originalUrl = 'https://moodle.org';
-        const params = {
+    it('adds params and anchors to URLs', () => {
+        // Add params to a URL without params.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+        })).toEqual('https://moodle.org?first=1&second=2');
 
-        expect(url).toEqual('https://moodle.org?first=1&second=2');
-    });
-
-    it('adds params to URL with existing params', () => {
-        const originalUrl = 'https://moodle.org?existing=1';
-        const params = {
+        // Add params to a URL with existing params.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org?existing=1', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params);
+        })).toEqual('https://moodle.org?existing=1&first=1&second=2');
 
-        expect(url).toEqual('https://moodle.org?existing=1&first=1&second=2');
-    });
+        // No params supplied.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org')).toEqual('https://moodle.org');
 
-    it('doesn\'t change URL if no params supplied', () => {
-        const originalUrl = 'https://moodle.org';
-        const url = CoreUrl.addParamsToUrl(originalUrl);
-
-        expect(url).toEqual(originalUrl);
-    });
-
-    it('doesn\'t add undefined or null params', () => {
-        const originalUrl = 'https://moodle.org';
-        const url = CoreUrl.addParamsToUrl(originalUrl, {
+        // Undefined or null params aren't added.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             foo: undefined,
             bar: null,
             baz: 1,
-        });
+        })).toEqual('https://moodle.org?baz=1');
 
-        expect(url).toEqual('https://moodle.org?baz=1');
-    });
-
-    it('adds anchor to URL', () => {
-        const originalUrl = 'https://moodle.org';
-        const params = {
+        // Adds anchor to URL.
+        expect(CoreUrl.addParamsToUrl('https://moodle.org', {
             first: '1',
             second: '2',
-        };
-        const url = CoreUrl.addParamsToUrl(originalUrl, params, 'myanchor');
+        }, {
+            anchor: 'myanchor',
+        })).toEqual('https://moodle.org?first=1&second=2#myanchor');
 
-        expect(url).toEqual('https://moodle.org?first=1&second=2#myanchor');
+        // Adds params to the urltogo in case it's an auto-login URL.
+        expect(CoreUrl.addParamsToUrl('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org', {
+            first: '1',
+            second: '2',
+        }, {
+            checkAutoLoginUrl: true,
+        })).toEqual('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org%3Ffirst%3D1%26second%3D2');
+
+        // Adds params to the base URL even if it has urltogo if checkAutoLoginUrl is not set.
+        expect(CoreUrl.addParamsToUrl('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org', {
+            first: '1',
+            second: '2',
+        })).toEqual('https://mysite.com/autologin.php?urltogo=https%3A%2F%2Fmoodle.org&first=1&second=2');
     });
 
     it('parses standard urls', () => {
@@ -201,7 +199,9 @@ describe('CoreUrl singleton', () => {
     it('removes protocol', () => {
         expect(CoreUrl.removeUrlParts('https://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
         expect(CoreUrl.removeUrlParts('ftp://school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('//school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
         expect(CoreUrl.removeUrlParts('school.edu', CoreUrlPartNames.Protocol)).toEqual('school.edu');
+        expect(CoreUrl.removeUrlParts('wrong//school.edu', CoreUrlPartNames.Protocol)).toEqual('wrong//school.edu');
     });
 
     it('removes protocol and www', () => {
@@ -279,8 +279,12 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.toRelativeURL('https://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('http://school.edu/', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu/', 'http://school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu?id=1#anchor', 'https://school.edu/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', 'https://school.edu/foo/bar/image.png')).toBe('image.png');
         expect(CoreUrl.toRelativeURL('https://school.edu', 'school.edu/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo/bar', '/foo/bar/image.png')).toBe('image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo', '/foo/bar/image.png')).toBe('bar/image.png');
+        expect(CoreUrl.toRelativeURL('https://school.edu/foo', '/bar/image.png')).toBe('/bar/image.png');
     });
 
     it('checks if it is a Vimeo video URL', () => {
@@ -291,6 +295,33 @@ describe('CoreUrl singleton', () => {
         expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/123456')).toEqual(true);
         expect(CoreUrl.isVimeoVideoUrl('http://player.vimeo.com/video/123456')).toEqual(true);
         expect(CoreUrl.isVimeoVideoUrl('https://player.vimeo.com/video/123456/654321?foo=bar')).toEqual(true);
+    });
+
+    it('checks if it is a Youtube video URL', () => {
+        expect(CoreUrl.isYoutubeURL('')).toEqual(false);
+
+        const acceptedDomains = ['youtube.com', 'youtu.be', 'youtube-nocookie.com', 'y2u.be'];
+
+        for (const domain of acceptedDomains) {
+            expect(CoreUrl.isYoutubeURL(`${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`//${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}/`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://${domain}/embed/abcdefghijk`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://www.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://www.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`https://www.fakesubdomain.${domain}`)).toEqual(true);
+            expect(CoreUrl.isYoutubeURL(`http://www.fakesubdomain.${domain}`)).toEqual(true);
+        }
+
+        expect(CoreUrl.isYoutubeURL('https://player.vimeo.com')).toEqual(false);
+        expect(CoreUrl.isYoutubeURL('https://youtub.e')).toEqual(false);
+
+        // The following domain is valid, but it redirects to youtube.com so the app doesn't accept it as a "final" URL.
+        expect(CoreUrl.isYoutubeURL('https://youtube.es')).toEqual(false);
     });
 
     it('gets the Vimeo player URL', () => {

@@ -17,12 +17,12 @@ import { ActivatedRoute } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { AddonModWiki } from '../wiki';
-import { ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { AddonModWikiCreateLinkHandlerService } from '@addons/mod/wiki/services/handlers/create-link';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Handler to treat links to create a wiki page.
@@ -47,21 +47,21 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
         const params = CoreNavigator.getRouteParams(route);
         const queryParams = CoreNavigator.getRouteQueryParams(route);
 
-        if (queryParams.subwikiId == subwikiId) {
+        if (Number(queryParams.subwikiId) === subwikiId) {
             // Same subwiki, so it's same wiki.
             return true;
         }
 
         const options = {
-            cmId: params.cmId,
+            cmId: Number(params.cmId),
             readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
             siteId,
         };
 
-        if (queryParams.pageId) {
+        if (Number(queryParams.pageId)) {
             // Get the page contents to check the subwiki.
             try {
-                const page = await AddonModWiki.getPageContents(queryParams.pageId, options);
+                const page = await AddonModWiki.getPageContents(Number(queryParams.pageId), options);
 
                 return page.subwikiid == subwikiId;
             } catch {
@@ -71,7 +71,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
 
         try {
             // Get the wiki.
-            const wiki = await AddonModWiki.getWiki(params.courseId, params.cmId, options);
+            const wiki = await AddonModWiki.getWiki(Number(params.courseId), Number(params.cmId), options);
 
             // Check if the subwiki belongs to this wiki.
             return await AddonModWiki.wikiHasSubwiki(wiki.id, subwikiId, options);
@@ -86,10 +86,10 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
      */
     async handleAction(siteId: string, courseId: number, params: Record<string, string>): Promise<void> {
         const modal = await CoreLoadings.show();
-        const { AddonModWikiIndexPage } = await import('../../pages/index');
+        const AddonModWikiIndexPage = await import('../../pages/index');
 
         try {
-            const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage });
+            const route = CoreNavigator.getCurrentRoute({ pageComponent: AddonModWikiIndexPage.default });
             if (!route) {
                 // Current view isn't wiki index.
                 return;
@@ -105,19 +105,19 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 // User is seeing the wiki, we can get the module from the wiki params.
                 const routeParams = CoreNavigator.getRouteParams(route);
 
-                path = path + `/${routeParams.courseId}/${routeParams.cmId}/edit`;
+                path = `${path}/${routeParams.courseId}/${routeParams.cmId}/edit`;
             } else if (wikiId) {
                 // The URL specifies which wiki it belongs to. Get the module.
                 const module = await CoreCourse.getModuleBasicInfoByInstance(
                     wikiId,
-                    'wiki',
+                    ADDON_MOD_WIKI_MODNAME,
                     { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
                 );
 
-                path = path + `/${module.course}/${module.id}/edit`;
+                path = `${path}/${module.course}/${module.id}/edit`;
             } else {
                 // Cannot get module ID.
-                path = path + `/${courseId || 0}/0/edit`;
+                path = `${path}/${courseId || 0}/0/edit`;
             }
 
             // Open the page.
@@ -132,7 +132,7 @@ export class AddonModWikiCreateLinkHandlerLazyService extends AddonModWikiCreate
                 },
             );
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_wiki.errorloadingpage', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_wiki.errorloadingpage') });
         } finally {
             modal.dismiss();
         }

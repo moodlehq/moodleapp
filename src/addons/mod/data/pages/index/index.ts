@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModDataIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays a data.
@@ -23,10 +24,14 @@ import { AddonModDataIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-data-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModDataIndexComponent,
+    ],
 })
-export class AddonModDataIndexPage extends CoreCourseModuleMainActivityPage<AddonModDataIndexComponent> implements OnInit {
+export default class AddonModDataIndexPage extends CoreCourseModuleMainActivityPage<AddonModDataIndexComponent> implements OnInit {
 
-    @ViewChild(AddonModDataIndexComponent) activityComponent?: AddonModDataIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModDataIndexComponent);
 
     group = 0;
 

@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { Translate } from '@singletons';
 import { CoreColors } from '@singletons/colors';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
@@ -24,6 +24,7 @@ import { CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
+import { CoreConstants } from '../constants';
 
 const defaultMaxHeight = 80;
 const minMaxHeight = 56;
@@ -45,9 +46,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * Using this parameter will force display: block to calculate height better.
      * If you want to avoid this use class="inline" at the same time to use display: inline-block.
      */
-    @Input('collapsible-item') height: number | string = defaultMaxHeight;
+    readonly height = input<number | string>(defaultMaxHeight, { alias: 'collapsible-item' });
 
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected toggleExpandEnabled = false;
     protected expanded = false;
     protected maxHeight = defaultMaxHeight;
@@ -61,11 +62,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     protected pageDidEnterListener?: EventListener;
     protected page?: HTMLElement;
 
-    constructor(el: ElementRef<HTMLElement>) {
-        this.element = el.nativeElement;
-
+    constructor() {
         this.element.addEventListener('click', (event) => this.elementClicked(event));
-        this.uniqueId = 'collapsible-item-' + CoreUtils.getUniqueId('CoreCollapsibleItemDirective');
+        this.uniqueId = `collapsible-item-${CoreUtils.getUniqueId('CoreCollapsibleItemDirective')}`;
         this.element.id = this.uniqueId;
     }
 
@@ -73,16 +72,17 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (this.height === null) {
+        const height = this.height();
+        if (height === null) {
             return;
         }
 
-        if (typeof this.height === 'string') {
-            this.maxHeight = this.height === ''
+        if (typeof height === 'string') {
+            this.maxHeight = height === ''
                 ? defaultMaxHeight
-                : parseInt(this.height, 10);
+                : parseInt(height, 10);
         } else {
-            this.maxHeight = this.height;
+            this.maxHeight = height;
         }
         this.maxHeight = this.maxHeight < minMaxHeight ? defaultMaxHeight : this.maxHeight;
 
@@ -92,6 +92,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         }
 
         this.element.classList.add('collapsible-item');
+        this.expanded = CoreConstants.CONFIG.collapsibleItemsExpanded;
 
         await this.waitLoadingsDone();
 
@@ -235,9 +236,9 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      */
     protected setHeight(height?: number): void {
         if (height) {
-            this.element.style.setProperty('--collapsible-height', height + 'px');
+            this.element.style.setProperty('--collapsible-height', `${height}px`);
         } else if (this.expandedHeight) {
-            this.element.style.setProperty('--collapsible-height', this.expandedHeight + 'px');
+            this.element.style.setProperty('--collapsible-height', `${this.expandedHeight}px`);
         } else {
             this.element.style.removeProperty('--collapsible-height');
 

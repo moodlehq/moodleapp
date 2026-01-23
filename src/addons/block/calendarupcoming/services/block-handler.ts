@@ -14,14 +14,13 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreBlockOnlyTitleComponent } from '@features/block/components/only-title-block/only-title-block';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { Params } from '@angular/router';
 import { makeSingleton } from '@singletons';
-import { AddonCalendarMainMenuHandlerService } from '@addons/calendar/services/handlers/mainmenu';
 import { CoreSites } from '@services/sites';
 import { ContextLevel } from '@/core/constants';
+import { ADDON_CALENDAR_PAGE_NAME } from '@addons/calendar/constants';
 
 /**
  * Block handler.
@@ -33,25 +32,22 @@ export class AddonBlockCalendarUpcomingHandlerService extends CoreBlockBaseHandl
     blockName = 'calendar_upcoming';
 
     /**
-     * Returns the data needed to render the block.
-     *
-     * @param block The block to render.
-     * @param contextLevel The context where the block will be used.
-     * @param instanceId The instance ID associated with the context level.
-     * @returns Data or promise resolved with the data.
+     * @inheritdoc
      */
-    getDisplayData(block: CoreCourseBlock, contextLevel: ContextLevel, instanceId: number): CoreBlockHandlerData {
+    async getDisplayData(block: CoreCourseBlock, contextLevel: ContextLevel, instanceId: number): Promise<CoreBlockHandlerData> {
         const linkParams: Params = { upcoming: true };
 
         if (contextLevel === ContextLevel.COURSE && instanceId !== CoreSites.getCurrentSiteHomeId()) {
             linkParams.courseId = instanceId;
         }
 
+        const { CoreBlockOnlyTitleComponent } = await import('@features/block/components/only-title-block/only-title-block');
+
         return {
             title: 'addon.block_calendarupcoming.pluginname',
             class: 'addon-block-calendar-upcoming',
             component: CoreBlockOnlyTitleComponent,
-            link: AddonCalendarMainMenuHandlerService.PAGE_NAME,
+            link: ADDON_CALENDAR_PAGE_NAME,
             linkParams: linkParams,
         };
     }

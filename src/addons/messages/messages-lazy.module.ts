@@ -13,22 +13,12 @@
 // limitations under the License.
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonMessagesContacts35Page } from '@addons/messages/pages/contacts-35/contacts';
-import { AddonMessagesContactsPage } from '@addons/messages/pages/contacts/contacts';
-import { AddonMessagesDiscussionPage } from '@addons/messages/pages/discussion/discussion';
-import { AddonMessagesDiscussions35Page } from '@addons/messages/pages/discussions-35/discussions';
-import { AddonMessagesGroupConversationsPage } from '@addons/messages/pages/group-conversations/group-conversations';
-import { AddonMessagesSearchPage } from '@addons/messages/pages/search/search';
-import { AddonMessagesMainMenuHandlerService } from '@addons/messages/services/handlers/mainmenu';
 import { Injector, NgModule } from '@angular/core';
 import { Route, ROUTES, Routes } from '@angular/router';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { CoreScreen } from '@services/screen';
-import { messagesIndexGuard } from './guards';
+import { ADDON_MESSAGES_PAGE_NAME } from './constants';
 
 /**
  * Build module routes.
@@ -40,36 +30,27 @@ function buildRoutes(injector: Injector): Routes {
     const discussionRoutes: Route[] = [
         {
             path: 'discussion/user/:userId',
-            component: AddonMessagesDiscussionPage,
+            loadComponent: () => import('./pages/discussion/discussion'),
         },
         {
             path: 'discussion/:conversationId',
-            component: AddonMessagesDiscussionPage,
+            loadComponent: () => import('./pages/discussion/discussion'),
         },
     ];
 
     const mobileRoutes: Routes = [
         {
-            path: 'contacts', // 3.6 or greater.
-            component: AddonMessagesContactsPage,
+            path: 'contacts',
+            loadComponent: () => import('./pages/contacts/contacts'),
         },
         {
-            path: 'index',
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesDiscussions35Page,
-        },
-        {
-            path: 'contacts-35', // 3.5.
-            component: AddonMessagesContacts35Page,
-        },
-        {
-            path: 'group-conversations', // 3.6 or greater.
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesGroupConversationsPage,
+            path: 'group-conversations',
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
+            loadComponent: () => import('./pages/group-conversations/group-conversations'),
         },
         {
             path: 'search',
-            component: AddonMessagesSearchPage,
+            loadComponent: () => import('./pages/search/search'),
         },
     ]
         .reduce((routes, mobileRoute) => [
@@ -83,31 +64,20 @@ function buildRoutes(injector: Injector): Routes {
 
     const tabletRoutes: Routes = [
         {
-            path: 'contacts', // 3.6 or greater.
-            component: AddonMessagesContactsPage,
-            children: discussionRoutes,
+            path: 'contacts',
+            loadComponent: () => import('./pages/contacts/contacts'),
+            loadChildren: () => discussionRoutes,
         },
         {
-            path: 'index',
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesDiscussions35Page,
-            children: discussionRoutes,
-        },
-        {
-            path: 'contacts-35', // 3.5.
-            component: AddonMessagesContacts35Page,
-            children: discussionRoutes,
-        },
-        {
-            path: 'group-conversations', // 3.6 or greater.
-            data: { mainMenuTabRoot: AddonMessagesMainMenuHandlerService.PAGE_NAME },
-            component: AddonMessagesGroupConversationsPage,
-            children: discussionRoutes,
+            path: 'group-conversations',
+            data: { mainMenuTabRoot: ADDON_MESSAGES_PAGE_NAME },
+            loadComponent: () => import('./pages/group-conversations/group-conversations'),
+            loadChildren: () => discussionRoutes,
         },
         {
             path: 'search',
-            component: AddonMessagesSearchPage,
-            children: discussionRoutes,
+            loadComponent: () => import('./pages/search/search'),
+            loadChildren: () => discussionRoutes,
         },
     ];
 
@@ -117,28 +87,16 @@ function buildRoutes(injector: Injector): Routes {
         ...discussionRoutes,
         {
             path: 'message-settings',
-            loadChildren: () => import('./messages-settings-lazy.module').then(m => m.AddonMessagesSettingsLazyModule),
+            loadComponent: () => import('./pages/settings/settings'),
         },
         ...buildTabMainRoutes(injector, {
-            canActivate: [messagesIndexGuard],
+            redirectTo: 'group-conversations',
+            pathMatch: 'full',
         }),
     ];
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        CoreSearchComponentsModule,
-        CoreMainMenuComponentsModule,
-    ],
-    declarations: [
-        AddonMessagesContacts35Page,
-        AddonMessagesContactsPage,
-        AddonMessagesDiscussionPage,
-        AddonMessagesDiscussions35Page,
-        AddonMessagesGroupConversationsPage,
-        AddonMessagesSearchPage,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -148,4 +106,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonMessagesLazyModule {}
+export default class AddonMessagesLazyModule {}

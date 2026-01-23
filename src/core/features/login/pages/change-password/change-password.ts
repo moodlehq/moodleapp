@@ -19,8 +19,9 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@services/utils/utils';
 import { CoreUserSupport } from '@features/user/services/support';
+import { CoreOpener } from '@singletons/opener';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that shows instructions to change the password.
@@ -28,8 +29,11 @@ import { CoreUserSupport } from '@features/user/services/support';
 @Component({
     selector: 'page-core-login-change-password',
     templateUrl: 'change-password.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreLoginChangePasswordPage implements OnDestroy {
+export default class CoreLoginChangePasswordPage implements OnDestroy {
 
     changingPassword = false;
     logoutLabel: string;
@@ -94,7 +98,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
         this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_STOP, (event) => {
             if (event.url.match(/\/login\/change_password\.php.*return=1/)) {
                 // Password has changed, close the IAB now.
-                CoreUtils.closeInAppBrowser();
+                CoreOpener.closeInAppBrowser();
                 this.login();
 
                 return;
@@ -105,7 +109,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
             }
 
             // Use a script to check if the user changed the password, in some platforms we cannot tell using the URL.
-            CoreUtils.getInAppBrowserInstance()?.executeScript({
+            CoreOpener.getInAppBrowserInstance()?.executeScript({
                 code: `
                     if (
                         document.querySelector('input[type="password"]') === null &&
@@ -119,7 +123,7 @@ export class CoreLoginChangePasswordPage implements OnDestroy {
 
         this.messageObserver = CoreEvents.on(CoreEvents.IAB_MESSAGE, (data) => {
             if (data.passwordChanged) {
-                CoreUtils.closeInAppBrowser();
+                CoreOpener.closeInAppBrowser();
                 this.login();
             }
         });

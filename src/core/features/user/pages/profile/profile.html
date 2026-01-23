@@ -27,10 +27,8 @@
                     <p class="aspire-student-info" *ngIf="rolesFormatted">
                         <ion-icon name="trophy-outline" [attr.aria-hidden]="true" /> Phoenix House
                     </p>
-                    <p *ngIf="user.lastaccess !== undefined">
-                        <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                        <span *ngIf="user.lastaccess">{{ user.lastaccess | coreTimeAgo }}</span>
-                        <ng-container *ngIf="!user.lastaccess">{{ 'core.never' | translate }}</ng-container>
+                    <p>
+                        <ion-skeleton-text [animated]="true" style="width: 60%;" />
                     </p>
                 </ion-label>
             </ion-item>
@@ -81,50 +79,122 @@
             <div class="core-user-communication-handlers" *ngIf="(buttonHandlers && buttonHandlers.length) || isLoadingHandlers">
                 <ion-item *ngIf="buttonHandlers && buttonHandlers.length">
                     <ion-label>
-                        <ion-button *ngFor="let handler of buttonHandlers" expand="block" size="default"
-                            [ngClass]="['core-user-profile-handler', handler.class || '']" (click)="handlerClicked($event, handler)"
-                            [hidden]="handler.hidden" [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
-                            <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
-                            {{ handler.title | translate }}
-                        </ion-button>
+                        <h3>
+                            <ion-skeleton-text [animated]="true" style="width: 100%;" />
+                        </h3>
+                        <p>
+                            <ion-skeleton-text [animated]="true" style="width: 60%;" />
+                        </p>
                     </ion-label>
                 </ion-item>
-                <div *ngIf="isLoadingHandlers" class="ion-text-center core-loading-handlers">
-                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                </div>
-            </div>
-            <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
-                [attr.aria-label]="'core.user.details' | translate" [detail]="true">
-                <ion-icon name="fas-user" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">{{ 'core.user.details' | translate }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-center core-loading-handlers" *ngIf="isLoadingHandlers">
-                <ion-label>
-                    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                </ion-label>
-            </ion-item>
-            <ion-item button *ngFor="let handler of listItemHandlers" class="ion-text-wrap" (click)="handlerClicked($event, handler)"
-                [ngClass]="['core-user-profile-handler', handler.class || '']" [hidden]="handler.hidden"
-                [attr.aria-label]="handler.title | translate" [detail]="true">
-                <ion-icon *ngIf="handler.icon" [name]="handler.icon" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-heading">{{ handler.title | translate }}</p>
-                </ion-label>
-                <ion-badge slot="end" *ngIf="handler.showBadge" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
-                    {{handler.badge}}
-                </ion-badge>
-                <span *ngIf="handler.showBadge && handler.badge && handler.badgeA11yText" class="sr-only">
-                    {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
-                </span>
-                <ion-spinner slot="end" *ngIf="handler.showBadge && handler.loading" [attr.aria-label]="'core.loading' | translate" />
-            </ion-item>
+            }
         </ion-list>
-        <core-empty-box *ngIf="!user && !isDeleted && isEnrolled" icon="far-user"
-            [message]=" 'core.user.detailsnotavailable' | translate" />
-        <core-empty-box *ngIf="isDeleted" icon="far-user" [message]="'core.userdeleted' | translate" />
-        <core-empty-box *ngIf="isSuspended" icon="far-user" [message]="'core.usersuspended' | translate" />
-        <core-empty-box *ngIf="!isEnrolled" icon="far-user" [message]="'core.notenrolledprofile' | translate" />
+        @if (user && !isDeleted && isEnrolled) {
+            <ion-list>
+                <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
+                    <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                    <ion-label>
+                        <h1>{{ user.fullname }}</h1>
+                        @if (user.address) {
+                            <p>
+                                <ion-icon name="fas-location-dot" [attr.aria-hidden]="true" /> {{ user.address }}
+                            </p>
+                        }
+                        @if (rolesFormatted) {
+                            <p>
+                                <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
+                                {{ rolesFormatted }}
+                            </p>
+                        }
+                        @if (user.lastaccess !== undefined) {
+                            <p>
+                                <strong>{{ 'core.lastaccess' | translate }}: </strong>
+                                @if (user.lastaccess) {
+                                    <span>{{ user.lastaccess | coreTimeAgo }}</span>
+                                }
+                                @if (!user.lastaccess) {
+                                    {{ 'core.never' | translate }}
+                                }
+                            </p>
+                        }
+                    </ion-label>
+                </ion-item>
+
+                @if ((buttonHandlers && buttonHandlers.length) || isLoadingHandlers) {
+                    <div class="core-user-communication-handlers">
+                        @if (buttonHandlers && buttonHandlers.length) {
+                            <ion-item>
+                                <ion-label>
+                                    <ion-button *ngFor="let handler of buttonHandlers" expand="block" size="default"
+                                        [class]="['core-user-profile-handler', handler.class]"
+                                        (click)="handlerClicked($event, handler)" [hidden]="handler.hidden"
+                                        [attr.aria-label]="handler.title | translate" [disabled]="handler.spinner">
+                                        @if (handler.icon) {
+                                            <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                                        }
+                                        {{ handler.title | translate }}
+                                    </ion-button>
+                                </ion-label>
+                            </ion-item>
+                        }
+                        @if (isLoadingHandlers) {
+                            <div class="ion-text-center core-loading-handlers">
+                                <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                            </div>
+                        }
+                    </div>
+                }
+                <ion-item button class="ion-text-wrap core-user-profile-handler" (click)="openUserDetails()"
+                    [attr.aria-label]="'core.user.details' | translate" [detail]="true">
+                    <ion-icon name="fas-user" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">{{ 'core.user.details' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+                @if (isLoadingHandlers) {
+                    <ion-item class="ion-text-center core-loading-handlers">
+                        <ion-label>
+                            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                        </ion-label>
+                    </ion-item>
+                }
+                <ion-item button *ngFor="let handler of listItemHandlers" (click)="handlerClicked($event, handler)"
+                    [class]="['ion-text-wrap', 'core-user-profile-handler', handler.class]" [hidden]="handler.hidden"
+                    [attr.aria-label]="handler.title | translate" [detail]="true">
+                    @if (handler.icon) {
+                        <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                    }
+                    <ion-label>
+                        <p class="item-heading">{{ handler.title | translate }}</p>
+                    </ion-label>
+                    @if (handler.showBadge) {
+                        <ion-badge slot="end" [hidden]="handler.loading || !handler.badge" aria-hidden="true">
+                            {{handler.badge}}
+                        </ion-badge>
+                        @if (handler.badge && handler.badgeA11yText) {
+                            <span class="sr-only">
+                                {{ handler.badgeA11yText | translate: {$a : handler.badge } }}
+                            </span>
+                        }
+                        @if (handler.loading) {
+                            <ion-spinner slot="end" [attr.aria-label]="'core.loading' | translate" />
+                        }
+                    }
+
+                </ion-item>
+            </ion-list>
+        }
+        @if (!user && !isDeleted && isEnrolled) {
+            <core-empty-box icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate" />
+        }
+        @if (isDeleted) {
+            <core-empty-box icon="far-user" [message]="'core.userdeleted' | translate" />
+        }
+        @if (isSuspended) {
+            <core-empty-box icon="far-user" [message]="'core.usersuspended' | translate" />
+        }
+        @if (!isEnrolled) {
+            <core-empty-box icon="far-user" [message]="'core.notenrolledprofile' | translate" />
+        }
     </core-loading>
 </ion-content>

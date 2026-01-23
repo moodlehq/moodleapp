@@ -1,4 +1,4 @@
-@core_user @app @javascript
+@core_user @app @core @javascript
 Feature: Test basic usage of user features
 
   Background:
@@ -7,6 +7,7 @@ Feature: Test basic usage of user features
       | username | firstname | lastname | timezone |
       | student1 | Student   | Student  | 99       |
 
+  @lms_from4.5
   Scenario: Complete missing fields
     Given the following "custom profile fields" exist:
       | datatype | shortname  | name           | required | param1 |
@@ -44,7 +45,7 @@ Feature: Test basic usage of user features
     And I set the field "password" to "student1"
     And I click on "Log in" "button"
     And I set the field "Favourite food" to "Pasta"
-    And I set the field "Web page" to "https://moodle.com"
+    And I set the field "Website" to "https://moodle.com"
     And I click on "Update profile" "button"
     Then I should see "Changes saved"
 
@@ -55,6 +56,7 @@ Feature: Test basic usage of user features
     When I press "Reconnect" in the app
     Then I should find "Acceptance test site" in the app
 
+  @lms_from4.5
   Scenario: View profile
     Given the following "custom profile fields" exist:
       | datatype | shortname  | name           | required | param1 |
@@ -67,7 +69,7 @@ Feature: Test basic usage of user features
     And I set the field "password" to "student1"
     And I click on "Log in" "button"
     And I set the field "Favourite food" to "Pasta"
-    And I set the field "Web page" to "https://moodle.com"
+    And I set the field "Website" to "https://moodle.com"
     When I click on "Update profile" "button"
     Then I should see "Changes saved"
 

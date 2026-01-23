@@ -1,0 +1,7 @@
+// scss-docs-start color-mode-mixin
+@mixin color-mode($unused_mode: dark, $unused_root: false) {
+  @at-root :root.dark & {
+    @content;
+  }
+}
+// scss-docs-end color-mode-mixin

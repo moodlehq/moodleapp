@@ -1,49 +1,66 @@
 <form (ngSubmit)="changeName(newFileName, $event)" #nameForm>
-    <ion-card class="card-file">
-        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" button [detail]="false">
+    <ion-card class="card-file ion-activatable">
+        <ion-item class="ion-text-wrap item-file" (click)="openFile($event)" tappable [detail]="false">
             <ion-thumbnail slot="start">
                 <img [src]="fileIcon" [alt]="fileExtension" role="presentation" />
             </ion-thumbnail>
 
-            <ion-label *ngIf="!editMode">
-                <!-- File name and edit button (if editable). -->
-                <p class="item-heading">{{fileName}}</p>
-                <!-- More data about the file. -->
-                <p *ngIf="size || timemodified">
-                    <ng-container *ngIf="size">{{ size }}</ng-container>
-                    <ng-container *ngIf="size && timemodified"> · </ng-container>
-                    <ng-container *ngIf="timemodified">{{ timemodified }}</ng-container>
-                </p>
-            </ion-label>
-
-            <!-- Form to edit the file's name. -->
-            <ion-input type="text" name="filename" [placeholder]="'core.filename' | translate" autocapitalize="none" autocorrect="off"
-                (click)="$event.stopPropagation()" core-auto-focus [(ngModel)]="newFileName" *ngIf="editMode"
-                [ariaLabel]="'core.filename' | translate" />
+            @if (!editMode) {
+                <ion-label>
+                    <!-- File name and edit button (if editable). -->
+                    <p class="item-heading">
+                        <span (ariaButtonClick)="openFile($event)">{{fileName}}</span>
+                    </p>
+                    <!-- More data about the file. -->
+                    @if (size || timemodified) {
+                        <p>
+                            @if (size) {
+                                {{ size }}
+                            }
+                            @if (size && timemodified) {
+                                ·
+                            }
+                            @if (timemodified) {
+                                {{ timemodified }}
+                            }
+                        </p>
+                    }
+                </ion-label>
+            } @else {
+                <!-- Form to edit the file's name. -->
+                <ion-input type="text" name="filename" [placeholder]="'core.filename' | translate" autocapitalize="none" autocorrect="off"
+                    (click)="$event.stopPropagation()" core-auto-focus [(ngModel)]="newFileName"
+                    [ariaLabel]="'core.filename' | translate" />
+            }
 
             <div class="buttons" slot="end">
-                <ion-button fill="clear" *ngIf="isIOS && !editMode" (click)="openFile($event, true)"
-                    [ariaLabel]="openButtonLabel | translate">
-                    <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
-                </ion-button>
-
-                <ng-container *ngIf="manage">
-                    <ion-button *ngIf="editMode" fill="clear" [ariaLabel]="'core.save' | translate" color="success"
-                        (click)="changeName(newFileName, $event)">
-                        <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
+                @if (isIOS && !editMode) {
+                    <ion-button fill="clear" (click)="openFile($event, true)" [ariaLabel]="openButtonLabel | translate">
+                        <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
                     </ion-button>
+                }
 
-                    <ion-button *ngIf="!editMode" fill="clear" [core-suppress-events] (onClick)="activateEdit($event)"
-                        [ariaLabel]="'core.edit' | translate">
-                        <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
+                @if (manage) {
 
-                    <ion-button *ngIf="!editMode" fill="clear" (click)="deleteFile($event)" [ariaLabel]="'core.delete' | translate"
-                        color="danger">
-                        <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                    </ion-button>
-                </ng-container>
+                    @if (editMode) {
+                        <ion-button fill="clear" [ariaLabel]="'core.save' | translate" color="success"
+                            (click)="changeName(newFileName, $event)">
+                            <ion-icon name="fas-check" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    } @else {
+                        <ion-button fill="clear" [core-suppress-events] (onClick)="activateEdit($event)"
+                            [ariaLabel]="'core.edit' | translate">
+                            <ion-icon name="fas-pen" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+
+                        <ion-button fill="clear" (click)="deleteFile($event)" [ariaLabel]="'core.delete' | translate" color="danger">
+                            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                        </ion-button>
+                    }
+
+                }
             </div>
         </ion-item>
+        <ion-ripple-effect />
     </ion-card>
 </form>

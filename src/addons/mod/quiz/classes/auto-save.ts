@@ -18,7 +18,7 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreLogger } from '@singletons/logger';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../services/quiz';
-import { CorePopovers } from '@services/popovers';
+import { CorePopovers } from '@services/overlays/popovers';
 
 /**
  * Class to support auto-save in quiz. Every certain seconds, it will check if there are changes in the current page answers
@@ -26,7 +26,7 @@ import { CorePopovers } from '@services/popovers';
  */
 export class AddonModQuizAutoSave {
 
-    protected readonly CHECK_CHANGES_INTERVAL = 5000;
+    protected static readonly CHECK_CHANGES_INTERVAL = 5000;
 
     protected logger: CoreLogger;
     protected checkChangesInterval?: number; // Interval to check if there are changes in the answers.
@@ -235,7 +235,7 @@ export class AddonModQuizAutoSave {
         // Check changes every certain time.
         this.checkChangesInterval = window.setInterval(() => {
             this.checkChanges(quiz, attempt, preflightData, offline);
-        }, this.CHECK_CHANGES_INTERVAL);
+        }, AddonModQuizAutoSave.CHECK_CHANGES_INTERVAL);
     }
 
     /**

@@ -14,7 +14,7 @@
 
 import { AddonModGlossaryHelper } from '@addons/mod/glossary/services/glossary-helper';
 import { AddonModGlossaryOffline, AddonModGlossaryOfflineEntry } from '@addons/mod/glossary/services/glossary-offline';
-import { Component, OnDestroy, OnInit, Optional, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -26,8 +26,7 @@ import { CoreTag } from '@features/tag/services/tag';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { AddonModGlossaryEntriesSource, AddonModGlossaryEntryItem } from '../../classes/glossary-entries-source';
@@ -38,10 +37,19 @@ import {
 } from '../../services/glossary';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_GLOSSARY_COMPONENT, ADDON_MOD_GLOSSARY_ENTRY_UPDATED, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import {
+    ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
+    ADDON_MOD_GLOSSARY_ENTRY_UPDATED,
+    ADDON_MOD_GLOSSARY_PAGE_NAME,
+} from '../../constants';
+import CoreCourseContentsPage from '@features/course/pages/contents/contents';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreTagListComponent } from '@features/tag/components/list/list';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 
 /**
  * Page that displays a glossary entry.
@@ -49,12 +57,19 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'page-addon-mod-glossary-entry',
     templateUrl: 'entry.html',
+    imports: [
+        CoreSharedModule,
+        CoreTagListComponent,
+        CoreCommentsCommentsComponent,
+        CoreRatingRateComponent,
+        CoreRatingAggregateComponent,
+    ],
 })
-export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
+export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
-    @ViewChild(CoreCommentsCommentsComponent) comments?: CoreCommentsCommentsComponent;
+    readonly comments = viewChild(CoreCommentsCommentsComponent);
 
-    component = ADDON_MOD_GLOSSARY_COMPONENT;
+    component = ADDON_MOD_GLOSSARY_COMPONENT_LEGACY;
     componentId?: number;
     onlineEntry?: AddonModGlossaryEntry;
     offlineEntry?: AddonModGlossaryOfflineEntry;
@@ -75,18 +90,17 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     protected entrySlug!: string;
     protected logView: () => void;
+    protected splitView = inject(CoreSplitViewComponent, { optional: true });
+    protected route = inject(ActivatedRoute);
+    protected courseContentsPage = inject(CoreCourseContentsPage, { optional: true });
 
-    constructor(
-        @Optional() protected splitView: CoreSplitViewComponent,
-        protected route: ActivatedRoute,
-        @Optional() protected courseContentsPage?: CoreCourseContentsPage,
-    ) {
+    constructor() {
         this.logView = CoreTime.once(async () => {
             if (!this.onlineEntry || !this.glossary || !this.componentId) {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModGlossary.logEntryView(this.onlineEntry.id, this.componentId));
+            await CorePromiseUtils.ignoreErrors(AddonModGlossary.logEntryView(this.onlineEntry.id, this.componentId));
 
             this.analyticsLogEvent('mod_glossary_get_entry_by_id', `/mod/glossary/showentry.php?eid=${this.onlineEntry.id}`);
         });
@@ -126,7 +140,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
                 onlineEntryId = Number(this.entrySlug);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             this.goBack();
 
             return;
@@ -184,8 +198,8 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
         );
 
         const glossaryId = this.glossary?.id;
-        const cancelled = await CoreUtils.promiseFails(
-            CoreDomUtils.showConfirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
+        const cancelled = await CorePromiseUtils.promiseFails(
+            CoreAlerts.confirm(Translate.instant('addon.mod_glossary.areyousuredelete')),
         );
 
         if (!glossaryId || cancelled) {
@@ -200,13 +214,13 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
                 await AddonModGlossary.deleteEntry(glossaryId, entryId);
                 await Promise.all([
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId)),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION')),
-                    CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE')),
-                    CoreUtils.ignoreErrors(this.entries.getSource().invalidateCache(false)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntry(entryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByLetter(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByAuthor(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByCategory(glossaryId)),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'CREATION')),
+                    CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntriesByDate(glossaryId, 'UPDATE')),
+                    CorePromiseUtils.ignoreErrors(this.entries.getSource().invalidateCache(false)),
                 ]);
             } else if (this.offlineEntry) {
                 const concept = this.offlineEntry.concept;
@@ -224,7 +238,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             await this.goBack();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errordeleting', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errordeleting') });
         } finally {
             modal.dismiss();
         }
@@ -237,14 +251,15 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     async doRefresh(refresher?: HTMLIonRefresherElement): Promise<void> {
-        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && this.comments) {
+        const comments = this.comments();
+        if (this.onlineEntry && this.glossary?.allowcomments && this.onlineEntry.id > 0 && this.commentsEnabled && comments) {
             // Refresh comments asynchronously (without blocking the current promise).
-            CoreUtils.ignoreErrors(this.comments.doRefresh());
+            CorePromiseUtils.ignoreErrors(comments.doRefresh());
         }
 
         try {
             if (this.onlineEntry) {
-                await CoreUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.onlineEntry.id));
+                await CorePromiseUtils.ignoreErrors(AddonModGlossary.invalidateEntry(this.onlineEntry.id));
                 await this.loadOnlineEntry(this.onlineEntry.id);
             } else if (this.offlineEntry) {
                 const timecreated = Number(this.entrySlug.slice(4));
@@ -261,9 +276,10 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
      */
     protected async loadOnlineEntry(entryId: number): Promise<void> {
         try {
+            const isOnline = CoreNetwork.isOnline();
             const result = await AddonModGlossary.getEntry(entryId);
-            const canDeleteEntries = CoreNetwork.isOnline() && await AddonModGlossary.canDeleteEntries();
-            const canUpdateEntries = CoreNetwork.isOnline() && await AddonModGlossary.canUpdateEntries();
+            const canDeleteEntries = isOnline && await AddonModGlossary.canDeleteEntries();
+            const canUpdateEntries = isOnline && await AddonModGlossary.canUpdateEntries();
 
             this.onlineEntry = result.entry;
             this.ratingInfo = result.ratinginfo;
@@ -274,7 +290,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
         }
     }
 
@@ -298,7 +314,7 @@ export class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
             this.canEdit = true;
             this.canDelete = true;
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'addon.mod_glossary.errorloadingentry', true);
+            CoreAlerts.showError(error, { default: Translate.instant('addon.mod_glossary.errorloadingentry') });
         }
     }
 
@@ -389,7 +405,7 @@ class AddonModGlossaryEntryEntriesSwipeManager
     protected getSelectedItemPathFromRoute(route: ActivatedRouteSnapshot | ActivatedRoute): string | null {
         const params = CoreNavigator.getRouteParams(route);
 
-        return `${this.getSource().GLOSSARY_PATH_PREFIX}entry/${params.entrySlug}`;
+        return `${this.getSource().glossaryPathPrefix}entry/${params.entrySlug}`;
     }
 
 }

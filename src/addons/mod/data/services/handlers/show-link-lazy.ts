@@ -17,9 +17,9 @@ import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_DATA_MODNAME, ADDON_MOD_DATA_PAGE_NAME } from '../../constants';
 import { AddonModDataShowLinkHandlerService } from '@addons/mod/data/services/handlers/show-link';
 
 /**
@@ -35,14 +35,13 @@ export class AddonModDataShowLinkHandlerLazyService extends AddonModDataShowLink
     async handleAction(siteId: string, params: Record<string, string>): Promise<void> {
         const modal = await CoreLoadings.show();
         const dataId = parseInt(params.d, 10);
-        const rId = params.rid || '';
+        const rId = params.rid || '0'; // If no rid, show the first entry.
         const group = parseInt(params.group, 10) || false;
         const page = parseInt(params.page, 10) || false;
-
         try {
             const module = await CoreCourse.getModuleBasicInfoByInstance(
                 dataId,
-                'data',
+                ADDON_MOD_DATA_MODNAME,
                 { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
             );
             const pageParams: Params = {
@@ -53,7 +52,7 @@ export class AddonModDataShowLinkHandlerLazyService extends AddonModDataShowLink
                 pageParams.group = group;
             }
 
-            if (params.mode && params.mode == 'single') {
+            if (params?.mode === 'single') {
                 pageParams.offset = page || 0;
             }
 

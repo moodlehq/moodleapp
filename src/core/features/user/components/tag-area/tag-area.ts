@@ -15,6 +15,7 @@
 import { Component, Input } from '@angular/core';
 
 import { CoreUserTagFeedElement } from '@features/user/services/handlers/tag-area';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render the user tag area.
@@ -22,6 +23,9 @@ import { CoreUserTagFeedElement } from '@features/user/services/handlers/tag-are
 @Component({
     selector: 'core-user-tag-area',
     templateUrl: 'core-user-tag-area.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreUserTagAreaComponent {
 

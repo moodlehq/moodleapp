@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { Routes } from '@angular/router';
+import { NgModule, provideAppInitializer } from '@angular/core';
+import { Route, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
@@ -37,35 +37,86 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonModForumTagAreaHandler } from './services/handlers/tag-area';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonModForumPushClickHandler } from './services/handlers/push-click';
-import { COURSE_CONTENTS_PATH } from '@features/course/constants';
+import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { ADDON_MOD_FORUM_COMPONENT, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
+import { ADDON_MOD_FORUM_COMPONENT_LEGACY, ADDON_MOD_FORUM_PAGE_NAME, ADDON_MOD_FORUM_SEARCH_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
+
+const newDiscussionRoute: Route = {
+    loadComponent: () => import('./pages/new-discussion/new-discussion'),
+    canDeactivate: [canLeaveGuard],
+};
+
+const discussionRoute: Route = {
+    loadComponent: () => import('./pages/discussion/discussion'),
+    canDeactivate: [canLeaveGuard],
+};
+
+const mobileRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+    },
+    {
+        path: ':courseId/:cmId/new/:timeCreated',
+        ...newDiscussionRoute,
+    },
+    {
+        path: ':courseId/:cmId/:discussionId',
+        ...discussionRoute,
+
+    },
+    {
+        path: 'discussion/:discussionId', // Only for discussion link handling.
+        ...discussionRoute,
+    },
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: ':courseId/:cmId',
+        loadComponent: () => import('./pages/index/index'),
+        loadChildren: () => [
+            {
+                path: 'new/:timeCreated',
+                ...newDiscussionRoute,
+            },
+            {
+                path: ':discussionId',
+                ...discussionRoute,
+            },
+        ],
+    },
+];
 
 const mainMenuRoutes: Routes = [
     {
         path: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
-        loadChildren: () => import('./forum-search-lazy.module'),
+        loadComponent: () => import('./pages/search/search'),
     },
     {
         path: `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/:discussionId`,
-        loadChildren: () => import('./forum-discussion-lazy.module'),
         data: { swipeEnabled: false },
+        ...discussionRoute,
     },
     {
         path: ADDON_MOD_FORUM_PAGE_NAME,
-        loadChildren: () => import('./forum-lazy.module'),
+        loadChildren: () => [
+            ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+            ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+        ],
     },
     ...conditionalRoutes(
         [
             {
-                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
-                loadChildren: () => import('./forum-new-discussion-lazy.module'),
+                path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+                ...newDiscussionRoute,
             },
             {
-                path: `${COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
-                loadChildren: () => import('./forum-discussion-lazy.module'),
+                path: `${CORE_COURSE_CONTENTS_PATH}/${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
                 data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+                ...discussionRoute,
             },
         ],
         () => CoreScreen.isMobile,
@@ -77,13 +128,13 @@ const courseContentsRoutes: Routes = conditionalRoutes(
     [
         {
             path: `${ADDON_MOD_FORUM_PAGE_NAME}/new/:timeCreated`,
-            loadChildren: () => import('./forum-new-discussion-lazy.module'),
+            ...newDiscussionRoute,
             data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
         },
         {
             path: `${ADDON_MOD_FORUM_PAGE_NAME}/:discussionId`,
-            loadChildren: () => import('./forum-discussion-lazy.module'),
             data: { discussionsPathPrefix: `${ADDON_MOD_FORUM_PAGE_NAME}/` },
+            ...discussionRoute,
         },
     ],
     () => CoreScreen.isTablet,
@@ -100,23 +151,19 @@ const courseContentsRoutes: Routes = conditionalRoutes(
             useValue: [SITE_SCHEMA],
             multi: true,
         },
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreCourseModuleDelegate.registerHandler(AddonModForumModuleHandler.instance);
-                CoreCourseModulePrefetchDelegate.registerHandler(AddonModForumPrefetchHandler.instance);
-                CoreCronDelegate.register(AddonModForumSyncCronHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumDiscussionLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumIndexLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumListLinkHandler.instance);
-                CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
-                CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
-                CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
+        provideAppInitializer(() => {
+            CoreCourseModuleDelegate.registerHandler(AddonModForumModuleHandler.instance);
+            CoreCourseModulePrefetchDelegate.registerHandler(AddonModForumPrefetchHandler.instance);
+            CoreCronDelegate.register(AddonModForumSyncCronHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumDiscussionLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumIndexLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumListLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonModForumPostLinkHandler.instance);
+            CoreTagAreaDelegate.registerHandler(AddonModForumTagAreaHandler.instance);
+            CorePushNotificationsDelegate.registerClickHandler(AddonModForumPushClickHandler.instance);
 
-                CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT);
-            },
-        },
+            CoreCourseHelper.registerModuleReminderClick(ADDON_MOD_FORUM_COMPONENT_LEGACY);
+        }),
     ],
 })
 export class AddonModForumModule {}

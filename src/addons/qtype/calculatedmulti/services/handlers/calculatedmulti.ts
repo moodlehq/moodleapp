@@ -14,11 +14,11 @@
 
 import { Injectable, Type } from '@angular/core';
 
-import { AddonQtypeMultichoiceComponent } from '@addons/qtype/multichoice/component/multichoice';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonQtypeMultichoiceHandler } from '@addons/qtype/multichoice/services/handlers/multichoice';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support calculated multi question type.
@@ -32,8 +32,10 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
         // Calculated multi behaves like a multichoice, use the same component.
+        const { AddonQtypeMultichoiceComponent } = await import('@addons/qtype/multichoice/component/multichoice');
+
         return AddonQtypeMultichoiceComponent;
     }
 
@@ -43,7 +45,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // This question type depends on multichoice.
         return AddonQtypeMultichoiceHandler.isCompleteResponseSingle(answers);
     }
@@ -61,7 +63,7 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // This question type depends on multichoice.
         return AddonQtypeMultichoiceHandler.isGradableResponseSingle(answers);
     }
@@ -76,6 +78,16 @@ export class AddonQtypeCalculatedMultiHandlerService implements CoreQuestionHand
     ): boolean {
         // This question type depends on multichoice.
         return AddonQtypeMultichoiceHandler.isSameResponseSingle(prevAnswers, newAnswers);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        return AddonQtypeMultichoiceHandler.getValidationError(question, answers);
     }
 
 }

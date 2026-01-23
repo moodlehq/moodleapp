@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreUserTourDirectiveOptions } from '@directives/user-tour';
-import { CoreUserToursAlignment, CoreUserToursSide } from '@features/usertours/services/user-tours';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from '@singletons/dom';
-import { CoreBlockSideBlocksTourComponent } from '../side-blocks-tour/side-blocks-tour';
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component that displays a button to open blocks.
@@ -27,34 +25,19 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'core-block-side-blocks-button',
     templateUrl: 'side-blocks-button.html',
-    styleUrls: ['side-blocks-button.scss'],
+    styleUrl: 'side-blocks-button.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
 
-    @Input({ required: true }) contextLevel!: ContextLevel;
-    @Input({ required: true }) instanceId!: number;
-    @Input() myDashboardPage?: string;
+    readonly contextLevel = input.required<ContextLevel>();
+    readonly instanceId = input.required<number>();
+    readonly myDashboardPage = input<string>();
 
-    userTour: CoreUserTourDirectiveOptions = {
-        id: 'side-blocks-button',
-        component: CoreBlockSideBlocksTourComponent,
-        side: CoreUserToursSide.Start,
-        alignment: CoreUserToursAlignment.Center,
-        after: 'user-menu',
-        afterTimeout: 1000,
-        getFocusedElement: nativeButton => {
-            const innerButton = Array.from(nativeButton.shadowRoot?.children ?? []).find(child => child.tagName === 'BUTTON');
-
-            return innerButton as HTMLElement ?? nativeButton;
-        },
-    };
-
-    protected element: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
     protected slotPromise?: CoreCancellablePromise<void>;
-
-    constructor(el: ElementRef) {
-        this.element = el.nativeElement;
-    }
 
     /**
      * @inheritdoc
@@ -72,9 +55,9 @@ export class CoreBlockSideBlocksButtonComponent implements OnInit, OnDestroy {
         CoreModals.openSideModal({
             component: CoreBlockSideBlocksComponent,
             componentProps: {
-                contextLevel: this.contextLevel,
-                instanceId: this.instanceId,
-                myDashboardPage: this.myDashboardPage,
+                contextLevel: this.contextLevel(),
+                instanceId: this.instanceId(),
+                myDashboardPage: this.myDashboardPage(),
             },
         });
     }

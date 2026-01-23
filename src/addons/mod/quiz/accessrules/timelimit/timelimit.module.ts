@@ -12,31 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModQuizAccessTimeLimitComponent } from './component/timelimit';
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAccessTimeLimitHandler } from './services/handlers/timelimit';
 
 @NgModule({
-    declarations: [
-        AddonModQuizAccessTimeLimitComponent,
-    ],
-    imports: [
-        CoreSharedModule,
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessTimeLimitHandler.instance);
-            },
-        },
-    ],
-    exports: [
-        AddonModQuizAccessTimeLimitComponent,
+        provideAppInitializer(() => {
+            AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessTimeLimitHandler.instance);
+        }),
     ],
 })
 export class AddonModQuizAccessTimeLimitModule {}

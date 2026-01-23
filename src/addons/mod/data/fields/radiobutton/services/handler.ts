@@ -22,7 +22,6 @@ import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModDataFieldRadiobuttonComponent } from '../component/radiobutton';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldRadiobuttonComponent } = await import('../component/radiobutton');
+
         return AddonModDataFieldRadiobuttonComponent;
     }
 
@@ -48,7 +49,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
         field: AddonModDataField,
         inputData: CoreFormFields<string>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         if (inputData[fieldName]) {
             return [{
                 name: fieldName,
@@ -63,7 +64,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [{
             fieldid: field.id,
@@ -79,7 +80,7 @@ export class AddonModDataFieldRadiobuttonHandlerService implements AddonModDataF
         inputData: CoreFormFields<string>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         const input = inputData[fieldName] || '';
         const content = originalFieldData?.content || '';
 

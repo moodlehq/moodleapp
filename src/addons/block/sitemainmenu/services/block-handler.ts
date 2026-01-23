@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { AddonBlockSiteMainMenuComponent } from '../components/sitemainmenu/sitemainmenu';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 
@@ -42,7 +41,8 @@ export class AddonBlockSiteMainMenuHandlerService extends CoreBlockBaseHandler {
      *
      * @returns Data or promise resolved with the data.
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockSiteMainMenuComponent } = await import('../components/sitemainmenu/sitemainmenu');
 
         return {
             title: 'addon.block_sitemainmenu.pluginname',

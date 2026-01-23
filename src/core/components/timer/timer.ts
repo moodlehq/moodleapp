@@ -13,10 +13,13 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, ElementRef } from '@angular/core';
-import { CoreUser } from '@features/user/services/user';
+import { Component, OnInit, OnDestroy, ElementRef, input, output, signal, computed, effect, inject } from '@angular/core';
+import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * This directive shows a timer in format HH:MM:SS. When the countdown reaches 0, a function is called.
@@ -27,107 +30,103 @@ import { CoreTimeUtils } from '@services/utils/time';
 @Component({
     selector: 'core-timer',
     templateUrl: 'core-timer.html',
-    styleUrls: ['timer.scss'],
+    styleUrl: 'timer.scss',
+    imports: [
+        CoreBaseModule,
+        CoreSecondsToHMSPipe,
+    ],
 })
 export class CoreTimerComponent implements OnInit, OnDestroy {
 
-    @Input() endTime = 0; // Timestamp (in seconds) when the timer should end.
-    @Input() timerText?: string; // Text to show next to the timer. If not defined, no text shown.
-    @Input() timeLeftClass?: string; // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
-    @Input() timeLeftClassThreshold = 100; // Number of seconds to start adding the timeLeftClass. Set it to -1 to not add it.
-    @Input() align = 'start'; // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
-    @Input({ transform: toBoolean }) hidable = false; // Whether the user can hide the time left.
-    @Input() timeUpText?: string; // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
-    @Input() mode: CoreTimerMode = CoreTimerMode.ITEM; // How to display data.
-    @Input() underTimeClassThresholds = []; // Number of seconds to add the class 'core-timer-under-'.
-    @Input() timerHiddenPreferenceName?: string; // Name of the preference to store the timer visibility.
-    @Output() finished = new EventEmitter<void>(); // Will emit an event when the timer reaches 0.
-
+    readonly endTime = input(0); // Timestamp (in seconds) when the timer should end.
+    readonly timerText = input<string>(''); // Text to show next to the timer. If not defined, no text shown.
+    readonly timeLeftClass = input<string>(); // Name of the class to apply with each second. By default, 'core-timer-timeleft-'.
+    readonly timeLeftClassThreshold = input(100); // Number of seconds to start adding the timeLeftClass. -1 to not add it.
+    readonly align = input('start'); // Where to align the time and text. Defaults to 'start'. Other values: 'center', 'end'.
+    readonly hidable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
+    readonly timeUpText = input<string>(); // Text to show when the timer reaches 0. If not defined, 'core.timesup'.
+    readonly mode = input<CoreTimerMode>(CoreTimerMode.ITEM); // How to display data.
+    readonly underTimeClassThresholds = input([]); // Number of seconds to add the class 'core-timer-under-'.
+    readonly timerHiddenPreferenceName = input<string>(); // Name of the preference to store the timer visibility.
+    readonly finished = output<void>(); // Will emit an event when the timer reaches 0.
     /**
      * @deprecated since 4.4. Use hidable instead.
      */
-    @Input({ transform: toBoolean }) hiddable = false; // Whether the user can hide the time left.
+    readonly hiddable = input(false, { transform: toBoolean }); // Whether the user can hide the time left.
 
-    timeLeft?: number; // Seconds left to end.
+    readonly timeLeft = signal(-1); // Seconds left to end.
+    readonly hiddenByUser = signal(false); // Whether the user has hidden the timer.
+
+    readonly showTimeLeft = computed(() => !this.canHideTimer() || !this.hiddenByUser());
+
+    readonly canHideTimer = computed(() => {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        if (!this.hidable() && !this.hiddable()) {
+            return false;
+        }
+
+        // Don't allow hiding the timer if not started or time left is below 100 seconds.
+        return this.timeLeft() === -1 || this.timeLeft() > 100;
+    });
+
     modeBasic = CoreTimerMode.BASIC;
-    showTimeLeft = true;
-
     protected timeInterval?: number;
-    protected element?: HTMLElement;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(
-        protected elementRef: ElementRef,
-    ) {}
+    constructor() {
+        // Apply classes based on the time left. Maybe this can be done with host bindings in the future.
+        let container = this.element;
+        effect(() => {
+            const timeLeft = this.timeLeft();
+            const timeLeftClass = this.timeLeftClass() || 'core-timer-timeleft-';
+            const timeLeftClassThreshold = this.timeLeftClassThreshold();
+            const underTimeClassThresholds = Array.from(this.underTimeClassThresholds())
+                .sort((a, b) => a - b); // Sort by increase order.
+
+            container = container || this.element;
+            if (!container || timeLeft === -1) {
+                return;
+            }
+
+            // Add class if timer is below timeLeftClassThreshold.
+            if (timeLeft < timeLeftClassThreshold && !container.classList.contains(timeLeftClass + timeLeft)) {
+                // Time left has changed. Remove previous classes and add the new one.
+                container.classList.remove(timeLeftClass + (timeLeft + 1));
+                container.classList.remove(timeLeftClass + (timeLeft + 2));
+                container.classList.add(timeLeftClass + timeLeft);
+            }
+
+            // Add classes for underTimeClassThresholds.
+            for (let i = 0; i < underTimeClassThresholds.length; i++) {
+                const threshold = underTimeClassThresholds[i];
+                if (timeLeft <= threshold) {
+                    if (!container.classList.contains(`core-timer-under-${timeLeft}`)) {
+                        // Add new class and remove the previous one.
+                        const nextTreshold = underTimeClassThresholds[i + 1];
+                        container.classList.add(`core-timer-under-${threshold}`);
+                        nextTreshold && container.classList.remove(`core-timer-under-${nextTreshold}`);
+                    }
+
+                    break;
+                }
+            }
+        });
+    }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        // eslint-disable-next-line deprecation/deprecation
-        if (this.hiddable && !this.hidable) {
+        // Only read the preference once, it should not change.
+        this.initHiddenByUser();
 
-            this.hidable = true;
-        }
+        // Start the timer, updating time left every 200ms until it reaches 0.
+        const endTime = Math.round(this.endTime());
 
-        const timeLeftClass = this.timeLeftClass || 'core-timer-timeleft-';
-        const endTime = Math.round(this.endTime);
-        this.underTimeClassThresholds.sort((a, b) => a - b); // Sort by increase order.
-
-        // @deprecated since 4.3. Use start/end instead.
-        if (this.align === 'left') {
-            this.align = 'start';
-        } else if (this.align === 'right') {
-            this.align = 'end';
-        }
-
-        if (this.hidable && this.timerHiddenPreferenceName) {
-            try {
-                const hidden = await CoreUser.getUserPreference(this.timerHiddenPreferenceName);
-
-                this.showTimeLeft = hidden !== '1';
-            } catch{
-                // Ignore errors.
-            }
-        }
-
-        let container: HTMLElement | undefined;
-
-        // Check time left every 200ms.
         this.timeInterval = window.setInterval(() => {
-            container = container || this.elementRef.nativeElement;
-            this.timeLeft = Math.max(endTime - CoreTimeUtils.timestamp(), 0);
+            this.timeLeft.set(Math.max(endTime - CoreTime.timestamp(), 0));
 
-            if (this.timeLeft <= 100) {
-                this.hidable = false;
-                this.showTimeLeft = true;
-            }
-
-            if (container) {
-                // Add class if timer is below timeLeftClassThreshold.
-                if (this.timeLeft < this.timeLeftClassThreshold && !container.classList.contains(timeLeftClass + this.timeLeft)) {
-                    // Time left has changed. Remove previous classes and add the new one.
-                    container.classList.remove(timeLeftClass + (this.timeLeft + 1));
-                    container.classList.remove(timeLeftClass + (this.timeLeft + 2));
-                    container.classList.add(timeLeftClass + this.timeLeft);
-                }
-
-                // Add classes for underTimeClassThresholds.
-                for (let i = 0; i < this.underTimeClassThresholds.length; i++) {
-                    const threshold = this.underTimeClassThresholds[i];
-                    if (this.timeLeft <= threshold) {
-                        if (!container.classList.contains('core-timer-under-' + this.timeLeft)) {
-                            // Add new class and remove the previous one.
-                            const nextTreshold = this.underTimeClassThresholds[i + 1];
-                            container.classList.add('core-timer-under-' + threshold);
-                            nextTreshold && container.classList.remove('core-timer-under-' + nextTreshold);
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            if (this.timeLeft === 0) {
+            if (this.timeLeft() === 0) {
                 // Time is up! Stop the timer and call the finish function.
                 clearInterval(this.timeInterval);
                 this.finished.emit();
@@ -138,13 +137,26 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Initializes the hiddenByUser signal based on the user preference.
+     */
+    protected async initHiddenByUser(): Promise<void> {
+        const timerHiddenPreferenceName = this.timerHiddenPreferenceName();
+        if (this.canHideTimer() && timerHiddenPreferenceName) {
+            const hidden = await CorePromiseUtils.ignoreErrors(CoreUserPreferences.getPreference(timerHiddenPreferenceName));
+
+            this.hiddenByUser.set(hidden === '1');
+        }
+    }
+
+    /**
      * Toggles the time left visibility.
      */
     toggleTimeLeftVisibility(): void {
-        this.showTimeLeft = !this.showTimeLeft;
+        this.hiddenByUser.set(!this.hiddenByUser());
 
-        if (this.hidable && this.timerHiddenPreferenceName) {
-            CoreUser.setUserPreference(this.timerHiddenPreferenceName, this.showTimeLeft ? '0' : '1');
+        const timerHiddenPreferenceName = this.timerHiddenPreferenceName();
+        if (timerHiddenPreferenceName) {
+            CoreUserPreferences.setPreference(timerHiddenPreferenceName, this.hiddenByUser() ? '0' : '1');
         }
     }
 

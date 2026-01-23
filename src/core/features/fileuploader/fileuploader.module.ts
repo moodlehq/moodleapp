@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 
 import { CoreFileUploaderDelegate } from './services/fileuploader-delegate';
 import { CoreFileUploaderAlbumHandler } from './services/handlers/album';
@@ -40,17 +40,13 @@ export async function getFileUploadedServices(): Promise<Type<unknown>[]> {
 
 @NgModule({
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAlbumHandler.instance);
-                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAudioHandler.instance);
-                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderCameraHandler.instance);
-                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderVideoHandler.instance);
-                CoreFileUploaderDelegate.registerHandler(CoreFileUploaderFileHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAlbumHandler.instance);
+            CoreFileUploaderDelegate.registerHandler(CoreFileUploaderAudioHandler.instance);
+            CoreFileUploaderDelegate.registerHandler(CoreFileUploaderCameraHandler.instance);
+            CoreFileUploaderDelegate.registerHandler(CoreFileUploaderVideoHandler.instance);
+            CoreFileUploaderDelegate.registerHandler(CoreFileUploaderFileHandler.instance);
+        }),
     ],
 })
 export class CoreFileUploaderModule {}

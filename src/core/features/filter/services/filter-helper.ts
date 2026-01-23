@@ -34,8 +34,8 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
-import { ContextLevel } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Helper service to provide filter functionalities.
@@ -118,7 +118,7 @@ export class CoreFilterHelperProvider {
     async getCategoryContexts(categoryId: number, siteId?: string): Promise<CoreFiltersGetAvailableInContextWSParamContext[]> {
         // Get the categories of courses the user is enrolled in to decrease the number of WS requests.
         // Using CoreCourses.getCategories would group more categories, but it would require a new WS request.
-        const courses = await CoreUtils.ignoreErrors(CoreCourses.getUserCourses(true, siteId));
+        const courses = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourses(true, siteId));
 
         const categoriesIds = (courses ?? []).map(course => course.categoryid)
             .filter((categoryId): categoryId is number => categoryId !== undefined);
@@ -233,7 +233,7 @@ export class CoreFilterHelperProvider {
                 options.filter = true;
 
                 // We cannot check which filters are available, apply them all.
-                return await CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
+                return CoreFilterDelegate.getEnabledFilters(contextLevel, instanceId);
             }
 
             const filters = await this.getFiltersInContextUsingAllStates(contextLevel, instanceId, options, site);
@@ -248,7 +248,7 @@ export class CoreFilterHelperProvider {
 
             if (
                 contextLevel === ContextLevel.SYSTEM ||
-                (contextLevel === ContextLevel.COURSE && instanceId == site.getSiteHomeId())
+                (contextLevel === ContextLevel.COURSE && instanceId === site.getSiteHomeId())
             ) {
                 // No need to check the site filters because we're requesting the same context, so we'd do the same twice.
             } else {
@@ -399,7 +399,7 @@ export class CoreFilterHelperProvider {
 
         text = await CoreFilter.formatText(text, options, filters, siteId);
 
-        return { text, filters: filters };
+        return { text, filters };
     }
 
     /**
@@ -427,7 +427,7 @@ export class CoreFilterHelperProvider {
 
         const cachedData = this.moduleContextsCache[siteId][courseId][contextLevel];
 
-        if (!CoreNetwork.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreSite.FREQUENCY_RARELY)) {
+        if (!CoreNetwork.isOnline() || Date.now() <= cachedData.time + site.getExpirationDelay(CoreCacheUpdateFrequency.RARELY)) {
             // We can use cache, return the filters if found.
             return cachedData.contexts[contextLevel] && cachedData.contexts[contextLevel][instanceId];
         }

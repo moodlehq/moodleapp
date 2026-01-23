@@ -1,31 +1,46 @@
-<ng-container *ngIf="!loadingMore && position !== 'top'">
-    <div *ngIf="enabled || error" class="ion-padding-horizontal">
-        <ion-button *ngIf="!error" expand="block" (click)="loadMore(true)" fill="outline">
-            {{ 'core.loadmore' | translate }}
-        </ion-button>
-        <ion-button *ngIf="error" expand="block" (click)="loadMore(true)" fill="outline">
-            {{ 'core.tryagain' | translate }}
-        </ion-button>
-    </div>
-</ng-container>
+@if (!loadingMore() && position() !== 'top') {
+
+    @if (enabled() || error()) {
+        <div class="ion-padding-horizontal">
+            @if (error()) {
+                <ion-button expand="block" (click)="loadMore(true)" fill="outline">
+                    {{ 'core.tryagain' | translate }}
+                </ion-button>
+            } @else {
+                <ion-button expand="block" (click)="loadMore(true)" fill="outline">
+                    {{ 'core.loadmore' | translate }}
+                </ion-button>
+            }
+
+        </div>
+    }
+
+}
 
 <!-- Don't allow disabling infinite-scroll while loading more items on scroll, otherwise infinite scroll stops working. -->
-<ion-infinite-scroll [disabled]="(loadingMore && loadingForced) || (!loadingMore && (!enabled || error))" (ionInfinite)="loadMore()"
-    [position]="position">
+<ion-infinite-scroll [disabled]="(loadingMore() && loadingForced()) || (!loadingMore() && (!enabled() || error()))"
+    (ionInfinite)="loadMore()" [position]="position()">
     <ion-infinite-scroll-content />
 </ion-infinite-scroll>
 
-<ng-container *ngIf="!loadingMore && position === 'top'">
-    <div *ngIf="enabled || error" class="ion-padding-horizontal">
-        <ion-button *ngIf="!error" expand="block" (click)="loadMore(true)" fill="outline">
-            {{ 'core.loadmore' | translate }}
-        </ion-button>
-        <ion-button *ngIf="error" expand="block" (click)="loadMore(true)" fill="outline">
-            {{ 'core.tryagain' | translate }}
-        </ion-button>
-    </div>
-</ng-container>
+@if (!loadingMore() && position() === 'top') {
 
-<div *ngIf="loadingMore && loadingForced" class="ion-padding ion-text-center">
-    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-</div>
+    @if (enabled() || error()) {
+        <div class="ion-padding-horizontal">
+            @if (error()) {
+                <ion-button expand="block" (click)="loadMore(true)" fill="outline">
+                    {{ 'core.tryagain' | translate }}
+                </ion-button>
+            } @else {
+                <ion-button expand="block" (click)="loadMore(true)" fill="outline">
+                    {{ 'core.loadmore' | translate }}
+                </ion-button>
+            }
+        </div>
+    }
+
+} @else if (loadingMore() && loadingForced()) {
+    <div class="ion-padding ion-text-center">
+        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+    </div>
+}

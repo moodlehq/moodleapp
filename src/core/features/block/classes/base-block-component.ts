@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, Input, Component, Optional, Inject, OnChanges, SimpleChanges } from '@angular/core';
+import { OnInit, Input, Component, OnChanges, SimpleChanges } from '@angular/core';
 import { CoreLogger } from '@singletons/logger';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreArray } from '@singletons/array';
 import { CoreText } from '@singletons/text';
 import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
@@ -23,6 +22,8 @@ import { ContextLevel } from '@/core/constants';
 import { CoreNavigationOptions } from '@services/navigator';
 import { AsyncDirective } from '@classes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
 
 /**
  * Template class to easily create components for blocks.
@@ -46,7 +47,9 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     protected logger: CoreLogger;
 
-    constructor(@Optional() @Inject('') loggerName: string = 'AddonBlockComponent') {
+    constructor() {
+        const loggerName = this.constructor.name ?? 'AddonBlockComponent';
+
         this.logger = CoreLogger.getInstance(loggerName);
     }
 
@@ -78,14 +81,13 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
             config.value = CoreText.parseJSON(config.value);
         });
 
-        this.block.configsRecord = CoreUtils.arrayToObject(this.block.configs, 'name');
+        this.block.configsRecord = CoreArray.toObject(this.block.configs, 'name');
     }
 
     /**
      * Perform the refresh content function.
      *
      * @param showLoading Whether to show loading.
-     * @returns Resolved when done.
      */
     protected async refreshContent(showLoading?: boolean): Promise<void> {
         if (showLoading) {
@@ -122,7 +124,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
             this.logger.error(error);
 
             // Error getting data, fail.
-            CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError, true);
+            CoreAlerts.showError(error, { default: Translate.instant(this.fetchContentDefaultError) });
         }
 
         this.loaded = true;
@@ -131,8 +133,6 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     /**
      * Download the component contents.
-     *
-     * @returns Promise resolved when done.
      */
     protected async fetchContent(): Promise<void> {
         return;
@@ -140,8 +140,6 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ICore
 
     /**
      * Reload content without invalidating data.
-     *
-     * @returns Promise resolved when done.
      */
     async reloadContent(): Promise<void> {
         if (!this.loaded) {
@@ -171,5 +169,10 @@ export interface ICoreBlockComponent {
      * Perform the invalidate content function.
      */
     invalidateContent(): Promise<void>;
+
+    /**
+     * Perform the reload content function.
+     */
+    reloadContent(): Promise<void>;
 
 }

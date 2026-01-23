@@ -12,9 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_GLOSSARY_COMPONENT = 'mmaModGlossary';
-export const ADDON_MOD_GLOSSARY_PAGE_NAME = 'mod_glossary';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_GLOSSARY_COMPONENT = 'AddonModGlossary';
+export const ADDON_MOD_GLOSSARY_COMPONENT_LEGACY = 'mmaModGlossary';
+export const ADDON_MOD_GLOSSARY_PAGE_NAME = 'mod_glossary';
+export const ADDON_MOD_GLOSSARY_MODNAME = 'glossary';
+
+export const ADDON_MOD_GLOSSARY_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_GLOSSARY_COMPONENT;
+
+// Events.
+export const GLOSSARY_AUTO_SYNCED = 'addon_mod_glossary_auto_synced';
 export const ADDON_MOD_GLOSSARY_ENTRY_ADDED = 'addon_mod_glossary_entry_added';
 export const ADDON_MOD_GLOSSARY_ENTRY_UPDATED = 'addon_mod_glossary_entry_updated';
 export const ADDON_MOD_GLOSSARY_ENTRY_DELETED = 'addon_mod_glossary_entry_deleted';

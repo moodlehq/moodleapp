@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { CorePlatform } from '@services/platform';
+import { CoreBaseModule } from '@/core/base.module';
+import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 const enum ScrollPosition {
     START = 'start',
@@ -25,14 +28,19 @@ const enum ScrollPosition {
 @Component({
     selector: 'core-horizontal-scroll-controls',
     templateUrl: 'core-horizontal-scroll-controls.html',
-    styleUrls: ['./horizontal-scroll-controls.scss'],
+    styleUrl: './horizontal-scroll-controls.scss',
+    imports: [
+        CoreBaseModule,
+        CoreUpdateNonReactiveAttributesDirective,
+        CoreFaIconDirective,
+    ],
 })
 export class CoreHorizontalScrollControlsComponent {
 
     // eslint-disable-next-line @angular-eslint/no-input-rename
-    @Input('aria-controls') targetId?: string;
+    readonly targetId = input<string>(undefined, { alias: 'aria-controls' });
 
-    scrollPosition: ScrollPosition = ScrollPosition.HIDDEN;
+    readonly scrollPosition = signal<ScrollPosition>(ScrollPosition.HIDDEN);
 
     /**
      * Get target element.
@@ -40,7 +48,9 @@ export class CoreHorizontalScrollControlsComponent {
      * @returns The target element or null.
      */
     private get target(): HTMLElement | null {
-        return this.targetId && document.getElementById(this.targetId) || null;
+        const targetId = this.targetId();
+
+        return targetId && document.getElementById(targetId) || null;
     }
 
     /**
@@ -78,7 +88,7 @@ export class CoreHorizontalScrollControlsComponent {
      * Update the current scroll position.
      */
     updateScrollPosition(scrollLeft?: number): void {
-        this.scrollPosition = this.getScrollPosition(scrollLeft);
+        this.scrollPosition.set(this.getScrollPosition(scrollLeft));
     }
 
     /**

@@ -31,8 +31,8 @@ import { CoreError } from '@classes/errors/error';
 import { CorePath } from '@singletons/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
-import { DownloadStatus } from '@/core/constants';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to provide H5P functionalities.
@@ -103,7 +103,7 @@ export class CoreH5PProvider {
         const state = await CoreFilepool.getFileStateByUrl(site.getId(), customCssUrl);
         if (state === DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED) {
             // File not downloaded, URL has changed or first time. Delete previously downloaded file.
-            await CoreUtils.ignoreErrors(
+            await CorePromiseUtils.ignoreErrors(
                 CoreFilepool.removeFilesByComponent(site.getId(), CoreH5PProvider.CUSTOM_CSS_COMPONENT, 1),
             );
         }
@@ -145,7 +145,7 @@ export class CoreH5PProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getTrustedH5PFileCacheKey(url),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -182,14 +182,13 @@ export class CoreH5PProvider {
      * @returns Cache key.
      */
     protected getTrustedH5PFilePrefixCacheKey(): string {
-        return CoreH5PProvider.ROOT_CACHE_KEY + 'trustedH5PFile:';
+        return `${CoreH5PProvider.ROOT_CACHE_KEY}trustedH5PFile:`;
     }
 
     /**
      * Invalidates all trusted H5P file WS calls.
      *
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateAllGetTrustedH5PFile(siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -202,7 +201,6 @@ export class CoreH5PProvider {
      *
      * @param url The URL of the file.
      * @param siteId Site ID (empty for current site).
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateGetTrustedH5PFile(url: string, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -232,6 +230,19 @@ export class CoreH5PProvider {
         site = site || CoreSites.getCurrentSite();
 
         return !!(site?.isOfflineDisabled() || site?.isFeatureDisabled('NoDelegate_H5POffline'));
+    }
+
+    /**
+     * Given an H5P URL, check if it's a trusted URL.
+     *
+     * @param fileUrl File URL to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether it's a trusted URL.
+     */
+    async isTrustedUrl(fileUrl: string, siteId?: string): Promise<boolean> {
+        const site = await CoreSites.getSite(siteId);
+
+        return site.containsUrl(fileUrl) && !!fileUrl.match(/pluginfile\.php\/([^/]+\/)?[^/]+\/core_h5p\/export\//i);
     }
 
     /**

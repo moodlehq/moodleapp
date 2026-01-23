@@ -16,9 +16,9 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { CoreUtils } from '@services/utils/utils';
-import { makeSingleton } from '@singletons';
-import { AddonQtypeShortAnswerComponent } from '../../component/shortanswer';
+import { CoreObject } from '@singletons/object';
+import { makeSingleton, Translate } from '@singletons';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**
  * Handler to support short answer question type.
@@ -32,7 +32,9 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeShortAnswerComponent } = await import('../../component/shortanswer');
+
         return AddonQtypeShortAnswerComponent;
     }
 
@@ -42,8 +44,8 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
-        return answers.answer ? 1 : 0;
+    ): QuestionCompleteGradableResponse {
+        return answers.answer ? QuestionCompleteGradableResponse.YES : QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -59,7 +61,7 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         return this.isCompleteResponse(question, answers);
     }
 
@@ -71,7 +73,21 @@ export class AddonQtypeShortAnswerHandlerService implements CoreQuestionHandler 
         prevAnswers: CoreQuestionsAnswers,
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
-        return CoreUtils.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+        return CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, 'answer');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isGradableResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_shortanswer.pleaseenterananswer');
     }
 
 }

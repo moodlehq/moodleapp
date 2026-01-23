@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base-handler';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourses } from '../courses';
 import { Params } from '@angular/router';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSites } from '@services/sites';
@@ -49,7 +49,7 @@ export class CoreCoursesLinksHandlerBase extends CoreContentLinksHandlerBase {
                         return;
                     }
 
-                    await CoreUtils.ignoreErrors(this.actionOpen(courseId, url, pageParams));
+                    await CorePromiseUtils.ignoreErrors(this.actionOpen(courseId, url, pageParams));
 
                     return;
                 }
@@ -86,7 +86,7 @@ export class CoreCoursesLinksHandlerBase extends CoreContentLinksHandlerBase {
 
         if (hasAccess && !guestInfo.guestAccess && !guestInfo.requiresUserInput) {
             // Direct access.
-            const course = await CoreUtils.ignoreErrors(CoreCourses.getUserCourse(courseId), { id: courseId });
+            const course = await CorePromiseUtils.ignoreErrors(CoreCourses.getUserCourse(courseId), { id: courseId });
 
             CoreCourseHelper.openCourse(course, { params: pageParams });
         } else {

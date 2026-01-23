@@ -13,17 +13,17 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 import { ModalController } from '@singletons';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays the contact DPO page.
@@ -31,11 +31,9 @@ import { CoreLoadings } from '@services/loadings';
 @Component({
     selector: 'core-data-privacy-contact-dpo',
     templateUrl: 'contactdpo.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
-
 })
 export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
@@ -45,9 +43,9 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
     // Form variables.
     form: FormGroup;
 
-    constructor(
-        protected fb: FormBuilder,
-    ) {
+    protected fb = inject(FormBuilder);
+
+    constructor() {
         this.form = new FormGroup({});
 
         // Initialize form variables.
@@ -62,7 +60,7 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
         // Get current user email.
         const userId = CoreSites.getCurrentSiteUserId();
-        const user = await CoreUtils.ignoreErrors(CoreUser.getProfile(userId));
+        const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(userId));
 
         this.email = user?.email || '';
 
@@ -90,7 +88,7 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
                 ModalController.dismiss(true);
             }
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error sending data privacy request');
+            CoreAlerts.showError(error, { default: 'Error sending data privacy request' });
         } finally {
             modal.dismiss();
         }

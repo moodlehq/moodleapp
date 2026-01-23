@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Optional, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTimeUtils } from '@services/utils/time';
+import { CoreTime } from '@singletons/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
-    CoreCoursesProvider,
     CoreCourses,
     CoreCoursesMyCoursesUpdatedEventData,
-    CoreCourseSummaryData,
+    CoreCourseSummaryExporterData,
 } from '@features/courses/services/courses';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfoAndOptions } from '@features/courses/services/courses-helper';
 import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSite } from '@classes/sites/site';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils } from '@services/utils/dom';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreText } from '@singletons/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { IonSearchbar } from '@ionic/angular';
@@ -42,7 +40,7 @@ import { CoreUserParent } from '@features/user/services/parent';
 import { CoreUserProfile } from '@features/user/services/user';
 
 const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
-    ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden'];
+    ['all', 'inprogress', 'future', 'past', 'favourite', 'allincludinghidden', 'hidden', 'custom'];
 
 /**
  * Component to render a my overview block.
@@ -51,10 +49,9 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
     styleUrl: 'myoverview.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy, OnChanges {
@@ -119,13 +116,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     protected fetchContentDefaultError = 'Error getting my overview data.';
     protected gradePeriodAfter = 0;
     protected gradePeriodBefore = 0;
-    protected today = 0;
     protected firstLoadWatcher?: PageLoadWatcher;
     protected loadsManager: PageLoadsManager;
 
-    constructor(@Optional() loadsManager?: PageLoadsManager) {
-        super('AddonBlockMyOverviewComponent');
+    constructor() {
+        super();
 
+        const loadsManager = inject(PageLoadsManager, { optional: true });
         this.loadsManager = loadsManager ?? new PageLoadsManager();
     }
 
@@ -148,7 +145,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         }, CoreSites.getCurrentSiteId());
 
         this.coursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
                 this.refreshCourseList(data);
             },
@@ -252,7 +249,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
         // Invalidate course completion data.
         promises.push(this.invalidateCourseList().finally(() =>
-            CoreUtils.allPromises(courseIds.map((courseId) =>
+            CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
         if (courseIds.length  == 1) {
@@ -264,7 +261,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises).finally(() => {
+        await CorePromiseUtils.allPromises(promises).finally(() => {
             this.prefetchIconsInitialized = false;
         });
     }
@@ -417,29 +414,29 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a CORE_COURSES_MY_COURSES_UPDATED_EVENT event.
      *
      * @param data Event data.
      * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
             // Always update if user enrolled in a course.
             return this.refreshContent(true);
         }
 
         const course = this.allCourses.find((course) => course.id == data.courseId);
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED) {
             if (!course) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
             }
 
-            if (data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+            if (data.state === CORE_COURSES_STATE_FAVOURITE) {
                 course.isfavourite = !!data.value;
             }
 
-            if (data.state == CoreCoursesProvider.STATE_HIDDEN) {
+            if (data.state === CORE_COURSES_STATE_HIDDEN) {
                 course.hidden = !!data.value;
             }
 
@@ -447,13 +444,13 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             await this.filterCourses();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.VIEW && data.courseId != CoreSites.getCurrentSiteHomeId()) {
             if (!course) {
                 // Not found, use WS update.
                 return this.refreshContent(true);
             }
 
-            course.lastaccess = CoreTimeUtils.timestamp();
+            course.lastaccess = CoreTime.timestamp();
 
             await this.invalidateCourseList();
             await this.filterCourses();
@@ -488,7 +485,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             await CoreCourseHelper.prefetchCourses(this.filteredCourses, this.prefetchCoursesData);
         } catch (error) {
             if (!this.isDestroyed) {
-                CoreDomUtils.showErrorModalDefault(error, 'core.course.errordownloadingcourse', true);
+                CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
                 this.prefetchCoursesData.icon = initialIcon;
             }
         }
@@ -513,6 +510,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      */
     protected async filterCourses(loadWatcher?: PageLoadWatcher): Promise<void> {
         let timeFilter = this.filters.timeFilterSelected;
+        const filterIsActive = timeFilter.startsWith('custom-') ? this.filters.show.custom : this.filters.show[timeFilter];
+        if (!filterIsActive) {
+            timeFilter = this.getFirstActiveFilter();
+        }
 
         this.filteredCourses = this.allCourses;
 
@@ -546,7 +547,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                         throw error; // Pass the error to the caller so it's treated there.
                     }
 
-                    CoreDomUtils.showErrorModalDefault(error, this.fetchContentDefaultError);
+                    CoreAlerts.showError(error, { default: this.fetchContentDefaultError });
                 } finally {
                     if (!alreadyLoading) {
                         // Only set loaded to true if there was no other data being loaded.
@@ -555,14 +556,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 }
             }
         } else {
-            // Filter is not active, take the first active or all. Custom is never saved.
-            if (!this.filters.show[timeFilter]) {
-                timeFilter = FILTER_PRIORITY.find((name) => this.filters.show[name]) || 'all';
-            }
             this.saveFilters(timeFilter);
-
-            // Update today date.
-            this.today = Date.now();
 
             // Apply filters.
             switch(timeFilter) {
@@ -616,7 +610,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 course.categoryname === this.categoryFilter);
         }
 
-        this.sortCourses(this.sort.selected);
+        this.sortCourses(false);
 
         // Refresh prefetch data (if enabled).
         this.prefetchIconsInitialized = false;
@@ -637,17 +631,32 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     }
 
     /**
+     * Get the first active filter, 'all' if no active filter.
+     *
+     * @returns First active filter.
+     */
+    protected getFirstActiveFilter(): string {
+        const activeFilter = FILTER_PRIORITY.find(name => this.filters.show[name]) || 'all';
+        if (activeFilter !== 'custom') {
+            return activeFilter;
+        }
+
+        // Use first custom filter if there's any.
+        return this.filters.customFilters.length ? 'custom-0' : 'all';
+    }
+
+    /**
      * Sort courses
      *
-     * @param sort Sort by value.
+     * @param saveSort Whether to save the sort option.
      */
-    sortCourses(sort: string): void {
+    sortCourses(saveSort = true): void {
         if (!this.sort.enabled) {
             return;
         }
 
-        if (this.sort.selected != sort) {
-            this.saveSort(sort);
+        if (saveSort) {
+            this.saveSort(this.sort.selected);
         }
 
         if (this.sort.selected == 'lastaccess') {
@@ -745,7 +754,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search' } });
+        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search', searchText: this.textFilter.trim() } });
     }
 
     /**
@@ -791,8 +800,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @returns Whether it has meaningful changes.
      */
     protected async customFilterCoursesHaveMeaningfulChanges(
-        previousCourses: CoreCourseSummaryData[],
-        newCourses: CoreCourseSummaryData[],
+        previousCourses: CoreCourseSummaryExporterData[],
+        newCourses: CoreCourseSummaryExporterData[],
     ): Promise<boolean> {
         if (previousCourses.length !== newCourses.length) {
             return true;
@@ -859,7 +868,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 }
 
 type AddonBlockMyOverviewLayouts = 'card'|'list';
-type AddonBlockMyOverviewTimeFilters = 'allincludinghidden'|'all'|'inprogress'|'future'|'past'|'favourite'|'hidden';
+type AddonBlockMyOverviewTimeFilters = 'allincludinghidden'|'all'|'inprogress'|'future'|'past'|'favourite'|'hidden'|'custom';
 
 export type AddonBlockMyOverviewFilterOptions = {
     enabled: boolean;

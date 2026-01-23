@@ -61,4 +61,15 @@ describe('CorePath', () => {
         expect(CorePath.pathIsAncestor('/foo/b', '/foo/bar')).toEqual(false);
     });
 
+    it('resolves relative paths', () => {
+        expect(CorePath.resolveRelativePath('/foo/bar', '')).toEqual('/foo/bar');
+        expect(CorePath.resolveRelativePath('/foo/bar', '/baz/xyz')).toEqual('/baz/xyz');
+        expect(CorePath.resolveRelativePath('/foo/bar', '../baz')).toEqual('/foo/baz');
+        expect(CorePath.resolveRelativePath('/foo/bar/', '../baz/')).toEqual('/foo/baz');
+        expect(CorePath.resolveRelativePath('/foo/bar', 'baz/xyz')).toEqual('/foo/bar/baz/xyz');
+        expect(CorePath.resolveRelativePath('/foo/bar', './baz/xyz')).toEqual('/foo/bar/baz/xyz');
+        expect(CorePath.resolveRelativePath('foo/bar', './baz/xyz')).toEqual('foo/bar/baz/xyz');
+        expect(CorePath.resolveRelativePath('./foo/bar', './baz/xyz')).toEqual('./foo/bar/baz/xyz');
+        expect(CorePath.resolveRelativePath('/foo', '../../../bar')).toEqual('/bar');
+    });
 });

@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { ADDON_CALENDAR_EVENTS_TABLE, AddonCalendarEventType } from '@addons/calendar/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreRemindersService, CoreReminders } from '@features/reminders/services/reminders';
+import { REMINDERS_DISABLED } from '@features/reminders/constants';
+import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { AddonCalendarEventType } from '../calendar';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Database variables for AddonCalendarProvider service.
  */
-export const EVENTS_TABLE = 'addon_calendar_events_3';
 export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonCalendarProvider',
     version: 5,
-    canBeCleared: [EVENTS_TABLE],
+    canBeCleared: [ADDON_CALENDAR_EVENTS_TABLE],
     tables: [
         {
-            name: EVENTS_TABLE,
+            name: ADDON_CALENDAR_EVENTS_TABLE,
             columns: [
                 {
                     name: 'id',
@@ -196,13 +196,13 @@ export const CALENDAR_SITE_SCHEMA: CoreSiteSchema = {
  */
 const migrateDefaultTime = async (siteId: string, convertToSeconds = false): Promise<void> => {
 
-    const key = 'mmaCalendarDefaultNotifTime#' + siteId;
+    const key = `mmaCalendarDefaultNotifTime#${siteId}`;
     try {
         let defaultTime = await CoreConfig.get<number>(key);
-        await CoreUtils.ignoreErrors(CoreConfig.delete(key));
+        await CorePromiseUtils.ignoreErrors(CoreConfig.delete(key));
 
         if (defaultTime <= 0) {
-            defaultTime = CoreRemindersService.DISABLED;
+            defaultTime = REMINDERS_DISABLED;
         } else if (convertToSeconds) {
             // Convert from minutes to seconds.
             defaultTime = defaultTime * 60;

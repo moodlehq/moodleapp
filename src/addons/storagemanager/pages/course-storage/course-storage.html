@@ -10,146 +10,191 @@
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded">
-        <ion-item class="ion-text-wrap" *ngIf="downloadCourseEnabled">
-            <ion-label>
-                <p>{{ 'addon.storagemanager.courseinfo' | translate }}</p>
-            </ion-label>
-        </ion-item>
+        @if (downloadCourseEnabled) {
+            <ion-item class="ion-text-wrap">
+                <ion-label>
+                    <p>{{ 'addon.storagemanager.courseinfo' | translate }}</p>
+                </ion-label>
+            </ion-item>
+        }
 
         <ion-card class="wholecourse">
             <ion-card-header>
                 <ion-card-title>
                     <core-format-text [text]="title" contextLevel="course" [contextInstanceId]="courseId" [adaptImg]="false" />
                 </ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
                 <ion-item class="size ion-text-wrap ion-no-padding">
                     <ion-label>
                         <p class="item-heading ion-text-wrap">{{ 'addon.storagemanager.totaldownloads' | translate }}</p>
                     </ion-label>
                     <ion-badge color="light" slot="end">
-                        <ng-container *ngIf="!calculatingSize">{{ totalSize | coreBytesToSize }}</ng-container>
-                        <ng-container *ngIf="calculatingSize">{{ 'core.calculating' | translate }}</ng-container>
+                        @if (!calculatingSize) {
+                            {{ totalSize | coreBytesToSize }}
+                        } @else {
+                            {{ 'core.calculating' | translate }}
+                        }
                     </ion-badge>
                 </ion-item>
-                <ion-button *ngIf="downloadCourseEnabled" (click)="prefetchCourse($event)" expand="block" fill="outline"
-                    class="ion-no-margin" [disabled]="prefetchCourseData.loading">
-                    <ion-icon *ngIf="!prefetchCourseData.loading" [name]="prefetchCourseData.icon" slot="start" aria-hidden="true" />
-                    <ion-spinner *ngIf="prefetchCourseData.loading" slot="start" />
-                    {{ prefetchCourseData.statusTranslatable | translate }}
-                </ion-button>
+                @if (downloadCourseEnabled) {
+                    <ion-button (click)="prefetchCourse($event)" expand="block" fill="outline" class="ion-no-margin"
+                        [disabled]="prefetchCourseData.loading">
+                        @if (!prefetchCourseData.loading) {
+                            <ion-icon [name]="prefetchCourseData.icon" slot="start" aria-hidden="true" />
+                        } @else {
+                            <ion-spinner slot="start" />
+                        }
+                        {{ prefetchCourseData.statusTranslatable | translate }}
+                    </ion-button>
+                }
                 <ion-button [disabled]="calculatingSize || totalSize <= 0" (click)="deleteForCourse($event)" expand="block" color="danger"
                     class="ion-no-margin ion-margin-top">
                     <ion-icon name="fas-trash" slot="start" [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate:
                         { name: title }" />
                     {{ 'addon.storagemanager.deleteall' | translate }}
                 </ion-button>
-            </ion-card-header>
+            </ion-card-content>
         </ion-card>
 
-        <ion-accordion-group [multiple]="true" (ionChange)="accordionGroupChange($event.detail)" [value]="accordionMultipleValue">
-            <ng-container *ngFor="let section of sections">
-                <ng-container *ngTemplateOutlet="sectionCard; context: { section }" />
-            </ng-container>
-        </ion-accordion-group>
+        <ng-container *ngFor="let section of sections">
+            <ng-container *ngTemplateOutlet="sectionCard; context: { section }" />
+        </ng-container>
 
     </core-loading>
 </ion-content>
 
 
 <ng-template #sectionCard let-section="section">
-    <ion-card class="section" *ngIf="section.contents.length > 0" [id]="'addons-course-storage-'+section.id">
-        <ion-accordion [value]="section.id" toggleIconSlot="start">
-            <ion-item [detail]="false" slot="header" class="card-header">
-                <ion-label>
-                    <p class="item-heading ion-text-wrap">
-                        <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="section.course"
-                            [adaptImg]="false" />
-                    </p>
-                    <ion-badge [color]="section.downloadStatus === statusDownloaded ? 'success' : 'light'"
-                        *ngIf="!section.calculatingSize && section.totalSize > 0">
-                        <ion-icon name="fam-cloud-done" *ngIf="section.downloadStatus === statusDownloaded"
-                            [attr.aria-label]="'core.downloaded' | translate" />{{ section.totalSize | coreBytesToSize }}
-                    </ion-badge>
-                    <ion-badge color="light" *ngIf="section.calculatingSize">
-                        {{ 'core.calculating' | translate }}
-                    </ion-badge>
-                    <!-- Download progress. -->
-                    <p *ngIf="downloadEnabled && section.isDownloading">
-                        <core-progress-bar
-                            [progress]="section.total === undefined || section.total === 0 ? -1 : (section.count / section.total) * 100" />
-                    </p>
-                </ion-label>
-                <div class="storage-buttons" slot="end" *ngIf="(!section.calculatingSize && section.totalSize > 0) || downloadEnabled">
-                    <div *ngIf="downloadEnabled" slot="end" class="core-button-spinner">
-                        <core-download-refresh *ngIf="!section.isDownloading && section.downloadStatus !== statusDownloaded"
-                            [status]="section.downloadStatus" [enabled]="true" (action)="prefetchSection(section)"
-                            [loading]="section.isDownloading || section.isCalculating" [canTrustDownload]="true"
-                            [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
-                            [statusSubject]="section.name" />
+    @if (section.contents.length > 0) {
+        <ion-card class="section" [id]="'addons-course-storage-'+section.id">
+            <div class="ion-activatable ripple-parent">
+                <ion-item [detail]="false" class="card-header" (click)="toggleSection(section)" tappable>
+                    <ion-label>
+                        <p class="item-heading ion-text-wrap" [attr.aria-expanded]="section.expanded"
+                            (ariaButtonClick)="toggleSection(section)">
+                            <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="section.course"
+                                [adaptImg]="false" />
+                        </p>
+                        @if (!section.calculatingSize && section.totalSize > 0) {
+                            <ion-badge [color]="section.downloadStatus === statusDownloaded ? 'success' : 'light'">
+                                @if (section.downloadStatus === statusDownloaded) {
+                                    <ion-icon name="fam-cloud-done" [attr.aria-label]="'core.downloaded' | translate" />
+                                }{{ section.totalSize | coreBytesToSize }}
+                            </ion-badge>
+                        }
+                        @if (section.calculatingSize) {
+                            <ion-badge color="light">
+                                {{ 'core.calculating' | translate }}
+                            </ion-badge>
+                        }
+                        <!-- Download progress. -->
+                        @if (downloadEnabled && section.isDownloading) {
+                            <p>
+                                <core-progress-bar
+                                    [progress]="section.total === undefined || section.total === 0 ? -1 : (section.count / section.total) * 100" />
+                            </p>
+                        }
+                    </ion-label>
+                    @if ((!section.calculatingSize && section.totalSize > 0) || downloadEnabled) {
+                        <div slot="end" class="storage-buttons">
+                            @if (downloadEnabled) {
+                                <div class="core-button-spinner">
+                                    @if (!section.isDownloading && section.downloadStatus !== statusDownloaded) {
+                                        <core-download-refresh [status]="section.downloadStatus" [enabled]="true"
+                                            (action)="prefetchSection(section)" [loading]="section.isDownloading || section.isCalculating"
+                                            [canTrustDownload]="true"
+                                            [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
+                                            [statusSubject]="section.name" />
+                                    }
 
-                        <ion-badge class="core-course-download-section-progress"
-                            *ngIf="section.isDownloading && section.total !== undefined && section.count < section.total" role="progressbar"
-                            [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
-                            [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
-                            {{section.count}} / {{section.total}}
-                        </ion-badge>
-                    </div>
-                    <ion-button (click)="deleteForSection($event, section)" *ngIf="!section.calculatingSize && section.totalSize > 0"
-                        color="danger" fill="clear">
-                        <ion-icon name="fas-trash" slot="icon-only"
-                            [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }" />
-                    </ion-button>
-                </div>
-            </ion-item>
-            <ion-card-content slot="content">
-                <ng-container *ngIf="section.expanded">
+                                    @if (section.isDownloading && section.total !== undefined && section.count < section.total) {
+                                        <ion-badge class="core-course-download-section-progress" role="progressbar"
+                                            [attr.aria-valuemax]="section.total" [attr.aria-valuenow]="section.count"
+                                            [attr.aria-valuetext]="'core.course.downloadsectionprogressdescription' | translate:section">
+                                            {{section.count}} / {{section.total}}
+                                        </ion-badge>
+                                    }
+                                </div>
+                            }
+                            @if (!section.calculatingSize && section.totalSize > 0) {
+                                <ion-button (click)="deleteForSection($event, section)" color="danger" fill="clear">
+                                    <ion-icon name="fas-trash" slot="icon-only"
+                                        [attr.aria-label]="'addon.storagemanager.deletedatafrom' | translate: { name: section.name }" />
+                                </ion-button>
+                            }
+                        </div>
+                    }
+                    <ion-icon name="fas-chevron-right" flip-rtl slot="start" aria-hidden="true" class="expandable-status-icon"
+                        [class.expandable-status-icon-expanded]="section.expanded" />
+                </ion-item>
+                <ion-ripple-effect />
+            </div>
+            <ion-card-content>
+                @if (section.expanded) {
+
                     <ng-container *ngFor="let modOrSubsection of section.contents">
                         @if (!isModule(modOrSubsection)) {
-                        <ng-container *ngTemplateOutlet="sectionCard; context: { section: modOrSubsection }" />
+                            <ng-container *ngTemplateOutlet="sectionCard; context: { section: modOrSubsection }" />
                         } @else {
-                        <ion-item class="core-course-storage-activity"
-                            *ngIf="downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0)">
-                            <core-mod-icon slot="start" *ngIf="modOrSubsection.handlerData.icon"
-                                [modicon]="modOrSubsection.handlerData.icon" [modname]="modOrSubsection.modname"
-                                [componentId]="modOrSubsection.instance" [fallbackTranslation]="modOrSubsection.modplural"
-                                [isBranded]="modOrSubsection.branded" />
-                            <ion-label class="ion-text-wrap">
-                                <p class="item-heading {{modOrSubsection.handlerData!.class}} addon-storagemanager-module-size">
-                                    <core-format-text [text]="modOrSubsection.handlerData.title" [courseId]="modOrSubsection.course"
-                                        contextLevel="module" [contextInstanceId]="modOrSubsection.id" [adaptImg]="false" />
-                                </p>
-                                <ion-badge [color]="modOrSubsection.downloadStatus === statusDownloaded ? 'success' : 'light'"
-                                    *ngIf="!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0">
-                                    <ion-icon name="fam-cloud-done" *ngIf="modOrSubsection.downloadStatus === statusDownloaded"
-                                        [attr.aria-label]="'core.downloaded' | translate" />{{ modOrSubsection.totalSize |
-                                    coreBytesToSize }}
-                                </ion-badge>
-                                <ion-badge color="light" *ngIf="modOrSubsection.calculatingSize ||
-                            (section.isDownloading && modOrSubsection.downloadStatus === statusDownloaded)">
-                                    {{ 'core.calculating' | translate }}
-                                </ion-badge>
-                            </ion-label>
+                            @if (modOrSubsection.handlerData &&
+                                modOrSubsection.visibleoncoursepage !== 0 &&
+                                (downloadEnabled || (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0))) {
+                                <ion-item class="core-course-storage-activity">
+                                    @if (modOrSubsection.handlerData.icon) {
+                                        <core-mod-icon slot="start" [modicon]="modOrSubsection.handlerData.icon"
+                                            [modname]="modOrSubsection.modname" [componentId]="modOrSubsection.instance"
+                                            [fallbackTranslation]="modOrSubsection.modplural" [isBranded]="modOrSubsection.branded" />
+                                    }
+                                    <ion-label class="ion-text-wrap">
+                                        <p class="item-heading {{modOrSubsection.handlerData!.class}} addon-storagemanager-module-size">
+                                            <core-format-text [text]="modOrSubsection.name" [courseId]="modOrSubsection.course"
+                                                contextLevel="module" [contextInstanceId]="modOrSubsection.id" [adaptImg]="false" />
+                                        </p>
+                                        @if (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0) {
+                                            <ion-badge [color]="modOrSubsection.downloadStatus === statusDownloaded ? 'success' : 'light'">
+                                                @if (modOrSubsection.downloadStatus === statusDownloaded) {
+                                                    <ion-icon name="fam-cloud-done" [attr.aria-label]="'core.downloaded' | translate" />
+                                                }{{ modOrSubsection.totalSize | coreBytesToSize }}
+                                            </ion-badge>
+                                        }
+                                        @if (modOrSubsection.calculatingSize ||
+                                            (section.isDownloading && modOrSubsection.downloadStatus === statusDownloaded)) {
+                                            <ion-badge color="light">
+                                                {{ 'core.calculating' | translate }}
+                                            </ion-badge>
+                                        }
+                                    </ion-label>
 
-                            <div class="storage-buttons" slot="end">
-                                <core-download-refresh *ngIf="downloadEnabled && modOrSubsection.handlerData?.showDownloadButton &&
-                            modOrSubsection.downloadStatus !== statusDownloaded" [status]="modOrSubsection.downloadStatus" [enabled]="true"
-                                    [canTrustDownload]="true" [loading]="modOrSubsection.spinner || modOrSubsection.handlerData.spinner"
-                                    (action)="prefetchModule(modOrSubsection)"
-                                    [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
-                                    [statusSubject]="modOrSubsection.name" />
-                                <ion-button fill="clear" (click)="deleteForModule($event, modOrSubsection)"
-                                    *ngIf="!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0" color="danger">
-                                    <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="
-                                        'addon.storagemanager.deletedatafrom' | translate: { name: modOrSubsection.name }" />
-                                </ion-button>
-                                <p *ngIf="!downloadEnabled || !modOrSubsection.handlerData?.showDownloadButton" class="sr-only">
-                                    {{ 'core.notdownloadable' | translate }}
-                                </p>
-                            </div>
-                        </ion-item>
+                                    <div class="storage-buttons" slot="end">
+                                        @if (downloadEnabled && modOrSubsection.handlerData?.showDownloadButton &&
+                                            modOrSubsection.downloadStatus !== statusDownloaded) {
+                                            <core-download-refresh [status]="modOrSubsection.downloadStatus" [enabled]="true"
+                                                [canTrustDownload]="true"
+                                                [loading]="modOrSubsection.spinner || modOrSubsection.handlerData.spinner"
+                                                (action)="prefetchModule(modOrSubsection)"
+                                                [statusesTranslatable]="{notdownloaded: 'addon.storagemanager.downloaddatafrom' }"
+                                                [statusSubject]="modOrSubsection.name" />
+                                        }
+                                        @if (!modOrSubsection.calculatingSize && modOrSubsection.totalSize > 0) {
+                                            <ion-button fill="clear" (click)="deleteForModule($event, modOrSubsection)" color="danger">
+                                                <ion-icon name="fas-trash" slot="icon-only" [attr.aria-label]="
+                                                'addon.storagemanager.deletedatafrom' | translate: { name: modOrSubsection.name }" />
+                                            </ion-button>
+                                        }
+                                        @if (!downloadEnabled || !modOrSubsection.handlerData?.showDownloadButton) {
+                                            <p class="sr-only">
+                                                {{ 'core.notdownloadable' | translate }}
+                                            </p>
+                                        }
+                                    </div>
+                                </ion-item>
+                            }
                         }
                     </ng-container>
-                </ng-container>
+
+                }
             </ion-card-content>
-        </ion-accordion>
-    </ion-card>
+        </ion-card>
+    }
 </ng-template>

@@ -1,4 +1,4 @@
-@addon_coursecompletion @app @javascript
+@addon_coursecompletion @app @block @block_completionstatus @block_selfcompletion @javascript @lms_from5.1
 Feature: Course completion navigation
 
   Background:
@@ -34,13 +34,13 @@ Feature: Course completion navigation
       | name     | P1   |
     And I enable "selfcompletion" "block" plugin
     And the following "blocks" exist:
-      | blockname        | contextlevel | reference |
-      | completionstatus | Course       | C1        |
-      | selfcompletion   | Course       | C1        |
-      | activity_modules | Course       | C1        |
-      | completionstatus | Course       | C2        |
-      | selfcompletion   | Course       | C2        |
-      | activity_modules | Course       | C2        |
+      | blockname        | contextlevel | reference | pagetypepattern | defaultregion | configdata                                                                                                   |
+      | completionstatus | Course       | C1        | course-view-*   | side-pre      |                                                                                                              |
+      | selfcompletion   | Course       | C1        | course-view-*   | side-pre      |                                                                                                              |
+      | html             | Course       | C1        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
+      | completionstatus | Course       | C2        | course-view-*   | side-pre      |                                                                                                              |
+      | selfcompletion   | Course       | C2        | course-view-*   | side-pre      |                                                                                                              |
+      | html             | Course       | C2        | course-view-*   | side-pre      | Tzo4OiJzdGRDbGFzcyI6Mjp7czo1OiJ0aXRsZSI7czoxNToiSFRNTCB0aXRsZSB0ZXN0IjtzOjQ6InRleHQiO3M6OToiYm9keSB0ZXN0Ijt9 |
     And the following config values are set as admin:
       | enablecompletion  | 1 |
     And I am on the "Course 1" course page logged in as teacher1
@@ -58,6 +58,7 @@ Feature: Course completion navigation
     Then I should find "Course completion status" in the app
     And I should find "Self completion" in the app
     When I press "Close" in the app
+    And I press "Next" within "Course" "ion-tab-bar" in the app
     And I press "Completion" in the app
     Then I should find "Status" in the app
 
@@ -66,6 +67,7 @@ Feature: Course completion navigation
     Then I should not find "Course completion status" in the app
     And I should not find "Self completion" in the app
     When I press "Close" in the app
+    And I press "Next" within "Course" "ion-tab-bar" in the app
     Then I should not find "Completion" in the app
 
     Given the following config values are set as admin:
@@ -76,4 +78,5 @@ Feature: Course completion navigation
     Then I should not find "Course completion status" in the app
     And I should not find "Self completion" in the app
     When I press "Close" in the app
+    And I press "Next" within "Course" "ion-tab-bar" in the app
     Then I should not find "Completion" in the app

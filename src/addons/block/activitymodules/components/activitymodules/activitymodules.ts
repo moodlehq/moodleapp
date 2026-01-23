@@ -17,13 +17,15 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSites } from '@services/sites';
-import { ContextLevel, CoreConstants } from '@/core/constants';
+import { ContextLevel } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreNavigator } from '@services/navigator';
+import { CoreObject } from '@singletons/object';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUrl } from '@singletons/url';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ModFeature, ModArchetype, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
+import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseOverview } from '@features/course/services/course-overview';
 
 /**
  * Component to render an "activity modules" block.
@@ -32,7 +34,6 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
     styleUrl: 'activitymodules.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -42,10 +43,6 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
     entries: AddonBlockActivityModuleEntry[] = [];
 
     protected fetchContentDefaultError = 'Error getting activity modules data.';
-
-    constructor() {
-        super('AddonBlockActivityModulesComponent');
-    }
 
     /**
      * Perform the invalidate content function.
@@ -72,7 +69,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
 
         const modules = CoreCourse.getSectionsModules(sections, {
             ignoreSection: section => !CoreCourseHelper.canUserViewSection(section),
-            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourse.moduleHasView(module),
+            ignoreModule: module => !CoreCourseHelper.canUserViewModule(module) || !CoreCourseModuleHelper.moduleHasView(module),
         });
 
         modules.forEach((mod) => {
@@ -83,15 +80,15 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
             // Get the archetype of the module type.
             archetypes[mod.modname] = CoreCourseModuleDelegate.supportsFeature<number>(
                 mod.modname,
-                CoreConstants.FEATURE_MOD_ARCHETYPE,
-                CoreConstants.MOD_ARCHETYPE_OTHER,
+                ModFeature.MOD_ARCHETYPE,
+                ModArchetype.OTHER,
             );
 
             // Get the full name of the module type.
-            if (archetypes[mod.modname] === CoreConstants.MOD_ARCHETYPE_RESOURCE) {
+            if (archetypes[mod.modname] === ModArchetype.RESOURCE) {
                 // All resources are gathered in a single "Resources" option.
-                if (!modFullNames['resources']) {
-                    modFullNames['resources'] = Translate.instant('core.resources');
+                if (!modFullNames[RESOURCE_ARCHETYPE_NAME]) {
+                    modFullNames[RESOURCE_ARCHETYPE_NAME] = Translate.instant('core.resources');
                 }
             } else {
                 modFullNames[mod.modname] = mod.modplural;
@@ -106,9 +103,9 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
         });
 
         // Sort the modnames alphabetically.
-        modFullNames = CoreUtils.sortValues(modFullNames);
+        modFullNames = CoreObject.sortValues(modFullNames);
         for (const modName in modFullNames) {
-            const iconModName = modName === 'resources' ? 'page' : modName;
+            const iconModName = modName === RESOURCE_ARCHETYPE_NAME ? 'page' : modName;
 
             const icon = await CoreCourseModuleDelegate.getModuleIconSrc(iconModName, modIcons[iconModName]);
 
@@ -128,7 +125,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @returns Course id.
      */
     protected getCourseId(): number {
-        if (this.contextLevel == ContextLevel.COURSE) {
+        if (this.contextLevel === ContextLevel.COURSE) {
             return this.instanceId;
         }
 
@@ -141,12 +138,7 @@ export class AddonBlockActivityModulesComponent extends CoreBlockBaseComponent i
      * @param entry Selected entry.
      */
     gotoCoureListModType(entry: AddonBlockActivityModuleEntry): void {
-        CoreNavigator.navigateToSitePath('course/' + this.getCourseId() + '/list-mod-type', {
-            params: {
-                modName: entry.modName,
-                title: entry.name,
-            },
-        });
+        CoreCourseOverview.navigateToCourseOverview(this.getCourseId(), entry.modName, entry.name);
     }
 
 }

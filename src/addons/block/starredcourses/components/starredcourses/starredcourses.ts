@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
-import { CoreCoursesProvider, CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
 import {
     CoreCourseSearchedDataWithExtraInfoAndOptions,
     CoreEnrolledCourseDataWithOptions,
@@ -23,11 +23,17 @@ import {
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreUtils } from '@singletons/utils';
 import { CoreSite } from '@classes/sites/site';
 import { AddonBlockStarredCourse, AddonBlockStarredCourses } from '../../services/starredcourses';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
+import { CoreCoursesCourseListItemComponent } from '@features/courses/components/course-list-item/course-list-item';
+import {
+    CORE_COURSES_MY_COURSES_UPDATED_EVENT,
+    CoreCoursesMyCoursesUpdatedEventAction,
+    CORE_COURSES_STATE_FAVOURITE,
+} from '@features/courses/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Component to render a starred courses block.
@@ -35,10 +41,9 @@ import { CoreCoursesComponentsModule } from '@features/courses/components/compon
 @Component({
     selector: 'addon-block-starredcourses',
     templateUrl: 'addon-block-starredcourses.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreCoursesComponentsModule,
+        CoreCoursesCourseListItemComponent,
     ],
 })
 export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent implements OnInit, OnDestroy {
@@ -53,8 +58,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     protected fetchContentDefaultError = 'Error getting starred courses data.';
 
     constructor() {
-        super('AddonBlockStarredCoursesComponent');
-
+        super();
         this.site = CoreSites.getRequiredCurrentSite();
     }
 
@@ -68,7 +72,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         this.scrollElementId = `addon-block-starredcourses-scroll-${scrollId}`;
 
         this.coursesObserver = CoreEvents.on(
-            CoreCoursesProvider.EVENT_MY_COURSES_UPDATED,
+            CORE_COURSES_MY_COURSES_UPDATED_EVENT,
             (data) => {
                 this.refreshCourseList(data);
             },
@@ -108,7 +112,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
 
         // Invalidate course completion data.
         promises.push(this.invalidateCourseList().finally(() =>
-            CoreUtils.allPromises(courseIds.map((courseId) =>
+            CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
         if (courseIds.length  == 1) {
@@ -120,7 +124,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             promises.push(CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')));
         }
 
-        await CoreUtils.allPromises(promises);
+        await CorePromiseUtils.allPromises(promises);
     }
 
     /**
@@ -157,19 +161,19 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
     }
 
     /**
-     * Refresh course list based on a EVENT_MY_COURSES_UPDATED event.
+     * Refresh course list based on a CORE_COURSES_MY_COURSES_UPDATED_EVENT event.
      *
      * @param data Event data.
      * @returns Promise resolved when done.
      */
     protected async refreshCourseList(data: CoreCoursesMyCoursesUpdatedEventData): Promise<void> {
-        if (data.action == CoreCoursesProvider.ACTION_ENROL) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.ENROL) {
             // Always update if user enrolled in a course.
             // New courses shouldn't be favourite by default, but just in case.
             return this.refreshContent();
         }
 
-        if (data.action == CoreCoursesProvider.ACTION_STATE_CHANGED && data.state == CoreCoursesProvider.STATE_FAVOURITE) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state == CORE_COURSES_STATE_FAVOURITE) {
             const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.

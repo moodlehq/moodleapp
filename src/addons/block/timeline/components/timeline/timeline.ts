@@ -14,21 +14,18 @@
 
 import { ChangeDetectionStrategy, Component, OnInit, HostListener, OnDestroy } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { ICoreBlockComponent } from '@features/block/classes/base-block-component';
+import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreCoursesHelper, CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import {
+    CoreCoursesHelper,
+    CoreEnrolledCourseDataWithExtraInfoAndOptions,
+} from '@features/courses/services/courses-helper';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
-import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
-import { catchError, distinctUntilChanged, map, share, tap, mergeAll } from 'rxjs/operators';
 import { AddonBlockTimelineDateRange, AddonBlockTimelineSection } from '@addons/block/timeline/classes/section';
 import { FormControl } from '@angular/forms';
-import { formControlValue, resolved } from '@/core/utils/rxjs';
-import { CoreLogger } from '@singletons/logger';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 import { AddonBlockTimelineEventsComponent } from '../events/events';
 import { CoreUserParent } from '@features/user/services/parent';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
@@ -41,10 +38,9 @@ import { CoreEventObserver, CoreEvents } from '@singletons/events';
     templateUrl: 'addon-block-timeline.html',
     styleUrl: 'timeline.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [
         CoreSharedModule,
-        CoreSearchComponentsModule,
+        CoreSearchBoxComponent,
         AddonBlockTimelineEventsComponent,
     ],
 })
@@ -143,7 +139,8 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
      * @param sort New sort.
      */
     sortChanged(sort: AddonBlockTimelineSort): void {
-        CoreSites.getRequiredCurrentSite().setLocalSiteConfig('AddonBlockTimelineSort', sort);
+        this.sort.set(sort);
+        CoreSites.getRequiredCurrentSite().setLocalSiteConfig(AddonBlockTimelineComponent.SORT_CONFIG_KEY, sort);
     }
 
     /**
@@ -245,28 +242,31 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
      * @inheritdoc
      */
     async invalidateContent(): Promise<void> {
-        await CoreUtils.allPromises([
+        const courseIds = this.courses().map(course => course.id);
+        await CorePromiseUtils.allPromises([
             AddonBlockTimeline.invalidateActionEventsByTimesort(),
             AddonBlockTimeline.invalidateActionEventsByCourses(),
             CoreCourses.invalidateUserCourses(),
             CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(),
-            CoreCourses.invalidateCoursesByField('ids', this.courseIdsToInvalidate.join(',')),
+            CoreCourses.invalidateCoursesByField('ids', courseIds.join(',')),
         ]);
+
+        this.courses.set([]);
     }
 
     /**
-     * Initialize sort properties.
+     * @inheritdoc
      */
-    protected initializeSort(): void {
-        this.sort$ = formControlValue(this.sort);
-        this.sortOptions = Object.values(AddonBlockTimelineSort).map(value => ({
-            value,
-            name: `addon.block_timeline.${value}`,
-        }));
+    protected async fetchContent(): Promise<void> {
+        await this.loadSections(this.filter(), this.sort(), this.search() ?? '');
     }
 
     /**
-     * Initialize filter properties.
+     * Load sections using search parameters.
+     *
+     * @param filter Filter.
+     * @param sort Sort.
+     * @param search Search.
      */
     protected initializeFilter(): void {
         this.filter$ = formControlValue(this.filter);
@@ -329,9 +329,17 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
             map(courses => {
                 this.courseIdsToInvalidate = courses.map(course => course.id);
 
-                return courses;
-            }),
-        );
+        try {
+            let sections: AddonBlockTimelineSection[] = [];
+            switch (sort) {
+                case AddonBlockTimelineSort.ByDates:
+                    sections = await this.getSectionsByDates(search, includeOverdue, dateRange);
+                    break;
+                case AddonBlockTimelineSort.ByCourses:
+                    sections = await this.getSectionsByCourse(search, includeOverdue, dateRange);
+                    break;
+            }
+            this.sections.set(sections);
 
         this.sections$ = combineLatest([this.statusFilter$, this.dateFilter$, sortValue, this.search$, courses]).pipe(
             map(async ([statusFilter, dateFilter, sort, search, courses]) => {
@@ -378,7 +386,7 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
      * @returns Sections.
      */
     protected async getSectionsByDates(
-        search: string | null,
+        search: string,
         overdue: boolean,
         done: boolean,
         dateRange: AddonBlockTimelineDateRange,
@@ -387,7 +395,7 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
 
         await section.loadMore();
 
-        return section.data$.pipe(map(({ events }) => events.length > 0 ? [section] : []));
+        return section.events().length > 0 ? [section] : [];
     }
 
     /**
@@ -397,16 +405,26 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
      * @param overdue Whether to filter overdue events or not.
      * @param done Whether to filter done events or not.
      * @param dateRange Date range to filter events by.
-     * @param courses Courses.
      * @returns Sections.
      */
     protected async getSectionsByCourse(
-        search: string | null,
+        search: string,
         overdue: boolean,
         done: boolean,
         dateRange: AddonBlockTimelineDateRange,
-        courses: CoreEnrolledCourseDataWithOptions[],
-    ): Promise<Observable<AddonBlockTimelineSection[]>> {
+    ): Promise<AddonBlockTimelineSection[]> {
+        let courses = this.courses();
+
+        if (courses.length === 0) {
+            // Load courses when sorting by courses unless they are already loaded and no empty.
+            courses = await CoreCoursesHelper.getUserCoursesWithOptions();
+            this.courses.set(courses);
+        }
+
+        if (!courses || courses.length === 0) {
+            return [];
+        }
+
         // Do not filter courses by date because they can contain activities due.
         const courseIds = courses.map(course => course.id);
         const gracePeriod = await this.getCoursesGracePeriod();
@@ -443,18 +461,12 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
                     done,
                 );
 
-                return section.data$.pipe(map(({ events }) => events.length > 0 ? section : null));
-            });
+                await section.addEvents(courseEvents[course.id]);
 
-        if (sectionObservables.length === 0) {
-            return of([]);
-        }
+                return section.events().length > 0 ? section : null;
+            }));
 
-        return combineLatest(sectionObservables).pipe(
-            map(sections => sections.filter(
-                (section: AddonBlockTimelineSection | null): section is AddonBlockTimelineSection => !!section,
-            )),
-        );
+        return sections.filter((section): section is AddonBlockTimelineSection => !!section);
     }
 
     /**

@@ -1,4 +1,4 @@
-@core @app @javascript
+@core_filesystem @app @javascript
 Feature: It opens files properly.
 
   Background:
@@ -21,7 +21,8 @@ Feature: It opens files properly.
       | resource | Test DOC | Test DOC description | 5       | C1     | A doc.doc       |
     And the following config values are set as admin:
       | filetypeexclusionlist | rtf,doc | tool_mobile |
-    And I entered the resource activity "Test TXT" on course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
+    And I press "Test TXT" in the app
     When I press "Open" in the app
     Then the app should have opened a browser tab with url "^blob:"
 

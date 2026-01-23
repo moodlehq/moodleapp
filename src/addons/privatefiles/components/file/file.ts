@@ -20,8 +20,7 @@ import { CoreFileComponent } from '@components/file/file';
 @Component({
     selector: 'addon-privatefiles-file',
     templateUrl: 'file.html',
-    standalone: true,
-    styleUrls: ['file.scss'],
+    styleUrl: 'file.scss',
     imports: [CoreSharedModule],
 })
 export class AddonPrivateFilesFileComponent extends CoreFileComponent implements OnDestroy {

@@ -12,14 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, viewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreWait } from '@singletons/wait';
+import { CoreText } from '@singletons/text';
 
 /**
  * Component to render a drag-and-drop markers question.
@@ -27,13 +29,16 @@ import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 @Component({
     selector: 'addon-qtype-ddmarker',
     templateUrl: 'addon-qtype-ddmarker.html',
-    styleUrls: ['ddmarker.scss'],
+    styleUrl: 'ddmarker.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonQtypeDdMarkerComponent
     extends CoreQuestionBaseComponent<AddonQtypeDdMarkerQuestionData>
     implements OnDestroy {
 
-    @ViewChild('questiontext') questionTextEl?: ElementRef;
+    readonly questionTextEl = viewChild<ElementRef>('questiontext');
 
     protected questionInstance?: AddonQtypeDdMarkerQuestion;
     protected dropZones: unknown[] = []; // The drop zones received in the init object of the question.
@@ -42,20 +47,20 @@ export class AddonQtypeDdMarkerComponent
     protected textIsRendered = false;
     protected ddAreaisRendered = false;
 
-    constructor(elementRef: ElementRef) {
-        super('AddonQtypeDdMarkerComponent', elementRef);
-    }
-
     /**
      * @inheritdoc
      */
     init(): void {
         if (!this.question) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
         const questionElement = this.initComponent();
         if (!questionElement) {
+            this.onReadyPromise.resolve();
+
             return;
         }
 
@@ -65,6 +70,7 @@ export class AddonQtypeDdMarkerComponent
 
         if (!ddArea || !ddForm) {
             this.logger.warn('Aborting because of an error parsing question.', this.question.slot);
+            this.onReadyPromise.resolve();
 
             return CoreQuestionHelper.showComponentError(this.onAbort);
         }
@@ -101,12 +107,19 @@ export class AddonQtypeDdMarkerComponent
             }
             nextIndex++;
 
-            if (this.question.amdArgs[nextIndex] !== undefined) {
-                this.dropZones = <unknown[]> this.question.amdArgs[nextIndex];
+            // Try to get drop zones from data attribute (Moodle 5.1+). If not found, fallback to old way of retrieving it.
+            const dropZones = ddArea.querySelector<HTMLElement>('.dropzones');
+            const visibleDropZones = dropZones?.dataset.visibledDropzones ?
+                CoreText.parseJSON(dropZones.dataset.visibledDropzones, null) :
+                this.question.amdArgs[nextIndex];
+
+            if (visibleDropZones) {
+                this.dropZones = <unknown[]> visibleDropZones;
             }
         }
 
         this.question.loaded = false;
+        this.onReadyPromise.resolve();
     }
 
     /**
@@ -153,9 +166,13 @@ export class AddonQtypeDdMarkerComponent
             );
         }
 
-        if (this.questionTextEl) {
-            await CoreDomUtils.waitForImages(this.questionTextEl.nativeElement);
+        const questionTextEl = this.questionTextEl();
+        if (questionTextEl) {
+            await CoreWait.waitForImages(questionTextEl.nativeElement);
         }
+
+        // Should not happen, but just in case we avoid creating duplicated instances.
+        this.questionInstance?.destroy();
 
         // Create the instance.
         this.questionInstance = new AddonQtypeDdMarkerQuestion(

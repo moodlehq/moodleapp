@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange, inject } from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { DownloadStatus } from '@/core/constants';
@@ -27,6 +26,12 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '../../classes/core';
 import { BehaviorSubject } from 'rxjs';
+import { CoreErrorHelper } from '@services/error-helper';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreH5PIframeComponent } from '../h5p-iframe/h5p-iframe';
+import { CoreFileHelper } from '@services/file-helper';
 
 /**
  * Component to render an H5P package.
@@ -34,31 +39,36 @@ import { BehaviorSubject } from 'rxjs';
 @Component({
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
-    styleUrls: ['h5p-player.scss'],
+    styleUrl: 'h5p-player.scss',
+    imports: [
+        CoreSharedModule,
+        CoreH5PIframeComponent,
+    ],
 })
 export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     @Input() src?: string; // The URL of the player to display the H5P package.
     @Input() component?: string; // Component.
     @Input() componentId?: string | number; // Component ID to use in conjunction with the component.
+    @Input() fileTimemodified?: number; // The timemodified of the package file.
+    @Input() autoPlay = false; // Auto-play the H5P package.
 
     showPackage = false;
-    state?: string;
+    state?: DownloadStatus;
     canDownload$ = new BehaviorSubject(false);
     calculating$ = new BehaviorSubject(true);
     displayOptions?: CoreH5PDisplayOptions;
-    urlParams: {[name: string]: string} = {};
+    // This param should be initialized as undefined to avoid showing the download button when is not set.
+    urlParams?: {[name: string]: string};
 
     protected site: CoreSite;
     protected siteId: string;
     protected siteCanDownload: boolean;
     protected observer?: CoreEventObserver;
     protected logger: CoreLogger;
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
 
-    constructor(
-        public elementRef: ElementRef,
-    ) {
-
+    constructor() {
         this.logger = CoreLogger.getInstance('CoreH5PPlayerComponent');
         this.site = CoreSites.getRequiredCurrentSite();
         this.siteId = this.site.getId();
@@ -69,17 +79,35 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.checkCanDownload();
+        this.handleAutoPlay();
     }
 
     /**
-     * Detect changes on input properties.
+     * @inheritdoc
      */
     ngOnChanges(changes: {[name: string]: SimpleChange}): void {
-        // If it's already playing there's no need to check if it can be downloaded.
+        // If it's already playing there's no need to check if it can be downloaded or auto-played.
         if (changes.src && !this.showPackage) {
-            this.checkCanDownload();
+            this.handleAutoPlay();
         }
+    }
+
+    /**
+     * Handle auto-play. If auto-play is enabled or package is downloaded (outdated included), it will try to play the H5P.
+     */
+    protected async handleAutoPlay(): Promise<void> {
+        await this.checkCanDownload();
+
+        if (!this.autoPlay) {
+            if (this.canDownload$.getValue() && this.state && CoreFileHelper.isStateDownloaded(this.state)) {
+                // It will be played if it's downloaded.
+                this.play();
+            }
+
+            return;
+        }
+
+        this.play();
     }
 
     /**
@@ -87,9 +115,9 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @param e Event.
      */
-    async play(e: MouseEvent): Promise<void> {
-        e.preventDefault();
-        e.stopPropagation();
+    async play(e?: MouseEvent): Promise<void> {
+        e?.preventDefault();
+        e?.stopPropagation();
 
         this.displayOptions = CoreH5P.h5pPlayer.getDisplayOptionsFromUrlParams(this.urlParams);
         this.showPackage = true;
@@ -111,44 +139,56 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Download the package.
-     *
-     * @returns Promise resolved when done.
      */
     async download(): Promise<void> {
         if (!CoreNetwork.isOnline()) {
-            CoreDomUtils.showErrorModal('core.networkerrormsg', true);
+            CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
             return;
         }
 
+        if (!this.urlParams) {
+            return;
+        }
+
         try {
+            // Check if the package has missing dependencies. If so, it cannot be downloaded.
+            const missingDependencies = await CoreH5P.h5pFramework.getMissingDependenciesForFile(this.urlParams.url);
+            if (missingDependencies.length > 0) {
+                throw CoreH5P.h5pFramework.buildMissingDependenciesErrorFromDBRecords(missingDependencies);
+            }
+
             // Get the file size and ask the user to confirm.
             const size = await CorePluginFileDelegate.getFileSize({ fileurl: this.urlParams.url }, this.siteId);
 
-            await CoreDomUtils.confirmDownloadSize({ size: size, total: true });
+            await CoreAlerts.confirmDownloadSize({ size: size, total: true });
 
             // User confirmed, add to the queue.
             await CoreFilepool.addToQueueByUrl(this.siteId, this.urlParams.url, this.component, this.componentId);
 
         } catch (error) {
-            if (CoreDomUtils.isCanceledError(error)) {
+            if (CoreErrorHelper.isCanceledError(error)) {
                 // User cancelled, stop.
                 return;
             }
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.errordownloading', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errordownloading') });
             this.calculateState();
         }
     }
 
     /**
      * Download the H5P in background if the size is low.
-     *
-     * @returns Promise resolved when done.
      */
     protected async attemptDownloadInBg(): Promise<void> {
         if (!this.urlParams || !this.src || !this.siteCanDownload || !CoreH5P.canGetTrustedH5PFileInSite() ||
                 !CoreNetwork.isOnline()) {
+            return;
+        }
+
+        // Check if the package has missing dependencies. If so, it cannot be downloaded.
+        const missingDependencies = await CoreH5P.h5pFramework.getMissingDependenciesForFile(this.urlParams.url);
+        if (missingDependencies.length > 0) {
             return;
         }
 
@@ -163,15 +203,13 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Check if the package can be downloaded.
-     *
-     * @returns Promise resolved when done.
      */
     protected async checkCanDownload(): Promise<void> {
-        this.observer && this.observer.off();
+        this.observer?.off();
         this.urlParams = CoreUrl.extractUrlParams(this.src || '');
 
         if (this.src && this.siteCanDownload && CoreH5P.canGetTrustedH5PFileInSite() && this.site.containsUrl(this.src)) {
-            this.calculateState();
+            await this.calculateState();
 
             // Listen for changes in the state.
             try {
@@ -180,7 +218,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
                 this.observer = CoreEvents.on(eventName, () => {
                     this.calculateState();
                 });
-            } catch (error) {
+            } catch {
                 // An error probably means the file cannot be downloaded or we cannot check it (offline).
             }
 
@@ -193,10 +231,12 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Calculate state of the file.
-     *
-     * @returns Promise resolved when done.
      */
     protected async calculateState(): Promise<void> {
+        if (!this.urlParams) {
+            return;
+        }
+
         this.calculating$.next(true);
 
         // Get the status of the file.
@@ -205,7 +245,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
             this.canDownload$.next(true);
             this.state = state;
-        } catch (error) {
+        } catch {
             this.canDownload$.next(false);
         } finally {
             this.calculating$.next(false);
@@ -213,7 +253,16 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * Get the native element.
+     *
+     * @returns The native element.
+     */
+    getElement(): HTMLElement {
+        return this.element;
+    }
+
+    /**
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.observer?.off();

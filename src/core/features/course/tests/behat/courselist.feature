@@ -1,4 +1,4 @@
-@core_course @app @javascript
+@core_course @app @core @core_my @block_myoverview @javascript
 Feature: Test course list shown on app start tab
   In order to select a course
   As a student

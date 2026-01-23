@@ -13,21 +13,20 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, ElementRef, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnInit, inject } from '@angular/core';
 import {
     CoreCourse,
-    CoreCourseModuleCompletionStatus,
-    CoreCourseProvider,
     sectionContentIsModule,
 } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from '@features/course/services/course-helper';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
+import { CoreCourseCompletion } from '@features/course/services/course-completion';
 import { CoreSites } from '@services/sites';
 import { CoreWait } from '@singletons/wait';
 import { ModalController } from '@singletons';
 import { CoreDom } from '@singletons/dom';
+import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
 
 /**
  * Component to display course index modal.
@@ -36,7 +35,6 @@ import { CoreDom } from '@singletons/dom';
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
     styleUrl: 'course-index.scss',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
@@ -47,15 +45,20 @@ export class CoreCourseCourseIndexComponent implements OnInit {
     @Input() selectedId?: number;
     @Input() course?: CoreCourseAnyCourseData;
 
-    allSectionId = CoreCourseProvider.ALL_SECTIONS_ID;
+    allSectionId = CORE_COURSE_ALL_SECTIONS_ID;
     highlighted?: string;
     sectionsToRender: CourseIndexSection[] = [];
     loaded = false;
     isModule = sectionContentIsModule;
 
-    constructor(
-        protected elementRef: ElementRef,
-    ) {
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    @HostBinding('attr.data-course-id') protected get courseId(): number | null {
+        return this.course?.id ?? null;
+    }
+
+    @HostBinding('attr.data-category-id') protected get courseCategoryId(): number | null {
+        return this.course?.categoryid ?? null;
     }
 
     /**
@@ -68,7 +71,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
             return;
         }
 
-        let completionEnabled = CoreCoursesHelper.isCompletionEnabledInCourse(this.course);
+        let completionEnabled = CoreCourseCompletion.isCompletionEnabledInCourse(this.course);
         if (completionEnabled && 'completionusertracked' in this.course && this.course.completionusertracked !== undefined) {
             completionEnabled = this.course.completionusertracked;
         }
@@ -102,7 +105,7 @@ export class CoreCourseCourseIndexComponent implements OnInit {
         await CoreWait.nextTick();
 
         CoreDom.scrollToElement(
-            this.elementRef.nativeElement,
+            this.element,
             '.item.item-current',
             { addYAxis: -10 },
         );

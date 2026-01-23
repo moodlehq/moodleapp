@@ -12,20 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSharedModule } from '@/core/shared.module';
-import { AddonCalendarComponentsModule } from '@addons/calendar/components/components.module';
-import { AddonCalendarDayPage } from '@addons/calendar/pages/day/day';
-import { AddonCalendarEditEventPage } from '@addons/calendar/pages/edit-event/edit-event';
-import { AddonCalendarEventPage } from '@addons/calendar/pages/event/event';
-import { AddonCalendarIndexPage } from '@addons/calendar/pages/index';
-import { AddonCalendarSettingsPage } from '@addons/calendar/pages/settings/settings';
 import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreMainMenuComponentsModule } from '@features/mainmenu/components/components.module';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { AddonCalendarMainMenuHandlerService } from './services/handlers/mainmenu';
+import { ADDON_CALENDAR_PAGE_NAME } from './constants';
+import { canLeaveGuard } from '@guards/can-leave';
 
 /**
  * Build module routes.
@@ -37,24 +29,25 @@ function buildRoutes(injector: Injector): Routes {
     return [
         {
             path: 'index',
-            data: { mainMenuTabRoot: AddonCalendarMainMenuHandlerService.PAGE_NAME },
-            component: AddonCalendarIndexPage,
+            data: { mainMenuTabRoot: ADDON_CALENDAR_PAGE_NAME },
+            loadComponent: () => import('@addons/calendar/pages/index'),
         },
         {
             path: 'calendar-settings',
-            component: AddonCalendarSettingsPage,
+            loadComponent: () => import('@addons/calendar/pages/settings/settings'),
         },
         {
             path: 'day',
-            component: AddonCalendarDayPage,
+            loadComponent: () => import('@addons/calendar/pages/day/day'),
         },
         {
             path: 'event/:id',
-            component: AddonCalendarEventPage,
+            loadComponent: () => import('@addons/calendar/pages/event/event'),
         },
         {
             path: 'edit/:eventId',
-            component: AddonCalendarEditEventPage,
+            loadComponent: () => import('@addons/calendar/pages/edit-event/edit-event'),
+            canDeactivate: [canLeaveGuard],
         },
         ...buildTabMainRoutes(injector, {
             redirectTo: 'index',
@@ -64,19 +57,6 @@ function buildRoutes(injector: Injector): Routes {
 }
 
 @NgModule({
-    imports: [
-        CoreSharedModule,
-        AddonCalendarComponentsModule,
-        CoreMainMenuComponentsModule,
-        CoreEditorComponentsModule,
-    ],
-    declarations: [
-        AddonCalendarDayPage,
-        AddonCalendarEditEventPage,
-        AddonCalendarEventPage,
-        AddonCalendarIndexPage,
-        AddonCalendarSettingsPage,
-    ],
     providers: [
         {
             provide: ROUTES,
@@ -86,4 +66,4 @@ function buildRoutes(injector: Injector): Routes {
         },
     ],
 })
-export class AddonCalendarLazyModule {}
+export default class AddonCalendarLazyModule {}

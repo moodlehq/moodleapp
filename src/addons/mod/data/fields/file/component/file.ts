@@ -17,7 +17,8 @@ import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFileEntry } from '@services/file-helper';
-import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
+import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data file field.
@@ -25,6 +26,9 @@ import { ADDON_MOD_DATA_COMPONENT } from '@addons/mod/data/constants';
 @Component({
     selector: 'addon-mod-data-field-file',
     templateUrl: 'addon-mod-data-field-file.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseComponent {
 
@@ -55,19 +59,19 @@ export class AddonModDataFieldFileComponent extends AddonModDataFieldPluginBaseC
      */
     protected init(): void {
         if (this.searchMode) {
-            this.addControl('f_' + this.field.id);
+            this.addControl(`f_${this.field.id}`);
 
             return;
         }
 
-        this.component = ADDON_MOD_DATA_COMPONENT;
+        this.component = ADDON_MOD_DATA_COMPONENT_LEGACY;
         this.componentId = this.database!.coursemodule;
 
         this.updateValue(this.value);
 
         if (this.editMode) {
             this.maxSizeBytes = parseInt(this.field.param3, 10);
-            CoreFileSession.setFiles(this.component, this.database!.id + '_' + this.field.id, this.files);
+            CoreFileSession.setFiles(this.component, `${this.database!.id}_${this.field.id}`, this.files);
         }
     }
 

@@ -22,14 +22,13 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
 import { CoreReportBuilder } from '../reportbuilder';
+import { CORE_REPORT_BUILDER_PAGE_NAME } from '@features/reportbuilder/constants';
 
 /**
  * Handler to visualize custom reports.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
-
-    static readonly PAGE_NAME = 'reportbuilder';
 
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -66,7 +65,7 @@ export class CoreReportBuilderHandlerService implements CoreUserProfileHandler {
             action: async (event): Promise<void> => {
                 event.preventDefault();
                 event.stopPropagation();
-                await CoreNavigator.navigateToSitePath(CoreReportBuilderHandlerService.PAGE_NAME);
+                await CoreNavigator.navigateToSitePath(CORE_REPORT_BUILDER_PAGE_NAME);
             },
         };
     }

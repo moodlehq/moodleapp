@@ -14,26 +14,35 @@
     <nav>
         <ion-list>
             <!-- Go to "home". -->
-            <ion-item class="ion-text-wrap" *ngIf="homeView" (click)="goToWikiHome()" button [detail]="true">
-                <ion-icon name="fas-house" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_wiki.gowikihome' | translate }}</ion-label>
-            </ion-item>
+            @if (homeView) {
+                <ion-item class="ion-text-wrap" (click)="goToWikiHome()" button [detail]="true">
+                    <ion-icon name="fas-house" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'addon.mod_wiki.gowikihome' | translate }}</ion-label>
+                </ion-item>
+            }
             <ng-container *ngFor="let letter of map">
-                <ion-item-divider *ngIf="letter.label">
-                    <ion-label>
-                        <h2>{{ letter.label }}</h2>
-                    </ion-label>
-                </ion-item-divider>
+                @if (letter.label) {
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ letter.label }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                }
                 <ion-item class="ion-text-wrap" *ngFor="let page of letter.pages" (click)="goToPage(page)"
                     [attr.aria-current]="selectedTitle === page.title ? 'page' : 'false'" button [detail]="false">
-                    <ion-icon name="fas-house" slot="start" *ngIf="page.firstpage" aria-hidden="true" />
+                    @if (page.firstpage) {
+                        <ion-icon name="fas-house" slot="start" aria-hidden="true" />
+                    }
                     <ion-label>
-                        <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId" />
+                        <core-format-text [text]="page.title" contextLevel="module" [contextInstanceId]="moduleId" [courseId]="courseId"
+                            [sanitize]="!page.id" />
                     </ion-label>
-                    <ion-note *ngIf="!page.id" slot="end">
-                        <ion-icon name="fas-clock" aria-hidden="true" />
-                        <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
-                    </ion-note>
+                    @if (!page.id) {
+                        <ion-note slot="end">
+                            <ion-icon name="fas-clock" aria-hidden="true" />
+                            <span class="ion-text-wrap">{{ 'core.notsent' | translate }}</span>
+                        </ion-note>
+                    }
                 </ion-item>
             </ng-container>
         </ion-list>

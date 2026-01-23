@@ -12,12 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule, Type } from '@angular/core';
+import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
-import { AppRoutingModule } from '@/app/app-routing.module';
+import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreSettingsHelper } from './services/settings-helper';
+import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
+import { getSharedFilesRoutes } from '@features/sharedfiles/sharedfiles.module';
+import { CoreScreen } from '@services/screen';
 
 /**
  * Get settings services.
@@ -34,21 +37,88 @@ export async function getSettingsServices(): Promise<Type<unknown>[]> {
     ];
 }
 
+const sectionRoutes: Routes = [
+    {
+        path: 'general',
+        loadComponent: () => import('@features/settings/pages/general/general'),
+    },
+    {
+        path: 'spaceusage',
+        loadComponent: () => import('@features/settings/pages/space-usage/space-usage'),
+    },
+    {
+        path: 'sync',
+        loadComponent: () => import('@features/settings/pages/synchronization/synchronization'),
+    },
+    {
+        path: SHAREDFILES_PAGE_NAME,
+        loadChildren: () => getSharedFilesRoutes(),
+    },
+    {
+        path: 'about',
+        loadComponent: () => import('@features/settings/pages/about/about'),
+    },
+];
+
+const mobileRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/settings/pages/index/index'),
+    },
+    ...sectionRoutes,
+];
+
+const tabletRoutes: Routes = [
+    {
+        path: '',
+        loadComponent: () => import('@features/settings/pages/index/index'),
+        loadChildren: () => [
+            {
+                path: '',
+                pathMatch: 'full',
+                redirectTo: 'general',
+            },
+            ...sectionRoutes,
+        ],
+    },
+];
+
+const settingsRoutes: Routes = [
+    ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
+    ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
+    {
+        path: 'about/deviceinfo',
+        loadComponent: () => import('@features/settings/pages/deviceinfo/deviceinfo'),
+    },
+    {
+        path: 'about/deviceinfo/dev',
+        loadComponent: () => import('@features/settings/pages/dev/dev'),
+    },
+    {
+        path: 'about/deviceinfo/dev/error-log',
+        loadComponent: () => import('@features/settings/pages/error-log/error-log'),
+    },
+    {
+        path: 'about/licenses',
+        loadComponent: () => import('@features/settings/pages/licenses/licenses'),
+    },
+];
+
 const appRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+        loadChildren: () => settingsRoutes,
     },
 ];
 
 const mainMenuMoreRoutes: Routes = [
     {
         path: 'settings',
-        loadChildren: () => import('./settings-lazy.module').then(m => m.CoreSettingsLazyModule),
+        loadChildren: () => settingsRoutes,
     },
     {
         path: 'preferences',
-        loadChildren: () => import('./settings-site-lazy.module').then(m => m.CoreettingsSiteLazyModule),
+        loadChildren: () => import('./settings-site-lazy.module'),
     },
 ];
 
@@ -58,7 +128,7 @@ const mainMenuMoreRoutes: Routes = [
         CoreMainMenuTabRoutingModule.forChild(mainMenuMoreRoutes),
     ],
     providers: [
-        { provide: APP_INITIALIZER, multi: true, useValue: () => CoreSettingsHelper.initialize() },
+        provideAppInitializer(() => CoreSettingsHelper.initialize()),
     ],
 })
 export class CoreSettingsModule {}

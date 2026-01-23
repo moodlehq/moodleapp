@@ -13,9 +13,11 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
+import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/login-helper';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
@@ -29,6 +31,10 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
     selector: 'core-site-plugins-user-profile-field',
     templateUrl: 'core-siteplugins-user-profile-field.html',
     styles: [':host { display: contents; }'],
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+    ],
 })
 export class CoreSitePluginsUserProfileFieldComponent extends CoreSitePluginsCompileInitComponent implements OnInit {
 

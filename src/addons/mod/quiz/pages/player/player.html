@@ -5,8 +5,10 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text *ngIf="quiz" [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
-                    [courseId]="courseId" />
+                @if (quiz) {
+                    <core-format-text [text]="quiz.name" contextLevel="module" [contextInstanceId]="quiz.coursemodule"
+                        [courseId]="courseId" />
+                }
             </h1>
         </ion-title>
 
@@ -15,128 +17,172 @@
                 (click)="showConnectionError($event)" [ariaLabel]="'addon.mod_quiz.connectionerror' | translate" aria-haspopup="dialog">
                 <ion-icon name="fas-circle-exclamation" slot="icon-only" aria-hidden="true" />
             </ion-button>
-            <ion-button *ngIf="navigation.length && !showSummary" [ariaLabel]="'addon.mod_quiz.opentoc' | translate"
-                (click)="openNavigation()">
-                <ion-icon name="fas-bookmark" slot="icon-only" aria-hidden="true" />
-            </ion-button>
+            @if (attemptSummary.length && !showSummary) {
+                <ion-button [ariaLabel]="'addon.mod_quiz.opentoc' | translate" (click)="openNavigation()">
+                    <ion-icon name="fas-list-ul" slot="icon-only" aria-hidden="true" />
+                </ion-button>
+            }
         </ion-buttons>
     </ion-toolbar>
-    <core-timer *ngIf="endTime && questions.length && !quizAborted && !showSummary" [endTime]="endTime" (finished)="timeUp()"
-        [timerText]="'addon.mod_quiz.timeleft' | translate" [hidable]="true" [hidden]="!loaded"
-        timerHiddenPreferenceName="quiz_timerhidden" />
+    @if (endTime && questions.length && !quizAborted && !showSummary) {
+        <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" [hidable]="true"
+            [hidden]="!loaded" timerHiddenPreferenceName="quiz_timerhidden" />
+    }
 </ion-header>
 <ion-content class="limited-width">
     <core-loading [hideUntil]="loaded" class="has-spacer">
         <!-- Button to start attempting. -->
-        <ion-button *ngIf="!attempt" expand="block" class="ion-margin" (click)="start()">
-            {{ 'addon.mod_quiz.startattempt' | translate }}
-        </ion-button>
+        @if (!attempt) {
+            <ion-button expand="block" class="ion-margin" (click)="start()">
+                {{ 'addon.mod_quiz.startattempt' | translate }}
+            </ion-button>
+        }
 
         <!-- Questions -->
-        <form name="addon-mod_quiz-player-form" *ngIf="questions.length && !quizAborted && !showSummary" #quizForm>
-            <ng-container *ngFor="let question of questions">
-                <addon-mod-quiz-question-card [question]="question">
-                    <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
-                        [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid" [offlineEnabled]="offline" contextLevel="module"
-                        [contextInstanceId]="cmId" [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour" [review]="false"
-                        (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)" />
-                </addon-mod-quiz-question-card>
-            </ng-container>
-        </form>
+        @if (questions.length && !quizAborted && !showSummary) {
+            <form name="addon-mod_quiz-player-form" #quizForm>
+                <ng-container *ngFor="let question of questions">
+                    <addon-mod-quiz-question-card [question]="question">
+                        <core-question class="ion-text-wrap" [question]="question" [component]="component" [componentId]="cmId"
+                            [attemptId]="attempt!.id" [usageId]="attempt!.uniqueid" [offlineEnabled]="offline" contextLevel="module"
+                            [contextInstanceId]="cmId" [courseId]="courseId" [preferredBehaviour]="quiz!.preferredbehaviour"
+                            [review]="false" (onAbort)="abortQuiz()" (buttonClicked)="behaviourButtonClicked($event)" />
+                    </addon-mod-quiz-question-card>
+                </ng-container>
+            </form>
+        }
 
         <!-- Go to next or previous page. -->
-        <ion-row *ngIf="questions.length && !quizAborted && !showSummary" class="spacer-top">
-            <ion-col *ngIf="previousPage >= 0">
-                <ion-button expand="block" fill="outline" (click)="changePage(previousPage)" class="ion-text-wrap">
-                    <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
-                    {{ 'core.previous' | translate }}
-                </ion-button>
-            </ion-col>
-            <ion-col *ngIf="nextPage >= -1">
-                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage > 0">
-                    {{ 'core.next' | translate }}
-                    <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
-                </ion-button>
-                <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap" *ngIf="nextPage === -1">
-                    {{ 'core.submit' | translate }}
-                </ion-button>
-            </ion-col>
-        </ion-row>
+        @if (questions.length && !quizAborted && !showSummary) {
+            <ion-row class="spacer-top">
+                @if (previousPage >= 0) {
+                    <ion-col>
+                        <ion-button expand="block" fill="outline" (click)="changePage(previousPage)" class="ion-text-wrap">
+                            <ion-icon name="fas-chevron-left" slot="start" aria-hidden="true" />
+                            {{ 'core.previous' | translate }}
+                        </ion-button>
+                    </ion-col>
+                }
+                @if (nextPage >= -1) {
+                    <ion-col>
+                        @if (nextPage > 0) {
+                            <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap">
+                                {{ 'core.next' | translate }}
+                                <ion-icon name="fas-chevron-right" slot="end" aria-hidden="true" />
+                            </ion-button>
+                        }
+                        @if (nextPage === -1) {
+                            <ion-button expand="block" (click)="changePage(nextPage)" class="ion-text-wrap">
+                                {{ 'core.submit' | translate }}
+                            </ion-button>
+                        }
+                    </ion-col>
+                }
+            </ion-row>
+        }
 
         <!-- Summary -->
-        <ion-card *ngIf="!quizAborted && showSummary && summaryQuestions.length" class="addon-mod_quiz-table">
-            <ion-card-header class="ion-text-wrap">
-                <ion-card-title>{{ 'addon.mod_quiz.summaryofattempt' | translate }}</ion-card-title>
-            </ion-card-header>
+        @if (!quizAborted && showSummary && attemptSummary.length) {
+            <ion-card class="addon-mod_quiz-table">
+                <ion-card-header class="ion-text-wrap">
+                    <ion-card-title>{{ 'addon.mod_quiz.summaryofattempt' | translate }}</ion-card-title>
+                </ion-card-header>
 
-            <!-- List of questions of the summary table. -->
-            <ng-container *ngFor="let question of summaryQuestions">
-                <ion-item *ngIf="question.type !== 'description' && question.questionnumber"
-                    (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
-                    [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn"
-                    [class]="'ion-text-wrap ' + question.stateClass">
-                    <ion-label class="ion-text-wrap">
-                        <p class="item-heading">
-                            {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
-                        </p>
-                        <p>{{ question.status }}</p>
-                    </ion-label>
+                <!-- List of questions of the summary table. -->
+                <ng-container *ngFor="let question of attemptSummary">
+                    @if (question.type !== 'description' && question.questionnumber) {
+                        <ion-item (click)="!isSequential && canReturn && changePage(question.page, false, question.slot)"
+                            [detail]="!isSequential && canReturn" [button]="!isSequential && canReturn"
+                            [class]="['ion-text-wrap', question.stateClass]">
+                            <ion-label class="ion-text-wrap">
+                                <p class="item-heading">
+                                    {{ 'core.question.questionno' | translate:{$a: question.questionnumber} }}
+                                </p>
+                                <p>{{ question.status }}</p>
+                            </ion-label>
 
-                    <ion-icon *ngIf="question.stateclass === 'requiresgrading'" name="fas-circle-question" aria-hidden="true" slot="end" />
-                    <ion-icon *ngIf="question.stateclass === 'correct'" [name]="correctIcon" color="success" aria-hidden="true"
-                        slot="end" />
-                    <ion-icon *ngIf="question.stateclass === 'partiallycorrect'" [name]="partialCorrectIcon" color="warning"
-                        aria-hidden="true" slot="end" />
-                    <ion-icon *ngIf="question.stateclass === 'incorrect' || question.stateclass === 'notanswered'" [name]="incorrectIcon"
-                        color="danger" aria-hidden="true" slot="end" />
-                    <ion-icon *ngIf="question.stateclass === 'invalidanswer'" name="fas-triangle-exclamation" color="danger"
-                        aria-hidden="true" slot="end" />
-                </ion-item>
-            </ng-container>
+                            @switch (question.stateclass) {
+                                @case ('requiresgrading') {
+                                    <ion-icon name="fas-circle-question" aria-hidden="true" slot="end" />
+                                }
+                                @case ('correct') {
+                                    <ion-icon [name]="correctIcon" color="success" aria-hidden="true" slot="end" />
+                                }
+                                @case ('partiallycorrect') {
+                                    <ion-icon [name]="partialCorrectIcon" color="warning" aria-hidden="true" slot="end" />
+                                }
+                                @case ('incorrect') {
+                                    <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
+                                }
+                                @case ('notanswered') {
+                                    <ion-icon [name]="incorrectIcon" color="danger" aria-hidden="true" slot="end" />
+                                }
+                                @case ('invalidanswer') {
+                                    <ion-icon name="fas-triangle-exclamation" color="danger" aria-hidden="true" slot="end" />
+                                }
+                            }
+                        </ion-item>
+                    }
+                </ng-container>
 
-            <!-- Due date warning. -->
-            <ion-item class="ion-text-wrap core-warning-item" *ngIf="dueDateWarning">
-                <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
-                <ion-label>{{ dueDateWarning }}</ion-label>
-            </ion-item>
+                <!-- Due date warning. -->
+                @if (dueDateWarning) {
+                    <ion-item class="ion-text-wrap core-warning-item">
+                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
+                        <ion-label>{{ dueDateWarning }}</ion-label>
+                    </ion-item>
+                }
 
-            <!-- Time left (if quiz is timed). -->
-            <core-timer *ngIf="endTime" [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" />
+                <!-- Time left (if quiz is timed). -->
+                @if (endTime) {
+                    <core-timer [endTime]="endTime" (finished)="timeUp()" [timerText]="'addon.mod_quiz.timeleft' | translate" />
+                }
 
-            <!-- List of messages explaining why the quiz cannot be submitted. -->
-            <ion-item class="ion-text-wrap" *ngIf="preventSubmitMessages.length">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
-                    <p *ngFor="let message of preventSubmitMessages">{{message}}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+                <!-- List of messages explaining why the quiz cannot be submitted. -->
+                @if (preventSubmitMessages.length) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_quiz.cannotsubmitquizdueto' | translate }}</p>
+                            <p *ngFor="let message of preventSubmitMessages">{{message}}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-card>
+        }
 
         <!-- Quiz aborted -->
-        <ion-card *ngIf="attempt && ((!questions.length && !showSummary) || quizAborted)">
-            <ion-item class="ion-text-wrap">
-                <ion-label>{{ 'addon.mod_quiz.errorparsequestions' | translate }}</ion-label>
-            </ion-item>
-            <ion-button *ngIf="canReturn" expand="block" class="ion-margin ion-text-wrap" fill="outline"
-                (click)="changePage(attempt!.currentpage!)">
-                {{ 'addon.mod_quiz.returnattempt' | translate }}
-            </ion-button>
-        </ion-card>
+        @if (attempt && ((!questions.length && !showSummary) || quizAborted)) {
+            <ion-card>
+                <ion-item class="ion-text-wrap">
+                    <ion-label>{{ 'addon.mod_quiz.errorparsequestions' | translate }}</ion-label>
+                </ion-item>
+                @if (canReturn) {
+                    <ion-button expand="block" class="ion-margin ion-text-wrap" fill="outline" (click)="changePage(attempt!.currentpage!)">
+                        {{ 'addon.mod_quiz.returnattempt' | translate }}
+                    </ion-button>
+                }
+            </ion-card>
+        }
 
-        <div collapsible-footer appearOnBottom *ngIf="!quizAborted && showSummary && summaryQuestions.length && loaded" slot="fixed">
-            <div class="list-item-limited-width">
-                <ion-button *ngIf="preventSubmitMessages.length" expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl"
-                    core-link [showBrowserWarning]="false">
-                    {{ 'core.openinbrowser' | translate }}
-                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-                </ion-button>
+        @if (!quizAborted && showSummary && attemptSummary.length && loaded) {
+            <div collapsible-footer appearOnBottom slot="fixed">
+                <div class="list-item-limited-width">
+                    @if (preventSubmitMessages.length) {
+                        <ion-button expand="block" class="ion-margin ion-text-wrap" [href]="moduleUrl" core-link
+                            [showBrowserWarning]="false">
+                            {{ 'core.openinbrowser' | translate }}
+                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                        </ion-button>
+                    }
 
-                <!-- Button to submit the quiz. -->
-                <ion-button *ngIf="!attempt!.finishedOffline && !preventSubmitMessages.length" expand="block"
-                    class="ion-margin ion-text-wrap" (click)="finishAttempt(true)">
-                    {{ 'addon.mod_quiz.submitallandfinish' | translate }}
-                </ion-button>
+                    <!-- Button to submit the quiz. -->
+                    @if (!attempt!.finishedOffline && !preventSubmitMessages.length) {
+                        <ion-button expand="block" class="ion-margin ion-text-wrap" (click)="finishAttempt(true)">
+                            {{ 'addon.mod_quiz.submitallandfinish' | translate }}
+                        </ion-button>
+                    }
+                </div>
             </div>
-        </div>
+        }
     </core-loading>
 </ion-content>

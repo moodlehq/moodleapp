@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     } @else {
-    <core-context-menu>
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
-    </core-context-menu>
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -18,149 +18,207 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
-    <!-- Activity availability messages -->
-    <ion-card class="core-info-card" *ngIf="showPreview && options.length">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p>{{ 'addon.mod_choice.previewing' | translate }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
+    @if (options.length) {
+        @if (showPreview) {
+            <!-- Activity availability messages -->
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'addon.mod_choice.previewing' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-    <!-- Inform what will happen with the choices. -->
-    <ion-card class="core-info-card" *ngIf="publishInfo && options.length">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>{{ publishInfo | translate }}</ion-label>
-        </ion-item>
-    </ion-card>
+        @if (publishInfo) {
+            <!-- Inform what will happen with the choices. -->
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>{{ publishInfo | translate }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-    <!-- Choice options -->
-    <ion-card *ngIf="options.length && choice && (canEdit || showPreview)">
-        <ng-container *ngIf="choice.allowmultiple">
-            <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
-                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                </ion-checkbox>
-            </ion-item>
-        </ng-container>
-        <ion-radio-group *ngIf="!choice.allowmultiple" [(ngModel)]="selectedOption.id">
-            <ion-item class="ion-text-wrap" *ngFor="let option of options">
-                <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
-                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option: option}" />
-                </ion-radio>
-            </ion-item>
-        </ion-radio-group>
-    </ion-card>
+        @if (choice) {
+            @if (canEdit || showPreview) {
+                <!-- Choice options -->
+                <ion-card>
+                    @if (choice.allowmultiple) {
 
-    <ion-card *ngIf="options.length && choice && !canEdit && !showPreview">
-        <ion-item-divider>
-            <ion-label>
-                <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
-            </ion-label>
-        </ion-item-divider>
-        <ng-container *ngFor="let option of options">
-            <ion-item class="ion-text-wrap" *ngIf="option.checked">
-                <ion-label>
-                    <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-                </ion-label>
-            </ion-item>
-        </ng-container>
-    </ion-card>
+                        @for (option of options; track option.id) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-checkbox [(ngModel)]="option.checked" [disabled]="option.disabled || showPreview">
+                                    <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                                </ion-checkbox>
+                            </ion-item>
+                        }
+
+                    } @else {
+                        <ion-radio-group [(ngModel)]="selectedOption.id">
+                            @for (option of options; track option.id) {
+                                <ion-item class="ion-text-wrap">
+                                    <ion-radio [value]="option.id" [disabled]="option.disabled || showPreview">
+                                        <ng-container *ngTemplateOutlet="optionLabelTemplate; context: {option, choice}" />
+                                    </ion-radio>
+                                </ion-item>
+                            }
+                        </ion-radio-group>
+                    }
+                </ion-card>
+            } @else {
+                <ion-card>
+                    <ion-item-divider>
+                        <ion-label>
+                            <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
+                        </ion-label>
+                    </ion-item-divider>
+                    @for (option of options; track option.id) {
+                        @if (option.checked) {
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id"
+                                        [courseId]="courseId" />
+                                </ion-label>
+                            </ion-item>
+                        }
+                    }
+                </ion-card>
+            }
+        }
+    }
 
     <!-- Choice results -->
-    <ng-container *ngIf="canSeeResults && choice">
+    @if (canSeeResults && choice) {
+
         <ion-item-divider>
             <ion-label>
                 <h2>{{ 'addon.mod_choice.responses' | translate }}</h2>
             </ion-label>
         </ion-item-divider>
-        <ion-grid class="ion-no-padding">
-            <ion-row>
-                <ion-col size="12" size-lg="5">
-                    <ion-item class="ion-text-wrap core-warning-item" *ngIf="hasOffline">
-                        <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
-                        <ion-label>{{ 'addon.mod_choice.resultsnotsynced' | translate }}</ion-label>
-                    </ion-item>
-                    <ion-item>
-                        <ion-label>
-                            <core-chart type="pie" [data]="data" [labels]="labels" height="300" contextLevel="module"
-                                [contextInstanceId]="module.id" [courseId]="courseId" />
-                        </ion-label>
-                    </ion-item>
-                </ion-col>
-                <ion-col *ngIf="choice.publish && results" size="12" size-lg="7">
-                    <ion-item-group *ngFor="let result of results">
-                        <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap" (click)="toggle(result)"
-                            [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate" [detail]="false">
-                            <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start" aria-hidden="true"
-                                class="expandable-status-icon" [class.expandable-status-icon-expanded]="result.expanded" />
+
+        @if (groupsSupported && groupInfo) {
+            <core-group-selector [groupInfo]="groupInfo" [(selected)]="groupId" (selectedChange)="groupChanged()" [courseId]="courseId" />
+        }
+
+        <core-loading [hideUntil]="!showResultsLoading" [fullscreen]="false">
+            <ion-grid class="ion-no-padding addon-mod-choice-chart-results">
+                <ion-row>
+                    <ion-col size="12" size-lg="6">
+                        @if (hasOffline) {
+                            <ion-item class="ion-text-wrap core-warning-item">
+                                <ion-icon slot="start" name="fas-triangle-exclamation" color="warning" aria-hidden="true" />
+                                <ion-label>{{ 'addon.mod_choice.resultsnotsynced' | translate }}</ion-label>
+                            </ion-item>
+                        }
+                        <ion-item>
                             <ion-label>
-                                <h3 class="item-heading">
-                                    <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
-                                        [courseId]="courseId" />
-                                </h3>
-                                <p>
-                                    {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
-                                    ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})
-                                </p>
-                                <p *ngIf="choice.limitanswers && choice.showavailable">
-                                    {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
-                                </p>
+                                <core-chart type="pie" [data]="data" [labels]="labels" height="300" contextLevel="module"
+                                    [contextInstanceId]="module.id" [courseId]="courseId" />
                             </ion-label>
                         </ion-item>
-                        <ng-container *ngIf="result.expanded">
-                            <ion-item *ngFor="let user of result.userresponses" core-user-link [courseId]="courseId" [userId]="user.userid"
-                                [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
-                                <ion-label>
-                                    <p>{{user.fullname}}</p>
-                                </ion-label>
-                            </ion-item>
-                        </ng-container>
-                    </ion-item-group>
-                </ion-col>
-            </ion-row>
-        </ion-grid>
-    </ng-container>
+                    </ion-col>
 
-    <ion-card class="core-info-card" *ngIf="!canSeeResults && showResultsMessage">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
+                    @if (choice.publish && results) {
+                        <ion-col size="12" size-lg="6">
+                            @for (result of results; track result.id) {
+                                <ion-item-group>
+                                    <ion-item [button]="result.numberofuser > 0" class="divider ion-text-wrap"
+                                        (click)="toggle(result)" [detail]="false"
+                                        [attr.aria-label]="(result.expanded ? 'core.collapse' : 'core.expand') | translate">
+                                        <ion-icon [name]="result.numberofuser > 0 ? 'fas-chevron-right' : ''" flip-rtl slot="start"
+                                            aria-hidden="true" class="expandable-status-icon"
+                                            [class.expandable-status-icon-expanded]="result.expanded" />
+                                        <ion-label>
+                                            <h3 class="item-heading">
+                                                <core-format-text [text]="result.text" contextLevel="module" [contextInstanceId]="module.id"
+                                                    [courseId]="courseId" />
+                                            </h3>
+                                            <p>
+                                                {{ 'addon.mod_choice.numberofuser' | translate }}: {{ result.numberofuser }}
+                                                ({{ 'core.percentagenumber' | translate: {$a: result.percentageamountfixed} }})
+                                            </p>
+                                            @if (choice.limitanswers && choice.showavailable) {
+                                                <p>
+                                                    {{ 'addon.mod_choice.limita' | translate:{$a: result.maxanswer} }}
+                                                </p>
+                                            }
+                                        </ion-label>
+                                    </ion-item>
+
+                                    @if (result.expanded) {
+                                        @for (user of result.userresponses; track user.userid) {
+                                            <ion-item core-user-link [courseId]="courseId"
+                                                [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
+                                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                                                <ion-label>
+                                                    <p>{{user.fullname}}</p>
+                                                </ion-label>
+                                            </ion-item>
+                                        }
+                                    }
+
+                                </ion-item-group>
+                            }
+                        </ion-col>
+                        }
+                </ion-row>
+            </ion-grid>
+        </core-loading>
+
+        }
+
+        @if (!canSeeResults && showResultsMessage) {
+            <ion-card class="core-info-card">
+                <ion-item>
+                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width adaptable-buttons-row" *ngIf="options.length && choice && (canEdit || canDelete)">
-            <ion-button *ngIf="canDelete" expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
-                {{ 'addon.mod_choice.removemychoice' | translate }}
-            </ion-button>
-            <ion-button *ngIf="canEdit" expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin ion-text-wrap">
-                {{ 'addon.mod_choice.savemychoice' | translate }}
-            </ion-button>
-        </div>
+        @if (!showLoading) {
+            <div collapsible-footer slot="fixed">
+                @if (options.length && choice && (canEdit || canDelete)) {
+                    <div class="list-item-limited-width adaptable-buttons-row">
+                        @if (canDelete) {
+                            <ion-button expand="block" fill="outline" (click)="delete()" class="ion-margin ion-text-wrap">
+                                {{ 'addon.mod_choice.removemychoice' | translate }}
+                            </ion-button>
+                        }
+                        @if (canEdit) {
+                            <ion-button expand="block" (click)="save()" [disabled]="!canSave()" class="ion-margin ion-text-wrap">
+                                {{ 'addon.mod_choice.savemychoice' | translate }}
+                            </ion-button>
+                        }
+                    </div>
+                }
 
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-    </div>
+                <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+            </div>
+        }
 </core-loading>
 
 
 
 <!-- Template to render a choice option label. -->
-<ng-template #optionLabelTemplate let-option="option">
+<ng-template #optionLabelTemplate let-option="option" let-choice="choice">
     <p class="item-heading">
         <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
-        <span *ngIf="choice!.limitanswers && option.countanswers >= option.maxanswers">
-            {{ 'addon.mod_choice.full' | translate }}
-        </span>
+        @if (choice.limitanswers && option.countanswers >= option.maxanswers) {
+            <span>
+                {{ 'addon.mod_choice.full' | translate }}
+            </span>
+        }
     </p>
-    <ng-container *ngIf="choice!.limitanswers && choice!.showavailable">
+    @if (choice.limitanswers && choice.showavailable) {
+
         <p>{{ 'addon.mod_choice.responsesa' | translate:{$a: option.countanswers} }}</p>
         <p>{{ 'addon.mod_choice.limita' | translate:{$a: option.maxanswers} }}</p>
-    </ng-container>
+
+    }
 </ng-template>

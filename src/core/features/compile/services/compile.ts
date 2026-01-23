@@ -25,6 +25,7 @@ import {
     computed,
     effect,
     untracked,
+    inject,
 } from '@angular/core';
 import {
     ActionSheetController,
@@ -39,76 +40,75 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreLogger } from '@singletons/logger';
 import { CoreEvents } from '@singletons/events';
 import { makeSingleton } from '@singletons';
-import { effectWithInjectionContext, modelWithInjectionContext } from '@/core/utils/signals';
+import { effectWithInjectionContext } from '@/core/utils/signals';
 
-// Import core services.
-import { getCoreServices } from '@/core/core.module';
-import { getBlockServices } from '@features/block/block.module';
+// Import core services and exported directives/objects.
+import { CoreSharedModule } from '@/core/shared.module';
+import { getCoreDeprecatedComponents } from '@components/components.module';
+import { getCoreExportedObjects, getCoreServices } from '@/core/core.module';
+import { getBlockExportedDirectives, getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
 import { getContentLinksExportedObjects, getContentLinksServices } from '@features/contentlinks/contentlinks.module';
-import { getCourseExportedObjects, getCourseServices, getCourseStandaloneComponents } from '@features/course/course.module';
-import { getCoursesServices } from '@features/courses/courses.module';
-import { getEditorServices } from '@features/editor/editor.module';
+import { getCourseExportedObjects, getCourseServices, getCourseExportedDirectives } from '@features/course/course.module';
+import { getCoursesExportedDirectives, getCoursesExportedObjects, getCoursesServices } from '@features/courses/courses.module';
+import { getEditorExportedDirectives, getEditorServices } from '@features/editor/editor.module';
 import { getEnrolServices } from '@features/enrol/enrol.module';
 import { getFileUploadedServices } from '@features/fileuploader/fileuploader.module';
 import { getFilterServices } from '@features/filter/filter.module';
 import { getGradesServices } from '@features/grades/grades.module';
 import { getH5PServices } from '@features/h5p/h5p.module';
 import { getLoginServices } from '@features/login/login.module';
-import { getMainMenuServices } from '@features/mainmenu/mainmenu.module';
+import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
-import { getQuestionServices } from '@features/question/question.module';
+import { getQuestionExportedDirectives, getQuestionServices } from '@features/question/question.module';
 import { getRatingServices } from '@features/rating/rating.module';
-import { getSearchServices } from '@features/search/search.module';
+import { getRemindersExportedDirectives, getRemindersServices } from '@features/reminders/reminders.module';
+import { getSearchExportedDirectives, getSearchServices } from '@features/search/search.module';
 import { getSettingsServices } from '@features/settings/settings.module';
 import { getSharedFilesServices } from '@features/sharedfiles/sharedfiles.module';
 import { getSiteHomeServices } from '@features/sitehome/sitehome.module';
 import { getStyleServices } from '@features/styles/styles.module';
 import { getTagServices } from '@features/tag/tag.module';
-import { getUsersServices } from '@features/user/user.module';
+import { getUsersExportedDirectives, getUsersServices } from '@features/user/user.module';
 import { getXAPIServices } from '@features/xapi/xapi.module';
 
 // Import other libraries and providers.
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormBuilder, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { CoreConstants, DownloadStatus } from '@/core/constants';
-import moment from 'moment-timezone';
+import { dayjs } from '@/core/utils/dayjs';
 import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreArray } from '@singletons/array';
+import { CoreCache } from '@classes/cache';
 import { CoreColors } from '@singletons/colors';
+import { CoreCountries } from '@singletons/countries';
+import { CoreDelegate } from '@classes/delegate';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreDom } from '@singletons/dom';
+import { CoreFileUtils } from '@singletons/file-utils';
 import { CoreForms } from '@singletons/form';
+import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
+import { CoreIframe } from '@singletons/iframe';
 import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreMedia } from '@singletons/media';
+import { CoreMimetype } from '@singletons/mimetype';
+import { CoreNetwork } from '@services/network';
 import { CoreObject } from '@singletons/object';
+import { CoreOpener } from '@singletons/opener';
 import { CorePath } from '@singletons/path';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreSSO } from '@singletons/sso';
 import { CoreText } from '@singletons/text';
 import { CoreTime } from '@singletons/time';
 import { CoreUrl } from '@singletons/url';
+import { CoreUtils } from '@singletons/utils';
 import { CoreWait } from '@singletons/wait';
 import { CoreWindow } from '@singletons/window';
-import { CoreCache } from '@classes/cache';
-import { CoreDelegate } from '@classes/delegate';
-import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
-import { CoreNetwork } from '@services/network';
-
-// Import all core modules that define components, directives and pipes.
-import { CoreSharedModule } from '@/core/shared.module';
-import { CoreCourseComponentsModule } from '@features/course/components/components.module';
-import { CoreCourseDirectivesModule } from '@features/course/directives/directives.module';
-import { CoreCoursesComponentsModule } from '@features/courses/components/components.module';
-import { CoreSitePluginsDirectivesModule } from '@features/siteplugins/directives/directives.module';
-import { CoreUserComponentsModule } from '@features/user/components/components.module';
-import { CoreQuestionComponentsModule } from '@features/question/components/components.module';
-import { CoreBlockComponentsModule } from '@features/block/components/components.module';
-import { CoreEditorComponentsModule } from '@features/editor/components/components.module';
-import { CoreSearchComponentsModule } from '@features/search/components/components.module';
 
 // Import addon providers. Do not import database module because it causes circular dependencies.
 import { getBadgesServices } from '@addons/badges/badges.module';
@@ -117,23 +117,23 @@ import { getCompetencyServices } from '@addons/competency/competency.module';
 import { getCourseCompletionServices } from '@addons/coursecompletion/coursecompletion.module';
 import { getMessageOutputServices } from '@addons/messageoutput/messageoutput.module';
 import { getMessagesServices } from '@addons/messages/messages.module';
-import { getModAssignComponentModules, getModAssignServices } from '@addons/mod/assign/assign.module';
-import { getModQuizComponentModules, getModQuizServices } from '@addons/mod/quiz/quiz.module';
-import { getModWorkshopComponentModules, getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
+import { getModAssignServices } from '@addons/mod/assign/assign.module';
+import { getModQuizServices } from '@addons/mod/quiz/quiz.module';
+import { getModWorkshopServices } from '@addons/mod/workshop/workshop.module';
 import { getNotesServices } from '@addons/notes/notes.module';
 import { getNotificationsServices } from '@addons/notifications/notifications.module';
 import { getPrivateFilesServices } from '@addons/privatefiles/privatefiles.module';
-
-// Import standalone components used by site plugins.
-import { getCoreStandaloneComponents } from '@components/components.module';
 
 // Import some addon modules that define components, directives and pipes. Only import the important ones.
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
 
 import { CoreAutoLogoutService } from '@features/autologout/services/autologout';
-import { CoreSitePluginsProvider } from '@features/siteplugins/services/siteplugins';
-import { getSitePluginsExportedObjects } from '@features/siteplugins/siteplugins.module';
+import {
+    getSitePluginsExportedDirectives,
+    getSitePluginsExportedObjects,
+    getSitePluginsServices,
+} from '@features/siteplugins/siteplugins.module';
 import { CoreError } from '@classes/errors/error';
 
 /**
@@ -142,43 +142,37 @@ import { CoreError } from '@classes/errors/error';
 @Injectable({ providedIn: 'root' })
 export class CoreCompileProvider {
 
-    protected logger: CoreLogger;
+    protected injector = inject(Injector);
+
+    protected logger = CoreLogger.getInstance('CoreCompileProvider');
 
     // Other Ionic/Angular providers that don't depend on where they are injected.
-    protected readonly OTHER_SERVICES: unknown[] = [
+    protected static readonly OTHER_SERVICES: unknown[] = [
         TranslateService, HttpClient, DomSanitizer, ActionSheetController, AlertController, LoadingController,
         ModalController, PopoverController, ToastController, FormBuilder,
     ];
 
     // List of imports for dynamic module. Since the template can have any component we need to import all core components modules.
-    protected readonly IMPORTS = [
+    protected static readonly IMPORTS = [
         CoreSharedModule,
-        CoreCourseComponentsModule,
-        CoreCoursesComponentsModule,
-        CoreUserComponentsModule,
-        CoreCourseDirectivesModule,
-        CoreQuestionComponentsModule,
-        CoreBlockComponentsModule,
-        CoreEditorComponentsModule,
-        CoreSearchComponentsModule,
-        CoreSitePluginsDirectivesModule,
     ];
 
-    protected readonly LAZY_IMPORTS = [
-        getModAssignComponentModules,
-        getModQuizComponentModules,
-        getModWorkshopComponentModules,
-        getCoreStandaloneComponents,
-        getCourseStandaloneComponents,
+    protected static readonly LAZY_IMPORTS = [
+        getBlockExportedDirectives,
+        getCoreDeprecatedComponents,
+        getCourseExportedDirectives,
+        getCoursesExportedDirectives,
+        getEditorExportedDirectives,
+        getQuestionExportedDirectives,
+        getRemindersExportedDirectives,
+        getSearchExportedDirectives,
+        getSitePluginsExportedDirectives,
+        getUsersExportedDirectives,
     ];
 
     protected componentId = 0;
     protected libraries?: unknown[];
     protected exportedObjects?: Record<string, unknown>;
-
-    constructor(protected injector: Injector) {
-        this.logger = CoreLogger.getInstance('CoreCompileProvider');
-    }
 
     /**
      * Create and compile a dynamic component.
@@ -200,10 +194,10 @@ export class CoreCompileProvider {
         // Import the Angular compiler to be able to compile components in runtime.
         await import('@angular/compiler');
 
-        const lazyImports = await Promise.all(this.LAZY_IMPORTS.map(getModules => getModules()));
+        const lazyImports = await Promise.all(CoreCompileProvider.LAZY_IMPORTS.map(getModules => getModules()));
         const imports = [
             ...lazyImports.flat(),
-            ...this.IMPORTS,
+            ...CoreCompileProvider.IMPORTS,
             ...extraImports,
         ];
 
@@ -212,7 +206,6 @@ export class CoreCompileProvider {
             template,
             host: { 'compiled-component-id': String(this.componentId++) },
             styles,
-            standalone: true,
             imports,
             schemas: [NO_ERRORS_SCHEMA],
         })(componentClass);
@@ -295,18 +288,18 @@ export class CoreCompileProvider {
         // Add some final classes.
         instance['injector'] = injector;
         instance['Validators'] = Validators;
-        instance['CoreConstants'] = CoreConstants;
-        instance['DownloadStatus'] = DownloadStatus;
-        instance['CoreConfigConstants'] = CoreConstants.CONFIG;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
-        instance['moment'] = moment;
+        /**
+         * @deprecated since 5.0, plugins should use native Date parsing functions instead.
+         * Also now it uses dayjs.
+         */
+        instance['moment'] = dayjs;
         instance['Md5'] = Md5;
         instance['signal'] = signal;
         instance['computed'] = computed;
         instance['untracked'] = untracked;
         instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
-        instance['model'] = modelWithInjectionContext(injector);
 
         /**
          * @deprecated since 4.1, plugins should use CoreNetwork instead.
@@ -314,26 +307,39 @@ export class CoreCompileProvider {
          */
         instance['Network'] = CoreNetwork.instance;
         instance['CoreNetwork'] = CoreNetwork.instance;
-        instance['CorePlatform'] = CorePlatform.instance;
-        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreArray'] = CoreArray;
         instance['CoreColors'] = CoreColors;
+        instance['CoreCountries'] = CoreCountries;
         instance['CoreDirectivesRegistry'] = CoreDirectivesRegistry;
         instance['CoreDom'] = CoreDom;
+        instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
+        instance['CoreIframe'] = CoreIframe;
         instance['CoreKeyboard'] = CoreKeyboard;
+        instance['CoreMedia'] = CoreMedia;
+        instance['CoreMimetype'] = CoreMimetype;
         instance['CoreObject'] = CoreObject;
+        instance['CoreOpener'] = CoreOpener;
         instance['CorePath'] = CorePath;
+        instance['CorePlatform'] = CorePlatform.instance;
+        instance['CorePromiseUtils'] = CorePromiseUtils;
+        instance['CoreSSO'] = CoreSSO;
+        instance['CoreSyncBaseProvider'] = CoreSyncBaseProvider;
         instance['CoreText'] = CoreText;
         instance['CoreTime'] = CoreTime;
         instance['CoreUrl'] = CoreUrl;
+        instance['CoreUtils'] = CoreUtils;
         instance['CoreWait'] = CoreWait;
         instance['CoreWindow'] = CoreWindow;
         instance['CoreCache'] = CoreCache; // @deprecated since 4.4, plugins should use plain objects instead.
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
-        instance['CoreGeolocationError'] = CoreGeolocationError;
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason;
+
+        /**
+         * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
+         */
+        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line @typescript-eslint/no-deprecated
+        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line @typescript-eslint/no-deprecated
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {
@@ -399,6 +405,8 @@ export class CoreCompileProvider {
             getNotesServices(),
             getNotificationsServices(),
             getPrivateFilesServices(),
+            getRemindersServices(),
+            getSitePluginsServices(),
         ]);
 
         const lazyLibraries = services.flat();
@@ -406,8 +414,7 @@ export class CoreCompileProvider {
         return [
             ...lazyLibraries,
             CoreAutoLogoutService,
-            CoreSitePluginsProvider,
-            ...this.OTHER_SERVICES,
+            ...CoreCompileProvider.OTHER_SERVICES,
         ];
     }
 
@@ -418,8 +425,11 @@ export class CoreCompileProvider {
      */
     protected async getExportedObjects(): Promise<Record<string, unknown>> {
         const objects = await Promise.all([
+            getCoreExportedObjects(),
             getCoreErrorsExportedObjects(),
             getCourseExportedObjects(),
+            getCoursesExportedObjects(),
+            getMainMenuExportedObjects(),
             getContentLinksExportedObjects(),
             getSitePluginsExportedObjects(),
         ]);

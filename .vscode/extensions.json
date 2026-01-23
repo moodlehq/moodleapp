@@ -1,7 +1,7 @@
 {
     "recommendations": [
-        "ionic.ionic",
+        "webnative.webnative",
         "dbaeumer.vscode-eslint",
-        "angular.ng-template"
+        "angular.ng-template",
     ]
 }

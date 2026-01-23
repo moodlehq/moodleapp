@@ -12,71 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable, Type } from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { AddonQtypeCalculatedComponent } from '@addons/qtype/calculated/component/calculated';
-import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { AddonQtypeCalculatedHandler } from '@addons/qtype/calculated/services/handlers/calculated';
-import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { makeSingleton } from '@singletons';
+import { AddonQtypeNumericalHandlerService } from '@addons/qtype/numerical/services/handlers/numerical';
 
 /**
  * Handler to support calculated simple question type.
+ * This question type depends on numeric question type.
  */
 @Injectable({ providedIn: 'root' })
-export class AddonQtypeCalculatedSimpleHandlerService implements CoreQuestionHandler {
+export class AddonQtypeCalculatedSimpleHandlerService extends AddonQtypeNumericalHandlerService {
 
     name = 'AddonQtypeCalculatedSimple';
     type = 'qtype_calculatedsimple';
-
-    /**
-     * @inheritdoc
-     */
-    getComponent(): Type<unknown> {
-        // Calculated simple behaves like a calculated, use the same component.
-        return AddonQtypeCalculatedComponent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    isCompleteResponse(
-        question: CoreQuestionQuestionParsed,
-        answers: CoreQuestionsAnswers,
-    ): number {
-        // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isCompleteResponse(question, answers);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabled(): Promise<boolean> {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    isGradableResponse(
-        question: CoreQuestionQuestionParsed,
-        answers: CoreQuestionsAnswers,
-    ): number {
-        // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isGradableResponse(question, answers);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    isSameResponse(
-        question: CoreQuestionQuestionParsed,
-        prevAnswers: CoreQuestionsAnswers,
-        newAnswers: CoreQuestionsAnswers,
-    ): boolean {
-        // This question type depends on calculated.
-        return AddonQtypeCalculatedHandler.isSameResponse(question, prevAnswers, newAnswers);
-    }
 
 }
 

@@ -14,18 +14,34 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, OnInit, EventEmitter, ChangeDetectorRef, Type, ElementRef } from '@angular/core';
-import { AsyncDirective } from '@classes/async-directive';
+import {
+    Component,
+    Input,
+    Output,
+    OnInit,
+    EventEmitter,
+    ChangeDetectorRef,
+    Type,
+    ElementRef,
+    inject,
+    viewChild,
+    effect,
+} from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { Translate } from '@singletons';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreLogger } from '@singletons/logger';
+import { CoreObject } from '@singletons/object';
+import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
+import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
+import { AsyncDirective } from '@classes/async-directive';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render a question.
@@ -33,7 +49,10 @@ import { CoreLogger } from '@singletons/logger';
 @Component({
     selector: 'core-question',
     templateUrl: 'core-question.html',
-    styleUrls: ['../../question.scss'],
+    styleUrl: '../../question.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
@@ -51,51 +70,74 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
     @Output() buttonClicked = new EventEmitter<CoreQuestionBehaviourButton>(); // Will emit when a behaviour button is clicked.
     @Output() onAbort= new EventEmitter<void>(); // Will emit an event if the question should be aborted.
 
+    readonly dynComponent = viewChild(CoreDynamicComponent<CoreQuestionBaseComponent>);
+
     componentClass?: Type<unknown>; // The class of the component to render.
     data: Record<string, unknown> = {}; // Data to pass to the component.
     seqCheck?: { name: string; value: string }; // Sequenche check name and value (if any).
     behaviourComponents?: Type<unknown>[] = []; // Components to render the question behaviour.
-    promisedReady: CorePromisedValue<void>;
 
     validationError?: string;
 
+    protected promisedDynamicComponent = new CorePromisedValue<CoreDynamicComponent<CoreQuestionBaseComponent>>();
+    protected showQuestionPromise = new CorePromisedValue<void>();
+
     protected logger: CoreLogger;
 
-    get loaded(): boolean {
-        return this.promisedReady.isResolved();
+    protected changeDetector = inject(ChangeDetectorRef);
+    protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    get showQuestion(): boolean {
+        return this.showQuestionPromise.isResolved();
     }
 
-    constructor(protected changeDetector: ChangeDetectorRef, private element: ElementRef) {
-        this.logger = CoreLogger.getInstance('CoreQuestionComponent');
-        this.promisedReady = new CorePromisedValue();
-        CoreDirectivesRegistry.register(this.element.nativeElement, this);
-    }
-
+    /**
+     * @inheritdoc
+     */
     async ready(): Promise<void> {
-        await this.promisedReady;
+        await this.showQuestionPromise;
+        const dynamicComponent = await this.promisedDynamicComponent;
+
+        return dynamicComponent.ready();
+    }
+
+    constructor() {
+        this.logger = CoreLogger.getInstance('CoreQuestionComponent');
+        CoreDirectivesRegistry.register(this.element, this);
+
+        effect(() => {
+            const el = this.dynComponent();
+            if (!el) {
+                return;
+            }
+
+            this.promisedDynamicComponent.resolve(el);
+        });
+
     }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (!this.question || (this.question.type != 'random' &&
+        if (!this.question || (this.question.type !== 'random' &&
                 !CoreQuestionDelegate.isQuestionSupported(this.question.type))) {
-            this.promisedReady.resolve();
+            this.showQuestionPromise.resolve();
 
             return;
         }
 
         // Get the component to render the question.
-        this.componentClass = await CoreUtils.ignoreErrors(
+        this.componentClass = await CorePromiseUtils.ignoreErrors(
             CoreQuestionDelegate.getComponentForQuestion(this.question),
         );
 
         if (!this.componentClass) {
-            this.promisedReady.resolve();
+            this.showQuestionPromise.resolve();
 
             return;
         }
+
         // Set up the data needed by the question and behaviour components.
         this.data = {
             question: this.question,
@@ -125,7 +167,7 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
             this.logger.warn('Aborting question because the behaviour is not supported.', this.question.slot);
             CoreQuestionHelper.showComponentError(
                 this.onAbort,
-                Translate.instant('addon.mod_quiz.errorbehaviournotsupported') + ' ' + behaviour,
+                `${Translate.instant('addon.mod_quiz.errorbehaviournotsupported')} ${behaviour}`,
             );
 
             return;
@@ -142,20 +184,10 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
 
         CoreQuestionHelper.extractQbehaviourRedoButton(this.question);
 
-        // Extract the validation error of the question.
-        this.validationError = CoreQuestionHelper.getValidationErrorFromHtml(this.question.html);
-
         // Load local answers if offline is enabled.
         if (this.offlineEnabled && this.component && this.attemptId) {
             await CoreQuestionHelper.loadLocalAnswers(this.question, this.component, this.attemptId);
-
-            this.validationError = CoreQuestionDelegate.getValidationError(
-                this.question,
-                this.question.localAnswers || {},
-                this.validationError,
-                this.component,
-                this.attemptId,
-            );
+            await CoreQuestionHelper.loadLocalQuestionState(this.question,this.attemptId);
         } else {
             this.question.localAnswers = {};
         }
@@ -174,8 +206,39 @@ export class CoreQuestionComponent implements OnInit, AsyncDirective {
                 this.question,
             );
         } finally {
-            this.question.html = CoreDomUtils.removeElementFromHtml(this.question.html, '.im-controls');
-            this.promisedReady.resolve();
+            this.question.html = CoreDom.removeElementFromHtml(this.question.html, '.im-controls');
+            this.showQuestionPromise.resolve();
+            await this.loadValidationError();
+        }
+    }
+
+    /**
+     * Load the validation error of the question.
+     */
+    async loadValidationError(): Promise<void> {
+        if (!this.question) {
+            return;
+        }
+
+        // Ensure question is completely initialized.
+        await this.ready();
+
+        // Extract the validation error of the question.
+        this.validationError = CoreQuestionHelper.getValidationErrorFromHtml(this.question.html);
+
+        // Load local answers if offline is enabled.
+        if (this.offlineEnabled && this.component && this.attemptId) {
+            if (this.question.localAnswers && !CoreObject.isEmpty(this.question.localAnswers)) {
+                this.validationError = this.question.state === 'invalid'
+                    ? CoreQuestionDelegate.getValidationError(
+                        this.question,
+                        this.question.localAnswers,
+                        this.validationError,
+                        this.component,
+                        this.attemptId,
+                    )
+                    : '';
+            }
         }
     }
 

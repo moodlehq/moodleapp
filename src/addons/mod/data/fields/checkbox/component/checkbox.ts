@@ -15,6 +15,7 @@
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Component to render data checkbox field.
@@ -22,6 +23,9 @@ import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-fiel
 @Component({
     selector: 'addon-mod-data-field-checkbox',
     templateUrl: 'addon-mod-data-field-checkbox.html',
+    imports: [
+        CoreSharedModule,
+    ],
 })
 export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginBaseComponent {
 
@@ -42,10 +46,10 @@ export class AddonModDataFieldCheckboxComponent extends AddonModDataFieldPluginB
         }
 
         if (this.searchMode) {
-            this.addControl('f_' + this.field.id + '_allreq');
+            this.addControl(`f_${this.field.id}_allreq`);
         }
 
-        this.addControl('f_' + this.field.id, this.getValidValues(this.value));
+        this.addControl(`f_${this.field.id}`, this.getValidValues(this.value));
     }
 
     /**

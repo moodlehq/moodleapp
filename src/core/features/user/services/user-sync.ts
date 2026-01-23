@@ -16,19 +16,18 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
-import { CoreUserOffline } from './user-offline';
-import { CoreUser } from './user';
+import { CoreUserPreferencesOffline } from './user-preferences-offline';
+import { CoreUserPreferences } from './user-preferences';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 
 /**
  * Service to sync user preferences.
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
-
-    static readonly AUTO_SYNCED = 'core_user_autom_synced';
 
     constructor() {
         super('CoreUserSync');
@@ -77,20 +76,20 @@ export class CoreUserSyncProvider extends CoreSyncBaseProvider<string[]> {
     protected async performSyncSitePreferences(siteId: string): Promise<string[]> {
         const warnings: string[] = [];
 
-        const preferences = await CoreUserOffline.getChangedPreferences(siteId);
+        const preferences = await CoreUserPreferencesOffline.getChangedPreferences(siteId);
 
-        await CoreUtils.allPromises(preferences.map(async (preference) => {
-            const onlineValue = await CoreUser.getUserPreferenceOnline(preference.name, siteId);
+        await CorePromiseUtils.allPromises(preferences.map(async (preference) => {
+            const onlineValue = await CoreUserPreferences.getPreferenceOnline(preference.name, siteId);
 
             if (onlineValue !== null && preference.onlinevalue != onlineValue) {
                 // Preference was changed on web while the app was offline, do not sync.
-                return CoreUserOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
+                return CoreUserPreferencesOffline.setPreference(preference.name, onlineValue, onlineValue, siteId);
             }
 
             try {
-                await CoreUser.setUserPreference(preference.name, preference.value, siteId);
+                await CoreUserPreferences.setPreferenceOnline(preference.name, preference.value, undefined, siteId);
             } catch (error) {
-                if (CoreUtils.isWebServiceError(error)) {
+                if (CoreWSError.isWebServiceError(error)) {
                     const warning = CoreErrorHelper.getErrorMessageFromError(error);
                     if (warning) {
                         warnings.push(warning);

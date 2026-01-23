@@ -1,4 +1,4 @@
-@core_courses @app @javascript
+@core_courses @app @core @core_my @block_myoverview @block_timeline @javascript
 Feature: Test basic usage of courses in app
   In order to participate in the courses while using the mobile app
   As a student
@@ -102,6 +102,8 @@ Feature: Test basic usage of courses in app
     And I press "Search" "button" in the app
     Then I should find "Course 4" in the app
     And the header should be "Available courses" in the app
+    And "Show only my courses" "ion-toggle" should not be selected in the app
+
 
     When I press "Course 4" in the app
     Then I should find "Course 4" in the app

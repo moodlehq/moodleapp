@@ -1,4 +1,4 @@
-@core_comments @app @javascript
+@core_comments @app @core_comment @javascript
 Feature: Test basic usage of comments in app
   In order to participate in the comments while using the mobile app
   As a student
@@ -38,8 +38,8 @@ Feature: Test basic usage of comments in app
     And I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test teacher" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I should find "Comments (1)" in the app
@@ -51,9 +51,9 @@ Feature: Test basic usage of comments in app
     And I press "Comments (1)" in the app
     And I set the field "Add a comment..." to "comment test student" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (2)" in the app
@@ -78,14 +78,13 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
     When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should find "comment test" in the app
@@ -105,7 +104,7 @@ Feature: Test basic usage of comments in app
     When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should not see "There are offline comments to be synchronised."
@@ -126,8 +125,8 @@ Feature: Test basic usage of comments in app
     And I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test teacher" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
     And I go back in the app
     And I should find "Comments (1)" in the app
 
@@ -138,9 +137,9 @@ Feature: Test basic usage of comments in app
     And I press "Comments (1)" in the app
     And I set the field "Add a comment..." to "comment test student" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test teacher" in the app
     And I should find "comment test student" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (2)" in the app
@@ -166,14 +165,13 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
     When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should find "comment test" in the app
@@ -193,7 +191,7 @@ Feature: Test basic usage of comments in app
     When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should not see "There are offline comments to be synchronised."
@@ -218,8 +216,8 @@ Feature: Test basic usage of comments in app
     When I press "Comments (0)" in the app
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Comment created" in the app
     And I should find "comment test" in the app
+    And I should not find "There are offline comments to be synchronised" in the app
 
     When I go back in the app
     And I press "Comments (1)" in the app
@@ -249,14 +247,13 @@ Feature: Test basic usage of comments in app
     And I switch network connection to offline
     And I set the field "Add a comment..." to "comment test" in the app
     And I press "Send" in the app
-    Then I should find "Data stored in the device because it couldn't be sent. It will be sent automatically later." in the app
     And I should find "There are offline comments to be synchronised." in the app
     And I should find "comment test" in the app
 
     When I go back in the app
     And I press "Comments (0)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should find "comment test" in the app
@@ -276,7 +273,7 @@ Feature: Test basic usage of comments in app
     When I go back in the app
     And I press "Comments (1)" in the app
     And I switch network connection to wifi
-    And I press "Display options" in the app
+    And I press the page context menu button in the app
     And I press "Synchronise now" in the app
     And I close the popup in the app
     Then I should not see "There are offline comments to be synchronised."

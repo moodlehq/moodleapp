@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnDestroy, viewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CanLeave } from '@guards/can-leave';
-import { CoreDomUtils } from '@services/utils/dom';
-import { Translate } from '@singletons';
 import { AddonModH5PActivityIndexComponent } from '../../components/index';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays an H5P activity.
@@ -26,26 +26,31 @@ import { AddonModH5PActivityIndexComponent } from '../../components/index';
 @Component({
     selector: 'page-addon-mod-h5pactivity-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModH5PActivityIndexComponent,
+    ],
 })
-export class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
+export default class AddonModH5PActivityIndexPage extends CoreCourseModuleMainActivityPage<AddonModH5PActivityIndexComponent>
     implements CanLeave, OnDestroy {
 
     canLeaveSafely = false;
     remainingTimeout?: number;
 
-    @ViewChild(AddonModH5PActivityIndexComponent) activityComponent?: AddonModH5PActivityIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModH5PActivityIndexComponent);
 
     /**
      * @inheritdoc
      */
     async canLeave(): Promise<boolean> {
-        if (!this.activityComponent?.playing || this.activityComponent.isOpeningPage || this.activityComponent.saveStateEnabled) {
+        const activityComponent = this.activityComponent();
+        if (!activityComponent.playing || activityComponent.isOpeningPage || activityComponent.saveStateEnabled) {
             return true;
         }
 
         if (!this.canLeaveSafely) {
             try {
-                await CoreDomUtils.showConfirm(Translate.instant('core.confirmleaveunknownchanges'));
+                await CoreAlerts.confirmLeaveWithChanges();
 
                 return true;
             } catch {

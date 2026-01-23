@@ -13,14 +13,17 @@
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
     <core-loading [hideUntil]="loaded">
-        <core-empty-box *ngIf="!sections || !sections.length" icon="fas-box-open"
-            [message]="'core.course.nocontentavailable' | translate" />
+        @if (!sections || !sections.length) {
+            <core-empty-box icon="fas-box-open" [message]="'core.course.nocontentavailable' | translate" />
+        }
 
         <ion-list class="core-course-module-list-wrapper">
             <ng-container *ngFor="let section of sections; index as i">
-                <ng-container *ngIf="i <= lastShownSectionIndex">
+                @if (i <= lastShownSectionIndex) {
+
                     <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: section}" />
-                </ng-container>
+
+                }
             </ng-container>
         </ion-list>
         <core-infinite-loading [enabled]="canLoadMore" (action)="showMoreActivities($event)" />
@@ -29,19 +32,21 @@
 
 <ng-template #sectionTemplate let-section="section">
     <ion-card>
-        <ion-item-divider class="course-section ion-text-wrap" *ngIf="section.name">
-            <ion-label>
-                <h2>
-                    <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="courseId" />
-                </h2>
-            </ion-label>
-        </ion-item-divider>
+        @if (section.name) {
+            <ion-item-divider class="course-section ion-text-wrap">
+                <ion-label>
+                    <h2>
+                        <core-format-text [text]="section.name" contextLevel="course" [contextInstanceId]="courseId" />
+                    </h2>
+                </ion-label>
+            </ion-item-divider>
+        }
         <ng-container *ngFor="let modOrSubsection of section.contents">
             @if (isModule(modOrSubsection)) {
-            <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="false" [showAvailability]="false"
-                [showExtra]="false" [showDownloadStatus]="false" [showCompletion]="false" [showIndentation]="false" />
+                <core-course-module [module]="modOrSubsection" [section]="section" [showActivityDates]="false" [showAvailability]="false"
+                    [showExtra]="false" [showDownloadStatus]="false" [showCompletion]="false" [showIndentation]="false" />
             } @else {
-            <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
+                <ng-container *ngTemplateOutlet="sectionTemplate; context: {section: modOrSubsection}" />
             }
         </ng-container>
     </ion-card>

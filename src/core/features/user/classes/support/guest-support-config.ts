@@ -19,7 +19,7 @@ import {
 } from '@classes/sites/unauthenticated-site';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreUserSupportConfig } from './support-config';
 import { CoreSitesFactory } from '@services/sites-factory';
 
@@ -35,7 +35,7 @@ export class CoreUserGuestSupportConfig extends CoreUserSupportConfig {
      * @returns Support config.
      */
     static async forSite(siteUrl: string): Promise<CoreUserSupportConfig> {
-        const siteConfig = await CoreUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(siteUrl));
+        const siteConfig = await CorePromiseUtils.ignoreErrors(CoreSites.getPublicSiteConfigByUrl(siteUrl));
 
         if (!siteConfig) {
             return new CoreUserNullSupportConfig();

@@ -1,0 +1,83 @@
+@if (question && (question.text || question.text === '')) {
+    <ion-list class="addon-qtype-numerical-container">
+        <ion-item class="ion-text-wrap">
+            <ion-label>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" [contextLevel]="contextLevel"
+                    [contextInstanceId]="contextInstanceId" [courseId]="courseId" />
+            </ion-label>
+        </ion-item>
+
+        @if (question.input && !question.input.isInline) {
+            @if (question.options?.length && question.optionsFirst) {
+                <!-- Display unit options before the answer input. -->
+                <ng-container *ngTemplateOutlet="radioUnits" />
+            }
+
+            <ion-item class="ion-text-wrap core-{{question.input.correctIconColor}}-item">
+                <div class="flex-row ion-align-items-end">
+                    @if (question.select && question.selectFirst) {
+                        <!-- Display unit select before the answer input. -->
+                        <ng-container *ngTemplateOutlet="selectUnits" />
+                    }
+
+                    <!-- Input to enter the answer. -->
+                    <ion-input labelPlacement="stacked" type="text" [attr.name]="question.input.name"
+                        [placeholder]="question.input.readOnly ? '' : 'core.question.answer' | translate" [value]="question.input.value"
+                        [disabled]="question.input.readOnly" autocorrect="off" [label]="'addon.mod_quiz.answercolon' | translate" />
+
+                    @if (question.select && !question.selectFirst) {
+                        <!-- Display unit select after the answer input. -->
+                        <ng-container *ngTemplateOutlet="selectUnits" />
+                    }
+                </div>
+                @if (question.input.correctIcon) {
+                    <ion-icon class="core-correct-icon ion-align-self-center" slot="end" [name]="question.input.correctIcon"
+                        [color]="[question.input.correctIconColor]" [ariaLabel]="question.input.correctIconLabel" />
+                }
+            </ion-item>
+
+            @if (question.options?.length && !question.optionsFirst) {
+                <!-- Display unit options after the answer input. -->
+                <ng-container *ngTemplateOutlet="radioUnits" />
+            }
+        }
+    </ion-list>
+}
+
+<!-- Template for units entered using a select. -->
+<ng-template #selectUnits>
+    @if (question && question.select) {
+        @if (question.select.accessibilityLabel) {
+            <label class="accesshide" for="{{question.select.id}}">
+                {{ question.select.accessibilityLabel }}
+            </label>
+        }
+
+        <ion-select id="{{question.select.id}}" [name]="question.select.name" [(ngModel)]="question.select.selected"
+            interface="action-sheet" [disabled]="question.select.disabled" [slot]="question.selectFirst ? 'start' : 'end'"
+            [cancelText]="'core.cancel' | translate" [interfaceOptions]="{header: 'addon.mod_quiz.unit' | translate}">
+            @for (option of question.select.options; track option.value) {
+                <ion-select-option [value]="option.value">{{option.label}}</ion-select-option>
+            }
+        </ion-select>
+    }
+</ng-template>
+
+<!-- Template for units entered using radio buttons. -->
+<ng-template #radioUnits>
+    @if (question && question.options) {
+        <ion-radio-group [(ngModel)]="question.unit" [name]="question.optionsName">
+            @for (option of question.options; track option.value) {
+                <ion-item class="ion-text-wrap">
+                    <ion-radio [value]="option.value" [disabled]="option.disabled || question.input?.readOnly"
+                        [color]="question.input?.correctIconColor">
+                        {{ option.text }}
+                    </ion-radio>
+                </ion-item>
+            }
+
+            <!-- ion-radio doesn't use an input. Create a hidden input to hold the selected value. -->
+            <input type="hidden" [ngModel]="question.unit" [attr.name]="question.optionsName">
+        </ion-radio-group>
+    }
+</ng-template>

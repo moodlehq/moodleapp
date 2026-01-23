@@ -16,8 +16,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
@@ -25,7 +24,11 @@ import {
 } from '../../services/h5pactivity';
 import { CoreTime } from '@singletons/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
+import { ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY } from '../../constants';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSites } from '@services/sites';
+import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/attempt-summary/attempt-summary';
 
 /**
  * Page that displays results of an attempt.
@@ -33,15 +36,19 @@ import { ADDON_MOD_H5PACTIVITY_COMPONENT } from '../../constants';
 @Component({
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
-    styleUrls: ['attempt-results.scss'],
+    styleUrl: 'attempt-results.scss',
+    imports: [
+        CoreSharedModule,
+        AddonModH5PActivityAttemptSummaryComponent,
+    ],
 })
-export class AddonModH5PActivityAttemptResultsPage implements OnInit {
+export default class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
     loaded = false;
     h5pActivity?: AddonModH5PActivityData;
     attempt?: AddonModH5PActivityAttemptResults;
     user?: CoreUserProfile;
-    component = ADDON_MOD_H5PACTIVITY_COMPONENT;
+    component = ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY;
     courseId!: number;
     cmId!: number;
 
@@ -54,7 +61,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
                 return;
             }
 
-            await CoreUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
+            await CorePromiseUtils.ignoreErrors(AddonModH5PActivity.logViewReport(
                 this.h5pActivity.id,
                 { attemptId: this.attemptId },
             ));
@@ -78,8 +85,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
             this.cmId = CoreNavigator.getRequiredRouteNumberParam('cmId');
             this.attemptId = CoreNavigator.getRequiredRouteNumberParam('attemptId');
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
-
+            CoreAlerts.showError(error);
             CoreNavigator.back();
 
             return;
@@ -116,7 +122,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
 
             this.logView();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'Error loading attempt.');
+            CoreAlerts.showError(error, { default: 'Error loading attempt.' });
         } finally {
             this.loaded = true;
         }
@@ -128,7 +134,9 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
      * @returns Promise resolved when done.
      */
     protected async fetchUserProfile(): Promise<void> {
-        if (!this.attempt) {
+        if (!this.attempt || this.attempt?.userid === CoreSites.getCurrentSiteUserId()) {
+            this.user = undefined;
+
             return;
         }
 
@@ -153,7 +161,7 @@ export class AddonModH5PActivityAttemptResultsPage implements OnInit {
             promises.push(AddonModH5PActivity.invalidateAttemptResults(this.h5pActivity.id, this.attemptId));
         }
 
-        await CoreUtils.ignoreErrors(Promise.all(promises));
+        await CorePromiseUtils.ignoreErrors(Promise.all(promises));
 
         await this.fetchData();
     }

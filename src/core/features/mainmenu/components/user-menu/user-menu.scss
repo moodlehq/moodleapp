@@ -947,13 +947,12 @@ $shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
     display: none;
 }
 
-.core-usermenu-sitename {
-    font: var(--mdl-typography-subtitle-font-lg);
-}
+core-site-logo {
+    --core-site-logo-margin: 0px auto 8px auto;
+    --core-site-logo-max-height: var(--core-user-menu-site-logo-max-height);
 
-img.core-usermenu-site-logo {
-    margin-bottom: 8px;
-    max-height: var(--core-user-menu-site-logo-max-height);
+    --core-site-logo-sitename-font: var(--mdl-typography-subtitle-font-lg);
+    --core-site-logo-sitename-margin-bottom: 2px;
 }
 
 img.image-not-found {

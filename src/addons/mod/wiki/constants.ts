@@ -12,18 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const ADDON_MOD_WIKI_COMPONENT = 'mmaModWiki';
+import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '@features/course/constants';
 
+export const ADDON_MOD_WIKI_COMPONENT = 'AddonModWiki';
+export const ADDON_MOD_WIKI_COMPONENT_LEGACY = 'mmaModWiki';
 export const ADDON_MOD_WIKI_PAGE_NAME = 'mod_wiki';
+export const ADDON_MOD_WIKI_MODNAME = 'wiki';
 
+export const ADDON_MOD_WIKI_FEATURE_NAME = CORE_COURSE_MODULE_FEATURE_PREFIX + ADDON_MOD_WIKI_COMPONENT;
+
+// Events.
 export const ADDON_MOD_WIKI_AUTO_SYNCED = 'addon_mod_wiki_autom_synced';
 export const ADDON_MOD_WIKI_MANUAL_SYNCED = 'addon_mod_wiki_manual_synced';
-
 export const ADDON_MOD_WIKI_PAGE_CREATED_EVENT = 'addon_mod_wiki_page_created';
+export const ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT = 'addon_mod_wiki_page_created_offline';
+
 export const ADDON_MOD_WIKI_RENEW_LOCK_TIME = 30000; // Milliseconds.
-
-export const ADDON_MOD_WIKI_FEATURE_NAME = 'CoreCourseModuleDelegate_AddonModWiki';
-
-export const ADDON_MOD_WIKI_PREFETCH_NAME = 'AddonModWiki';
-export const ADDON_MOD_WIKI_PREFETCH_MODNAME = 'wiki';
-export const ADDON_MOD_WIKI_PREFETCH_COMPONENT = ADDON_MOD_WIKI_COMPONENT;

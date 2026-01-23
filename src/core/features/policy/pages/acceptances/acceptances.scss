@@ -1,6 +1,8 @@
 @use "theme/globals" as *;
 
 :host {
+    --details-bg: var(--gray-100);
+
     .core-policy-revision ion-badge {
         @include margin-horizontal(0px, 4px);
     }
@@ -51,7 +53,7 @@
 
         .core-policy-details {
             .item:not(.core-policy-title) {
-                --background: var(--gray-100);
+                --background: var(--details-bg);
             }
 
             .core-policy-user-agreement.core-policy-agreement-has-actions {
@@ -103,11 +105,6 @@
                 font-size: 1.125rem;
                 padding: 13px;
                 margin: 3px;
-
-                &.core-policy-icon-bullet {
-                    font-size: #{dynamic-font(6px)};
-                    width: 18px;
-                }
             }
 
         }
@@ -132,4 +129,9 @@
             background: var(--secondary);
         }
     }
+}
+
+
+:host-context(:root.dark) {
+   --details-bg: var(--gray-800);
 }

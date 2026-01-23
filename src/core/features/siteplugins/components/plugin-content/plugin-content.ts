@@ -20,9 +20,9 @@ import {
     EventEmitter,
     DoCheck,
     KeyValueDiffers,
-    ViewChild,
     KeyValueDiffer,
-    HostBinding,
+    inject,
+    viewChild,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Md5 } from 'ts-md5';
@@ -31,10 +31,13 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigator } from '@services/navigator';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreEvents } from '@singletons/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Component to render a site plugin content.
@@ -43,19 +46,29 @@ import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/c
     selector: 'core-site-plugins-plugin-content',
     templateUrl: 'core-siteplugins-plugin-content.html',
     styles: [':host { display: contents; }'],
+    imports: [
+        CoreSharedModule,
+        CoreCompileHtmlComponent,
+    ],
+    host: {
+        '[class]': 'component',
+    },
 })
 export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
     // Get the compile element. Don't set the right type to prevent circular dependencies.
-    @ViewChild('compile') compileComponent?: CoreCompileHtmlComponent;
+    readonly compileComponent = viewChild<CoreCompileHtmlComponent>('compile');
 
-    @HostBinding('class') @Input() component = '';
+    @Input() component = '';
     @Input({ required: true }) method!: string;
     @Input() args?: Record<string, unknown>;
     @Input() initResult?: CoreSitePluginsContent | null; // Result of the init WS call of the handler.
     @Input() data: Record<string, unknown> = {}; // Data to pass to the component.
     @Input() preSets?: CoreSiteWSPreSets; // The preSets for the WS call.
     @Input() pageTitle?: string; // Current page title. It can be used by the "new-content" directives.
+    @Input() contextLevel?: ContextLevel; // The context level to filter text. Can be used by some directives.
+    @Input() contextInstanceId?: number; // The instance ID related to the context. Can be used by some directives.
+    @Input() courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
     @Output() onContentLoaded = new EventEmitter<CoreSitePluginsPluginContentLoadedData>(); // Emits event when content is loaded.
     @Output() onLoadingContent = new EventEmitter<boolean>(); // Emits an event when starts to load the content.
 
@@ -69,7 +82,9 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
 
     protected differ: KeyValueDiffer<unknown, unknown>; // To detect changes in the data input.
 
-    constructor(differs: KeyValueDiffers) {
+    constructor() {
+        const differs = inject(KeyValueDiffers);
+
         this.differ = differs.find([]).create();
     }
 
@@ -153,7 +168,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.content = '<div></div>';
             this.onContentLoaded.emit({ refresh: !!refresh, success: false, content: this.content });
 
-            CoreDomUtils.showErrorModalDefault(error, 'core.errorloadingcontent', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.errorloadingcontent') });
         } finally {
             this.dataLoaded = true;
         }
@@ -179,6 +194,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
         jsData?: Record<string, unknown> | boolean,
         preSets?: CoreSiteWSPreSets,
         ptrEnabled?: boolean,
+        filterOptions?: FilterOptions,
     ): void {
         if (jsData === true) {
             jsData = this.data;
@@ -196,6 +212,9 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
                 jsData,
                 preSets,
                 ptrEnabled,
+                contextLevel: filterOptions?.contextLevel || this.contextLevel,
+                contextInstanceId: filterOptions?.contextInstanceId || this.contextInstanceId,
+                courseId: filterOptions?.courseId || this.courseId,
             },
         });
     }
@@ -256,7 +275,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      * @returns Result of the call. Undefined if no component instance or the function doesn't exist.
      */
     callComponentFunction(name: string, params?: unknown[]): unknown | undefined {
-        return this.compileComponent?.callComponentFunction(name, params);
+        return this.compileComponent()?.callComponentFunction(name, params);
     }
 
     /**
@@ -288,4 +307,10 @@ export type CoreSitePluginsPluginContentLoadedData = {
     refresh: boolean;
     success: boolean;
     content: string;
+};
+
+type FilterOptions = {
+    contextLevel?: ContextLevel; // The context level to filter text.
+    contextInstanceId?: number; // The instance ID related to the context.
+    courseId?: number; // Course ID the text belongs to. It can be used to improve performance with filters.
 };

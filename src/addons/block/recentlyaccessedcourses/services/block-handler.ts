@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { AddonBlockRecentlyAccessedCoursesComponent } from '../components/recentlyaccessedcourses/recentlyaccessedcourses';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 
@@ -42,7 +41,9 @@ export class AddonBlockRecentlyAccessedCoursesHandlerService extends CoreBlockBa
      *
      * @returns Data or promise resolved with the data.
      */
-    getDisplayData(): CoreBlockHandlerData {
+    async getDisplayData(): Promise<CoreBlockHandlerData> {
+        const { AddonBlockRecentlyAccessedCoursesComponent } =
+            await import('../components/recentlyaccessedcourses/recentlyaccessedcourses');
 
         return {
             title: 'addon.block_recentlyaccessedcourses.pluginname',

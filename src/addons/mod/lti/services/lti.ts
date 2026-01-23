@@ -14,7 +14,6 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreError } from '@classes/errors/error';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
@@ -23,10 +22,12 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreText } from '@singletons/text';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
+import { CoreOpener } from '@singletons/opener';
+import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { ADDON_MOD_LTI_COMPONENT } from '../constants';
+import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for LTI.
@@ -54,10 +55,6 @@ export class AddonModLtiProvider {
      * @returns Promise resolved with the file URL.
      */
     async generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
-        if (!CoreFile.isAvailable()) {
-            return url;
-        }
-
         // Generate a form with the params.
         let text = `<form action="${url}" name="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">\n`;
         params.forEach((p) => {
@@ -96,8 +93,8 @@ export class AddonModLtiProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getLtiCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
-            component: ADDON_MOD_LTI_COMPONENT,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
+            component: ADDON_MOD_LTI_COMPONENT_LEGACY,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
@@ -105,12 +102,7 @@ export class AddonModLtiProvider {
 
         const response = await site.read<AddonModLtiGetLtisByCoursesWSResponse>('mod_lti_get_ltis_by_courses', params, preSets);
 
-        const currentLti = response.ltis.find((lti) => lti.coursemodule == cmId);
-        if (currentLti) {
-            return currentLti;
-        }
-
-        throw new CoreError(Translate.instant('core.course.modulenotfound'));
+        return CoreCourseModuleHelper.getActivityByCmId(response.ltis, cmId);
     }
 
     /**
@@ -120,7 +112,7 @@ export class AddonModLtiProvider {
      * @returns Cache key.
      */
     protected getLtiCacheKey(courseId: number): string {
-        return AddonModLtiProvider.ROOT_CACHE_KEY + 'lti:' + courseId;
+        return `${AddonModLtiProvider.ROOT_CACHE_KEY}lti:${courseId}`;
     }
 
     /**
@@ -163,7 +155,6 @@ export class AddonModLtiProvider {
      *
      * @param courseId Course ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLti(courseId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -176,7 +167,6 @@ export class AddonModLtiProvider {
      *
      * @param id LTI id.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateLtiLaunchData(id: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -207,7 +197,7 @@ export class AddonModLtiProvider {
     isLaunchViaSiteDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:launchViaSite');
+        return !!site?.isFeatureDisabled(`${ADDON_MOD_LTI_FEATURE_NAME}:launchViaSite`);
     }
 
     /**
@@ -233,7 +223,7 @@ export class AddonModLtiProvider {
     isOpenInAppBrowserDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreCourseModuleDelegate_AddonModLti:openInAppBrowser');
+        return !!site?.isFeatureDisabled(`${ADDON_MOD_LTI_FEATURE_NAME}:openInAppBrowser`);
     }
 
     /**
@@ -252,10 +242,10 @@ export class AddonModLtiProvider {
         const launcherUrl = await this.generateLauncher(url, params);
 
         if (CorePlatform.isMobile()) {
-            CoreUtils.openInApp(launcherUrl);
+            CoreOpener.openInApp(launcherUrl);
         } else {
             // In desktop open in browser, we found some cases where inapp caused JS issues.
-            CoreUtils.openInBrowser(launcherUrl);
+            CoreOpener.openInBrowser(launcherUrl);
         }
     }
 
@@ -275,7 +265,7 @@ export class AddonModLtiProvider {
         return CoreCourseLogHelper.log(
             'mod_lti_view_lti',
             params,
-            ADDON_MOD_LTI_COMPONENT,
+            ADDON_MOD_LTI_COMPONENT_LEGACY,
             id,
             siteId,
         );
@@ -321,14 +311,7 @@ export type AddonModLtiGetLtisByCoursesWSResponse = {
 /**
  * LTI returned by mod_lti_get_ltis_by_courses.
  */
-export type AddonModLtiLti = {
-    id: number; // External tool id.
-    coursemodule: number; // Course module id.
-    course: number; // Course id.
-    name: string; // LTI name.
-    intro?: string; // The LTI intro.
-    introformat?: number; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
+export type AddonModLtiLti = CoreCourseModuleStandardElements & {
     timecreated?: number; // Time of creation.
     timemodified?: number; // Time of last modification.
     typeid?: number; // Type id.
@@ -350,10 +333,6 @@ export type AddonModLtiLti = {
     servicesalt?: string; // Service salt.
     icon?: string; // Alternative icon URL.
     secureicon?: string; // Secure icon URL.
-    section?: number; // Course section id.
-    visible?: number; // Visible.
-    groupmode?: number; // Group mode.
-    groupingid?: number; // Group id.
 };
 
 /**

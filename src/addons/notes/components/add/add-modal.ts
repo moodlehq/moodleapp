@@ -13,29 +13,28 @@
 // limitations under the License.
 
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
-import { Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreForms } from '@singletons/form';
 import { ModalController } from '@singletons';
 import { CoreKeyboard } from '@singletons/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreToasts, ToastDuration } from '@services/toasts';
-import { CoreLoadings } from '@services/loadings';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Component that displays a text area for composing a note.
  */
 @Component({
     templateUrl: 'add-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],
 })
 export class AddonNotesAddComponent {
 
-    @ViewChild('itemEdit') formElement?: ElementRef;
+    readonly formElement = viewChild<ElementRef>('itemEdit');
 
     @Input({ required: true }) courseId!: number;
     @Input() userId?: number;
@@ -61,7 +60,7 @@ export class AddonNotesAddComponent {
             this.userId = this.userId || CoreSites.getCurrentSiteUserId();
             const sent = await AddonNotes.addNote(this.userId, this.courseId, this.type, this.text);
 
-            CoreForms.triggerFormSubmittedEvent(this.formElement, sent, CoreSites.getCurrentSiteId());
+            CoreForms.triggerFormSubmittedEvent(this.formElement(), sent, CoreSites.getCurrentSiteId());
 
             ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type, sent: true }).finally(() => {
                 CoreToasts.show({
@@ -71,7 +70,7 @@ export class AddonNotesAddComponent {
                 });
             });
         } catch (error){
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
             this.processing = false;
         } finally {
             loadingModal.dismiss();
@@ -82,7 +81,7 @@ export class AddonNotesAddComponent {
      * Close modal.
      */
     closeModal(): void {
-        CoreForms.triggerFormCancelledEvent(this.formElement, CoreSites.getCurrentSiteId());
+        CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());
 
         ModalController.dismiss(<AddonNotesAddModalReturn>{ type: this.type });
     }

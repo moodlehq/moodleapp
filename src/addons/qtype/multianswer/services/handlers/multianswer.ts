@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { makeSingleton } from '@singletons';
-import { AddonQtypeMultiAnswerComponent } from '../../component/multianswer';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support multianswer question type.
@@ -43,7 +43,9 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeMultiAnswerComponent } = await import('../../component/multianswer');
+
         return AddonQtypeMultiAnswerComponent;
     }
 
@@ -53,19 +55,34 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // Get all the inputs in the question to check if they've all been answered.
         const names = CoreQuestion.getBasicAnswers<boolean>(
             CoreQuestionHelper.getAllInputNamesFromHtml(question.html || ''),
         );
+
+        const completedCheckboxes: string[] = [];
         for (const name in names) {
             const value = answers[name];
-            if (!value) {
-                return 0;
+
+            // Split name by _ to guess the type.
+            const parts = name.split('_');
+            if (parts.length  === 2 && parts[1] === 'answer') {
+                // Radio, dropdown or textarea.
+                if (!value) {
+                    return QuestionCompleteGradableResponse.NO;
+                }
+            } else if (completedCheckboxes.indexOf(parts[0]) === -1) {
+                // Checkboxes.
+                if (!value || value === 'false') {
+                    return QuestionCompleteGradableResponse.NO;
+                } else {
+                    completedCheckboxes.push(parts[0]);
+                }
             }
         }
 
-        return 1;
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -81,16 +98,32 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
-        for (const name in answers) {
+        // Get all the inputs in the question to check if they've all been answered.
+        const names = CoreQuestion.getBasicAnswers<boolean>(
+            CoreQuestionHelper.getAllInputNamesFromHtml(question.html || ''),
+        );
+
+        for (const name in names) {
             const value = answers[name];
-            if (value || value === false) {
-                return 1;
+
+            // Split name by _ to guess the type.
+            const parts = name.split('_');
+            if (parts.length  === 2 && parts[1] === 'answer') {
+                // Radio, dropdown or textarea.
+                if (value) {
+                    return QuestionCompleteGradableResponse.YES;
+                }
+            } else {
+                // Checkboxes.
+                if (value && value !== 'false') {
+                    return QuestionCompleteGradableResponse.YES;
+                }
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -108,17 +141,32 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
      * @inheritdoc
      */
     validateSequenceCheck(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean {
-        if (question.sequencecheck == Number(offlineSequenceCheck)) {
+        const offlineSequenceCheckNumber = Number(offlineSequenceCheck);
+        if (question.sequencecheck === offlineSequenceCheckNumber) {
             return true;
         }
 
         // For some reason, viewing a multianswer for the first time without answering it creates a new step "todo".
         // We'll treat this case as valid.
-        if (question.sequencecheck == 2 && question.state == 'todo' && offlineSequenceCheck == '1') {
+        if (question.sequencecheck === 2 && question.state === 'todo' && offlineSequenceCheckNumber === 1) {
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_multianswer.pleaseananswerallparts');
     }
 
 }

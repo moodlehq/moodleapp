@@ -12,18 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Optional } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
-import { IonContent } from '@ionic/angular';
 import { CoreApp } from '@services/app';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreTime } from '@singletons/time';
+import { CoreArray } from '@singletons/array';
 import { Translate } from '@singletons';
 import {
     AddonModBBB,
@@ -31,9 +28,15 @@ import {
     AddonModBBBMeetingInfo,
     AddonModBBBRecordingPlaybackTypes,
 } from '../../services/bigbluebuttonbn';
-import { ADDON_MOD_BBB_COMPONENT } from '../../constants';
-import { CoreLoadings } from '@services/loadings';
+import { ADDON_MOD_BBB_COMPONENT_LEGACY, ADDON_MOD_BBB_MODNAME } from '../../constants';
+import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreOpener } from '@singletons/opener';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreSharedModule } from '@/core/shared.module';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -41,24 +44,22 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 @Component({
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
-    styleUrls: ['index.scss'],
+    styleUrl: 'index.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+    ],
 })
 export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit {
 
-    component = ADDON_MOD_BBB_COMPONENT;
-    pluginName = 'bigbluebuttonbn';
+    component = ADDON_MOD_BBB_COMPONENT_LEGACY;
+    pluginName = ADDON_MOD_BBB_MODNAME;
     bbb?: AddonModBBBData;
     groupInfo?: CoreGroupInfo;
     groupId = 0;
     meetingInfo?: AddonModBBBMeetingInfo;
     recordings?: Recording[];
-
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModBBBIndexComponent', content, courseContentsPage);
-    }
 
     /**
      * @inheritdoc
@@ -144,7 +145,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const recordingsTable = await AddonModBBB.getRecordings(this.bbb.id, this.groupId, {
             cmId: this.module.id,
         });
-        const columns = CoreUtils.arrayToObject(recordingsTable.columns, 'key');
+        const columns = CoreArray.toObject(recordingsTable.columns, 'key');
 
         this.recordings = recordingsTable.parsedData.map(recordingData => {
             const details: RecordingDetail[] = [];
@@ -162,7 +163,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 }
 
                 if (columnData.formatter === 'customDate' && !isNaN(Number(value))) {
-                    value = CoreTimeUtils.userDate(Number(value), 'core.strftimedaydate');
+                    value = CoreTime.userDate(Number(value), 'core.strftimedaydate');
                 } else if (columnData.allowHTML && typeof value === 'string') {
                     // If the HTML is empty, don't display it.
                     const valueElement = convertTextToHTMLElement(value);
@@ -228,7 +229,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             return; // Shouldn't happen.
         }
 
-        await CoreUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
+        await CorePromiseUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
 
         this.analyticsLogEvent('mod_bigbluebuttonbn_view_bigbluebuttonbn');
     }
@@ -285,7 +286,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
             await this.fetchRecordings();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             this.showLoading = false;
         }
@@ -302,7 +303,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         try {
             const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
 
-            await CoreUtils.openInBrowser(joinUrl, {
+            await CoreOpener.openInBrowser(joinUrl, {
                 showBrowserWarning: false,
             });
 
@@ -311,7 +312,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
             this.updateMeetingInfo(true);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             modal.dismiss();
         }
@@ -328,11 +329,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         }
 
         try {
-            await CoreDomUtils.showConfirm(
-                Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm'),
-                Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm_title'),
-                Translate.instant('core.yes'),
-            );
+            await CoreAlerts.confirm(Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm'), {
+                header: Translate.instant('addon.mod_bigbluebuttonbn.end_session_confirm_title'),
+                okText: Translate.instant('core.yes'),
+            });
         } catch {
             // User canceled.
             return;
@@ -345,7 +345,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
             this.updateMeetingInfo();
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         } finally {
             modal.dismiss();
         }

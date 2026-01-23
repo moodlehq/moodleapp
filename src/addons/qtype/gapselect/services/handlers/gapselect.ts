@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import { Injectable, Type } from '@angular/core';
+import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { makeSingleton } from '@singletons';
-import { AddonQtypeGapSelectComponent } from '../../component/gapselect';
+import { makeSingleton, Translate } from '@singletons';
 
 /**
  * Handler to support gapselect question type.
@@ -42,7 +42,9 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     /**
      * @inheritdoc
      */
-    getComponent(): Type<unknown> {
+    async getComponent(): Promise<Type<unknown>> {
+        const { AddonQtypeGapSelectComponent } = await import('../../component/gapselect');
+
         return AddonQtypeGapSelectComponent;
     }
 
@@ -52,16 +54,16 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     isCompleteResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
         for (const name in answers) {
             const value = answers[name];
             if (!value || value === '0') {
-                return 0;
+                return QuestionCompleteGradableResponse.NO;
             }
         }
 
-        return 1;
+        return QuestionCompleteGradableResponse.YES;
     }
 
     /**
@@ -77,16 +79,16 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
     isGradableResponse(
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
-    ): number {
+    ): QuestionCompleteGradableResponse {
         // We should always get a value for each select so we can assume we receive all the possible answers.
         for (const name in answers) {
             const value = answers[name];
-            if (value) {
-                return 1;
+            if (value && value !== '0') {
+                return QuestionCompleteGradableResponse.YES;
             }
         }
 
-        return 0;
+        return QuestionCompleteGradableResponse.NO;
     }
 
     /**
@@ -98,6 +100,20 @@ export class AddonQtypeGapSelectHandlerService implements CoreQuestionHandler {
         newAnswers: CoreQuestionsAnswers,
     ): boolean {
         return CoreQuestion.compareAllAnswers(prevAnswers, newAnswers);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getValidationError(
+        question: CoreQuestionQuestionParsed,
+        answers: CoreQuestionsAnswers,
+    ): string | undefined {
+        if (this.isCompleteResponse(question, answers) === QuestionCompleteGradableResponse.YES) {
+            return;
+        }
+
+        return Translate.instant('addon.qtype_gapselect.pleaseputananswerineachbox');
     }
 
 }

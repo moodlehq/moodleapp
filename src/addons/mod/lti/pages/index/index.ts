@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewChild } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModLtiIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays an LTI.
@@ -23,9 +24,13 @@ import { AddonModLtiIndexComponent } from '../../components/index/index';
 @Component({
     selector: 'page-addon-mod-lti-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModLtiIndexComponent,
+    ],
 })
-export class AddonModLtiIndexPage extends CoreCourseModuleMainActivityPage<AddonModLtiIndexComponent> {
+export default class AddonModLtiIndexPage extends CoreCourseModuleMainActivityPage<AddonModLtiIndexComponent> {
 
-    @ViewChild(AddonModLtiIndexComponent) activityComponent?: AddonModLtiIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModLtiIndexComponent);
 
 }

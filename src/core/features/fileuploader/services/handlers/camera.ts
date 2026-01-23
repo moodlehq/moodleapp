@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreApp } from '@services/app';
+import { CoreMedia } from '@singletons/media';
 import { CorePlatform } from '@services/platform';
 import { CoreArray } from '@singletons/array';
 import { makeSingleton } from '@singletons';
@@ -34,7 +34,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
      * @inheritdoc
      */
     async isEnabled(): Promise<boolean> {
-        return CorePlatform.isMobile() || CoreApp.canGetUserMedia();
+        return CorePlatform.isMobile() || CoreMedia.canGetUserMedia();
     }
 
     /**

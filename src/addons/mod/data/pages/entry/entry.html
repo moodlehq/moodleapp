@@ -17,47 +17,58 @@
     </ion-refresher>
     <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
         <!-- Database entries found to be synchronized -->
-        <ion-card class="core-warning-card" *ngIf="entry && entry.hasOffline">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-            </ion-item>
-        </ion-card>
+        @if (entry && entry.hasOffline) {
+            <ion-card class="core-warning-card">
+                <ion-item>
+                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
+                    <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"
             [courseId]="courseId" />
 
-        <div class="addon-data-contents addon-data-entry addon-data-entries-{{database.id}}" *ngIf="database && entry">
-            <core-compile-html [text]="entryHtml" [jsData]="jsData" [extraImports]="extraImports" (compiling)="setRenderingEntry($event)"
-                [cssCode]="database.csstemplate" />
-        </div>
+        @if (database && entry) {
+            <div class="addon-data-contents addon-data-entry addon-data-entries-{{database.id}}">
+                <core-compile-html [text]="entryHtml" [jsData]="jsData" [extraImports]="extraImports"
+                    (compiling)="setRenderingEntry($event)" [cssCode]="database.csstemplate" />
+            </div>
 
-        <core-rating-rate *ngIf="database && entry && ratingInfo && (!database.approval || entry.approved)" [ratingInfo]="ratingInfo"
-            contextLevel="module" [instanceId]="database.coursemodule" [itemId]="entry.id" [itemSetId]="0" [courseId]="courseId"
-            [aggregateMethod]="database.assessed" [scaleId]="database.scale" [userId]="entry.userid" (onLoading)="setLoadingRating($event)"
-            (onUpdate)="ratingUpdated()" />
-        <core-rating-aggregate *ngIf="database && entry && ratingInfo" [ratingInfo]="ratingInfo" contextLevel="module"
-            [instanceId]="database.coursemodule" [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="database.assessed"
-            [scaleId]="database.scale" />
+            @if (ratingInfo) {
+                @if (!database.approval || entry.approved) {
+                    <core-rating-rate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule"
+                        [itemId]="entry.id" [itemSetId]="0" [courseId]="courseId" [aggregateMethod]="database.assessed"
+                        [scaleId]="database.scale" [userId]="entry.userid" (onLoading)="setLoadingRating($event)"
+                        (onUpdate)="ratingUpdated()" />
+                }
 
-        <core-comments *ngIf="database && database.comments && entry && entry.id > 0 && commentsEnabled" contextLevel="module"
-            [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id" area="database_entry" [courseId]="courseId"
-            (onLoading)="setLoadingComments($event)" [showItem]="true" />
+                <core-rating-aggregate [ratingInfo]="ratingInfo" contextLevel="module" [instanceId]="database.coursemodule"
+                    [itemId]="entry.id" [courseId]="courseId" [aggregateMethod]="database.assessed" [scaleId]="database.scale" />
+            }
+
+            @if (database.comments && entry.id > 0 && commentsEnabled) {
+                <core-comments contextLevel="module" [instanceId]="database.coursemodule" component="mod_data" [itemId]="entry.id"
+                    area="database_entry" [courseId]="courseId" (onLoading)="setLoadingComments($event)" [showItem]="true" />
+            }
+        }
     </core-loading>
-    <div collapsible-footer *ngIf="entryLoaded && hasPrevious || hasNext" slot="fixed" appearOnBottom>
-        <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
-            <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
-                <ion-button [disabled]="!hasPrevious" fill="clear" [ariaLabel]="'core.previous' | translate"
-                    (click)="gotoEntry(offset! -1)">
-                    <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-            </ion-col>
-            <ion-col class="ion-text-center" />
-            <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
-                <ion-button [disabled]="!hasNext" fill="clear" [ariaLabel]=" 'core.next' | translate" (click)="gotoEntry(offset! + 1)">
-                    <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
-                </ion-button>
-            </ion-col>
-        </ion-row>
-    </div>
+    @if (entryLoaded && hasPrevious || hasNext) {
+        <div collapsible-footer slot="fixed" appearOnBottom>
+            <ion-row class="ion-justify-content-between ion-align-items-center ion-no-padding ion-wrap">
+                <ion-col class="ion-text-start ion-no-padding core-navigation-arrow" size="auto">
+                    <ion-button [disabled]="!hasPrevious" fill="clear" [ariaLabel]="'core.previous' | translate"
+                        (click)="gotoEntry(offset! -1)">
+                        <ion-icon name="fas-chevron-left" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+                <ion-col class="ion-text-center" />
+                <ion-col class="ion-text-end ion-no-padding core-navigation-arrow" size="auto">
+                    <ion-button [disabled]="!hasNext" fill="clear" [ariaLabel]=" 'core.next' | translate" (click)="gotoEntry(offset! + 1)">
+                        <ion-icon name="fas-chevron-right" slot="icon-only" aria-hidden="true" />
+                    </ion-button>
+                </ion-col>
+            </ion-row>
+        </div>
+    }
 </ion-content>

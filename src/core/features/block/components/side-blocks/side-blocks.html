@@ -8,16 +8,20 @@
     </ion-toolbar>
 </ion-header>
 <ion-content [fullscreen]="true">
-    <ion-refresher slot="fixed" [disabled]="!loaded" (ionRefresh)="doRefresh($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="doRefresh($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="loaded">
-        <ion-list *ngIf="blocks.length > 0">
-            <ng-container *ngFor="let block of blocks">
-                <core-block *ngIf="block.visible" [block]="block" [contextLevel]="contextLevel" [instanceId]="instanceId" />
-            </ng-container>
-        </ion-list>
-
-        <core-empty-box *ngIf="blocks.length === 0" icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate" />
+    <core-loading [hideUntil]="loaded()" placeholderType="column" placeholderHeight="120px">
+        @if (blocks().length > 0) {
+            <ion-list>
+                @for (block of blocks(); track block.instanceid) {
+                    @if (block.visible) {
+                        <core-block [block]="block" [contextLevel]="contextLevel()" [instanceId]="instanceId()" />
+                    }
+                }
+            </ion-list>
+        } @else {
+            <core-empty-box icon="fas-table-cells-large" [message]="'core.block.noblocks' | translate" />
+        }
     </core-loading>
 </ion-content>

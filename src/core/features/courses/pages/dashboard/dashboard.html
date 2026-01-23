@@ -87,8 +87,12 @@
             </ng-container>
         </ion-list>
 
-        <core-block-side-blocks-button slot="fixed" *ngIf="hasSideBlocks" contextLevel="user" [instanceId]="userId" />
+        @if (hasSideBlocks) {
+            <core-block-side-blocks-button slot="fixed" contextLevel="user" [instanceId]="userId" />
+        }
 
-        <core-empty-box *ngIf="!hasMainBlocks" icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        @if (!hasMainBlocks) {
+            <core-empty-box icon="fas-cubes" [message]="'core.course.nocontentavailable' | translate" />
+        }
     </core-loading>
 </ion-content>

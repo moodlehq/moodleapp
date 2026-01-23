@@ -22,7 +22,6 @@ import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModDataFieldMultimenuComponent } from '../component/multimenu';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModDataFieldMultimenuHandlerService implements AddonModDataFie
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldMultimenuComponent } = await import('../component/multimenu');
+
         return AddonModDataFieldMultimenuComponent;
     }
 
@@ -48,8 +49,8 @@ export class AddonModDataFieldMultimenuHandlerService implements AddonModDataFie
         field: AddonModDataField,
         inputData: CoreFormFields<string[]>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
-        const fieldName = 'f_' + field.id;
-        const reqName = 'f_' + field.id + '_allreq';
+        const fieldName = `f_${field.id}`;
+        const reqName = `f_${field.id}_allreq`;
 
         if (inputData[fieldName]) {
 
@@ -77,7 +78,7 @@ export class AddonModDataFieldMultimenuHandlerService implements AddonModDataFie
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string[]>): AddonModDataSubfieldData[] {
 
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [{
             fieldid: field.id,
@@ -93,7 +94,7 @@ export class AddonModDataFieldMultimenuHandlerService implements AddonModDataFie
         inputData: CoreFormFields<string[]>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
         const content = originalFieldData?.content || '';
 
         return inputData[fieldName].join('##') != content;

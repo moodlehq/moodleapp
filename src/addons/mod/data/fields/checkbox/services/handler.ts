@@ -22,7 +22,6 @@ import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-
 import { Injectable, Type } from '@angular/core';
 import { CoreFormFields } from '@singletons/form';
 import { makeSingleton, Translate } from '@singletons';
-import { AddonModDataFieldCheckboxComponent } from '../component/checkbox';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 
 /**
@@ -37,7 +36,9 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
     /**
      * @inheritdoc
      */
-    getComponent(): Type<AddonModDataFieldPluginBaseComponent> {
+    async getComponent(): Promise<Type<AddonModDataFieldPluginBaseComponent>> {
+        const { AddonModDataFieldCheckboxComponent } = await import('../component/checkbox');
+
         return AddonModDataFieldCheckboxComponent;
     }
 
@@ -49,8 +50,8 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
         inputData: CoreFormFields<string[]>,
     ): AddonModDataSearchEntriesAdvancedFieldFormatted[] {
 
-        const fieldName = 'f_' + field.id;
-        const reqName = 'f_' + field.id + '_allreq';
+        const fieldName = `f_${field.id}`;
+        const reqName = `f_${field.id}_allreq`;
 
         if (inputData[fieldName]) {
             const values: AddonModDataSearchEntriesAdvancedFieldFormatted[] = [];
@@ -77,7 +78,7 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
      * @inheritdoc
      */
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string[]>): AddonModDataSubfieldData[] {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         return [{
             fieldid: field.id,
@@ -93,7 +94,7 @@ export class AddonModDataFieldCheckboxHandlerService implements AddonModDataFiel
         inputData: CoreFormFields<string[]>,
         originalFieldData: AddonModDataEntryField,
     ): boolean {
-        const fieldName = 'f_' + field.id;
+        const fieldName = `f_${field.id}`;
 
         const content = originalFieldData?.content || '';
 

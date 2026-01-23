@@ -1,4 +1,4 @@
-@addon_mod_chat @app @javascript
+@addon_mod_chat @app @mod @mod_chat @javascript @lms_upto4.5
 Feature: Test chat navigation
 
   Background:

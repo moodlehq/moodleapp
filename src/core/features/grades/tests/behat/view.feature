@@ -1,4 +1,4 @@
-@core_grades @app @javascript
+@core_grades @app @core @javascript
 Feature: View grades
 
   Background:

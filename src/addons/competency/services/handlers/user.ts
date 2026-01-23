@@ -14,7 +14,7 @@
 
 import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDON_COMPETENCY_LEARNING_PLANS_PAGE } from '@addons/competency/constants';
 import { Injectable } from '@angular/core';
-import { COURSE_PAGE_NAME } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME } from '@features/course/constants';
 import { CoreUserProfile } from '@features/user/services/user';
 import {
     CoreUserProfileHandler,
@@ -34,7 +34,8 @@ import { AddonCompetency } from '../competency';
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler {
 
-    name = 'AddonCompetency'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = 'AddonCompetency:fakename';
     priority = 100;
     type = CoreUserProfileHandlerType.LIST_ITEM;
     cacheEnabled = true;
@@ -59,8 +60,7 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            // This option used to belong to main menu, check the original disabled feature value.
-            if (currentSite.isFeatureDisabled('CoreMainMenuDelegate_AddonCompetency')) {
+            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency')) {
                 return false;
             }
         } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonCompetency:learningPlan')) {
@@ -114,9 +114,13 @@ export class AddonCompetencyUserHandlerService implements CoreUserProfileHandler
             action: (event, user, context, contextId): void => {
                 event.preventDefault();
                 event.stopPropagation();
-                CoreNavigator.navigateToSitePath(
-                    [COURSE_PAGE_NAME, contextId, PARTICIPANTS_PAGE_NAME, user.id, ADDON_COMPETENCY_COMPETENCIES_PAGE].join('/'),
-                );
+                CoreNavigator.navigateToSitePath([
+                    CORE_COURSE_PAGE_NAME,
+                    contextId,
+                    PARTICIPANTS_PAGE_NAME,
+                    user.id,
+                    ADDON_COMPETENCY_COMPETENCIES_PAGE,
+                ].join('/'));
             },
         };
     }

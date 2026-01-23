@@ -18,6 +18,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSite } from '@classes/sites/site';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * App settings about menu page.
@@ -25,15 +26,18 @@ import { CoreSite } from '@classes/sites/site';
 @Component({
     selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
-    styleUrls: ['about.scss'],
+    styleUrl: 'about.scss',
+    imports: [
+        CoreSharedModule,
+    ],
 })
-export class CoreSettingsAboutPage {
+export default class CoreSettingsAboutPage {
 
     appName: string;
     versionName: string;
     privacyPolicy: string;
     feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
-    a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?versionid=5';
+    a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?policyid=5';
     currentSite?: CoreSite;
     showSurvey: boolean | undefined = false;
     legalDisclaimer = CoreConstants.CONFIG.legalDisclaimer;

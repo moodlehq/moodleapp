@@ -3,17 +3,22 @@
         <h2>{{ 'addon.block_sitemainmenu.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded">
-    <ion-list *ngIf="mainMenuBlock" class="core-course-module-list-wrapper list-item-limited-width">
-        <ion-item class="ion-text-wrap" *ngIf="mainMenuBlock.summary">
-            <ion-label>
-                <core-format-text [text]="mainMenuBlock.summary" [component]="component" [componentId]="siteHomeId" contextLevel="course"
-                    [contextInstanceId]="siteHomeId" />
-            </ion-label>
-        </ion-item>
+<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="48px" [placeholderLimit]="8">
+    @if (mainMenuBlock(); as block) {
+        <ion-list class="core-course-module-list-wrapper list-item-limited-width">
+            @if (block.summary) {
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <core-format-text [text]="block.summary" contextLevel="course" [contextInstanceId]="siteHomeId()" />
+                    </ion-label>
+                </ion-item>
+            }
 
-        <ng-container *ngFor="let modOrSubsection of mainMenuBlock.contents">
-            <core-course-module *ngIf="isModule(modOrSubsection)" [module]="modOrSubsection" [section]="mainMenuBlock" />
-        </ng-container>
-    </ion-list>
+            @for (modOrSubsection of block.contents; track modOrSubsection.id) {
+                @if (isModule(modOrSubsection)) {
+                    <core-course-module [module]="modOrSubsection" [section]="mainMenuBlock" />
+                }
+            }
+        </ion-list>
+    }
 </core-loading>

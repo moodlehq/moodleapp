@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreText } from '@singletons/text';
 import { CoreCoordinates, CoreDom } from '@singletons/dom';
 import { CoreEventObserver } from '@singletons/events';
 import { CoreLogger } from '@singletons/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
-import { CoreUtils } from '@services/utils/utils';
+import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreDirectivesRegistry } from '@singletons/directives-registry';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLinkDirective } from '@directives/link';
@@ -30,7 +29,7 @@ import { ElementRef } from '@angular/core';
  */
 export class AddonQtypeDdMarkerQuestion {
 
-    protected readonly COLOURS = ['#FFFFFF', '#B0C4DE', '#DCDCDC', '#D8BFD8', '#87CEFA', '#DAA520', '#FFD700', '#F0E68C'];
+    protected static readonly COLOURS = ['#FFFFFF', '#B0C4DE', '#DCDCDC', '#D8BFD8', '#87CEFA', '#DAA520', '#FFD700', '#F0E68C'];
 
     protected logger: CoreLogger;
     protected afterImageLoadDone = false;
@@ -95,7 +94,7 @@ export class AddonQtypeDdMarkerQuestion {
         const drag = <HTMLElement> dragHome.cloneNode(true);
         drag.classList.remove('draghome');
         drag.classList.add('dragitem');
-        drag.classList.add('item' + itemNo);
+        drag.classList.add(`item${itemNo}`);
         drag.classList.remove('dragplaceholder'); // In case it has it.
         dragHome.classList.add('dragplaceholder');
 
@@ -250,7 +249,7 @@ export class AddonQtypeDdMarkerQuestion {
     drawDropZone(dropZoneNo: number, markerText: string, shape: string, coords: string, colour: string): void {
         const markerTexts = this.doc.markerTexts();
         // Check if there is already a marker text for this drop zone.
-        const existingMarkerText = markerTexts?.querySelector<HTMLElement>('span.markertext' + dropZoneNo);
+        const existingMarkerText = markerTexts?.querySelector<HTMLElement>(`span.markertext${dropZoneNo}`);
 
         if (existingMarkerText) {
             // Marker text already exists. Update it or remove it if empty.
@@ -262,7 +261,7 @@ export class AddonQtypeDdMarkerQuestion {
             }
         } else if (markerText !== '' && markerTexts) {
             // Create and add the marker text.
-            const classNames = 'markertext markertext' + dropZoneNo;
+            const classNames = `markertext markertext${dropZoneNo}`;
             const span = document.createElement('span');
 
             span.className = classNames;
@@ -273,7 +272,7 @@ export class AddonQtypeDdMarkerQuestion {
         }
 
         // Check that a function to draw this shape exists.
-        const drawFunc = 'drawShape' + CoreText.capitalize(shape);
+        const drawFunc = `drawShape${CoreText.capitalize(shape)}`;
         if (!(this[drawFunc] instanceof Function)) {
             return;
         }
@@ -292,19 +291,19 @@ export class AddonQtypeDdMarkerQuestion {
 
         const computedStyle = getComputedStyle(markerSpan);
         const width = markerSpan.getBoundingClientRect().width +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingRight');
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderLeftWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderRightWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingLeft') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingRight');
 
         const height =  markerSpan.getBoundingClientRect().height +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingTop') +
-            CoreDomUtils.getComputedStyleMeasure(computedStyle, 'paddingBottom');
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderTopWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'borderBottomWidth') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingTop') +
+            CoreDom.getComputedStyleMeasure(computedStyle, 'paddingBottom');
         markerSpan.style.opacity = '0.6';
-        markerSpan.style.left = (xyForText.x - (width / 2)) + 'px';
-        markerSpan.style.top = (xyForText.y - (height / 2)) + 'px';
+        markerSpan.style.left = `${xyForText.x - (width / 2)}px`;
+        markerSpan.style.top = `${xyForText.y - (height / 2)}px`;
 
         const markerSpanAnchor = markerSpan.querySelector('a');
         if (markerSpanAnchor !== null) {
@@ -442,7 +441,7 @@ export class AddonQtypeDdMarkerQuestion {
             if (this.coordsInImg(point)) {
                 point = this.makePointProportional(point);
 
-                pointsOnImg.push(point.x + ',' + point.y);
+                pointsOnImg.push(`${point.x},${point.y}`);
             }
         });
 
@@ -470,7 +469,7 @@ export class AddonQtypeDdMarkerQuestion {
     parsePoint(coordinates: string): CoreCoordinates {
         const bits = coordinates.split(',');
         if (bits.length !== 2) {
-            throw coordinates + ' is not a valid point';
+            throw `${coordinates} is not a valid point`;
         }
 
         return { x: Number(bits[0]), y: Number(bits[1]) };
@@ -594,11 +593,11 @@ export class AddonQtypeDdMarkerQuestion {
      * @returns Colour.
      */
     getNextColour(): string {
-        const colour = this.COLOURS[this.nextColourIndex];
+        const colour = AddonQtypeDdMarkerQuestion.COLOURS[this.nextColourIndex];
         this.nextColourIndex++;
 
         // If we reached the end of the list, start again.
-        if (this.nextColourIndex === this.COLOURS.length) {
+        if (this.nextColourIndex === AddonQtypeDdMarkerQuestion.COLOURS.length) {
             this.nextColourIndex = 0;
         }
 
@@ -715,7 +714,7 @@ export class AddonQtypeDdMarkerQuestion {
             // Wait for image to be visible, otherwise the calculated positions are wrong.
             const visiblePromise = CoreDom.waitToBeVisible(bgImg);
 
-            await CoreUtils.ignoreErrors(CoreUtils.timeoutPromise(visiblePromise, 500));
+            await CorePromiseUtils.ignoreErrors(CorePromiseUtils.timeoutPromise(visiblePromise, 500));
             visiblePromise.cancel(); // In case of timeout, cancel the promise.
 
             this.redrawDragsAndDrops();
@@ -779,11 +778,11 @@ export class AddonQtypeDdMarkerQuestion {
                     dragItem.classList.add('placed');
 
                     const computedStyle = getComputedStyle(dragItem);
-                    const left = coords[i][0] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginLeft');
-                    const top = coords[i][1] - CoreDomUtils.getComputedStyleMeasure(computedStyle, 'marginTop');
+                    const left = coords[i][0] - CoreDom.getComputedStyleMeasure(computedStyle, 'marginLeft');
+                    const top = coords[i][1] - CoreDom.getComputedStyleMeasure(computedStyle, 'marginTop');
 
-                    dragItem.style.left = left + 'px';
-                    dragItem.style.top = top + 'px';
+                    dragItem.style.left = `${left}px`;
+                    dragItem.style.top = `${top}px`;
                     placeholder?.classList.add('active');
                 } else {
                     dragItem.classList.remove('placed');
@@ -849,8 +848,8 @@ export class AddonQtypeDdMarkerQuestion {
             const dragItem = this.doc.dragItemForChoice(choiceNo, i);
             if (dragItem) {
                 const bgImgXY = this.getDragXY(dragItem);
-                dragItem.classList.remove('item' + i);
-                dragItem.classList.add('item' + coords.length);
+                dragItem.classList.remove(`item${i}`);
+                dragItem.classList.add(`item${coords.length}`);
                 coords.push(bgImgXY);
             }
         }
@@ -858,7 +857,7 @@ export class AddonQtypeDdMarkerQuestion {
         if (position !== null) {
             // Element dropped into a certain position. Mark it as placed and save the position.
             dropped.classList.remove('unplaced');
-            dropped.classList.add('item' + coords.length);
+            dropped.classList.add(`item${coords.length}`);
             coords.push(position);
         } else {
             // Element back at home, mark it as unplaced.
@@ -898,7 +897,7 @@ export class AddonQtypeDdMarkerQuestion {
 
         const itemNo = this.getItemNoForNode(drag);
         if (itemNo !== null) {
-            drag.classList.remove('item' + itemNo);
+            drag.classList.remove(`item${itemNo}`);
         }
     }
 
@@ -987,7 +986,7 @@ export class AddonQtypeDdMarkerQuestionDocStructure {
 
     getClassnameNumericSuffix(node: HTMLElement, prefix: string): number | undefined {
         if (node.classList.length) {
-            const patt1 = new RegExp('^' + prefix + '([0-9])+$');
+            const patt1 = new RegExp(`^${prefix}([0-9])+$`);
             const patt2 = new RegExp('([0-9])+$');
 
             for (let index = 0; index < node.classList.length; index++) {
@@ -999,7 +998,7 @@ export class AddonQtypeDdMarkerQuestionDocStructure {
             }
         }
 
-        this.logger.warn('Prefix "' + prefix + '" not found in class names.');
+        this.logger.warn(`Prefix "${prefix}" not found in class names.`);
     }
 
     inputsForChoices(): HTMLElement[] {

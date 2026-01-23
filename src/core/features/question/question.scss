@@ -1,6 +1,11 @@
 @use "theme/globals" as *;
 
 :host ::ng-deep {
+
+    .core-correct-icon {
+        min-width: 1em;
+    }
+
     .core-question-answer-correct {
         color: var(--core-question-correct-color);
     }
@@ -106,5 +111,7 @@
     .questioncorrectnessicon,
     .fa.icon.questioncorrectnessicon {
         font-size: var(--mdl-typography-icon-fontSize-md);
+        vertical-align: middle;
+        margin: 4px;
     }
 }

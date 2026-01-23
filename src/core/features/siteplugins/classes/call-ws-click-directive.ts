@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, OnInit, ElementRef, Directive } from '@angular/core';
+import { Input, OnInit, Directive } from '@angular/core';
 
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
-import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePluginsCallWSBaseDirective } from './call-ws-directive';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Base class for directives to call a WS when the element is clicked.
@@ -32,13 +31,6 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
 
     @Input() confirmMessage?: string; // Message to confirm the action. If not supplied, no confirmation. If empty, default message.
     @Input({ transform: toBoolean }) showError = true; // Whether to show an error message if the WS call fails.
-
-    constructor(
-        element: ElementRef,
-        parentContent: CoreSitePluginsPluginContentComponent | null,
-    ) {
-        super(element, parentContent);
-    }
 
     /**
      * @inheritdoc
@@ -53,7 +45,7 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
             if (this.confirmMessage !== undefined) {
                 // Ask for confirm.
                 try {
-                    await CoreDomUtils.showConfirm(this.confirmMessage || Translate.instant('core.areyousure'));
+                    await CoreAlerts.confirm(this.confirmMessage || Translate.instant('core.areyousure'));
                 } catch {
                     // User cancelled, stop.
                     return;
@@ -74,12 +66,11 @@ export class CoreSitePluginsCallWSOnClickBaseDirective extends CoreSitePluginsCa
             await super.callWS();
         } catch (error) {
             if (this.showError) {
-                CoreDomUtils.showErrorModalDefault(
-                    error,
-                    Translate.instant('core.serverconnection', {
+                CoreAlerts.showError(error, {
+                    default: Translate.instant('core.serverconnection', {
                         details: CoreErrorHelper.getErrorMessageFromError(error) ?? 'Unknown error',
                     }),
-                );
+                });
             }
         } finally {
             modal.dismiss();

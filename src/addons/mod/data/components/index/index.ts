@@ -13,20 +13,18 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, OnDestroy, OnInit, Optional, Type } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCommentsProvider } from '@features/comments/services/comments';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
-import { CoreCourseContentsPage } from '@features/course/pages/contents/contents';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
-import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
-import { CoreTimeUtils } from '@services/utils/time';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreDom } from '@singletons/dom';
+import { CoreTime } from '@singletons/time';
+import { CoreArray } from '@singletons/array';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import {
     AddonModData,
@@ -39,19 +37,26 @@ import {
 import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../services/data-helper';
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
-import { AddonModDataComponentsCompileModule } from '../components-compile.module';
+
 import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
-    ADDON_MOD_DATA_COMPONENT,
+    ADDON_MOD_DATA_COMPONENT_LEGACY,
     ADDON_MOD_DATA_ENTRIES_PER_PAGE,
     ADDON_MOD_DATA_ENTRY_CHANGED,
     ADDON_MOD_DATA_PAGE_NAME,
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
-import { CoreModals } from '@services/modals';
+import { CoreModals } from '@services/overlays/modals';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreObject } from '@singletons/object';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { Translate } from '@singletons';
+import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
+import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
+import { CoreSharedModule } from '@/core/shared.module';
 
 const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 
@@ -61,11 +66,17 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
 @Component({
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
-    styleUrls: ['../../data.scss'],
+    styleUrl: '../../data.scss',
+    imports: [
+        CoreSharedModule,
+        CoreCourseModuleInfoComponent,
+        CoreCourseModuleNavigationComponent,
+        CoreCompileHtmlComponent,
+    ],
 })
 export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComponent implements OnInit, OnDestroy {
 
-    component = ADDON_MOD_DATA_COMPONENT;
+    component = ADDON_MOD_DATA_COMPONENT_LEGACY;
     pluginName = 'data';
 
     access?: AddonModDataGetDataAccessInformationWSResponse;
@@ -94,7 +105,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
     hasNextPage = false;
     entriesRendered = '';
-    extraImports: Type<unknown>[] = [AddonModDataComponentsCompileModule];
+    extraImports: Type<unknown>[] = [];
 
     jsData?: {
         fields: Record<number, AddonModDataField>;
@@ -123,18 +134,13 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
     protected ratingSyncObserver?: CoreEventObserver;
     protected logSearch?: () => void;
 
-    constructor(
-        protected content?: IonContent,
-        @Optional() courseContentsPage?: CoreCourseContentsPage,
-    ) {
-        super('AddonModDataIndexComponent', content, courseContentsPage);
-    }
-
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
         await super.ngOnInit();
+
+        this.extraImports = await AddonModDataHelper.getComponentsToCompile();
 
         this.selectedGroup = this.group || 0;
 
@@ -223,7 +229,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         if (sync) {
             // Try to synchronize the data.
-            await CoreUtils.ignoreErrors(this.syncActivity(showErrors));
+            await CorePromiseUtils.ignoreErrors(this.syncActivity(showErrors));
         }
 
         this.groupInfo = await CoreGroups.getActivityGroupInfo(this.database.coursemodule);
@@ -241,19 +247,19 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         });
 
         if (!this.access.timeavailable) {
-            const time = CoreTimeUtils.timestamp();
+            const time = CoreTime.timestamp();
 
             this.timeAvailableFrom = this.database.timeavailablefrom && time < this.database.timeavailablefrom
                 ? this.database.timeavailablefrom * 1000
                 : undefined;
             this.timeAvailableFromReadable = this.timeAvailableFrom
-                ? CoreTimeUtils.userDate(this.timeAvailableFrom)
+                ? CoreTime.userDate(this.timeAvailableFrom)
                 : undefined;
             this.timeAvailableTo = this.database.timeavailableto && time > this.database.timeavailableto
                 ? this.database.timeavailableto * 1000
                 : undefined;
             this.timeAvailableToReadable = this.timeAvailableTo
-                ? CoreTimeUtils.userDate(this.timeAvailableTo)
+                ? CoreTime.userDate(this.timeAvailableTo)
                 : undefined;
 
             this.isEmpty = true;
@@ -268,8 +274,8 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         const fields = await AddonModData.getFields(this.database.id, { cmId: this.module.id });
         this.search.advanced = [];
 
-        this.fields = CoreUtils.arrayToObject(fields, 'id');
-        this.fieldsArray = CoreUtils.objectToArray(this.fields);
+        this.fields = CoreArray.toObject(fields, 'id');
+        this.fieldsArray = CoreObject.toArray(this.fields);
         if (this.fieldsArray.length == 0) {
             canSearch = false;
             canAdd = false;
@@ -342,7 +348,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
                 this.fieldsArray,
             );
 
-            headerAndFooter = CoreDomUtils.fixHtml(headerAndFooter);
+            headerAndFooter = CoreDom.fixHtml(headerAndFooter);
 
             // Get first entry from the whole list.
             if (!this.search.searching || !this.firstEntry) {
@@ -434,7 +440,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
             this.logSearch?.();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         } finally {
             this.showLoading = false;
         }
@@ -482,7 +488,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await this.fetchEntriesData();
         } catch (error) {
-            CoreDomUtils.showErrorModalDefault(error, 'core.course.errorgetmodule', true);
+            CoreAlerts.showError(error, { default: Translate.instant('core.course.errorgetmodule') });
         }
     }
 

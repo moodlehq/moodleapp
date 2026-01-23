@@ -1,4 +1,4 @@
-@addon_mod_assign @app @javascript @lms_upto4.4
+@addon_mod_assign @app @mod @mod_assign @javascript @lms_upto4.4
 Feature: Test marking workflow in assignment activity in app
 
   Background:
@@ -76,21 +76,22 @@ Feature: Test marking workflow in assignment activity in app
     And I should not find "Not marked" within "Student5" "ion-item" in the app
 
     When I press "Student1" in the app
-    And I press "Grade" in the app
     Then I should find "Submitted for grading" in the app
+    And I should find "In review" within "Marking workflow state" "ion-item" in the app
+    When I should not find "Graded by" in the app
+    Then I press "Grade" "ion-button" in the app
     And I should find "50 / 100" within "Current grade in assignment" "ion-item" in the app
     And I should find "-" within "Current grade in gradebook" "ion-item" in the app
-    And I should find "In review" within "Marking workflow state" "ion-item" in the app
     And the field "Grade out of 100" matches value "50" in the app
-    And I should not find "Graded by" in the app
+    And I press "Close" in the app
 
     When I go back in the app
     And I press "Student3" in the app
-    And I press "Grade" in the app
     Then I should find "Submitted for grading" in the app
-    And I should find "30" within "Current grade in gradebook" "ion-item" in the app
     And I should find "Released" within "Marking workflow state" "ion-item" in the app
     And I should find "Teacher teacher" within "Graded by" "ion-item" in the app
+    And I press "Grade" "ion-button" in the app
+    And I should find "30" within "Current grade in gradebook" "ion-item" in the app
     And the field "Grade out of 100" matches value "30" in the app
     And I should not find "Current grade in assignment" in the app
 
@@ -98,27 +99,26 @@ Feature: Test marking workflow in assignment activity in app
     Given I entered the assign activity "Group Assign" on course "Course 1" as "teacher1" in the app
     And I press "Groups" in the app
     And I press "Student1" in the app
-    And I press "Grade" in the app
+    And I press "Grade" "ion-button" in the app
     When I set the field "Grade out of 100" to "60" in the app
-    And I press "Done" in the app
+    And I press "Grade" "ion-button" in the app
     And I wait loading to finish in the app
-    And I press "Student1" in the app
-    And I press "Grade" in the app
+    Then I should find "In review" within "Marking workflow state" "ion-item" in the app
+    When I press "Grade" "ion-button" in the app
     Then I should find "60 / 100" within "Current grade in assignment" "ion-item" in the app
     And I should find "-" within "Current grade in gradebook" "ion-item" in the app
-    And I should find "In review" within "Marking workflow state" "ion-item" in the app
     And the field "Grade out of 100" matches value "60" in the app
+    And I press "Close" in the app
 
     When I go back in the app
     And I press "Student3" in the app
-    And I press "Grade" in the app
-    When I set the field "Grade out of 100" to "80" in the app
-    And I press "Done" in the app
+    And I press "Grade" "ion-button" in the app
+    Then I set the field "Grade out of 100" to "80" in the app
+    When I press "Grade" "ion-button" in the app
     And I wait loading to finish in the app
-    And I press "Student3" in the app
-    And I press "Grade" in the app
-    Then I should find "80" within "Current grade in gradebook" "ion-item" in the app
-    And I should find "Released" within "Marking workflow state" "ion-item" in the app
+    Then I should find "Released" within "Marking workflow state" "ion-item" in the app
     And I should find "Teacher teacher" within "Graded by" "ion-item" in the app
+    When I press "Grade" "ion-button" in the app
+    Then I should find "80" within "Current grade in gradebook" "ion-item" in the app
     And the field "Grade out of 100" matches value "80" in the app
     And I should not find "Current grade in assignment" in the app

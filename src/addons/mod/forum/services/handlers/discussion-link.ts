@@ -18,7 +18,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
+import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 
 /**
  * Handler to treat links to forum review.
@@ -27,7 +27,7 @@ import { ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 export class AddonModForumDiscussionLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'AddonModForumDiscussionLinkHandler';
-    featureName = 'CoreCourseModuleDelegate_AddonModForum';
+    featureName = ADDON_MOD_FORUM_FEATURE_NAME;
     pattern = /\/mod\/forum\/discuss\.php.*([&?]d=\d+)/;
 
     /**

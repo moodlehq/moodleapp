@@ -251,7 +251,7 @@ export class AddonQtypeDdImageOrTextQuestion {
         }
 
         return Array.from(
-            this.doc.topNode.querySelectorAll('div.dragitemgroup' + drop.getAttribute('group') + ` .choice${choice}.drag`),
+            this.doc.topNode.querySelectorAll(`div.dragitemgroup${drop.getAttribute('group')} .choice${choice}.drag`),
         );
     }
 
@@ -423,8 +423,8 @@ export class AddonQtypeDdImageOrTextQuestion {
 
         const position = CoreDom.getRelativeElementPosition(drop, ddArea);
         const choice = drag.getAttribute('choice');
-        drag.style.left = position.x + 'px';
-        drag.style.top = position.y + 'px';
+        drag.style.left = `${position.x}px`;
+        drag.style.top = `${position.y}px`;
         drag.classList.add('placed');
 
         if (choice) {
@@ -476,8 +476,8 @@ export class AddonQtypeDdImageOrTextQuestion {
         }
 
         const position = CoreDom.getRelativeElementPosition(dragItemHome, ddArea);
-        drag.style.left = position.x + 'px';
-        drag.style.top = position.y + 'px';
+        drag.style.left = `${position.x}px`;
+        drag.style.top = `${position.y}px`;
         drag.classList.remove('placed');
 
         drag.setAttribute('inputid', '');
@@ -511,8 +511,8 @@ export class AddonQtypeDdImageOrTextQuestion {
             const widthHeight = [Math.round(dragItemHomeImg.naturalWidth * this.proportion),
                 Math.round(dragItemHomeImg.naturalHeight * this.proportion)];
 
-            dragItemHomeImg.style.width = widthHeight[0] + 'px';
-            dragItemHomeImg.style.height = widthHeight[1] + 'px';
+            dragItemHomeImg.style.width = `${widthHeight[0]}px`;
+            dragItemHomeImg.style.height = `${widthHeight[1]}px`;
 
             // Apply the proportion to all the images cloned from this home.
             const dragItemNo = this.doc.getClassnameNumericSuffix(dragItemHome, 'dragitemhomes');
@@ -521,8 +521,8 @@ export class AddonQtypeDdImageOrTextQuestion {
                 Array.from(this.doc.topNode.querySelectorAll<HTMLElement>(`.drag.group${groupNo}.dragitems${dragItemNo} img`)) : [];
 
             dragsImg.forEach((dragImg) => {
-                dragImg.style.width = widthHeight[0] + 'px';
-                dragImg.style.height = widthHeight[1] + 'px';
+                dragImg.style.width = `${widthHeight[0]}px`;
+                dragImg.style.height = `${widthHeight[1]}px`;
             });
         }
 
@@ -536,11 +536,11 @@ export class AddonQtypeDdImageOrTextQuestion {
             const dropZoneXY = dropZone.getAttribute('xy')?.split(',').map((i) => Number(i));
             const relativeXY = this.convertToWindowXY(dropZoneXY || []);
 
-            dropZone.style.left = relativeXY[0] + 'px';
-            dropZone.style.top = relativeXY[1] + 'px';
+            dropZone.style.left = `${relativeXY[0]}px`;
+            dropZone.style.top = `${relativeXY[1]}px`;
 
             // Re-place items got from the inputs.
-            const inputCss = 'input#' + dropZone.getAttribute('inputid');
+            const inputCss = `input#${dropZone.getAttribute('inputid')}`;
             const input = this.doc.topNode?.querySelector<HTMLInputElement>(inputCss);
             const choice = input ? Number(input.value) : -1;
 
@@ -678,8 +678,8 @@ export class AddonQtypeDdImageOrTextQuestion {
         // It adds the border of 1px to the width.
         const zoneGroups = this.doc.dropZoneGroup(groupNo);
         zoneGroups.forEach((zone) => {
-            zone.style.width = maxWidth + 2 + 'px ';
-            zone.style.height = maxHeight + 2 + 'px ';
+            zone.style.width = `${maxWidth + 2}px`;
+            zone.style.height = `${maxHeight + 2}px`;
         });
     }
 

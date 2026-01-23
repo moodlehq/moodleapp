@@ -14,11 +14,9 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@services/utils/utils';
-import { CoreUserOffline } from './user-offline';
+import { CoreCountries } from '@singletons/countries';
 import { CoreLogger } from '@singletons/logger';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
@@ -28,9 +26,15 @@ import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@singletons/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreConstants } from '@/core/constants';
-
-const ROOT_CACHE_KEY = 'mmUser:';
+import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTextFormat } from '@singletons/text';
+import {
+    CORE_USER_PROFILE_REFRESHED,
+    CORE_USER_PROFILE_PICTURE_UPDATED,
+    CORE_USER_PARTICIPANTS_LIST_LIMIT,
+} from '../constants';
+import { CoreUserPreferences } from './user-preferences';
 
 declare module '@singletons/events' {
 
@@ -40,31 +44,11 @@ declare module '@singletons/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [USER_PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
-        [USER_PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
+        [CORE_USER_PROFILE_REFRESHED]: CoreUserProfileRefreshedData;
+        [CORE_USER_PROFILE_PICTURE_UPDATED]: CoreUserProfilePictureUpdatedData;
     }
 
 }
-
-/**
- * Profile picture updated event.
- */
-export const USER_PROFILE_REFRESHED = 'CoreUserProfileRefreshed';
-
-/**
- * Profile picture updated event.
- */
-export const USER_PROFILE_PICTURE_UPDATED = 'CoreUserProfilePictureUpdated';
-
-/**
- * Value set in timezone when using the server's timezone.
- */
-export const USER_PROFILE_SERVER_TIMEZONE = '99';
-
-/**
- * Fake ID for a "no reply" user.
- */
-export const USER_NOREPLY_USER = -10;
 
 /**
  * Service to provide user functionalities.
@@ -72,7 +56,12 @@ export const USER_NOREPLY_USER = -10;
 @Injectable({ providedIn: 'root' })
 export class CoreUserProvider {
 
-    static readonly PARTICIPANTS_LIST_LIMIT = 50; // Max of participants to retrieve in each WS call.
+    protected static readonly ROOT_CACHE_KEY = 'mmUser:';
+
+    /**
+     * @deprecated since 5.0. Use CORE_USER_PARTICIPANTS_LIST_LIMIT.
+     */
+    static readonly PARTICIPANTS_LIST_LIMIT = CORE_USER_PARTICIPANTS_LIST_LIMIT;
 
     protected logger: CoreLogger;
 
@@ -170,10 +159,6 @@ export class CoreUserProvider {
      * @returns Promise resolve when the user is deleted.
      */
     async deleteStoredUser(userId: number, siteId?: string): Promise<void> {
-        if (isNaN(userId)) {
-            throw new CoreError('Invalid user ID.');
-        }
-
         const site = await CoreSites.getSite(siteId);
 
         await Promise.all([
@@ -195,7 +180,7 @@ export class CoreUserProvider {
     async getParticipants(
         courseId: number,
         limitFrom: number = 0,
-        limitNumber: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+        limitNumber: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
         ignoreCache?: boolean,
     ): Promise<{participants: CoreUserParticipant[]; canLoadMore: boolean}> {
@@ -223,7 +208,7 @@ export class CoreUserProvider {
         };
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getParticipantsListCacheKey(courseId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
 
         if (ignoreCache) {
@@ -246,7 +231,7 @@ export class CoreUserProvider {
      * @returns Cache key.
      */
     protected getParticipantsListCacheKey(courseId: number): string {
-        return ROOT_CACHE_KEY + 'list:' + courseId;
+        return `${CoreUserProvider.ROOT_CACHE_KEY}list:${courseId}`;
     }
 
     /**
@@ -289,18 +274,10 @@ export class CoreUserProvider {
      * Get the starting week day based on the user preference.
      *
      * @returns Starting week day.
+     * @deprecated since 5.1. Use CoreUserPreferences.getStartingWeekDay instead.
      */
     async getStartingWeekDay(): Promise<number> {
-        const preference = await CoreUtils.ignoreErrors(this.getUserPreference('calendar_startwday'));
-
-        if (preference && !isNaN(Number(preference))) {
-            return Number(preference);
-        }
-
-        const defaultValue = Number(CoreSites.getCurrentSite()?.getStoredConfig('calendar_startwday') ??
-            Translate.instant('core.firstdayofweek'));
-
-        return !isNaN(defaultValue) ? defaultValue % 7 : CoreConstants.CALENDAR_DEFAULT_STARTING_WEEKDAY;
+        return CoreUserPreferences.getStartingWeekDay();
     }
 
     /**
@@ -310,7 +287,7 @@ export class CoreUserProvider {
      * @returns Cache key.
      */
     protected getUserCacheKey(userId: number): string {
-        return ROOT_CACHE_KEY + 'data:' + userId;
+        return `${CoreUserProvider.ROOT_CACHE_KEY}data:${userId}`;
     }
 
     /**
@@ -357,14 +334,14 @@ export class CoreUserProvider {
         userId: number,
         courseId?: number,
         siteId?: string,
-    ): Promise<CoreUserCourseProfile | CoreUserData> {
+    ): Promise<CoreUserCourseProfile | CoreUserDescriptionExporter> {
         const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
             cacheKey: this.getUserCacheKey(userId),
-            updateFrequency: CoreSite.FREQUENCY_RARELY,
+            updateFrequency: CoreCacheUpdateFrequency.RARELY,
         };
-        let users: CoreUserData[] | CoreUserCourseProfile[] | undefined;
+        let users: CoreUserDescriptionExporter[] | CoreUserCourseProfile[] | undefined;
 
         // Determine WS and data to use.
         if (courseId && courseId != site.getSiteHomeId()) {
@@ -391,14 +368,14 @@ export class CoreUserProvider {
             users = await site.read<CoreUserGetUsersByFieldWSResponse>('core_user_get_users_by_field', params, preSets);
         }
 
-        if (users.length == 0) {
+        if (users.length === 0) {
             // Shouldn't happen.
             throw new CoreError('Cannot retrieve user info.');
         }
 
-        const user: CoreUserData | CoreUserCourseProfile = users[0];
-        if (user.country) {
-            user.country = CoreUtils.getCountryName(user.country);
+        const user = users[0];
+        if ('country' in user && user.country) {
+            user.country = CoreCountries.getCountryName(user.country);
         }
         
         this.storeUser(user.id, user.fullname, user.profileimageurl);
@@ -412,41 +389,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Preference value or null if preference not set.
+     * @deprecated since 5.1. Use CoreUserPreferences.getPreference instead.
      */
     async getUserPreference(name: string, siteId?: string): Promise<string | null> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        const preference = await CoreUtils.ignoreErrors(CoreUserOffline.getPreference(name, siteId));
-
-        if (preference && !CoreNetwork.isOnline()) {
-            // Offline, return stored value.
-            return preference.value;
-        }
-
-        const wsValue = await this.getUserPreferenceOnline(name, siteId);
-
-        if (preference && preference.value != preference.onlinevalue && preference.onlinevalue == wsValue) {
-            // Sync is pending for this preference, return stored value.
-            return preference.value;
-        }
-
-        if (!wsValue) {
-            return null;
-        }
-
-        await CoreUserOffline.setPreference(name, wsValue, wsValue);
-
-        return wsValue;
-    }
-
-    /**
-     * Get cache key for a user preference WS call.
-     *
-     * @param name Preference name.
-     * @returns Cache key.
-     */
-    protected getUserPreferenceCacheKey(name: string): string {
-        return ROOT_CACHE_KEY + 'preference:' + name;
+        return CoreUserPreferences.getPreference(name, siteId);
     }
 
     /**
@@ -455,21 +401,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
      * @returns Preference value or null if preference not set.
+     * @deprecated since 5.1. Use CoreUserPreferences.getPreferenceOnline instead.
      */
     async getUserPreferenceOnline(name: string, siteId?: string): Promise<string | null> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreUserGetUserPreferencesWSParams = {
-            name,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserPreferenceCacheKey(name),
-            updateFrequency: CoreSite.FREQUENCY_SOMETIMES,
-        };
-
-        const result = await site.read<CoreUserGetUserPreferencesWSResponse>('core_user_get_user_preferences', params, preSets);
-
-        return result.preferences[0] ? result.preferences[0].value : null;
+        return CoreUserPreferences.getPreferenceOnline(name, siteId);
     }
 
     /**
@@ -477,7 +412,6 @@ export class CoreUserProvider {
      *
      * @param userId User ID.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
      */
     async invalidateUserCache(userId: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -503,12 +437,10 @@ export class CoreUserProvider {
      *
      * @param name Name of the preference.
      * @param siteId Site Id. If not defined, use current site.
-     * @returns Promise resolved when the data is invalidated.
+     * @deprecated since 5.1. Use CoreUserPreferences.invalidatePreference instead.
      */
     async invalidateUserPreference(name: string, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getUserPreferenceCacheKey(name));
+        await CoreUserPreferences.invalidatePreference(name, siteId);
     }
 
     /**
@@ -548,7 +480,7 @@ export class CoreUserProvider {
         }
 
         // Retrieving one participant will fail if browsing users is disabled by capabilities.
-        return CoreUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
+        return CorePromiseUtils.promiseWorks(this.getParticipants(courseId, 0, 1, siteId));
     }
 
     /**
@@ -622,10 +554,8 @@ export class CoreUserProvider {
                 return;
             }
 
-            userId = Number(userId); // Make sure it's a number.
-
             // Prevent repeats and errors.
-            if (isNaN(userId) || treated[userId] || userId <= 0) {
+            if (treated[userId] || userId <= 0) {
                 return;
             }
 
@@ -702,9 +632,9 @@ export class CoreUserProvider {
         search: string,
         searchAnywhere: boolean = true,
         page: number = 0,
-        perPage: number = CoreUserProvider.PARTICIPANTS_LIST_LIMIT,
+        perPage: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
-    ): Promise<{participants: CoreUserData[]; canLoadMore: boolean}> {
+    ): Promise<{participants: CoreUserDescriptionExporter[]; canLoadMore: boolean}> {
         const site = await CoreSites.getSite(siteId);
 
         const params: CoreEnrolSearchUsersWSParams = {
@@ -718,12 +648,12 @@ export class CoreUserProvider {
             getFromCache: false, // Always try to get updated data. If it fails, it will get it from cache.
         };
 
-        const users = await site.read<CoreEnrolSearchUsersWSResponse>('core_enrol_search_users', params, preSets);
+        const participants = await site.read<CoreEnrolSearchUsersWSResponse>('core_enrol_search_users', params, preSets);
 
-        const canLoadMore = users.length >= perPage;
-        this.storeUsers(users, siteId);
+        const canLoadMore = participants.length >= perPage;
+        this.storeUsers(participants, siteId);
 
-        return { participants: users, canLoadMore: canLoadMore };
+        return { participants, canLoadMore };
     }
 
     /**
@@ -733,9 +663,12 @@ export class CoreUserProvider {
      * @param fullname User full name.
      * @param avatar User avatar URL.
      * @param siteId ID of the site. If not defined, use current site.
-     * @returns Promise resolve when the user is stored.
      */
     protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
+        if (!userId) {
+            return;
+        }
+
         const site = await CoreSites.getSite(siteId);
 
         const userRecord: CoreUserDBRecord = {
@@ -752,17 +685,10 @@ export class CoreUserProvider {
      *
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
-     * @returns Promise resolve when the user is stored.
      */
     async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-
-        await Promise.all(users.map((user) => {
-            if (!user.id || isNaN(Number(user.id))) {
-                return;
-            }
-
-            return this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId);
-        }));
+        await Promise.all(users.map((user) =>
+            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
     }
 
     /**
@@ -771,33 +697,10 @@ export class CoreUserProvider {
      * @param name Name of the preference.
      * @param value Value of the preference.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved on success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreference instead.
      */
     async setUserPreference(name: string, value: string, siteId?: string): Promise<void> {
-        siteId = siteId || CoreSites.getCurrentSiteId();
-
-        if (!CoreNetwork.isOnline()) {
-            // Offline, just update the preference.
-            return CoreUserOffline.setPreference(name, value);
-        }
-
-        try {
-            // Update the preference in the site.
-            const preferences = [
-                { type: name, value },
-            ];
-
-            await this.updateUserPreferences(preferences, undefined, undefined, siteId);
-
-            // Update preference and invalidate data.
-            await Promise.all([
-                CoreUserOffline.setPreference(name, value, value),
-                CoreUtils.ignoreErrors(this.invalidateUserPreference(name)),
-            ]);
-        } catch (error) {
-            // Preference not saved online. Update the offline one.
-            await CoreUserOffline.setPreference(name, value);
-        }
+        await CoreUserPreferences.setPreference(name, value, siteId);
     }
 
     /**
@@ -807,17 +710,10 @@ export class CoreUserProvider {
      * @param value Preference new value.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreferenceOnline instead.
      */
-    updateUserPreference(name: string, value: string | undefined, userId?: number, siteId?: string): Promise<void> {
-        const preferences = [
-            {
-                type: name,
-                value: value,
-            },
-        ];
-
-        return this.updateUserPreferences(preferences, undefined, userId, siteId);
+    async updateUserPreference(name: string, value: string | undefined, userId?: number, siteId?: string): Promise<void> {
+        await CoreUserPreferences.setPreferenceOnline(name, value, userId, siteId);
     }
 
     /**
@@ -827,7 +723,7 @@ export class CoreUserProvider {
      * @param disableNotifications Whether to disable all notifications. Undefined to not update this value.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if success.
+     * @deprecated since 5.1. Use CoreUserPreferences.setPreferencesOnline instead.
      */
     async updateUserPreferences(
         preferences: { type: string; value: string | undefined }[],
@@ -835,23 +731,7 @@ export class CoreUserProvider {
         userId?: number,
         siteId?: string,
     ): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        userId = userId || site.getUserId();
-
-        const params: CoreUserUpdateUserPreferencesWSParams = {
-            userid: userId,
-            preferences: preferences,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            responseExpected: false,
-        };
-
-        if (disableNotifications !== undefined) {
-            params.emailstop = disableNotifications ? 1 : 0;
-        }
-
-        await site.write('core_user_update_user_preferences', params, preSets);
+        await CoreUserPreferences.setPreferencesOnline(preferences, disableNotifications, userId, siteId);
     }
 
 }
@@ -885,6 +765,7 @@ export type CoreUserBasicData = {
 
 /**
  * User preference.
+ * Used by an exporter, only modify if the exporter changes.
  */
 export type CoreUserPreference = {
     name: string; // The name of the preference.
@@ -893,6 +774,7 @@ export type CoreUserPreference = {
 
 /**
  * User custom profile field.
+ * Used by an exporter, only modify if the exporter changes.
  */
 export type CoreUserProfileField = {
     type: string; // The type of the custom field - text field, checkbox...
@@ -909,7 +791,7 @@ export type CoreUserGroup = {
     id: number; // Group id.
     name: string; // Group name.
     description: string; // Group description.
-    descriptionformat: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
 };
 
 /**
@@ -932,9 +814,11 @@ export type CoreUserEnrolledCourse = {
 };
 
 /**
- * Common data returned by user_description function.
+ * Type for exporting a user description.
+ * This relates to LMS core_user_external::user_description, do not modify unless the exporter changes.
+ * This is not implemented as an exporter in LMS right now.
  */
-export type CoreUserData = {
+export type CoreUserDescriptionExporter = {
     id: number; // ID of the user.
     username?: string; // The username.
     firstname?: string; // The first name(s) of the user.
@@ -944,11 +828,6 @@ export type CoreUserData = {
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
     phone2?: string; // Phone 2.
-    icq?: string; // Icq number.
-    skype?: string; // Skype id.
-    yahoo?: string; // Yahoo id.
-    aim?: string; // Aim id.
-    msn?: string; // Msn number.
     department?: string; // Department.
     institution?: string; // Institution.
     idnumber?: string; // An arbitrary ID code number perhaps from the institution.
@@ -962,12 +841,11 @@ export type CoreUserData = {
     calendartype?: string; // Calendar type such as "gregorian", must exist on server.
     theme?: string; // Theme name such as "standard", must exist on server.
     timezone?: string; // Timezone code such as Australia/Perth, or 99 for default.
-    mailformat?: number; // Mail format code is 0 for plain text, 1 for HTML etc.
-    trackforums?: number; // @since 4.4. Whether the user is tracking forums.
+    mailformat?: CoreTextFormat; // Mail format code is 0 for plain text, 1 for HTML etc.
+    trackforums?: number; // Whether the user is tracking forums.
     description?: string; // User profile description.
-    descriptionformat?: number; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Int format (1 = HTML, 0 = MOODLE, 2 = PLAIN, or 4 = MARKDOWN).
     city?: string; // Home city of the user.
-    url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.
     profileimageurlsmall: string; // User image profile URL - small version.
     profileimageurl: string; // User image profile URL - big version.
@@ -1017,7 +895,7 @@ export type CoreUserParticipant = CoreUserBasicData & {
     lastaccess?: number; // Last access to the site (0 if never).
     lastcourseaccess?: number | null; // @since 3.7. Last access to the course (0 if never).
     description?: string; // User profile description.
-    descriptionformat?: number; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+    descriptionformat?: CoreTextFormat; // Description format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     city?: string; // Home city of the user.
     url?: string; // URL of the user.
     country?: string; // Home country code of the user, such as AU or CZ.
@@ -1032,7 +910,7 @@ export type CoreUserParticipant = CoreUserBasicData & {
 /**
  * User data returned by core_user_get_course_user_profiles WS.
  */
-export type CoreUserCourseProfile = CoreUserData & {
+export type CoreUserCourseProfile = CoreUserDescriptionExporter & {
     groups?: CoreUserGroup[]; // User groups.
     roles?: CoreUserRole[]; // User roles.
     enrolledcourses?: CoreUserEnrolledCourse[]; // Courses where the user is enrolled.
@@ -1041,7 +919,7 @@ export type CoreUserCourseProfile = CoreUserData & {
 /**
  * User data returned by getProfile.
  */
-export type CoreUserProfile = (CoreUserBasicData & Partial<CoreUserData>) | CoreUserCourseProfile;
+export type CoreUserProfile = (CoreUserBasicData & Partial<CoreUserDescriptionExporter>) | CoreUserCourseProfile;
 
 /**
  * Params of core_user_update_picture WS.
@@ -1102,26 +980,7 @@ type CoreUserGetUsersByFieldWSParams = {
 /**
  * Data returned by core_user_get_users_by_field WS.
  */
-type CoreUserGetUsersByFieldWSResponse = CoreUserData[];
-
-/**
- * Params of core_user_get_user_preferences WS.
- */
-type CoreUserGetUserPreferencesWSParams = {
-    name?: string; // Preference name, empty for all.
-    userid?: number; // Id of the user, default to current user.
-};
-
-/**
- * Data returned by core_user_get_user_preferences WS.
- */
-type CoreUserGetUserPreferencesWSResponse = {
-    preferences: { // User custom fields (also known as user profile fields).
-        name: string; // The name of the preference.
-        value: string | null; // The value of the preference.
-    }[];
-    warnings?: CoreWSExternalWarning[];
-};
+type CoreUserGetUsersByFieldWSResponse = CoreUserDescriptionExporter[];
 
 /**
  * Params of core_user_view_user_list WS.
@@ -1139,18 +998,6 @@ type CoreUserViewUserProfileWSParams = {
 };
 
 /**
- * Params of core_user_update_user_preferences WS.
- */
-type CoreUserUpdateUserPreferencesWSParams = {
-    userid?: number; // Id of the user, default to current user.
-    emailstop?: number; // Enable or disable notifications for this user.
-    preferences?: { // User preferences.
-        type: string; // The name of the preference.
-        value?: string; // The value of the preference, do not set this field if you want to remove (unset) the current value.
-    }[];
-};
-
-/**
  * Params of core_enrol_search_users WS.
  */
 type CoreEnrolSearchUsersWSParams = {
@@ -1165,4 +1012,4 @@ type CoreEnrolSearchUsersWSParams = {
 /**
  * Data returned by core_enrol_search_users WS.
  */
-type CoreEnrolSearchUsersWSResponse = CoreUserData[];
+type CoreEnrolSearchUsersWSResponse = CoreUserDescriptionExporter[];

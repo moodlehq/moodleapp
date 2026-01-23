@@ -5,8 +5,7 @@
         </ion-buttons>
         <ion-title>
             <h1>
-                <core-format-text [text]="siteName" contextLevel="system" [contextInstanceId]="0" class="core-header-sitename" />
-                <img src="assets/img/top_logo.png" class="core-header-logo" [alt]="siteName">
+                <core-site-logo logoType="top" />
             </h1>
         </ion-title>
         <ion-buttons slot="end">
@@ -15,6 +14,10 @@
     </ion-toolbar>
 </ion-header>
 <core-loading [hideUntil]="loaded">
-    <core-empty-box *ngIf="tabs.length === 0" icon="fas-house" [message]="'core.courses.nocourses' | translate" />
+    @if (tabs.length === 0) {
+        <core-empty-box icon="fas-house" [message]="'core.courses.nocourses' | translate" />
+    }
 </core-loading>
-<core-tabs-outlet *ngIf="tabs.length > 0" [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()" />
+@if (tabs.length > 0) {
+    <core-tabs-outlet [hideUntil]="loaded" [tabs]="tabs" (ionChange)="tabSelected()" />
+}

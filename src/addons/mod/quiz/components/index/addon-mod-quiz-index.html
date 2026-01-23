@@ -1,14 +1,14 @@
 <!-- Buttons to add to the header. -->
 <core-navbar-buttons slot="end">
     @if (!courseContentsPage) {
-    <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
-        <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
-    </ion-button>
+        <ion-button fill="clear" (click)="openModuleSummary()" aria-haspopup="true" [ariaLabel]="'core.info' | translate">
+            <ion-icon name="fas-circle-info" slot="icon-only" aria-hidden="true" />
+        </ion-button>
     } @else {
-    <core-context-menu>
-        <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
-            iconAction="fas-circle-info" />
-    </core-context-menu>
+        <core-context-menu>
+            <core-context-menu-item [priority]="5000" [content]="'core.info' | translate" (action)="openModuleSummary()"
+                iconAction="fas-circle-info" />
+        </core-context-menu>
     }
 </core-navbar-buttons>
 
@@ -17,239 +17,272 @@
 
     <!-- Activity info. -->
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
-        [courseId]="courseId" [hasDataToSync]="buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
+        [courseId]="courseId" [hasDataToSync]="!!buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Access rules description messages. -->
-    <ion-card *ngIf="gradeMethodReadable || accessRules.length || syncTime">
-        <ion-list>
-            <ion-item class="ion-text-wrap" *ngFor="let rule of accessRules">
-                <ion-label>
-                    <p>{{ rule }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="gradeMethodReadable">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
-                    <p>{{ gradeMethodReadable }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="bestGrade && bestGrade.gradetopass && quiz && quiz.gradeFormatted">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.grades.gradepass' | translate }}</p>
-                    <p>{{ 'addon.mod_quiz.outof' | translate: { $a: {
-                        grade: bestGrade.gradetopass,
-                        maxgrade: quiz.gradeFormatted
+    @if (gradeMethodReadable || accessRules.length || syncTime) {
+        <ion-card>
+            <ion-list>
+                <ion-item class="ion-text-wrap" *ngFor="let rule of accessRules">
+                    <ion-label>
+                        <p class="item-heading">{{ rule }}</p>
+                    </ion-label>
+                </ion-item>
+                @if (gradeMethodReadable) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
+                            <p>{{ gradeMethodReadable }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (bestGrade && gradeToPass && quiz && quiz.gradeFormatted) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.grades.gradepass' | translate }}</p>
+                            <p>{{ 'addon.mod_quiz.outof' | translate: { $a: {
+                                grade: gradeToPass,
+                                maxgrade: quiz.gradeFormatted
                         } } }}</p>
-                </ion-label>
-            </ion-item>
-            <ion-item class="ion-text-wrap" *ngIf="syncTime">
-                <ion-label>
-                    <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
-                    <p>{{ syncTime }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-list>
-    </ion-card>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (syncTime) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'core.lastsync' | translate }}</p>
+                            <p>{{ syncTime }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-list>
+        </ion-card>
+    }
 
     <!-- List of user attempts. -->
     @if (quiz && attempts.length) {
-    <ion-card class="addon-mod_quiz-attempts-summary">
-        <ion-card-header class="ion-text-wrap">
-            <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
-        </ion-card-header>
+        <ion-card class="addon-mod_quiz-attempts-summary">
+            <ion-card-header class="ion-text-wrap">
+                <ion-card-title>{{ 'addon.mod_quiz.summaryofattempts' | translate }}</ion-card-title>
+            </ion-card-header>
 
-        <!-- Quiz result info. -->
-        @if (quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
+            <!-- Quiz result info. -->
+            @if (quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
 
-        @if (overallStats && gradeResult) {
-        <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">
-            <ion-label>
-                <div class="addon-mod_quiz-grade-result-grade">
-                    @if (moreAttempts) {
-                    <span>{{ gradeMethodReadable }}</span>
-                    <span>{{ gradeResult }}</span>
-                    } @else {
-                    <span>{{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}</span>
-                    }
-                </div>
+                @if (overallStats && gradeResult) {
+                    <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">
+                        <ion-label>
+                            <div class="addon-mod_quiz-grade-result-grade">
+                                @if (moreAttempts) {
+                                    <span>{{ gradeMethodReadable }}</span>
+                                    <span>{{ gradeResult }}</span>
+                                } @else {
+                                    <span>{{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}</span>
+                                }
+                            </div>
 
-                @if (gradeOverridden) {
-                <p class="addon-mod_quiz-grade-overridden-notice">
-                    <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
-                    {{ 'core.course.overriddennotice' | translate }}
-                </p>
+                            @if (gradeOverridden) {
+                                <p class="addon-mod_quiz-grade-overridden-notice">
+                                    <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
+                                    {{ 'core.course.overriddennotice' | translate }}
+                                </p>
+                            }
+                        </ion-label>
+                    </ion-item>
                 }
-            </ion-label>
-        </ion-item>
-        }
 
-        @if (gradebookFeedback) {
-        <ion-item class="ion-text-wrap addon-mod_quiz-gradebook-feedback">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</p>
-                <p>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback" contextLevel="module"
-                        [contextInstanceId]="module.id" [courseId]="courseId" />
-                </p>
-            </ion-label>
-        </ion-item>
-        }
-
-        @if (quiz.showFeedback && overallFeedback) {
-        <hr>
-        <ion-item class="ion-text-wrap addon-mod_quiz-overall-feedback">
-            <ion-label>
-                <p class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</p>
-                <p>
-                    <core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback" contextLevel="module"
-                        [contextInstanceId]="module.id" [courseId]="courseId" />
-                </p>
-            </ion-label>
-        </ion-item>
-        }
-
-        }
-
-        <ion-accordion-group>
-            @for (attempt of attempts; track attempt.id) {
-            <ion-accordion [value]="attempt.id" toggleIconSlot="start">
-                <ion-item slot="header" class="ion-text-wrap addon-mod_quiz-attempt-title" lines="none">
-                    <ion-label>
-                        <h3>{{ 'addon.mod_quiz.attempt' | translate:{ $a: attempt.attempt } }}</h3>
-                    </ion-label>
-                    <div slot="end" class="addon-mod_quiz-attempt-title-info">
-                        <addon-mod-quiz-attempt-state [state]="attempt.state" [finishedOffline]="attempt.finishedOffline" />
-                        @if (attempt.finished && quiz.showAttemptsGrades) {
-                        @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {
-                        <p>
-                            {{ 'core.grades.gradelong' | translate: { $a: {
-                            grade: attempt.formattedGrade,
-                            max: quiz.gradeFormatted,
-                            } } }}
-                        </p>
-                        } @else {
-                        <p>{{ 'addon.mod_quiz.notyetgraded' | translate }}</p>
-                        }
-                        }
-                    </div>
-                </ion-item>
-                <div class="addon-mod_quiz-attempt-details" slot="content">
-                    <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="attempt.additionalData" />
-
-                    @if (attempt.canReview) {
-                    <hr>
-                    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="reviewAttempt(attempt.id)" fill="outline">
-                        <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_quiz.review' | translate }}
-                    </ion-button>
-                    } @else if (attempt.completed && attempt.cannotReviewMessage) {
-                    <hr>
-                    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-noreview">
+                @if (gradebookFeedback) {
+                    <ion-item class="ion-text-wrap addon-mod_quiz-gradebook-feedback">
                         <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_quiz.comment' | translate }}</p>
                             <p>
-                                <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
-                                {{ attempt.cannotReviewMessage }}
+                                <core-format-text [component]="component" [componentId]="componentId" [text]="gradebookFeedback"
+                                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                             </p>
                         </ion-label>
                     </ion-item>
-                    } @else if (attempt.finishedOffline) {
+                }
+
+                @if (quiz.showFeedback && overallFeedback) {
                     <hr>
-                    <ion-item class="ion-text-wrap addon-mod_quiz-attempt-finishedoffline">
+                    <ion-item class="ion-text-wrap addon-mod_quiz-overall-feedback">
                         <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_quiz.overallfeedback' | translate }}</p>
                             <p>
-                                <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
-                                {{ 'addon.mod_quiz.finishedofflinenotice' | translate }}
+                                <core-format-text [component]="component" [componentId]="componentId" [text]="overallFeedback"
+                                    contextLevel="module" [contextInstanceId]="module.id" [courseId]="courseId" />
                             </p>
                         </ion-label>
                     </ion-item>
-                    }
-                </div>
-            </ion-accordion>
+                }
+
             }
-        </ion-accordion-group>
-    </ion-card>
+
+            <ion-accordion-group class="striped">
+                @for (attempt of attempts; track attempt.id) {
+                    <ion-accordion [value]="attempt.id" toggleIconSlot="start">
+                        <ion-item slot="header" class="ion-text-wrap addon-mod_quiz-attempt-title" lines="none">
+                            <ion-label>
+                                <h3>{{ 'addon.mod_quiz.attempt' | translate:{ $a: attempt.attempt } }}</h3>
+                            </ion-label>
+                            <div slot="end" class="addon-mod_quiz-attempt-title-info hide_on_expand">
+                                <addon-mod-quiz-attempt-state [state]="attempt.state" [finishedOffline]="attempt.finishedOffline" />
+                                @if (attempt.finished && quiz.showAttemptsGrades) {
+                                    @if (attempt.rescaledGrade !== undefined && attempt.rescaledGrade >= 0) {
+                                        <p>
+                                            {{ 'core.grades.gradelong' | translate: { $a: {
+                                                grade: attempt.formattedGrade,
+                                                max: quiz.gradeFormatted,
+                                            } } }}
+                                        </p>
+                                    } @else {
+                                        <p>{{ 'addon.mod_quiz.notyetgraded' | translate }}</p>
+                                    }
+                                }
+                            </div>
+                        </ion-item>
+                        <div class="addon-mod_quiz-attempt-details" slot="content">
+                            <addon-mod-quiz-attempt-info [quiz]="quiz" [attempt]="attempt" [additionalData]="attempt.additionalData" />
+
+                            @if (attempt.canReview) {
+                                <hr>
+                                <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="reviewAttempt(attempt.id)"
+                                    fill="outline">
+                                    <ion-icon name="fas-magnifying-glass" slot="start" aria-hidden="true" />
+                                    {{ 'addon.mod_quiz.review' | translate }}
+                                </ion-button>
+                            } @else if (attempt.completed && attempt.cannotReviewMessage) {
+                                <hr>
+                                <ion-item class="ion-text-wrap addon-mod_quiz-attempt-noreview">
+                                    <ion-label>
+                                        <p>
+                                            <ion-icon name="fas-circle-info" color="info" slot="start" aria-hidden="true" />
+                                            {{ attempt.cannotReviewMessage }}
+                                        </p>
+                                    </ion-label>
+                                </ion-item>
+                            } @else if (attempt.finishedOffline) {
+                                <hr>
+                                <ion-item class="ion-text-wrap addon-mod_quiz-attempt-finishedoffline">
+                                    <ion-label>
+                                        <p>
+                                            <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
+                                            {{ 'addon.mod_quiz.finishedofflinenotice' | translate }}
+                                        </p>
+                                    </ion-label>
+                                </ion-item>
+                            }
+                        </div>
+                    </ion-accordion>
+                }
+            </ion-accordion-group>
+        </ion-card>
     }
 
     <!-- More data. -->
-    <ng-container *ngIf="quiz">
+    @if (quiz) {
+
         <!-- Error messages. -->
-        <ion-card class="core-danger-card addon-mod_quiz-prevent-messages">
-            <ion-item class="ion-text-wrap" *ngFor="let message of preventMessages">
-                <ion-label>
-                    <p>{{ message }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-no-questions" *ngIf="quiz.hasquestions === 0">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-unsupported-questions"
-            *ngIf="!hasSupportedQuestions && unsupportedQuestions.length">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
-                    <p *ngFor="let type of unsupportedQuestions"
-                        class="addon-mod_quiz-unsupported-question addon-mod_quiz-unsupported-question-{{type}}">
-                        {{ type }}
-                    </p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-unsupported-rules" *ngIf="unsupportedRules.length">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
-                    <p *ngFor="let name of unsupportedRules"
-                        class="addon-mod_quiz-unsupported-rule addon-mod_quiz-unsupported-rule-{{name}}">
-                        {{ name }}
-                    </p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-        <ion-card class="core-danger-card addon-mod_quiz-unsupported-behaviours" *ngIf="behaviourSupported === false">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
-                    <p class="addon-mod_quiz-unsupported-behaviour">{{ quiz.preferredbehaviour }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        @if (preventMessages?.length) {
+            <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
+                @for (message of preventMessages; track message) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p>{{ message }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-card>
+        }
+        @if (!hasQuestions) {
+            <ion-card class="core-danger-card addon-mod_quiz-no-questions">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+        @if (!hasSupportedQuestions && unsupportedQuestions.length) {
+            <ion-card class="core-danger-card addon-mod_quiz-unsupported-questions">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
+                        <p *ngFor="let type of unsupportedQuestions"
+                            class="addon-mod_quiz-unsupported-question addon-mod_quiz-unsupported-question-{{type}}">
+                            {{ type }}
+                        </p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+        @if (unsupportedRules.length) {
+            <ion-card class="core-danger-card addon-mod_quiz-unsupported-rules">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
+                        <p *ngFor="let name of unsupportedRules"
+                            class="addon-mod_quiz-unsupported-rule addon-mod_quiz-unsupported-rule-{{name}}">
+                            {{ name }}
+                        </p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
+        @if (behaviourSupported === false) {
+            <ion-card class="core-danger-card addon-mod_quiz-unsupported-behaviours">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
+                        <p class="addon-mod_quiz-unsupported-behaviour">{{ quiz.preferredbehaviour }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
         <!-- Other warnings. -->
-        <ion-card class="core-warning-card" *ngIf="hasSupportedQuestions && unsupportedQuestions.length">
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
-                    <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
-                    <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
-    </ng-container>
+        @if (hasSupportedQuestions && unsupportedQuestions.length) {
+            <ion-card class="core-warning-card">
+                <ion-item class="ion-text-wrap">
+                    <ion-label>
+                        <p class="item-heading">{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
+                        <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
+                        <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
+                    </ion-label>
+                </ion-item>
+            </ion-card>
+        }
 
-    <div collapsible-footer *ngIf="!showLoading" slot="fixed">
-        <div class="list-item-limited-width" *ngIf="quiz">
-            <!-- Button to start/continue. -->
-            <ion-button *ngIf="buttonText" expand="block" (click)="attemptQuiz()" class="ion-margin ion-text-wrap"
-                [disabled]="showStatusSpinner">
-                <ion-spinner *ngIf="showStatusSpinner" slot="start" aria-hidden="true" />
-                {{ buttonText | translate }}
-            </ion-button>
+    }
 
-            <!-- Button to open in browser if it cannot be attempted in the app. -->
-            <ion-button class="ion-text-wrap ion-margin" *ngIf="!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
-                unsupportedRules.length || behaviourSupported === false)" expand="block" [href]="module.url" core-link
-                [showBrowserWarning]="false">
-                {{ 'core.openinbrowser' | translate }}
-                <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-            </ion-button>
+    @if (!showLoading) {
+        <div collapsible-footer slot="fixed">
+            @if (quiz) {
+                <div class="list-item-limited-width">
+                    <!-- Button to start/continue. -->
+                    @if (buttonText) {
+                        <ion-button expand="block" (click)="attemptQuiz()" class="ion-margin ion-text-wrap" [disabled]="showStatusSpinner">
+                            @if (showStatusSpinner) {
+                                <ion-spinner slot="start" aria-hidden="true" />
+                            }
+                            {{ buttonText | translate }}
+                        </ion-button>
+                    }
+
+                    <!-- Button to open in browser if it cannot be attempted in the app. -->
+                    @if (!buttonText && ((!hasSupportedQuestions && unsupportedQuestions.length) ||
+                        unsupportedRules.length || behaviourSupported === false)) {
+                        <ion-button class="ion-text-wrap ion-margin" expand="block" [href]="module.url" core-link
+                            [showBrowserWarning]="false">
+                            {{ 'core.openinbrowser' | translate }}
+                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                        </ion-button>
+                    }
+                </div>
+            }
+
+            <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
+
         </div>
-
-        <core-course-module-navigation [courseId]="courseId" [currentModuleId]="module.id" />
-
-    </div>
+    }
 </core-loading>

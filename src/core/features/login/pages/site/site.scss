@@ -25,9 +25,9 @@
         height: auto;
         margin: 0 auto;
         margin-left: 50%;
-        @include transform(translate3d(-50%,0,0));
         object-fit: cover;
         object-position: 50% 50%;
+        @include transform(translate3d(-50%,0,0));
     }
     ion-icon {
         margin: 0 auto;
@@ -48,7 +48,6 @@
 .core-login-site-logo,
 .core-login-site-list,
 .core-login-site-list-found {
-    transition-delay: 0s;
     visibility: visible;
     opacity: 1;
     transition: all 0.7s ease-in-out;
@@ -61,6 +60,7 @@
         margin-bottom: 0;
         padding: 0;
         max-height: 0;
+        display: block !important; /** Avoid breaking the animation */
     }
 }
 

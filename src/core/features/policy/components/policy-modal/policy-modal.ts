@@ -23,7 +23,6 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-policy-view-policy-modal',
     templateUrl: 'policy-modal.html',
-    standalone: true,
     imports: [
         CoreSharedModule,
     ],

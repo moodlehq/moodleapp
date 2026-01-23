@@ -1,29 +1,42 @@
-<span *ngIf="inputMode && form" [formGroup]="form">
-    <ion-input *ngIf="searchMode" type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id" />
+@if (inputMode && form) {
+    <span [formGroup]="form">
+        @if (searchMode) {
+            <ion-input type="text" [placeholder]="field.name" [formControlName]="'f_'+field.id" />
+        }
 
-    <ng-container *ngIf="editMode">
-        <span [core-mark-required]="field.required" class="core-mark-required"></span>
-        <div class="addon-data-latlong">
-            <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" maxlength="10" placeholder="0.0">
-                <div class="input-units" slot="end">°N</div>
-            </ion-input>
-        </div>
-        <div class="addon-data-latlong">
-            <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10" placeholder="0.0">
-                <div class="input-units" slot="end">°E</div>
-            </ion-input>
-        </div>
-        <div class="addon-data-latlong" *ngIf="locationServicesEnabled">
-            <ion-button (click)="getLocation($event)">
-                <ion-icon name="fas-crosshairs" slot="start" aria-hidden="true" />
-                {{ 'addon.mod_data.mylocation' | translate }}
-            </ion-button>
-        </div>
-        <core-input-errors *ngIf="error" [control]="form.controls['f_'+field.id]" [errorText]="error" />
-    </ng-container>
-</span>
+        @if (editMode) {
+
+            <span [core-mark-required]="field.required" class="core-mark-required"></span>
+            <div class="addon-data-latlong">
+                <ion-input type="text" [formControlName]="'f_'+field.id+'_0'" maxlength="10" placeholder="0.0">
+                    <div class="input-units" slot="end">°N</div>
+                </ion-input>
+            </div>
+            <div class="addon-data-latlong">
+                <ion-input type="text" [formControlName]="'f_'+field.id+'_1'" maxlength="10" placeholder="0.0">
+                    <div class="input-units" slot="end">°E</div>
+                </ion-input>
+            </div>
+            <div class="addon-data-latlong addon-data-latlong-coordinates-instructions">
+                <ion-note>
+                    <ion-icon name="fas-circle-question" aria-hidden="true" class="text-info" />
+                    <span>
+                        <core-format-text [text]="'core.howtoobtaincoordinates' | translate:{ url: mapsUrl }"
+                            [showBrowserWarningInLinks]="false" />
+                    </span>
+                </ion-note>
+            </div>
+            @if (error) {
+                <core-input-errors [control]="form.controls['f_'+field.id]" [errorText]="error" />
+            }
+
+        }
+    </span>
+}
 
 
-<span *ngIf="displayMode && value">
-    <a [href]="getLatLongLink(north, east)">{{ formatLatLong(north, east) }}</a>
-</span>
+@if (displayMode && value) {
+    <span>
+        <a [href]="getLatLongLink(north, east)" core-link>{{ formatLatLong(north, east) }}</a>
+    </span>
+}

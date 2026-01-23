@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModScormAutoPlayData, AddonModScormIndexComponent } from '../../components/index/index';
+import { CoreSharedModule } from '@/core/shared.module';
 
 /**
  * Page that displays the scorm entry page.
@@ -23,10 +24,15 @@ import { AddonModScormAutoPlayData, AddonModScormIndexComponent } from '../../co
 @Component({
     selector: 'page-addon-mod-scorm-index',
     templateUrl: 'index.html',
+    imports: [
+        CoreSharedModule,
+        AddonModScormIndexComponent,
+    ],
 })
-export class AddonModScormIndexPage extends CoreCourseModuleMainActivityPage<AddonModScormIndexComponent> implements OnInit {
+export default class AddonModScormIndexPage extends CoreCourseModuleMainActivityPage<AddonModScormIndexComponent>
+    implements OnInit {
 
-    @ViewChild(AddonModScormIndexComponent) activityComponent?: AddonModScormIndexComponent;
+    readonly activityComponent = viewChild.required(AddonModScormIndexComponent);
 
     autoPlayData?: AddonModScormAutoPlayData; // Data to auto-play the SCORM.
 

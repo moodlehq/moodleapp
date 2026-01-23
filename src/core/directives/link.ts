@@ -17,9 +17,8 @@ import { SafeUrl } from '@angular/platform-browser';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreDomUtils } from '@services/utils/dom';
 import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@services/utils/utils';
+import { CoreOpener } from '@singletons/opener';
 import { CoreConstants } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
@@ -27,28 +26,37 @@ import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreDom } from '@singletons/dom';
 import { toBoolean } from '../transforms/boolean';
-import { CoreLoadings } from '@services/loadings';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
 
 /**
  * Directive to open a link in external browser or in the app.
  */
 @Directive({
     selector: '[core-link]',
+    host: {
+        href: 'href', // Make sure href is in the DOM for a11y.
+    },
 })
 export class CoreLinkDirective implements OnInit {
 
     @Input() href?: string | SafeUrl; // Link URL.
     @Input({ transform: toBoolean }) capture = false; // If the link needs to be captured by the app.
-    @Input({ transform: toBoolean }) inApp = false; // True to open in embedded browser, false to open in system browser.
+    /**
+     * True to force open in embedded browser, false to force open in system browser, undefined to determine it based on
+     * forceOpenLinksIn setting and data-open-in attribute.
+     */
+    @Input({ transform: toBoolean }) inApp?: boolean;
     @Input({ transform: toBoolean }) autoLogin = true; // Whether to try to use auto-login.
     @Input({ transform: toBoolean }) showBrowserWarning = true; // Whether to show a warning before opening browser.
 
     protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement;
 
     constructor(
+        // eslint-disable-next-line @angular-eslint/prefer-inject
         element: ElementRef,
     ) {
-        this.element = element.nativeElement;
+        this.element = element.nativeElement;  // This is done that way to let format text create a directive.
     }
 
     /**
@@ -122,7 +130,7 @@ export class CoreLinkDirective implements OnInit {
             // Look for id or name.
             href = href.substring(1);
             const container = this.element.closest<HTMLIonContentElement>('ion-content');
-            if (container) {
+            if (container && href.length > 0) {
                 CoreDom.scrollToElement(
                     container,
                     `#${href}, [name='${href}']`,
@@ -136,7 +144,7 @@ export class CoreLinkDirective implements OnInit {
             try {
                 await CoreCustomURLSchemes.handleCustomURL(href);
             } catch (error) {
-                CoreCustomURLSchemes.treatHandleCustomURLError(error);
+                CoreCustomURLSchemes.treatHandleCustomURLError(error, href, 'CoreLinkDirective');
             }
 
             return;
@@ -157,15 +165,15 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreFileHelper.isOpenableInApp({ filename })) {
             try {
                 await CoreFileHelper.showConfirmOpenUnsupportedFile(false, { filename });
-            } catch (error) {
+            } catch {
                 return; // Cancelled, stop.
             }
         }
 
         try {
-            await CoreUtils.openFile(path);
+            await CoreOpener.openFile(path);
         } catch (error) {
-            CoreDomUtils.showErrorModal(error);
+            CoreAlerts.showError(error);
         }
     }
 
@@ -186,9 +194,9 @@ export class CoreLinkDirective implements OnInit {
         if (!CoreSites.isLoggedIn()) {
             // Not logged in, cannot auto-login.
             if (openInApp) {
-                CoreUtils.openInApp(href);
+                CoreOpener.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
 
             return;
@@ -227,9 +235,9 @@ export class CoreLinkDirective implements OnInit {
             }
         } else {
             if (openInApp) {
-                CoreUtils.openInApp(href);
+                CoreOpener.openInApp(href);
             } else {
-                CoreUtils.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
             }
         }
     }

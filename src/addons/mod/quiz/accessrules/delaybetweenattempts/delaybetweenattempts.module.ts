@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, provideAppInitializer } from '@angular/core';
 
 import { AddonModQuizAccessRuleDelegate } from '../../services/access-rules-delegate';
 import { AddonModQuizAccessDelayBetweenAttemptsHandler } from './services/handlers/delaybetweenattempts';
 
 @NgModule({
-    declarations: [
-    ],
     providers: [
-        {
-            provide: APP_INITIALIZER,
-            multi: true,
-            useValue: () => {
-                AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessDelayBetweenAttemptsHandler.instance);
-            },
-        },
+        provideAppInitializer(() => {
+            AddonModQuizAccessRuleDelegate.registerHandler(AddonModQuizAccessDelayBetweenAttemptsHandler.instance);
+        }),
     ],
 })
 export class AddonModQuizAccessDelayBetweenAttemptsModule {}
