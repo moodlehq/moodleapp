@@ -19,17 +19,16 @@
     ],
     "scripts": {
         "ng": "ng",
-        "start": "ionic serve --browser=$MOODLE_APP_BROWSER",
+        "start": "ionic serve --browser=$MOODLE_APP_BROWSER --ssl",
         "serve:test": "NODE_ENV=testing ionic serve --no-open",
         "build": "NODE_OPTIONS=--max-old-space-size=8192 ionic build --configuration=development",
-        "build:prod": "NODE_ENV=production ionic build --prod",
-        "build:test": "NODE_ENV=testing ionic build --configuration=testing",
-        "dev:android": "adb shell pm clear org.capriolegroup.aspire && concurrently \"npm run dev:android:app\" \"npm run dev:android:cordova\"",
-        "dev:android:app": "ionic cordova run android --livereload --ssl",
-        "dev:android:reverse": "adb reverse tcp:8100 tcp:8100",
+        "build:prod": "NODE_OPTIONS=--max-old-space-size=8192 NODE_ENV=production ionic build --prod",
+        "build:test": "NODE_OPTIONS=--max-old-space-size=8192 NODE_ENV=testing ionic build --configuration=testing",
+        "dev:android": "concurrently \"npm run dev:android:app\" \"npm run dev:android:cordova\"",
+        "dev:android:app": "ionic cordova run android --livereload --external --ssl",
         "dev:android:cordova": "npm run dev --prefix cordova-plugin-moodleapp",
         "dev:ios": "ionic cordova run ios",
-        "prod:android": "npm run prod --prefix cordova-plugin-moodleapp && NODE_ENV=production npx ionic cordova run android --prod",
+        "prod:android": "npm run prod --prefix cordova-plugin-moodleapp && NODE_ENV=production ionic cordova run android --prod",
         "prod:ios": "NODE_ENV=production ionic cordova run ios --prod",
         "test": "NODE_ENV=testing gulp && jest --verbose",
         "test:ci": "NODE_ENV=testing gulp && jest -ci --runInBand --verbose",
@@ -39,7 +38,7 @@
         "ionic:serve:before": "gulp",
         "ionic:serve": "cross-env-shell ./scripts/serve.sh",
         "ionic:build:before": "gulp",
-        "postinstall": "patch-package && cd cordova-plugin-moodleapp && npm install && npm run prod",
+        "postinstall": "patch-package && cd cordova-plugin-moodleapp && npm install",
         "lang:update-langpacks": "./scripts/update_langpacks.sh",
         "lang:detect-langpacks": "./scripts/update_langpacks.sh detect",
         "lang:create-langindex": "./scripts/create_langindex.sh"
@@ -80,8 +79,11 @@
         "@moodlehq/cordova-plugin-file-transfer": "2.0.0-moodle.2",
         "@moodlehq/cordova-plugin-inappbrowser": "6.0.0-moodle.1",
         "@moodlehq/cordova-plugin-intent": "2.2.0-moodle.3",
-        "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.5",
-        "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.3",
+        "@moodlehq/cordova-plugin-ionic-keyboard": "2.2.0-moodle.3",
+        "@moodlehq/cordova-plugin-ionic-webview": "5.0.0-moodle.5",
+        "@moodlehq/cordova-plugin-media-capture": "5.0.0-moodle.1",
+        "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.6",
+        "@moodlehq/cordova-plugin-statusbar": "4.0.0-moodle.5",
         "@moodlehq/cordova-plugin-zip": "3.1.0-moodle.1",
         "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.13",
         "@ngx-translate/core": "16.0.4",
@@ -92,7 +94,9 @@
         "@types/dom-mediacapture-record": "1.0.7",
         "chart.js": "4.5.0",
         "cordova": "12.0.0",
+        "cordova-android": "14.0.1",
         "cordova-clipboard": "1.3.0",
+        "cordova-ios": "7.1.1",
         "cordova-plugin-add-swift-support": "2.0.2",
         "cordova-plugin-androidx-adapter": "1.1.3",
         "cordova-plugin-badge": "0.8.9",
@@ -112,9 +116,9 @@
         "ionicons": "8.0.13",
         "jszip": "3.10.1",
         "mathjax": "3.2.2",
-        "moment-timezone": "^0.6.0",
         "mp3-mediarecorder": "4.0.5",
-        "ngx-image-cropper": "^9.1.6",
+        "ngx-image-cropper": "9.1.5",
+        "nl.kingsquare.cordova.background-audio": "1.0.1",
         "ogv": "1.9.0",
         "rxjs": "7.8.2",
         "swiper": "11.2.10",
@@ -141,11 +145,7 @@
         "@types/webpack-env": "1.18.8",
         "angular-eslint": "20.3.0",
         "circular-dependency-plugin": "5.2.2",
-        "concurrently": "8.2.2",
-        "cordova-android": "^14.0.0",
-        "cordova-ios": "^7.1.1",
-        "cordova-plugin-ionic": "^5.5.3",
-        "cordova-plugin-ionic-webview": "^5.0.1",
+        "concurrently": "9.2.1",
         "cordova-plugin-moodleapp": "file:cordova-plugin-moodleapp",
         "cross-env": "10.0.0",
         "es-check": "9.4.4",
@@ -177,7 +177,7 @@
         "vinyl": "3.0.1"
     },
     "engines": {
-        "node": ">=18.18.2 <25"
+        "node": ">=v22.17 <23"
     },
     "cordova": {
         "platforms": [
@@ -195,6 +195,9 @@
             "@moodlehq/cordova-plugin-file-transfer": {},
             "@moodlehq/cordova-plugin-inappbrowser": {},
             "@moodlehq/cordova-plugin-intent": {},
+            "@moodlehq/cordova-plugin-ionic-keyboard": {},
+            "@moodlehq/cordova-plugin-ionic-webview": {},
+            "@moodlehq/cordova-plugin-media-capture": {},
             "@moodlehq/cordova-plugin-qrscanner": {},
             "@moodlehq/cordova-plugin-statusbar": {},
             "@moodlehq/cordova-plugin-zip": {},
@@ -218,7 +221,6 @@
             "cordova-plugin-local-notification": {
                 "ANDROID_SUPPORT_V4_VERSION": "26.+"
             },
-            "cordova-plugin-media-capture": {},
             "cordova-plugin-moodleapp": {
                 "ANDROIDX_VERSION": "1.0.0",
                 "ANDROIDX_APPCOMPAT_VERSION": "1.3.1"
@@ -229,15 +231,7 @@
             "cordova-plugin-wkuserscript": {},
             "cordova-plugin-wkwebview-cookies": {},
             "cordova-sqlite-storage": {},
-            "cordova-plugin-ionic": {
-                "APP_ID": "f9e94571",
-                "CHANNEL_NAME": "Production",
-                "UPDATE_METHOD": "background",
-                "MAX_STORE": "2",
-                "MIN_BACKGROUND_DURATION": "30",
-                "UPDATE_API": "https://api.ionicjs.com"
-            },
-            "cordova-plugin-add-swift-support": {}
+            "nl.kingsquare.cordova.background-audio": {}
         }
     }
 }
