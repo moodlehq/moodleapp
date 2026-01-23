@@ -351,30 +351,6 @@ export default class CoreCourseIndexPage implements OnInit, OnDestroy {
         return 'ellipsis-horizontal-outline';
     }
 
-    /**
-     * Set course color.
-     */
-    protected async setCourseColor(): Promise<void> {
-        if (!this.course) {
-            return;
-        }
-
-        await CoreCoursesHelper.loadCourseColorAndImage(this.course);
-
-        if (!this.courseThumb) {
-            return;
-        }
-
-        if (this.course.color) {
-            this.courseThumb.nativeElement.style.setProperty('--course-color', this.course.color);
-
-            const tint = CoreColors.lighter(this.course.color, 50);
-            this.courseThumb.nativeElement.style.setProperty('--course-color-tint', tint);
-        } else if(this.course.colorNumber !== undefined) {
-            this.courseThumb.nativeElement.classList.add('course-color-' + this.course.colorNumber);
-        }
-    }
-
 }
 
 type CourseTab = CoreTabsOutletTab & {
