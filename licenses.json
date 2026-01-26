@@ -6182,7 +6182,7 @@
     "repository": "https://github.com/isaacs/node-mkdirp",
     "licenseFile": "LICENSE"
   },
-  "moodlemobile@5.1.0": {
+  "moodlemobile@5.1.1": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/moodlehq/moodleapp",
     "publisher": "Moodle Pty Ltd.",
