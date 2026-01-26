@@ -92,7 +92,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         timeFilterSelected: 'all', // Aspire School: Show all courses by default
         customFilters: [],
     };
-    
+
     // Category filter for Aspire School
     categoryFilter = 'all';
     availableCategories: string[] = [];
@@ -109,7 +109,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     textFilter = '';
     hasCourses = false;
     searchEnabled = false;
-    
+
     // Parent/mentee properties
     isParentUser = false;
     selectedMentee?: CoreUserProfile;
@@ -302,7 +302,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @returns Promise resolved when done.
      */
     protected async loadAllCourses(loadWatcher: PageLoadWatcher): Promise<void> {
-        const showCategories = this.block.configsRecord?.displaycategories?.value === '1';
+        const _showCategories = this.block.configsRecord?.displaycategories?.value === '1';
 
         this.allCourses = await loadWatcher.watchRequest(
             CoreCoursesHelper.getUserCoursesWithOptionsObservable({
@@ -416,7 +416,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      *
      * @param layouts Config available layouts.
      */
-    protected loadLayouts(layouts?: string[]): void {
+    protected loadLayouts(_layouts?: string[]): void {
         // Aspire School: Always use card layout, no switching allowed
         this.layout = 'card';
         this.isLayoutSwitcherAvailable = false;
@@ -612,7 +612,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                     course.fullname.toLowerCase().indexOf(value) > -1);
             }
         }
-        
+
         // Category filter for Aspire School
         if (this.categoryFilter && this.categoryFilter !== 'all') {
             this.filteredCourses = this.filteredCourses.filter((course) =>
@@ -625,7 +625,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         this.prefetchIconsInitialized = false;
         this.initPrefetchCoursesIcons();
     }
-    
+
     /**
      * Extract available categories from all courses.
      */
@@ -747,7 +747,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         await this.saveSort(selected);
         this.sortCourses(true);
     }
-    
+
     /**
      * Category filter selected - apply filter.
      *
@@ -829,22 +829,22 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         try {
             // Check if user is a parent
             this.isParentUser = await CoreUserParent.isParentUser();
-            
+
             if (!this.isParentUser) {
                 return;
             }
-            
+
             // Get selected mentee
             const selectedMenteeId = await CoreUserParent.getSelectedMentee();
-            
+
             if (selectedMenteeId) {
                 // Get mentee details
                 const mentees = await CoreUserParent.getMentees();
                 this.selectedMentee = mentees.find(m => m.id === selectedMenteeId);
                 this.viewingMenteeCourses = !!this.selectedMentee;
             }
-        } catch (error) {
-            console.error('Error loading parent data:', error);
+        } catch {
+            // Silently fail - parent data is optional enhancement
         }
     }
 

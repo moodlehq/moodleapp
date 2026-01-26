@@ -41,12 +41,12 @@
                     
                     <div class="aspire-event-meta">
                         <span class="aspire-event-time">
-                            <ion-icon name="fas-clock" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-clock" aria-hidden="true" />
                             {{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}
                         </span>
                         
                         <span class="aspire-event-course" *ngIf="showInlineCourse() && event.course">
-                            <ion-icon name="fas-book" aria-hidden="true"></ion-icon>
+                            <ion-icon name="fas-book" aria-hidden="true" />
                             <core-format-text [text]="event.course.fullnamedisplay" 
                                 contextLevel="course"
                                 [contextInstanceId]="event.course.id" />

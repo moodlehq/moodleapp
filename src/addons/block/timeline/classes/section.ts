@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AddonBlockTimeline, AddonBlockTimelineActionEvents } from '@addons/block/timeline/services/timeline';
+import { AddonBlockTimeline } from '@addons/block/timeline/services/timeline';
 import { AddonCalendarEvent } from '@addons/calendar/services/calendar';
-import { signal } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
@@ -77,9 +76,11 @@ export class AddonBlockTimelineSection {
             loadingMore: true,
         });
 
+        const lastEventId = this.dataSubject$.value.lastEventId;
+        const searchTerm = this.search ?? undefined;
         const result = this.course
-            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, this.dataSubject$.value.lastEventId, this.search ?? undefined)
-            : await AddonBlockTimeline.getActionEventsByTimesort(this.dataSubject$.value.lastEventId, this.search ?? undefined);
+            ? await AddonBlockTimeline.getActionEventsByCourse(this.course.id, lastEventId, searchTerm)
+            : await AddonBlockTimeline.getActionEventsByTimesort(lastEventId, searchTerm);
 
         const events = result.events;
         const canLoadMore = result.lastEventId;
@@ -133,11 +134,11 @@ export class AddonBlockTimelineSection {
         }, {} as Record<string, AddonBlockTimelineDayEvents>);
 
         // Aspire School: Sort events when grouped by course
-        let dayEventsList = Object.values(eventsByDates);
+        const dayEventsList = Object.values(eventsByDates);
         if (this.course) {
             // Sort days with most recent first (today, tomorrow, etc.)
             dayEventsList.sort((a, b) => a.dayTimestamp - b.dayTimestamp);
-            
+
             // Sort events within each day by time (earliest first for natural daily flow)
             dayEventsList.forEach(dayEvents => {
                 dayEvents.events.sort((a, b) => a.timesort - b.timesort);
