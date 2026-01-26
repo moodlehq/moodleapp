@@ -554,13 +554,14 @@ video::-webkit-media-text-track-display {
     display: block;
 }
 
-// Dynamic bottom tab bar padding based on device safe area
+// Bottom tab bar safe area handling
+// Note: On Android, safe area insets are set via JavaScript by @totalpave/cordova-plugin-insets
+// plugin in initialize-edge-to-edge.ts. Do NOT override --ion-safe-area-bottom here as
+// env(safe-area-inset-bottom) doesn't work reliably on Android WebView (e.g., S22 Ultra).
 ion-tabs.placement-bottom ion-tab-bar {
-    // Use device's safe area (for notches/home indicators), with 3px minimum
-    --ion-safe-area-bottom: max(env(safe-area-inset-bottom), 3px);
     margin-bottom: 0px !important;
-    // Add extra padding on top of safe area for better touch target
-    padding-bottom: max(calc(env(safe-area-inset-bottom) - 5px), 3px) !important;
+    // Use the JS-set safe area variable for bottom padding
+    padding-bottom: max(var(--ion-safe-area-bottom, 0px), 3px) !important;
     margin-top: 0px !important;
     padding-top: 1px !important;
 }

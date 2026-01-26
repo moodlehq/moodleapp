@@ -128,14 +128,16 @@ page-core-mainmenu-home ion-header {
 }
 
 // Aspire Bottom Navigation
+// Note: On Android, safe area insets are set via JavaScript (--ion-safe-area-*).
+// env(safe-area-inset-*) doesn't work reliably on Android WebView.
 .mainmenu-tabs {
     background: #ffffff;
     border-top: none;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-    padding: 8px 16px calc(4px + env(safe-area-inset-bottom, 0px)) 16px; // Added horizontal padding and safe area for iPhone
-    padding-left: calc(16px + env(safe-area-inset-left, 0px));
-    padding-right: calc(16px + env(safe-area-inset-right, 0px));
-    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 16px calc(4px + var(--ion-safe-area-bottom, 0px)) 16px;
+    padding-left: calc(16px + var(--ion-safe-area-left, 0px));
+    padding-right: calc(16px + var(--ion-safe-area-right, 0px));
+    height: calc(64px + var(--ion-safe-area-bottom, 0px));
     position: relative;
 
     &::before {
