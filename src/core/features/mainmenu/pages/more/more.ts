@@ -22,7 +22,7 @@ import {
     CoreMainMenuHandlerToDisplay,
     CoreMainMenuPageNavHandlerToDisplay,
 } from '../../services/mainmenu-delegate';
-import { CoreMainMenu, CoreMainMenuCustomItem } from '../../services/mainmenu';
+import { CoreMainMenu } from '../../services/mainmenu';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
@@ -35,6 +35,8 @@ import { CoreUrl } from '@singletons/url';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
+import { CoreCustomMenuItemComponent } from '@features/mainmenu/components/custom-menu-item/custom-menu-item';
 
 /**
  * Page that displays the more page of the app.
@@ -46,6 +48,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,
+        CoreCustomMenuItemComponent,
     ],
 })
 export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
@@ -55,7 +58,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
     handlers?: CoreMainMenuHandlerToDisplay[];
     handlersLoaded = false;
     showScanQR: boolean;
-    customItems?: CoreMainMenuCustomItem[];
+    customItems?: CoreCustomMenuItem[];
     hasComponentHandlers = false;
 
     protected allHandlers?: CoreMainMenuHandlerToDisplay[];
@@ -68,7 +71,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, () => this.loadCustomMenuItems());
 
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
-            this.customItems = await CoreMainMenu.getCustomMenuItems();
+            this.customItems = await CoreCustomMenu.getCustomMainMenuItems();
         }, CoreSites.getCurrentSiteId());
 
         this.loadCustomMenuItems();
@@ -128,7 +131,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Load custom menu items.
      */
     protected async loadCustomMenuItems(): Promise<void> {
-        this.customItems = await CoreMainMenu.getCustomMenuItems();
+        this.customItems = await CoreCustomMenu.getCustomMainMenuItems();
     }
 
     /**
@@ -140,15 +143,6 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
         const params = handler.pageParams;
 
         CoreNavigator.navigateToSitePath(handler.page, { params });
-    }
-
-    /**
-     * Open an embedded custom item.
-     *
-     * @param item Item to open.
-     */
-    openItem(item: CoreMainMenuCustomItem): void {
-        CoreViewer.openIframeViewer(item.label, item.url);
     }
 
     /**

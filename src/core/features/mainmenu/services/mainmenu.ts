@@ -14,14 +14,10 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreLang, CoreLangFormat, CoreLangLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreConstants } from '@/core/constants';
 import { CoreMainMenuDelegate, CoreMainMenuPageNavHandlerToDisplay } from './mainmenu-delegate';
-import { Device, makeSingleton } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { makeSingleton } from '@singletons';
 import { CoreScreen } from '@services/screen';
-import { CorePlatform } from '@services/platform';
 import {
     CoreMainMenuPlacement,
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
@@ -30,6 +26,7 @@ import {
     MAIN_MENU_NUM_MAIN_HANDLERS,
     MAIN_MENU_VISIBILITY_UPDATED_EVENT,
 } from '../constants';
+import { CoreCustomMenuItem } from './custommenu';
 
 declare module '@singletons/events' {
 
@@ -88,157 +85,13 @@ export class CoreMainMenuProvider {
      *
      * @param siteId Site to get custom items from.
      * @returns List of custom menu items.
-     */
-    async getCustomMenuItems(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
-        const customItems = await Promise.all([
-            this.getCustomMenuItemsFromSite(siteId),
-            this.getCustomItemsFromConfig(),
-        ]);
-
-        return customItems.flat();
-    }
-
-    /**
-     * Get a list of custom menu items for a certain site.
      *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns List of custom menu items.
+     * @deprecated since 5.2. Use CoreCustomMenu.getCustomMenuItems() instead.
      */
-    protected async getCustomMenuItemsFromSite(siteId?: string): Promise<CoreMainMenuCustomItem[]> {
-        const site = await CoreSites.getSite(siteId);
+    async getCustomMenuItems(siteId?: string): Promise<CoreCustomMenuItem[]> {
+        const { CoreCustomMenu } = await import('./custommenu');
 
-        const itemsString = site.getStoredConfig('tool_mobile_custommenuitems');
-        const map: CustomMenuItemsMap = {};
-        const result: CoreMainMenuCustomItem[] = [];
-
-        let position = 0; // Position of each item, to keep the same order as it's configured.
-
-        if (!itemsString || typeof itemsString != 'string') {
-            // Setting not valid.
-            return result;
-        }
-
-        // Add items to the map.
-        const items = itemsString.split(/(?:\r\n|\r|\n)/);
-        items.forEach((item) => {
-            const values = item.split('|');
-            const label = values[0] ? values[0].trim() : values[0];
-            const url = values[1] ? values[1].trim() : values[1];
-            const type = values[2] ? values[2].trim() : values[2];
-            const lang = (values[3] ? values[3].trim() : values[3]) || 'none';
-            let icon = values[4] ? values[4].trim() : values[4];
-
-            if (!label || !url || !type) {
-                // Invalid item, ignore it.
-                return;
-            }
-
-            const id = `${url}#${type}`;
-            if (!icon) {
-                // Icon not defined, use default one.
-                icon = type == 'embedded' ? 'fas-expand' : 'fas-link'; // @todo Find a better icon for embedded.
-            }
-
-            if (!map[id]) {
-                // New entry, add it to the map.
-                map[id] = {
-                    url: url,
-                    type: type,
-                    position: position,
-                    labels: {},
-                };
-                position++;
-            }
-
-            map[id].labels[lang.toLowerCase()] = {
-                label: label,
-                icon: icon,
-            };
-        });
-
-        if (!position) {
-            // No valid items found, stop.
-            return result;
-        }
-
-        const currentLangApp = await CoreLang.getCurrentLanguage();
-        const currentLangLMS = CoreLang.formatLanguage(currentLangApp, CoreLangFormat.LMS);
-        const fallbackLang = CoreConstants.CONFIG.default_lang || 'en';
-
-        // Get the right label for each entry and add it to the result.
-        for (const id in map) {
-            const entry = map[id];
-            let data = entry.labels[currentLangApp]
-                ?? entry.labels[currentLangLMS]
-                ?? entry.labels[`${currentLangApp}_only`]
-                ?? entry.labels[`${currentLangLMS}_only`]
-                ?? entry.labels.none
-                ?? entry.labels[fallbackLang];
-
-            if (!data) {
-                // No valid label found, get the first one that is not "_only".
-                for (const lang in entry.labels) {
-                    if (lang.indexOf('_only') == -1) {
-                        data = entry.labels[lang];
-                        break;
-                    }
-                }
-
-                if (!data) {
-                    // No valid label, ignore this entry.
-                    continue;
-                }
-            }
-
-            result[entry.position] = {
-                url: entry.url,
-                type: entry.type,
-                label: data.label,
-                icon: data.icon,
-            };
-        }
-
-        // Remove undefined values.
-        return result.filter((entry) => entry !== undefined);
-    }
-
-    /**
-     * Get a list of custom menu items from config.
-     *
-     * @returns List of custom menu items.
-     */
-    protected async getCustomItemsFromConfig(): Promise<CoreMainMenuCustomItem[]> {
-        const items = CoreConstants.CONFIG.customMainMenuItems;
-
-        if (!items) {
-            return [];
-        }
-
-        const currentLang = await CoreLang.getCurrentLanguage();
-
-        const fallbackLang = CoreConstants.CONFIG.default_lang || 'en';
-        const replacements = {
-            devicetype: '',
-            osversion: Device.version,
-        };
-
-        if (CorePlatform.isAndroid()) {
-            replacements.devicetype = 'Android';
-        } else if (CorePlatform.isIOS()) {
-            replacements.devicetype = 'iPhone or iPad';
-        } else {
-            replacements.devicetype = 'Other';
-        }
-
-        return items
-            .filter(item => typeof item.label === 'string' || currentLang in item.label || fallbackLang in item.label)
-            .map(item => ({
-                ...item,
-                url: CoreText.replaceArguments(item.url, replacements, 'uri'),
-                label: typeof item.label === 'string'
-                    ? item.label
-                    : item.label[currentLang] ?? item.label[fallbackLang],
-            }));
+        return CoreCustomMenu.getCustomMainMenuItems(siteId);
     }
 
     /**
@@ -283,7 +136,7 @@ export class CoreMainMenuProvider {
      * @returns Promise resolved with boolean: whether it's the root of a main menu tab.
      */
     async isMainMenuTab(pageName: string): Promise<boolean> {
-        if (pageName == MAIN_MENU_MORE_PAGE_NAME) {
+        if (pageName === MAIN_MENU_MORE_PAGE_NAME) {
             return true;
         }
 
@@ -322,53 +175,6 @@ export class CoreMainMenuProvider {
 }
 
 export const CoreMainMenu = makeSingleton(CoreMainMenuProvider);
-
-/**
- * Custom main menu item.
- */
-export type CoreMainMenuCustomItem = {
-    /**
-     * Type of the item: app, inappbrowser, browser or embedded.
-     */
-    type: string;
-
-    /**
-     * Url of the item.
-     */
-    url: string;
-
-    /**
-     * Label to display for the item.
-     */
-    label: string;
-
-    /**
-     * Name of the icon to display for the item.
-     */
-    icon: string;
-};
-
-/**
- * Custom main menu item with localized text.
- */
-export type CoreMainMenuLocalizedCustomItem = Omit<CoreMainMenuCustomItem, 'label'> & {
-    label: string | Record<CoreLangLanguage, string>;
-};
-
-/**
- * Map of custom menu items.
- */
-type CustomMenuItemsMap = Record<string, {
-    url: string;
-    type: string;
-    position: number;
-    labels: {
-        [lang: string]: {
-            label: string;
-            icon: string;
-        };
-    };
-}>;
 
 export type CoreMainMenuHandlerBadgeUpdatedEventData = {
     handler: string; // Handler name.

@@ -38,6 +38,8 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
+import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
+import { CoreCustomMenuItemComponent } from '../custom-menu-item/custom-menu-item';
 
 /**
  * Component to display a user menu.
@@ -49,6 +51,7 @@ import type { ReloadableComponent } from '@coretypes/reloadable-component';
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,
+        CoreCustomMenuItemComponent,
     ],
 })
 export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
@@ -59,6 +62,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     siteUrl?: string;
     displaySiteUrl = false;
     handlers: HandlerData[] = [];
+    customItems?: CoreCustomMenuItem[];
     accountHandlers: HandlerData[] = [];
     handlersLoaded = false;
     user?: CoreUserProfile;
@@ -83,6 +87,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.displayContactSupport = new CoreUserAuthenticatedSupportConfig(currentSite).canContactSupport();
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
         this.displaySiteUrl = currentSite.shouldDisplayInformativeLinks();
+
+        await this.loadCustomMenuItems();
 
         await this.loadData();
     }
@@ -175,6 +181,13 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         );
 
         event?.complete();
+    }
+
+    /**
+     * Load custom menu items.
+     */
+    protected async loadCustomMenuItems(): Promise<void> {
+        this.customItems = await CoreCustomMenu.getUserCustomMenuItems();
     }
 
     /**

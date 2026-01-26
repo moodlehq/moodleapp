@@ -1,0 +1,17 @@
+@if (type() !== 'embedded') {
+    <ion-item button [href]="url()" [attr.aria-label]="label()" core-link [capture]="type() === 'app'"
+        [inApp]="type() === 'inappbrowser'" class="core-custom-menu-item" [detail]="true"
+        [detailIcon]="type() === 'browser' ? 'open-outline' : 'chevron-forward'">
+        <ion-icon [name]="icon()" slot="start" aria-hidden="true" />
+        <ion-label>
+            <p class="item-heading">{{label()}}</p>
+        </ion-label>
+    </ion-item>
+} @else {
+    <ion-item button (click)="openItem()" [attr.aria-label]="label()" class="core-custom-menu-item" [detail]="true">
+        <ion-icon [name]="icon()" slot="start" aria-hidden="true" />
+        <ion-label>
+            <p class="item-heading">{{label()}}</p>
+        </ion-label>
+    </ion-item>
+}

@@ -50,6 +50,10 @@
                 <ng-container *ngTemplateOutlet="menuHandler; context: { handler, class: 'core-user-menu-handler', addSeparator: false }" />
             }
 
+            @for (item of customItems; track item) {
+                <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url" />
+            }
+
             @for (handler of accountHandlers; track handler.name; let first = $first) {
                 <ng-container
                     *ngTemplateOutlet="menuHandler; context: { handler, class: 'core-user-account-menu-handler', addSeparator: first }" />
