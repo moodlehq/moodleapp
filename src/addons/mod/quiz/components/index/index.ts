@@ -54,6 +54,7 @@ import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-stat
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreUserParentModuleHelper } from '@features/user/services/parent-module-helper';
 
 /**
  * Component that displays a quiz entry page.
@@ -140,6 +141,13 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     async attemptQuiz(): Promise<void> {
         if (this.showStatusSpinner || !this.quiz) {
             // Quiz is being downloaded or synchronized, abort.
+            return;
+        }
+
+        // Prevent parents from attempting quizzes on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('attempt quizzes'));
             return;
         }
 
