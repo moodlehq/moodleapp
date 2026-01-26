@@ -1,75 +1,111 @@
 <!-- Course Header (when sorting by course) -->
 <div class="aspire-course-header" *ngIf="course()">
     <h3 class="aspire-course-title">
-        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
-        <core-format-text [text]="course().displayname || course().fullname" contextLevel="course" [contextInstanceId]="course().id" />
+        <core-format-text
+            [text]="course().displayname || course().fullname"
+            contextLevel="course"
+            [contextInstanceId]="course().id"
+        />
     </h3>
 </div>
 
 <!-- Events grouped by day -->
 <div class="aspire-day-section" *ngFor="let dayEvents of events()">
     <div class="aspire-day-header">
-        <h4>{{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate" }}</h4>
+        <h4>
+            {{ dayEvents.dayTimestamp * 1000 | coreFormatDate:"strftimedaydate"
+            }}
+        </h4>
     </div>
-    
+
     <div class="aspire-events-list">
-        <div class="aspire-event-card" *ngFor="let event of dayEvents.events" 
-            (click)="action($event, event.url)" 
+        <div
+            class="aspire-event-card"
+            *ngFor="let event of dayEvents.events"
+            (click)="action($event, event.url)"
             [attr.aria-label]="event.name"
             role="button"
-            tabindex="0">
-            
+            tabindex="0"
+        >
             <!-- Event Header -->
             <div class="aspire-event-header">
                 <div class="aspire-event-icon">
-                    <core-mod-icon *ngIf="event.iconUrl" 
-                        [modicon]="event.iconUrl" 
+                    <core-mod-icon
+                        *ngIf="event.iconUrl"
+                        [modicon]="event.iconUrl"
                         [componentId]="event.instance"
-                        [modname]="event.modulename" 
-                        [purpose]="event.purpose" 
-                        [colorize]="colorizeIcons" 
-                        [isBranded]="event.branded" />
+                        [modname]="event.modulename"
+                        [purpose]="event.purpose"
+                        [colorize]="colorizeIcons"
+                        [isBranded]="event.branded"
+                    />
                 </div>
-                
+
                 <div class="aspire-event-info">
                     <h5 class="aspire-event-name">
-                        <core-format-text [text]="event.activityname || event.name" 
+                        <core-format-text
+                            [text]="event.activityname || event.name"
                             contextLevel="module"
-                            [contextInstanceId]="event.id" 
-                            [courseId]="event.course?.id" />
+                            [contextInstanceId]="event.id"
+                            [courseId]="event.course?.id"
+                        />
                     </h5>
-                    
+
                     <div class="aspire-event-meta">
                         <span class="aspire-event-time">
                             <ion-icon name="fas-clock" aria-hidden="true" />
-                            {{event.timesort * 1000 | coreFormatDate:"strftimetime24" }}
+                            {{event.timesort * 1000 |
+                            coreFormatDate:"strftimetime24" }}
                         </span>
-                        
-                        <span class="aspire-event-course" *ngIf="showInlineCourse() && event.course">
+
+                        <span
+                            class="aspire-event-course"
+                            *ngIf="showInlineCourse() && event.course"
+                        >
                             <ion-icon name="fas-book" aria-hidden="true" />
-                            <core-format-text [text]="event.course.fullnamedisplay" 
+                            <core-format-text
+                                [text]="event.course.fullnamedisplay"
                                 contextLevel="course"
-                                [contextInstanceId]="event.course.id" />
+                                [contextInstanceId]="event.course.id"
+                            />
                         </span>
                     </div>
-                    
-                    <p class="aspire-event-description" *ngIf="event.activitystr">
-                        <core-format-text [text]="event.activitystr" 
+
+                    <p
+                        class="aspire-event-description"
+                        *ngIf="event.activitystr"
+                    >
+                        <core-format-text
+                            [text]="event.activitystr"
                             contextLevel="module"
-                            [contextInstanceId]="event.id" />
+                            [contextInstanceId]="event.id"
+                        />
                     </p>
                 </div>
-                
-                <ion-badge class="aspire-overdue-badge" *ngIf="event.overdue" color="danger">
+
+                <ion-badge
+                    class="aspire-overdue-badge"
+                    *ngIf="event.overdue"
+                    color="danger"
+                >
                     {{ 'addon.block_timeline.overdue' | translate }}
                 </ion-badge>
             </div>
-            
+
             <!-- Action Button -->
-            <div class="aspire-event-action" *ngIf="event.action && event.action.actionable">
-                <button class="aspire-action-button" (click)="action($event, event.action.url); $event.stopPropagation()">
+            <div
+                class="aspire-event-action"
+                *ngIf="event.action && event.action.actionable"
+            >
+                <button
+                    class="aspire-action-button"
+                    (click)="action($event, event.action.url); $event.stopPropagation()"
+                >
                     {{event.action.name}}
-                    <span class="aspire-action-count" *ngIf="event.action.showitemcount">
+                    <span
+                        class="aspire-action-count"
+                        *ngIf="event.action.showitemcount"
+                    >
                         {{event.action.itemcount}}
                     </span>
                 </button>
@@ -79,14 +115,14 @@
 </div>
 
 @if (canLoadMore()) {
-    <div class="ion-padding ion-text-center">
-        <!-- Button and spinner to show more attempts. -->
-        @if (loadingMore()) {
-            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-        } @else {
-            <ion-button expand="block" (click)="loadMore.emit()" fill="outline">
-                {{ 'core.loadmore' | translate }}
-            </ion-button>
-        }
-    </div>
+<div class="ion-padding ion-text-center">
+    <!-- Button and spinner to show more attempts. -->
+    @if (loadingMore()) {
+    <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+    } @else {
+    <ion-button expand="block" (click)="loadMore.emit()" fill="outline">
+        {{ 'core.loadmore' | translate }}
+    </ion-button>
+    }
+</div>
 }
