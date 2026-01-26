@@ -1,0 +1,12 @@
+diff --git a/node_modules/cordova-plugin-ionic/plugin.xml b/node_modules/cordova-plugin-ionic/plugin.xml
+index 841f6c5..2123199 100644
+--- a/node_modules/cordova-plugin-ionic/plugin.xml
++++ b/node_modules/cordova-plugin-ionic/plugin.xml
+@@ -76,6 +76,6 @@
+             <runs/>
+         </js-module>
+     </platform>
+-    <dependency id="cordova-plugin-ionic-webview" version=">=2.1.4"/>
++    <!-- Dependency removed: @moodlehq/cordova-plugin-ionic-webview already provides this -->
+     <author>Ionic</author>
+ </plugin>
