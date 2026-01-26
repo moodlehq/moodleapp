@@ -20,11 +20,19 @@
                 </div>
                 <div class="reception-info">
                     <h2>School Reception</h2>
-                    <p class="reception-number">Tel: <a href="tel:{{ receptionPhone }}">{{ receptionPhoneDisplay }}</a></p>
+                    <p class="reception-number">
+                        Tel:
+                        <a href="tel:{{ receptionPhone }}"
+                            >{{ receptionPhoneDisplay }}</a
+                        >
+                    </p>
                 </div>
             </div>
             <div class="reception-actions">
-                <button class="action-btn copy" (click)="copyToClipboard(receptionPhone, 'Phone number')">
+                <button
+                    class="action-btn copy"
+                    (click)="copyToClipboard(receptionPhone, 'Phone number')"
+                >
                     <ion-icon name="copy"></ion-icon>
                     <span>Copy</span>
                 </button>
@@ -39,7 +47,10 @@
                 </div>
                 <div class="booking-info">
                     <h2>Book a Meeting</h2>
-                    <p>Schedule meetings with Key Stage principals, HOSs, and teachers</p>
+                    <p>
+                        Schedule meetings with Key Stage principals, HODs, and
+                        teachers
+                    </p>
                 </div>
             </div>
             <button class="booking-btn" (click)="openBookingLink()">
@@ -57,12 +68,30 @@
                 </div>
 
                 <div class="section-items">
-                    <div class="contact-item" *ngFor="let item of section.items">
+                    <div
+                        class="contact-item"
+                        *ngFor="let item of section.items"
+                    >
                         <div class="item-info">
                             <h4 class="item-name">{{ item.name }}</h4>
-                            <p class="item-description" *ngIf="item.description">{{ item.description }}</p>
-                            <p class="item-email" *ngIf="item.email">Email: <a href="mailto:{{ item.email }}">{{ item.email }}</a></p>
-                            <p class="item-phone" *ngIf="item.phone">Tel: <a href="tel:{{ item.phone }}">{{ item.phone }}</a></p>
+                            <p
+                                class="item-description"
+                                *ngIf="item.description"
+                            >
+                                {{ item.description }}
+                            </p>
+                            <p class="item-email" *ngIf="item.email">
+                                Email:
+                                <a href="mailto:{{ item.email }}"
+                                    >{{ item.email }}</a
+                                >
+                            </p>
+                            <p class="item-phone" *ngIf="item.phone">
+                                Tel:
+                                <a href="tel:{{ item.phone }}"
+                                    >{{ item.phone }}</a
+                                >
+                            </p>
                         </div>
 
                         <div class="item-actions">

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="51000" id="org.capriolegroup.aspire" ios-CFBundleVersion="5.1.0.0" version="5.1.0" versionCode="51000" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="51100" id="org.capriolegroup.aspire" ios-CFBundleVersion="5.1.1.0" version="5.1.1" versionCode="51100" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Aspire School</name>
     <description>Aspire School Learning Platform</description>
     <author email="support@aspireschool.org" href="https://aspireschool.org">Aspire School</author>
@@ -29,7 +29,7 @@
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
     <preference name="prerendered-icon" value="true" />
-    <preference name="AppendUserAgent" value="AspireSchoolApp 5.1.0 (51000)" />
+    <preference name="AppendUserAgent" value="AspireSchoolApp 5.1.1 (51100)" />
     <preference name="BackupWebStorage" value="none" />
     <preference name="ScrollEnabled" value="true" />
     <preference name="KeyboardDisplayRequiresUserAction" value="false" />
