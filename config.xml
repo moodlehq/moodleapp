@@ -53,6 +53,7 @@
     <preference name="GradlePluginGoogleServicesEnabled" value="true" />
     <preference name="GradlePluginGoogleServicesVersion" value="4.3.15" />
     <preference name="GradlePluginKotlinVersion" value="1.9.24" />
+    <preference name="AndroidJavaSourceCompatibility" value="11" />
     <preference name="AndroidJavaTargetCompatibility" value="11" />
     <preference name="AndroidKotlinJVMTarget" value="11" />
     <preference name="StatusBarOverlaysWebView" value="false" />
