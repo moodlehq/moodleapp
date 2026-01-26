@@ -85,6 +85,7 @@ import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
+import { CoreUserParentModuleHelper } from '@features/user/services/parent-module-helper';
 
 /**
  * Prefetch info of a module.
@@ -2083,6 +2084,13 @@ export class CoreCourseHelperProvider {
 
         if (completion.cmid === undefined ||
             completion.tracking !== CoreCourseModuleCompletionTracking.MANUAL) {
+            return;
+        }
+
+        // Prevent parents from changing completion status on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('mark activities as complete'));
             return;
         }
 
