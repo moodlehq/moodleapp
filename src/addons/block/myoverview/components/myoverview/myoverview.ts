@@ -302,8 +302,6 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * @returns Promise resolved when done.
      */
     protected async loadAllCourses(loadWatcher: PageLoadWatcher): Promise<void> {
-        const _showCategories = this.block.configsRecord?.displaycategories?.value === '1';
-
         this.allCourses = await loadWatcher.watchRequest(
             CoreCoursesHelper.getUserCoursesWithOptionsObservable({
                 sort: this.sort.selected,
@@ -414,7 +412,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
     /**
      * Load block layouts.
      *
-     * @param layouts Config available layouts.
+     * @param _layouts Config available layouts.
      */
     protected loadLayouts(_layouts?: string[]): void {
         // Aspire School: Always use card layout, no switching allowed

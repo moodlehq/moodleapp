@@ -512,7 +512,7 @@ export class AddonBlockTimelineComponent implements OnInit, OnDestroy, ICoreBloc
                     this.selectedMenteeName = name.trim().split(/\s+/)[0] || '';
                 }
             }
-        } catch (error) {
+        } catch {
             // Ignore errors
             this.viewingAsMentee = false;
             this.selectedMenteeName = '';

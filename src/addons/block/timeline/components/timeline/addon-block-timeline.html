@@ -6,27 +6,27 @@
             
             <!-- Mentee Indicator -->
             <div class="aspire-mentee-indicator" *ngIf="viewingAsMentee">
-                <ion-icon name="people-outline"></ion-icon>
+                <ion-icon name="people-outline" />
                 <span>{{ selectedMenteeName }}</span>
             </div>
             
             <!-- Compact Filter Dropdown -->
             <div class="aspire-compact-filters">
                 <button class="aspire-filter-trigger" (click)="toggleFilterDropdown()">
-                    <ion-icon name="fas-filter" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-filter" aria-hidden="true" />
                     <span *ngIf="(statusFilter$ | async) === filterOverdue">{{ 'addon.block_timeline.overdue' | translate }}</span>
                     <span *ngIf="(statusFilter$ | async) === filterDone">{{ 'addon.block_timeline.done' | translate }}</span>
                     <span *ngIf="(statusFilter$ | async) === filterAll && (dateFilter$ | async) === filterNext7Days">{{ 'addon.block_timeline.next7days' | translate }}</span>
                     <span *ngIf="(statusFilter$ | async) === filterAll && (dateFilter$ | async) !== filterNext7Days">
                         {{ getDateFilterLabel() | translate }}
                     </span>
-                    <ion-icon name="fas-chevron-down" class="dropdown-arrow" aria-hidden="true"></ion-icon>
+                    <ion-icon name="fas-chevron-down" class="dropdown-arrow" aria-hidden="true" />
                 </button>
                 
                 <div class="aspire-filter-dropdown" [class.show]="showFilterDropdown">
                     <div class="filter-section compact">
                         <div class="filter-row">
-                            <label>View</label>
+                            <span class="filter-label">View</span>
                             <div class="filter-options inline">
                                 <button 
                                     class="filter-option compact" 
@@ -40,20 +40,20 @@
                                     [class.active]="(statusFilter$ | async) === filterOverdue"
                                     (click)="selectFilter('status', filterOverdue)"
                                     title="Overdue">
-                                    <ion-icon name="fas-exclamation"></ion-icon>
+                                    <ion-icon name="fas-exclamation" />
                                 </button>
                                 <button 
                                     class="filter-option compact icon-only" 
                                     [class.active]="(statusFilter$ | async) === filterDone"
                                     (click)="selectFilter('status', filterDone)"
                                     title="Completed">
-                                    <ion-icon name="fas-check"></ion-icon>
+                                    <ion-icon name="fas-check" />
                                 </button>
                             </div>
                         </div>
                         
                         <div class="filter-row" *ngIf="(statusFilter$ | async) === filterAll">
-                            <label>Period</label>
+                            <span class="filter-label">Period</span>
                             <div class="filter-options inline">
                                 <button 
                                     class="filter-option compact"
@@ -87,7 +87,7 @@
                         </div>
                         
                         <div class="filter-row">
-                            <label>Sort</label>
+                            <span class="filter-label">Sort</span>
                             <div class="filter-options inline">
                                 <button 
                                     class="filter-option compact"
