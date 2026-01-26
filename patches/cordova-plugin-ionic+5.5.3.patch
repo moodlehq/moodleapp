@@ -10,3 +10,18 @@ index 841f6c5..2123199 100644
 +    <!-- Dependency removed: @moodlehq/cordova-plugin-ionic-webview already provides this -->
      <author>Ionic</author>
  </plugin>
+diff --git a/node_modules/cordova-plugin-ionic/src/android/cordovapluginionic.gradle b/node_modules/cordova-plugin-ionic/src/android/cordovapluginionic.gradle
+index 32b893f..74eb7dd 100644
+--- a/node_modules/cordova-plugin-ionic/src/android/cordovapluginionic.gradle
++++ b/node_modules/cordova-plugin-ionic/src/android/cordovapluginionic.gradle
+@@ -16,8 +16,8 @@ android {
+ ext.postBuildExtras = {
+     android {
+         compileOptions {
+-            sourceCompatibility JavaVersion.VERSION_1_8
+-            targetCompatibility JavaVersion.VERSION_1_8
++            sourceCompatibility JavaVersion.VERSION_11
++            targetCompatibility JavaVersion.VERSION_11
+         }
+     }
+ }
