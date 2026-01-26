@@ -65,6 +65,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@singletons/utils';
+import { CoreUserParentModuleHelper } from '@features/user/services/parent-module-helper';
 
 /**
  * Component that displays an assignment submission.
@@ -268,6 +269,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Prevent parents from copying submissions on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('edit assignments'));
+            return;
+        }
+
         if (!CoreNetwork.isOnline()) {
             CoreAlerts.showError(Translate.instant('core.networkerrormsg'));
 
@@ -329,6 +337,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * @param afterCopyPrevious Whether the user has just copied the previous submission.
      */
     async goToEdit(afterCopyPrevious = false): Promise<void> {
+        // Prevent parents from editing assignments on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('edit assignments'));
+            return;
+        }
+
         if (!afterCopyPrevious && this.assign?.timelimit && (!this.userSubmission || !this.userSubmission.timestarted)) {
             try {
                 await CoreAlerts.confirm(
@@ -359,6 +374,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         if (!this.assign || !this.userSubmission) {
             return;
         }
+
+        // Prevent parents from removing submissions on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('remove submissions'));
+            return;
+        }
+
         const message = this.assign.timelimit ?
             'addon.mod_assign.removesubmissionconfirmwithtimelimit' :
             'addon.mod_assign.removesubmissionconfirm';
@@ -823,6 +846,13 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     async submitForGrading(acceptStatement: boolean): Promise<void> {
         if (!this.assign || !this.userSubmission) {
+            return;
+        }
+
+        // Prevent parents from submitting on behalf of students
+        const isParentViewing = await CoreUserParentModuleHelper.isParentViewingMentee();
+        if (isParentViewing) {
+            CoreAlerts.showError(CoreUserParentModuleHelper.getParentRestrictionMessage('submit assignments'));
             return;
         }
 
