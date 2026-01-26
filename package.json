@@ -163,7 +163,7 @@
         "gulp-clip-empty-files": "0.1.2",
         "gulp-slash": "1.1.3",
         "jest": "30.2.0",
-        "jest-environment-jsdom": "29.7.0",
+        "jest-environment-jsdom": "30.2.0",
         "jest-preset-angular": "15.0.1",
         "jsonc-parser": "3.3.1",
         "minimatch": "10.0.3",
