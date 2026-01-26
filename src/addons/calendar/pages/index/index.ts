@@ -17,7 +17,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@singletons/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { AddonCalendar } from '../../services/calendar';
+import { AddonCalendar, AddonCalendarEventToDisplay } from '../../services/calendar';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync } from '../../services/calendar-sync';
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
@@ -33,8 +33,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
 import moment from 'moment-timezone';
-import { AddonCalendarEventToDisplay } from '../../services/calendar';
-import { CoreTimeUtils } from '@services/utils/time';
 import { CoreUserParent } from '@features/user/services/parent';
 import {
     ADDON_CALENDAR_NEW_EVENT_EVENT,
@@ -99,6 +97,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     }[] = [];
     weekPeriodName = '';
     currentWeekStart?: moment.Moment;
+
     filter: AddonCalendarFilter = {
         filtered: false,
         courseId: undefined,
@@ -198,7 +197,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
             if (this.year !== undefined && this.month !== undefined && calendarComponent) {
                 calendarComponent.viewMonth(this.month, this.year);
             }
-            
+
             // Load week events if in week view
             if (this.calendarView === 'week' && this.showCalendar) {
                 await this.loadWeekEvents();
@@ -466,12 +465,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
             const now = moment();
             const daysToStart = this.currentWeekStart.diff(now.startOf('day'), 'days');
 
-            console.log('[Calendar] Loading week events:', {
-                weekStart: this.currentWeekStart.format('YYYY-MM-DD'),
-                daysToStart,
-                daysInterval: 7
-            });
-
             let allEvents: any[] = [];
             const site = CoreSites.getCurrentSite();
 
@@ -481,7 +474,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
                 // If parent viewing as themselves (no child selected), get all children's events
                 if (isParent && !selectedMentee) {
-                    console.log('[Calendar] Parent viewing as self - loading all children events');
                     const mentees = await CoreUserParent.getMentees(site.getId());
 
                     for (const mentee of mentees) {
@@ -489,7 +481,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                             // Switch to child's token to get their events
                             await CoreUserParent.setSelectedMentee(mentee.id, site.getId());
                             const menteeEvents = await AddonCalendar.getEventsList(undefined, daysToStart, 7, this.currentSiteId);
-                            console.log(`[Calendar] Events for ${mentee.fullname}:`, menteeEvents?.length || 0);
 
                             if (menteeEvents && menteeEvents.length > 0) {
                                 for (const event of menteeEvents) {
@@ -497,8 +488,8 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                                     allEvents.push(event);
                                 }
                             }
-                        } catch (err) {
-                            console.error('[Calendar] Error loading events for mentee:', mentee.id, err);
+                        } catch {
+                            // Silently fail for individual mentee event loads
                         }
                     }
 
@@ -508,8 +499,12 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                     // Remove duplicates
                     const seen = new Set();
                     allEvents = allEvents.filter(event => {
-                        if (seen.has(event.id)) return false;
+                        if (seen.has(event.id)) {
+                            return false;
+                        }
+
                         seen.add(event.id);
+
                         return true;
                     });
                 } else {
@@ -522,8 +517,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                 allEvents = events || [];
             }
 
-            console.log('[Calendar] Total events received:', allEvents.length);
-
             // Group events by day
             if (allEvents.length > 0) {
                 for (const event of allEvents) {
@@ -535,7 +528,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
                         const eventToDisplay: any = {
                             ...event,
                             formattedType: event.eventtype || 'user',
-                            ispast: moment().isAfter(moment(event.timestart * 1000))
+                            ispast: moment().isAfter(moment(event.timestart * 1000)),
                         };
 
                         // Add module icon if available
@@ -554,7 +547,6 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
             });
 
         } catch (error) {
-            console.error('[Calendar] Error loading week events:', error);
             CoreAlerts.showError(error);
         }
     }
@@ -577,7 +569,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
     /**
      * Get event end time.
-     * 
+     *
      * @param event Event to get end time for.
      * @returns Event end time.
      */
