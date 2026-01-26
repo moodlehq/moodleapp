@@ -688,6 +688,12 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 return;
             }
 
+            if (site) {
+                const url = CoreUrl.toAbsoluteURL(site.getURL() || '', '/');
+                const protocol = CoreUrl.getUrlProtocol(url) || 'https';
+                iframe.innerHTML = iframe.innerHTML.replace(/(href|src)=' *\/\//ig, `$1='${protocol}://`);
+            }
+
             promises.push(this.treatIframe(iframe, site));
 
             return new FrameElementController(iframe, !this.disabled());
@@ -732,6 +738,12 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(frame);
             if (launchExternal && this.replaceFrameWithButton(frame, site, label)) {
                 return;
+            }
+
+            if (site) {
+                const url = CoreUrl.toAbsoluteURL(site.getURL() || '', '/');
+                const protocol = CoreUrl.getUrlProtocol(url) || 'https';
+                frame.innerHTML = frame.innerHTML.replace(/(href|src)=' *\/\//ig, `$1='${protocol}://`);
             }
 
             CoreIframe.treatFrame(frame, false);
