@@ -22,7 +22,6 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { AddonBlog } from '../blog';
 
 /**
  * Profile item handler.
