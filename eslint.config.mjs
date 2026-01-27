@@ -176,6 +176,7 @@ const appConfig = {
         ],
         'arrow-body-style': ['error', 'as-needed'],
         'curly': 'error',
+        'eqeqeq': ['warn', 'always'],
         'id-denylist': [
             'error',
             'any',
