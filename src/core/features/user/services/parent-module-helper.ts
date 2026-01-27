@@ -71,7 +71,7 @@ export class CoreUserParentModuleHelperProvider {
         // Check if there's a stored original parent token - this means we're viewing as mentee
         // We can't compare selectedMenteeId to site.getUserId() because when viewing as mentee,
         // the site's user ID IS the mentee's ID (token was swapped)
-        const originalToken = await site.getLocalSiteConfig<string>('CoreUserParent:originalToken:' + site.getId());
+        const originalToken = await site.getLocalSiteConfig<string>('CoreUserParent:originalToken:' + site.getId(), '');
         const selectedMenteeId = await CoreUserParent.getSelectedMentee(site.getId());
 
         // If we have both a stored original token AND a selected mentee, we're viewing as parent
