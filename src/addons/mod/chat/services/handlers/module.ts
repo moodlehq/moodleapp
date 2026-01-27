@@ -18,6 +18,9 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_CHAT_MODNAME, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModChat } from '../chat';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support chat modules.
@@ -48,6 +51,19 @@ export class AddonModChatModuleHandlerService extends CoreModuleHandlerBase impl
         const { AddonModChatIndexComponent } = await import('../../components/index');
 
         return AddonModChatIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModChat.getChat(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }
