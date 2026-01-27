@@ -298,7 +298,7 @@ export class CoreCustomURLSchemesProvider {
             siteUrl: url,
             username: username,
             token: params.token,
-            privateToken: params.privateToken,
+            privateToken: params.privateToken || params.privatetoken,
             redirect: params.redirect,
             isAuthenticationURL: !!params.token,
         };
