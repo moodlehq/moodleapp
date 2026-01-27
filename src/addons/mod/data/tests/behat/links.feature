@@ -31,7 +31,7 @@ Feature: Users can manage entries in database activities
   Scenario: Create links in list template
     Given I set the following fields to these values:
       | Repeated entry | <div class="colleague-entry-value mt-4"><span class="colleague-entry-value-title font-weight-bold">[[Email-Adresse#name]]</span><p><a href="mailto:[[Email-Adresse]]">Mail: [[Email-Adresse]]</a></p></div> |
-    And I click on "Save" "button" in the "sticky-footer" "region"
+    And I click on "Save" "button"
 
     And I entered the data activity "Test database name" on course "Course 1" as "teacher1" in the app
     And I should find "test@moodle.com" in the app
