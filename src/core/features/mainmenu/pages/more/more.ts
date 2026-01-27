@@ -64,12 +64,14 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
 
     protected allHandlers?: CoreMainMenuHandlerToDisplay[];
     protected subscription!: Subscription;
-    protected langObserver: CoreEventObserver;
+    protected langSubscription: Subscription;
     protected updateSiteObserver: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
 
     constructor() {
-        this.langObserver = CoreEvents.on(CoreEvents.LANGUAGE_CHANGED, () => this.loadCustomMenuItems());
+        this.langSubscription = Translate.onLangChange.subscribe(() => {
+            this.loadCustomMenuItems();
+        });
 
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             this.customItems = await CoreCustomMenu.getCustomMainMenuItems();
@@ -103,7 +105,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.langObserver?.off();
+        this.langSubscription.unsubscribe();
         this.updateSiteObserver?.off();
         this.subscription?.unsubscribe();
         this.resizeListener?.off();

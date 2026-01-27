@@ -67,7 +67,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
         await this.window.MathJax?.startup.promise;
 
-        // @todo: Once MathJax supports locale, set current language and listen for CoreEvents.LANGUAGE_CHANGED events.
+        // @todo: Once MathJax supports locale, set current language and listen for Translate.onLangChange events.
     }
 
     /**
@@ -164,6 +164,8 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
 
     /**
      * Called by the filter when an equation is found while rendering the content.
+     *
+     * @param container The container element.
      */
     protected async typeset(container: HTMLElement): Promise<void> {
         const equations = Array.from(container.getElementsByClassName('filter_mathjaxloader_equation'));
