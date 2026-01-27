@@ -631,7 +631,7 @@ export class CoreFileUploaderProvider {
         }
 
         // Index the online files by name.
-        const usedNames: {[name: string]: CoreFileEntry} = {};
+        const usedNames: { [name: string]: CoreFileEntry } = {};
         const filesToUpload: FileEntry[] = [];
         files.forEach((file) => {
             if (CoreFileUtils.isFileEntry(file)) {

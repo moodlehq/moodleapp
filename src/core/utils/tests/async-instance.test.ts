@@ -85,7 +85,7 @@ describe('AsyncInstance', () => {
     });
 
     it('preserves undefined properties after initialization', async () => {
-        const asyncService = asyncInstance(() => new LazyService()) as { thisDoesNotExist?: () => Promise<void>};
+        const asyncService = asyncInstance(() => new LazyService()) as { thisDoesNotExist?: () => Promise<void> };
 
         await expect(asyncService.thisDoesNotExist?.()).rejects.toBeInstanceOf(Error);
 

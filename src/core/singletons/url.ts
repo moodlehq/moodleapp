@@ -1086,7 +1086,7 @@ export class CoreUrl {
 
 }
 
-export type CoreUrlParams = {[key: string]: string};
+export type CoreUrlParams = { [key: string]: string };
 
 /**
  * Options for addParamsToUrl.

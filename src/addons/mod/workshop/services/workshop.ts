@@ -115,7 +115,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getSubmissionsDataCacheKey(workshopId: number, userId: number = 0, groupId: number = 0): string {
+    protected getSubmissionsDataCacheKey(workshopId: number, userId = 0, groupId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:submissions:${userId}:${groupId}`;
     }
 
@@ -147,7 +147,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getGradesReportDataCacheKey(workshopId: number, groupId: number = 0): string {
+    protected getGradesReportDataCacheKey(workshopId: number, groupId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:report:${groupId}`;
     }
 
@@ -169,7 +169,7 @@ export class AddonModWorkshopProvider {
      * @param userId User ID or current user.
      * @returns Cache key.
      */
-    protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId: number = 0): string {
+    protected getReviewerAssessmentsDataCacheKey(workshopId: number, userId = 0): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:reviewerassessments:${userId}`;
     }
 
@@ -192,7 +192,7 @@ export class AddonModWorkshopProvider {
      * @param mode Mode assessment (default) or preview.
      * @returns Cache key.
      */
-    protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode: string = 'assessment'): string {
+    protected getAssessmentFormDataCacheKey(workshopId: number, assessmentId: number, mode = 'assessment'): string {
         return `${this.getWorkshopDataPrefixCacheKey(workshopId)}:assessmentsform:${assessmentId}:${mode}`;
     }
 
@@ -427,7 +427,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateSubmissionsData(workshopId: number, userId: number = 0, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateSubmissionsData(workshopId: number, userId = 0, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getSubmissionsDataCacheKey(workshopId, userId, groupId));
@@ -605,7 +605,7 @@ export class AddonModWorkshopProvider {
      * @param groupId Group ID.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateGradeReportData(workshopId: number, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateGradeReportData(workshopId: number, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getGradesReportDataCacheKey(workshopId, groupId));
@@ -678,7 +678,7 @@ export class AddonModWorkshopProvider {
         content: string,
         attachmentsId?: number,
         siteId?: string,
-        allowOffline: boolean = false,
+        allowOffline = false,
     ): Promise<number | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -778,7 +778,7 @@ export class AddonModWorkshopProvider {
         content: string,
         attachmentsId?: number | undefined,
         siteId?: string,
-        allowOffline: boolean = false,
+        allowOffline = false,
     ): Promise<number | false> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -1078,7 +1078,7 @@ export class AddonModWorkshopProvider {
             if (!isNaN(idxNumber)) {
                 if (!parsedFields[idx]) {
                     parsedFields[idx] = {
-                        number: idxNumber + 1, // eslint-disable-line id-blacklist
+                        number: idxNumber + 1, // eslint-disable-line id-denylist
                     };
                 }
 
@@ -1089,7 +1089,7 @@ export class AddonModWorkshopProvider {
 
                     if (!parsedFields[idx].fields[idy]) {
                         parsedFields[idx].fields[idy] = {
-                            number: idyNumber + 1, // eslint-disable-line id-blacklist
+                            number: idyNumber + 1, // eslint-disable-line id-denylist
                         };
                     }
                     parsedFields[idx].fields[idy][name] = field.value;
@@ -1113,7 +1113,7 @@ export class AddonModWorkshopProvider {
     async invalidateAssessmentFormData(
         workshopId: number,
         assessmentId: number,
-        mode: string = 'assessment',
+        mode = 'assessment',
         siteId?: string,
     ):
         Promise<void> {
@@ -1858,7 +1858,7 @@ type AddonModWorkshopGetAssessmentFormDefinitionWSResponse = {
 
 export type AddonModWorkshopGetAssessmentFormDefinitionData =
     Omit<AddonModWorkshopGetAssessmentFormDefinitionWSResponse, 'fields'|'options'|'current'> & {
-        options?: {[name: string]: string} ;
+        options?: { [name: string]: string } ;
         fields: AddonModWorkshopGetAssessmentFormFieldsParsedData[]; // The form fields.
         current: AddonModWorkshopGetAssessmentFormFieldsParsedData[]; // The current field values.
     };
@@ -1871,11 +1871,11 @@ export type AddonModWorkshopGetAssessmentFormFieldData = {
 export type AddonModWorkshopGetAssessmentFormFieldsParsedData = (
     Record<string, string> &
     {
-        number?: number; // eslint-disable-line id-blacklist
+        number?: number; // eslint-disable-line id-denylist
         grades?: CoreGradesMenuItem[];
         grade?: number | string;
         fields?: (Record<string, string> & {
-            number: number; // eslint-disable-line id-blacklist
+            number: number; // eslint-disable-line id-denylist
         })[];
     }
 );

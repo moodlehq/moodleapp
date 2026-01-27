@@ -101,7 +101,7 @@ export class AddonBlockTimelineProvider {
         courseIds: number[],
         searchValue = '',
         siteId?: string,
-    ): Promise<{[courseId: string]: AddonBlockTimelineActionEvents }> {
+    ): Promise<{ [courseId: string]: AddonBlockTimelineActionEvents }> {
         if (courseIds.length === 0) {
             return {};
         }
@@ -130,7 +130,7 @@ export class AddonBlockTimelineProvider {
             preSets,
         );
 
-        const courseEvents: {[courseId: string]: AddonBlockTimelineActionEvents } = {};
+        const courseEvents: { [courseId: string]: AddonBlockTimelineActionEvents } = {};
 
         events.groupedbycourse.forEach((course) => {
             courseEvents[course.courseid] = this.treatCourseEvents(course, time);

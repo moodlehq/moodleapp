@@ -54,8 +54,8 @@ export class CoreLocalNotificationsProvider {
 
     protected logger: CoreLogger;
     protected codes: { [s: string]: number } = {};
-    protected codeRequestsQueue: {[key: string]: CodeRequestsQueueItem} = {};
-    protected observables: {[eventName: string]: {[component: string]: Subject<unknown>}} = {};
+    protected codeRequestsQueue: { [key: string]: CodeRequestsQueueItem } = {};
+    protected observables: { [eventName: string]: { [component: string]: Subject<unknown> } } = {};
 
     protected triggerSubscription?: Subscription;
     protected clickSubscription?: Subscription;
@@ -339,7 +339,11 @@ export class CoreLocalNotificationsProvider {
             // LocalNotifications.getAllScheduled is broken, use the Cordova plugin directly.
             const plugin = this.getCordovaPlugin();
 
-            plugin ? plugin.getScheduled(notifications => resolve(notifications)) : resolve([]);
+            if (plugin) {
+                plugin.getScheduled(notifications => resolve(notifications));
+            } else {
+                resolve([]);
+            }
         }));
     }
 
@@ -476,7 +480,7 @@ export class CoreLocalNotificationsProvider {
      * @param useQueue Whether to add the call to the queue.
      * @returns Promise resolved with a boolean indicating if promise is triggered (true) or not.
      */
-    async isTriggered(notification: ILocalNotification, useQueue: boolean = true): Promise<boolean> {
+    async isTriggered(notification: ILocalNotification, useQueue = true): Promise<boolean> {
         if (notification.id === undefined) {
             return false;
         }

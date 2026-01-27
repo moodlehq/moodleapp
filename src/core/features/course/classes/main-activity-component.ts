@@ -88,7 +88,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param showErrors Wether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
-    protected async refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async refreshContent(sync = false, showErrors = false): Promise<void> {
         if (!this.module) {
             // This can happen if course format changes from single activity to weekly/topics.
             return;
@@ -109,7 +109,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param showErrors Wether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
-    protected async showLoadingAndFetch(sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async showLoadingAndFetch(sync = false, showErrors = false): Promise<void> {
         this.showLoading = true;
         this.content?.scrollToTop();
 
@@ -123,7 +123,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param showErrors Wether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
-    protected showLoadingAndRefresh(sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected showLoadingAndRefresh(sync = false, showErrors = false): Promise<void> {
         this.showLoading = true;
         this.content?.scrollToTop();
 
@@ -139,7 +139,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected async fetchContent(refresh: boolean = false, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async fetchContent(refresh = false, sync = false, showErrors = false): Promise<void> {
         return;
     }
 
@@ -151,7 +151,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param showErrors Wether to show errors to the user or hide them.
      * @returns Promise resolved when done.
      */
-    protected async loadContent(refresh?: boolean, sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async loadContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {
         if (!this.module) {
             // This can happen if course format changes from single activity to weekly/topics.
             return;
@@ -205,7 +205,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * @param showErrors If show errors to the user of hide them.
      * @returns Promise resolved with true if sync hast updated data to the server, false otherwise.
      */
-    protected async syncActivity(showErrors: boolean = false): Promise<boolean> {
+    protected async syncActivity(showErrors = false): Promise<boolean> {
         try {
             const result = await this.sync();
 

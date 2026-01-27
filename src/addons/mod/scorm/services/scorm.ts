@@ -197,7 +197,7 @@ export class AddonModScormProvider {
         newAttempt?: boolean,
         incomplete?: boolean,
         canSaveTracks = true,
-    ): {mode: AddonModScormMode; attempt: number; newAttempt: boolean} {
+    ): { mode: AddonModScormMode; attempt: number; newAttempt: boolean } {
         if (!canSaveTracks) {
             return {
                 mode: scorm.hidebrowse ? AddonModScormMode.NORMAL : mode,
@@ -406,7 +406,7 @@ export class AddonModScormProvider {
      * @param level The level of the TOC we're right now. 0 by default.
      * @returns SCORM's TOC (array format).
      */
-    formatTocToArray(toc: AddonModScormTOCTreeSco[], level: number = 0): AddonModScormTOCListSco[] {
+    formatTocToArray(toc: AddonModScormTOCTreeSco[], level = 0): AddonModScormTOCListSco[] {
         if (!toc || !toc.length) {
             return [];
         }
@@ -1678,7 +1678,7 @@ export class AddonModScormProvider {
         scormId: number,
         attempt: number,
         tracks: AddonModScormDataEntry[],
-        options: {cmId?: number; siteId?: string},
+        options: { cmId?: number; siteId?: string },
     ): Promise<void> {
         if (!tracks || !tracks.length) {
             return;

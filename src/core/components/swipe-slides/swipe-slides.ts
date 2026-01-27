@@ -83,7 +83,7 @@ export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDe
         });
     }
 
-    @ContentChild(TemplateRef) template?: TemplateRef<{item: Item; active: boolean}>; // Template defined by the content.
+    @ContentChild(TemplateRef) template?: TemplateRef<{ item: Item; active: boolean }>; // Template defined by the content.
 
     protected unsubscribe?: () => void;
     protected resizeListener: CoreEventObserver;

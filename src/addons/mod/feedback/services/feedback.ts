@@ -343,7 +343,7 @@ export class AddonModFeedbackProvider {
      * @param groupId Group ID.
      * @returns Cache key.
      */
-    protected getAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
+    protected getAnalysisDataCacheKey(feedbackId: number, groupId = 0): string {
         return this.getAnalysisDataPrefixCacheKey(feedbackId) + groupId;
     }
 
@@ -710,7 +710,7 @@ export class AddonModFeedbackProvider {
      * @param groupId Group id, 0 means that the function will determine the user group.
      * @returns Cache key.
      */
-    protected getNonRespondentsDataCacheKey(feedbackId: number, groupId: number = 0): string {
+    protected getNonRespondentsDataCacheKey(feedbackId: number, groupId = 0): string {
         return this.getNonRespondentsDataPrefixCacheKey(feedbackId) + groupId;
     }
 
@@ -886,7 +886,7 @@ export class AddonModFeedbackProvider {
      * @param groupId Group id, 0 means that the function will determine the user group.
      * @returns Cache key.
      */
-    protected getResponsesAnalysisDataCacheKey(feedbackId: number, groupId: number = 0): string {
+    protected getResponsesAnalysisDataCacheKey(feedbackId: number, groupId = 0): string {
         return this.getResponsesAnalysisDataPrefixCacheKey(feedbackId) + groupId;
     }
 
@@ -1092,7 +1092,7 @@ export class AddonModFeedbackProvider {
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the WS call is successful.
      */
-    async logView(id: number, formViewed: boolean = false, siteId?: string): Promise<void> {
+    async logView(id: number, formViewed = false, siteId?: string): Promise<void> {
         const params: AddonModFeedbackViewFeedbackWSParams = {
             feedbackid: id,
             moduleviewed: formViewed,
@@ -1590,7 +1590,7 @@ export type AddonModFeedbackWSAttempt = {
 export type AddonModFeedbackWSAnonAttempt = {
     id: number; // Completed id.
     courseid: number; // Course id.
-    // eslint-disable-next-line id-blacklist
+    // eslint-disable-next-line id-denylist
     number: number; // Response number.
     responses: AddonModFeedbackWSAttemptResponse[];
 };

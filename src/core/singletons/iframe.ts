@@ -464,7 +464,7 @@ export class CoreIframe {
      * @returns Promise resolved when done.
      */
     protected static async linkClicked(
-        link: CoreIframeHTMLAnchorElement | {href: string; target?: string; originalHref?: string},
+        link: CoreIframeHTMLAnchorElement | { href: string; target?: string; originalHref?: string },
         event?: Event,
     ): Promise<void> {
         if (event && event.defaultPrevented) {
@@ -637,7 +637,11 @@ export class CoreIframe {
 
             if (!mimetype || mimetype === 'text/html' || mimetype === 'text/plain') {
                 // It's probably a web page, open in browser.
-                options.site ? options.site.openInBrowserWithAutoLogin(url) : CoreOpener.openInBrowser(url);
+                if (options.site) {
+                    options.site.openInBrowserWithAutoLogin(url);
+                } else {
+                    CoreOpener.openInBrowser(url);
+                }
 
                 return;
             }

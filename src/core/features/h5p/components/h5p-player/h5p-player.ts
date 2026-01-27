@@ -59,7 +59,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     calculating$ = new BehaviorSubject(true);
     displayOptions?: CoreH5PDisplayOptions;
     // This param should be initialized as undefined to avoid showing the download button when is not set.
-    urlParams?: {[name: string]: string};
+    urlParams?: { [name: string]: string };
 
     protected site: CoreSite;
     protected siteId: string;
@@ -85,7 +85,7 @@ export class CoreH5PPlayerComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnChanges(changes: {[name: string]: SimpleChange}): void {
+    ngOnChanges(changes: { [name: string]: SimpleChange }): void {
         // If it's already playing there's no need to check if it can be downloaded or auto-played.
         if (changes.src && !this.showPackage) {
             this.handleAutoPlay();

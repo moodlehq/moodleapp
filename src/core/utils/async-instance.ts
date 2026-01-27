@@ -23,7 +23,7 @@ import { CorePromisedValue } from '@classes/promised-value';
  */
 function createAsyncInstanceWrapper<
     TLazyInstance extends TEagerInstance,
-    TEagerInstance extends AsyncObject = Partial<TLazyInstance>
+    TEagerInstance extends AsyncObject = Partial<TLazyInstance>,
 >(
     lazyConstructor?: () => TLazyInstance | Promise<TLazyInstance>,
 ): AsyncInstanceWrapper<TLazyInstance, TEagerInstance> {
@@ -120,7 +120,7 @@ function isMethod(value: unknown): value is (...args: unknown[]) => unknown {
  */
 export interface AsyncInstanceWrapper<
     TLazyInstance extends TEagerInstance,
-    TEagerInstance extends AsyncObject = Partial<TLazyInstance>
+    TEagerInstance extends AsyncObject = Partial<TLazyInstance>,
 > {
     instance?: TLazyInstance;
     lazyMethods?: Array<string | number | symbol> | null;
@@ -171,7 +171,7 @@ export type GetEagerMethods<TEagerInstance extends AsyncObject> = {
 export type AsyncInstance<
     TLazyInstance extends TEagerInstance,
     TEagerInstance extends AsyncObject = Partial<TLazyInstance>,
-    TEagerMethods extends keyof TEagerInstance = GetEagerMethods<TEagerInstance>
+    TEagerMethods extends keyof TEagerInstance = GetEagerMethods<TEagerInstance>,
 > =
     AsyncInstanceWrapper<TLazyInstance, TEagerInstance> & Omit<{
         [k in keyof TLazyInstance]: AsyncMethod<TLazyInstance[k]>;

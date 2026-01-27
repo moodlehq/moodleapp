@@ -46,7 +46,7 @@ export class AddonModQuizPreflightModalComponent implements OnInit {
     @Input({ required: true }) rules!: string[];
 
     preflightForm: FormGroup;
-    accessRulesData: { component: Type<unknown>; data: Record<string, unknown>}[] = []; // Component and data for each access rule.
+    accessRulesData: { component: Type<unknown>; data: Record<string, unknown> }[] = []; // Component and data for each access rule.
     loaded = false;
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;

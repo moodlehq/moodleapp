@@ -304,7 +304,7 @@ export default class AddonModChatChatPage implements OnInit, OnDestroy, CanLeave
      * @param text Text of the nessage.
      * @param beep ID of the user to beep.
      */
-    async sendMessage(text: string, beep: number = 0): Promise<void> {
+    async sendMessage(text: string, beep = 0): Promise<void> {
         if (!this.isOnline) {
             // Silent error, the view should prevent this.
             return;

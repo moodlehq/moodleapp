@@ -670,7 +670,7 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @param showModal Whether to show a loading modal.
      * @returns Promise resolved with the converted URL.
      */
-    async getAutoLoginUrl(url: string, showModal: boolean = true): Promise<string> {
+    async getAutoLoginUrl(url: string, showModal = true): Promise<string> {
         if (!this.privateToken) {
             // No private token, don't change the URL.
             return url;

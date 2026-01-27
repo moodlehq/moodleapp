@@ -43,57 +43,57 @@ declare module 'video.js' {
     };
 
     export type VideoJSOptions = {
-        aspectRatio?: string;
-        audioOnlyMode?: boolean;
-        audioPosterMode?: boolean;
-        autoplay?: boolean | string;
-        autoSetup?: boolean;
-        base?: string;
-        breakpoints?: Record<string, number>;
-        children?: string[] | Record<string, Record<string, unknown>>;
-        controlBar?: {
+        'aspectRatio'?: string;
+        'audioOnlyMode'?: boolean;
+        'audioPosterMode'?: boolean;
+        'autoplay'?: boolean | string;
+        'autoSetup'?: boolean;
+        'base'?: string;
+        'breakpoints'?: Record<string, number>;
+        'children'?: string[] | Record<string, Record<string, unknown>>;
+        'controlBar'?: {
             fullscreenToggle?: boolean;
             pictureInPictureToggle?: boolean;
             remainingTimeDisplay?: {
                 displayNegative?: boolean;
             };
         };
-        controls?: boolean;
-        fluid?: boolean;
-        fullscreen?: {
+        'controls'?: boolean;
+        'fluid'?: boolean;
+        'fullscreen'?: {
             options?: Record<string, unknown>;
         };
-        height?: string | number;
-        id?: string;
-        inactivityTimeout?: number;
-        language?: string;
-        languages?: Record<string, Record<string, string>>;
-        liveui?: boolean;
-        liveTracker?: {
+        'height'?: string | number;
+        'id'?: string;
+        'inactivityTimeout'?: number;
+        'language'?: string;
+        'languages'?: Record<string, Record<string, string>>;
+        'liveui'?: boolean;
+        'liveTracker'?: {
             trackingThreshold?: number;
             liveTolerance?: number;
         };
-        loop?: boolean;
-        muted?: boolean;
-        nativeControlsForTouch?: boolean;
-        normalizeAutoplay?: boolean;
-        notSupportedMessage?: string;
-        noUITitleAttributes?: boolean;
-        playbackRates?: number[];
-        plugins?: Record<string, Record<string, unknown>>;
-        poster?: string;
-        preferFullWindow?: boolean;
-        preload?: PreloadOption;
-        responsive?: boolean;
-        restoreEl?: boolean | HTMLElement;
-        source?: TechSourceObject;
-        sources?: TechSourceObject[];
-        src?: string;
-        suppressNotSupportedError?: boolean;
-        tag?: HTMLElement;
-        techCanOverridePoster?: boolean;
-        techOrder?: string[];
-        userActions?: {
+        'loop'?: boolean;
+        'muted'?: boolean;
+        'nativeControlsForTouch'?: boolean;
+        'normalizeAutoplay'?: boolean;
+        'notSupportedMessage'?: string;
+        'noUITitleAttributes'?: boolean;
+        'playbackRates'?: number[];
+        'plugins'?: Record<string, Record<string, unknown>>;
+        'poster'?: string;
+        'preferFullWindow'?: boolean;
+        'preload'?: PreloadOption;
+        'responsive'?: boolean;
+        'restoreEl'?: boolean | HTMLElement;
+        'source'?: TechSourceObject;
+        'sources'?: TechSourceObject[];
+        'src'?: string;
+        'suppressNotSupportedError'?: boolean;
+        'tag'?: HTMLElement;
+        'techCanOverridePoster'?: boolean;
+        'techOrder'?: string[];
+        'userActions'?: {
             click?: boolean | ((ev: MouseEvent) => void);
             doubleClick?: boolean | ((ev: MouseEvent) => void);
             hotkeys?: boolean | ((ev: KeyboardEvent) => void) | {
@@ -103,7 +103,7 @@ declare module 'video.js' {
             };
         };
         'vtt.js'?: string;
-        width?: string | number;
+        'width'?: string | number;
     };
 
     export type TechSourceObject = {

@@ -347,7 +347,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
      * @param refreshUnreadCounts Whether to refresh unread counts.
      * @returns Promise resolved when done.
      */
-    protected async fetchData(refreshUnreadCounts: boolean = true): Promise<void> {
+    protected async fetchData(refreshUnreadCounts = true): Promise<void> {
         // Load the amount of conversations and contact requests.
         const promises: Promise<unknown>[] = [];
 
@@ -772,7 +772,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
      * @param refreshUnreadCounts Whether to refresh unread counts.
      * @returns Promise resolved when done.
      */
-    async refreshData(refresher?: HTMLIonRefresherElement, refreshUnreadCounts: boolean = true): Promise<void> {
+    async refreshData(refresher?: HTMLIonRefresherElement, refreshUnreadCounts = true): Promise<void> {
         // Don't invalidate conversations and so, they always try to get latest data.
         try {
             await AddonMessages.invalidateContactRequestsCountCache(this.siteId);

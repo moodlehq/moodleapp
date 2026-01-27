@@ -90,7 +90,7 @@ export default class AddonModFeedbackNonRespondentsPage implements OnInit {
      * @param refresh Empty events array first.
      * @returns Promise resolved when done.
      */
-    protected async fetchData(refresh: boolean = false): Promise<void> {
+    protected async fetchData(refresh = false): Promise<void> {
         this.page = 0;
         this.total = 0;
         this.users = [];

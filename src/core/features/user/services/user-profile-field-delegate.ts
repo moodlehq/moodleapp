@@ -160,8 +160,8 @@ export class CoreUserProfileFieldDelegateService extends CoreDelegate<CoreUserPr
      */
     async getDataForFields(
         fields: (AuthEmailSignupProfileField | CoreUserProfileField)[] | undefined,
-        signup: boolean = false,
-        registerAuth: string = '',
+        signup = false,
+        registerAuth = '',
         formValues: Record<string, unknown>,
     ): Promise<CoreUserProfileFieldHandlerData[]> {
         if (!fields) {

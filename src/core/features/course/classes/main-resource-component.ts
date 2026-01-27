@@ -146,7 +146,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * @returns Resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    protected async refreshContent(sync: boolean = false, showErrors: boolean = false): Promise<void> {
+    protected async refreshContent(sync = false, showErrors = false): Promise<void> {
         if (!this.module) {
             // This can happen if course format changes from single activity to weekly/topics.
             return;

@@ -122,7 +122,11 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
                 const option = formattedEntry.options.find(option => option.name === 'attachmentsid');
 
                 if (draftId) {
-                    option ? option.value = draftId : formattedEntry.options.push({ name: 'attachmentsid', value: draftId });
+                    if (option) {
+                        option.value = draftId;
+                    } else {
+                        formattedEntry.options.push({ name: 'attachmentsid', value: draftId });
+                    }
                 }
 
                 await AddonBlog.addEntryOnline(formattedEntry, siteId);

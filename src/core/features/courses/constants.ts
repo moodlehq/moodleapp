@@ -39,7 +39,7 @@ export const CoreCoursesMyCoursesUpdatedEventAction = {
     VIEW: 'view', // Course viewed.
 /* eslint-enable @typescript-eslint/naming-convention*/
 } as const;
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+
 export type CoreCoursesMyCoursesUpdatedEventAction =
     typeof CoreCoursesMyCoursesUpdatedEventAction[keyof typeof CoreCoursesMyCoursesUpdatedEventAction];
 
@@ -49,5 +49,5 @@ export const CORE_COURSES_STATE_FAVOURITE = 'favourite';
 
 export const enum CoreCoursesMyPageName {
     DEFAULT = '__default',
-    COURSES = '__courses'
+    COURSES = '__courses',
 }

@@ -269,7 +269,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @param whenUndefined The value to return when the parameter is undefined.
      * @returns Whether can use advanced feature.
      */
-    canUseAdvancedFeature(featureName: string, whenUndefined: boolean = true): boolean {
+    canUseAdvancedFeature(featureName: string, whenUndefined = true): boolean {
         const info = this.getInfo();
 
         if (info?.advancedfeatures === undefined) {
@@ -1572,7 +1572,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      * @param version Release version (e.g. '3.1.0').
      * @returns Object with major and minor. Returns false if invalid version.
      */
-    protected getMajorAndMinor(version: string): {major: string; minor: number} | false {
+    protected getMajorAndMinor(version: string): { major: string; minor: number } | false {
         const match = version.match(/^(\d+)(\.(\d+)(\.\d+)?)?/);
         if (!match || !match[1]) {
             // Invalid version.

@@ -213,7 +213,7 @@ export class AddonModLessonProvider {
     protected async calculateOfflineData(
         lesson: AddonModLessonLessonWSData,
         options: AddonModLessonCalculateOfflineDataOptions = {},
-    ): Promise<{reviewmode: boolean; progress?: number; ongoingscore: string}> {
+    ): Promise<{ reviewmode: boolean; progress?: number; ongoingscore: string }> {
 
         const reviewMode = !!(options.review || options.accessInfo?.reviewmode);
         let ongoingMessage = '';
@@ -402,11 +402,11 @@ export class AddonModLessonProvider {
         if (data['answer_editor[text]'] !== undefined) {
             studentAnswer = data['answer_editor[text]'];
         } else if (typeof data.answer_editor === 'object') {
-            studentAnswer = (<{text: string}> data.answer_editor).text;
+            studentAnswer = (<{ text: string }> data.answer_editor).text;
         } else if (data['answer[text]'] !== undefined) {
             studentAnswer = data['answer[text]'];
         } else if (typeof data.answer === 'object') {
-            studentAnswer = (<{text: string}> data.answer).text;
+            studentAnswer = (<{ text: string }> data.answer).text;
         } else {
             studentAnswer = data.answer;
         }
@@ -1192,7 +1192,7 @@ export class AddonModLessonProvider {
         lessonId: number,
         retake: number,
         options: CoreCourseCommonModWSOptions = {},
-    ): Promise<{online: AddonModLessonWSContentPageViewed[]; offline: AddonModLessonPageAttemptRecord[]}> {
+    ): Promise<{ online: AddonModLessonWSContentPageViewed[]; offline: AddonModLessonPageAttemptRecord[] }> {
         const type = AddonModLessonPageType.STRUCTURE;
 
         const [online, offline] = await Promise.all([
@@ -1936,7 +1936,7 @@ export class AddonModLessonProvider {
         lessonId: number,
         retake: number,
         options: AddonModLessonGetQuestionsAttemptsOptions = {},
-    ): Promise<{online: AddonModLessonQuestionAttemptWSData[]; offline: AddonModLessonPageAttemptRecord[]}> {
+    ): Promise<{ online: AddonModLessonQuestionAttemptWSData[]; offline: AddonModLessonPageAttemptRecord[] }> {
 
         const [online, offline] = await Promise.all([
             this.getQuestionsAttemptsOnline(lessonId, retake, options),

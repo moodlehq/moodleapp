@@ -111,7 +111,7 @@ class CoreSitesDB {
     async registerSiteSchema(schema: CoreSiteSchema, site: CoreSite): Promise<void> {
         try {
             // Site has already been created, apply the schema directly.
-            const schemas: {[name: string]: CoreRegisteredSiteSchema} = {};
+            const schemas: { [name: string]: CoreRegisteredSiteSchema } = {};
             schemas[schema.name] = schema;
 
             // Apply it to the specified site only.
@@ -159,11 +159,11 @@ class CoreSitesDB {
      * @param site Site.
      * @param schemas Schemas to migrate.
      */
-    protected async applySiteSchemas(site: CoreSite, schemas: {[name: string]: CoreRegisteredSiteSchema}): Promise<void> {
+    protected async applySiteSchemas(site: CoreSite, schemas: { [name: string]: CoreRegisteredSiteSchema }): Promise<void> {
         // Fetch installed versions of the schema.
         const records = await this.getSiteSchemasTable(site).getMany();
 
-        const versions: {[name: string]: number} = {};
+        const versions: { [name: string]: number } = {};
 
         records.forEach((record) => {
             versions[record.name] = record.version;
@@ -506,7 +506,7 @@ export class CoreSitesProvider {
      * @param origin Origin of this check site call.
      * @returns A promise resolved when the site is checked.
      */
-    async checkSite(siteUrl: string, protocol: string = 'https://', origin = 'unknown'): Promise<CoreSiteCheckResponse> {
+    async checkSite(siteUrl: string, protocol = 'https://', origin = 'unknown'): Promise<CoreSiteCheckResponse> {
         // The formatURL function adds the protocol if is missing.
         siteUrl = CoreUrl.formatURL(siteUrl);
 
@@ -813,8 +813,8 @@ export class CoreSitesProvider {
     async newSite(
         siteUrl: string,
         token: string,
-        privateToken: string = '',
-        login: boolean = true,
+        privateToken = '',
+        login = true,
         oauthId?: number,
     ): Promise<string> {
         if (typeof login !== 'boolean') {
@@ -1097,7 +1097,7 @@ export class CoreSitesProvider {
         siteUrl: string,
         token: string,
         info: CoreSiteInfoResponse,
-        privateToken: string = '',
+        privateToken = '',
         config?: CoreSiteConfig,
         oauthId?: number,
     ): Promise<void> {
@@ -1809,7 +1809,7 @@ export class CoreSitesProvider {
      * @param siteId ID of the site.
      * @param isLoggedOut True if logged out and needs to authenticate again, false otherwise.
      */
-    async setSiteLoggedOut(siteId: string, isLoggedOut: boolean = true): Promise<void> {
+    async setSiteLoggedOut(siteId: string, isLoggedOut = true): Promise<void> {
         const site = await this.getSite(siteId);
 
         site.setLoggedOut(isLoggedOut);
@@ -1825,7 +1825,7 @@ export class CoreSitesProvider {
      * @param token User's new token.
      * @param privateToken User's private token.
      */
-    async updateSiteToken(siteUrl: string, username: string, token: string, privateToken: string = ''): Promise<void> {
+    async updateSiteToken(siteUrl: string, username: string, token: string, privateToken = ''): Promise<void> {
         const siteId = this.createSiteID(siteUrl, username);
 
         await this.updateSiteTokenBySiteId(siteId, token, privateToken);
@@ -1840,7 +1840,7 @@ export class CoreSitesProvider {
      * @param token User's new token.
      * @param privateToken User's private token.
      */
-    async updateSiteTokenBySiteId(siteId: string, token: string, privateToken: string = ''): Promise<void> {
+    async updateSiteTokenBySiteId(siteId: string, token: string, privateToken = ''): Promise<void> {
         const site = await this.getSite(siteId);
 
         site.token = token;
@@ -2094,11 +2094,11 @@ export class CoreSitesProvider {
      * @returns Promise resolved with site to use and the list of sites that have
      *         the URL. Site will be undefined if it isn't the root URL of any stored site.
      */
-    async isStoredRootURL(url: string, username?: string): Promise<{site?: CoreSite; siteIds: string[]}> {
+    async isStoredRootURL(url: string, username?: string): Promise<{ site?: CoreSite; siteIds: string[] }> {
         // Check if the site is stored.
         const siteIds = await this.getSiteIdsFromUrl(url, true, username);
 
-        const result: {site?: CoreSite; siteIds: string[]} = {
+        const result: { site?: CoreSite; siteIds: string[] } = {
             siteIds,
         };
 

@@ -24,7 +24,7 @@ import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
  */
 export class CoreSwipeNavigationItemsManager<
     Item = unknown,
-    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>
+    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>,
 >
     extends CoreRoutedItemsManager<Item, Source> {
 

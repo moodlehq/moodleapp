@@ -156,9 +156,11 @@ export default class AddonNotificationsListPage implements AfterViewInit, OnDest
      * @param reload Whether to reload the list or load the next page.
      */
     protected async fetchNotifications(reload: boolean): Promise<void> {
-        reload
-            ? await this.notifications.reload()
-            : await this.notifications.load();
+        if (reload) {
+            await this.notifications.reload();
+        } else {
+            await this.notifications.load();
+        }
 
         this.fetchMoreNotificationsFailed = false;
         this.loadMarkAllAsReadButton();

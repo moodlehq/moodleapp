@@ -1244,6 +1244,7 @@ export class CoreSitePluginsInitService {
                 typeof handler[property] === 'function' &&
                 typeof jsResult[property] === 'function'
             ) {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
                 handler[property] = (<Function> jsResult[property]).bind(handler);
             }
         }

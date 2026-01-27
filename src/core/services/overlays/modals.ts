@@ -44,7 +44,7 @@ export class CoreModalsService {
         // This has to be done manually because Ionic's overlay mechanisms are not exposed externally, thus making it more difficult
         // to implement custom overlays.
         //
-        // eslint-disable-next-line max-len
+        // eslint-disable-next-line @stylistic/max-len
         // See https://github.com/ionic-team/ionic-framework/blob/a9b12a5aa4c150a1f8a80a826dda0df350bc0092/core/src/utils/overlays.ts#L39
 
         const overlays = document.body.querySelectorAll<HTMLElement>(

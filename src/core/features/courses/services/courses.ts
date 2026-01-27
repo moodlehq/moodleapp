@@ -122,7 +122,7 @@ export class CoreCoursesProvider {
      */
     async getCategories(
         categoryId: number,
-        addSubcategories: boolean = false,
+        addSubcategories = false,
         siteId?: string,
     ): Promise<CoreCourseGetCategoriesWSResponse> {
         const site = await CoreSites.getSite(siteId);
@@ -456,7 +456,7 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the courses.
      */
     async getCoursesByField(
-        field: string = '',
+        field = '',
         value: string | number = '',
         siteId?: string,
     ): Promise<CoreCourseSearchedData[]> {
@@ -478,7 +478,7 @@ export class CoreCoursesProvider {
      * @returns Observable that returns the courses.
      */
     getCoursesByFieldObservable(
-        field: string = '',
+        field = '',
         value: string | number = '',
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreCourseSearchedData[]> {
@@ -551,7 +551,7 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @returns Cache key.
      */
-    protected getCoursesByFieldCacheKey(field: string = '', value: string | number = ''): string {
+    protected getCoursesByFieldCacheKey(field = '', value: string | number = ''): string {
         return `${CoreCoursesProvider.ROOT_CACHE_KEY}coursesbyfield:${field}:${value}`;
     }
 
@@ -889,7 +889,7 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the courses.
      */
     async getUserCourses(
-        preferCache: boolean = false,
+        preferCache = false,
         siteId?: string,
         strategy?: CoreSitesReadingStrategy,
     ): Promise<CoreEnrolledCourseData[]> {
@@ -1083,7 +1083,7 @@ export class CoreCoursesProvider {
      * @param value The value to match.
      * @param siteId Site Id. If not defined, use current site.
      */
-    async invalidateCoursesByField(field: string = '', value: number | string = '', siteId?: string): Promise<void> {
+    async invalidateCoursesByField(field = '', value: number | string = '', siteId?: string): Promise<void> {
         if (typeof value === 'string' && value.length === 0) {
             return;
         }
@@ -1196,9 +1196,9 @@ export class CoreCoursesProvider {
      */
     async search(
         text: string,
-        page: number = 0,
+        page = 0,
         perPage: number = CoreCoursesProvider.SEARCH_PER_PAGE,
-        limitToEnrolled: boolean = false,
+        limitToEnrolled = false,
         siteId?: string,
     ): Promise<{ total: number; courses: CoreCourseBasicSearchedData[] }> {
         const site = await CoreSites.getSite(siteId);

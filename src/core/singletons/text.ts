@@ -86,7 +86,7 @@ export class CoreText {
      * @param precision Number of digits after the decimal separator.
      * @returns Size in human readable format.
      */
-    static bytesToSize(bytes: number, precision: number = 2): string {
+    static bytesToSize(bytes: number, precision = 2): string {
         if (bytes === undefined || bytes === null || bytes < 0) {
             return Translate.instant('core.notapplicable');
         }
@@ -541,7 +541,7 @@ export class CoreText {
      * @param decimals Number of decimals. By default, 2.
      * @returns Rounded number.
      */
-    static roundToDecimals(num: number, decimals: number = 2): number {
+    static roundToDecimals(num: number, decimals = 2): number {
         const multiplier = Math.pow(10, decimals);
 
         return Math.round(num * multiplier) / multiplier;

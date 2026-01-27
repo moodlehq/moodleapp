@@ -59,8 +59,8 @@ export class CoreSitesListComponent<T extends CoreSiteBasicInfo> {
                                                                                                   // for current site.
     readonly onSiteClicked = output<T>();
 
-    @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
-    @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{site: T; isCurrentSite: boolean}>;
+    @ContentChild('siteItem') siteItemTemplate?: TemplateRef<{ site: T; isCurrentSite: boolean }>;
+    @ContentChild('siteLabel') siteLabelTemplate?: TemplateRef<{ site: T; isCurrentSite: boolean }>;
 
     /**
      * Check whether a site is clickable.

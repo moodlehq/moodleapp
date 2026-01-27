@@ -73,7 +73,7 @@ export default class CoreSettingsDevPage implements OnInit {
     autoLoginTimeBetweenRequests?: number;
     lastAutoLoginTime?: number;
 
-    readonly wsOverrides = signal<{method: string; count: number}[]>([]);
+    readonly wsOverrides = signal<{ method: string; count: number }[]>([]);
     readonly totalOverrides = computed(() => this.wsOverrides().reduce((sum, override) => sum + override.count, 0));
 
     async ngOnInit(): Promise<void> {

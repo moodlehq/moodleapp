@@ -146,7 +146,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     /**
      * @inheritdoc
      */
-    async ngOnChanges(changes: {[name: string]: SimpleChange}): Promise<void> {
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         if (changes.collapsible && !changes.collapsible.firstChange) {
             this.enabled = this.collapsible;
 

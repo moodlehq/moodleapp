@@ -241,7 +241,7 @@ class CoreFilepoolQueue {
     getPromise(
         siteId: string,
         fileId: string,
-        create: boolean = true,
+        create = true,
         onProgress?: CoreFilepoolOnProgressCallback,
     ): CoreFilepoolPromisedValue | undefined {
         if (!this.deferreds[siteId]) {
@@ -421,7 +421,7 @@ export class CoreFilepoolProvider {
     protected queue: CoreFilepoolQueue; // To handle file downloads using the queue.
 
     // To handle file downloads using the queue.
-    protected sizeCache: {[fileUrl: string]: number} = {}; // A "cache" to store file sizes.
+    protected sizeCache: { [fileUrl: string]: number } = {}; // A "cache" to store file sizes.
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<string> } } = {};
@@ -792,7 +792,7 @@ export class CoreFilepoolProvider {
         component?: string,
         componentId?: string | number,
         timemodified = 0,
-        checkSize: boolean = true,
+        checkSize = true,
         downloadUnknown?: boolean,
         options: CoreFilepoolFileOptions = {},
         revision?: number,
@@ -2477,16 +2477,18 @@ export class CoreFilepoolProvider {
      *                    It is advised to set it to true to reduce the performance and data usage of the app.
      * @returns Resolved on success.
      */
-    async invalidateAllFiles(siteId: string, onlyUnknown: boolean = true): Promise<void> {
-        onlyUnknown
-            ? await this.filesTables[siteId].updateWhere(
+    async invalidateAllFiles(siteId: string, onlyUnknown = true): Promise<void> {
+        if (onlyUnknown) {
+            await this.filesTables[siteId].updateWhere(
                 { stale: 1 },
                 {
                     sql: CoreFilepoolProvider.FILE_IS_UNKNOWN_SQL,
                     js: CoreFilepoolProvider.FILE_IS_UNKNOWN_JS,
                 },
-            )
-            : await this.filesTables[siteId].update({ stale: 1 });
+            );
+        } else {
+            await this.filesTables[siteId].update({ stale: 1 });
+        }
     }
 
     /**
@@ -2522,7 +2524,7 @@ export class CoreFilepoolProvider {
         siteId: string | undefined,
         component: string,
         componentId?: string | number,
-        onlyUnknown: boolean = true,
+        onlyUnknown = true,
     ): Promise<void> {
         siteId = siteId ?? CoreSites.getCurrentSiteId();
 

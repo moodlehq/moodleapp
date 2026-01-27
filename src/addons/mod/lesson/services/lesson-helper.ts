@@ -76,7 +76,7 @@ export class AddonModLessonHelperProvider {
      * @param html Answer's HTML.
      * @returns Data to render the answer.
      */
-    getContentPageAnswerDataFromHtml(html: string): {buttonText: string; content: string} {
+    getContentPageAnswerDataFromHtml(html: string): { buttonText: string; content: string } {
         const data = {
             buttonText: '',
             content: '',

@@ -225,7 +225,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     /**
      * Detect changes on input properties.
      */
-    async ngOnChanges(changes: {[name: string]: SimpleChange }): Promise<void> {
+    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
         if (changes.iframeWidth) {
             this.iframeWidth = (this.iframeWidth && CoreDom.formatSizeUnits(this.iframeWidth)) || '100%';
         }
@@ -329,7 +329,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.fullscreen = !this.fullscreen;
         }
 
-        this.fullscreen ? StatusBar.hide() : StatusBar.show();
+        if (this.fullscreen) {
+            StatusBar.hide();
+        } else {
+            StatusBar.show();
+        }
 
         if (this.style) {
             // Done this way because of the shadow DOM.

@@ -163,8 +163,8 @@ export class FileTransferMock {
      * @param urlString The URL to get the credentials from.
      * @returns The header with the credentials, null if no credentials.
      */
-    protected getBasicAuthHeader(urlString: string): {name: string; value: string} | null {
-        let header: {name: string; value: string} | null = null;
+    protected getBasicAuthHeader(urlString: string): { name: string; value: string } | null {
+        let header: { name: string; value: string } | null = null;
 
         // MS Windows doesn't support credentials in http uris so we detect them by regexp and strip off from result url.
         if (window.btoa) {

@@ -32,7 +32,7 @@ export type GetClosureArgs<T> = T extends (...args: infer TArgs) => any ? TArgs 
 /**
  * Helper type to flatten complex types.
  */
-export type Pretty<T> = T extends infer U ? {[K in keyof U]: U[K]} : never;
+export type Pretty<T> = T extends infer U ? { [K in keyof U]: U[K] } : never;
 
 /**
  * Helper to convert some keys of an object to optional.

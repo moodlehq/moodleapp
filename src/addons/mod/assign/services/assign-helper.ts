@@ -257,7 +257,7 @@ export class AddonModAssignHelperProvider {
         // If no participants returned and all groups specified, get participants by groups.
         const groupsInfo = await CoreGroups.getActivityGroupInfo(assign.cmid, false, undefined, modOptions.siteId);
 
-        const participantsIndexed: {[id: number]: AddonModAssignParticipant} = {};
+        const participantsIndexed: { [id: number]: AddonModAssignParticipant } = {};
 
         const promises = groupsInfo.groups
             ? groupsInfo.groups.map((userGroup) =>
@@ -792,4 +792,4 @@ export type AddonModAssignSubmissionFormatted = AddonModAssignSubmission & {
 /**
  * Assignment plugin config.
  */
-export type AddonModAssignPluginConfig = {[name: string]: string};
+export type AddonModAssignPluginConfig = { [name: string]: string };

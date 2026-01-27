@@ -316,7 +316,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             return;
         }
 
-        const contentStateObj = CoreText.parseJSON<{h5p: string}>(contentState, { h5p: '{}' });
+        const contentStateObj = CoreText.parseJSON<{ h5p: string }>(contentState, { h5p: '{}' });
 
         // The H5P state doesn't always use JSON, so an h5p property was added to jsonize it.
         this.contentState = contentStateObj.h5p ?? '{}';

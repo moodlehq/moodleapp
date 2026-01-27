@@ -213,7 +213,7 @@ export class CoreH5PPlayer {
         content: CoreH5PContentData,
         embedType: string,
         siteId?: string,
-    ): Promise<{settings: AssetsSettings; cssRequires: string[]; jsRequires: string[]}> {
+    ): Promise<{ settings: AssetsSettings; cssRequires: string[]; jsRequires: string[] }> {
 
         siteId = siteId || CoreSites.getCurrentSiteId();
 
@@ -334,7 +334,7 @@ export class CoreH5PPlayer {
      * @param params URL params.
      * @returns Display options as object.
      */
-    getDisplayOptionsFromUrlParams(params?: {[name: string]: string}): CoreH5PDisplayOptions {
+    getDisplayOptionsFromUrlParams(params?: { [name: string]: string }): CoreH5PDisplayOptions {
         const displayOptions: CoreH5PDisplayOptions = {};
 
         if (!params) {
@@ -404,8 +404,8 @@ export class CoreH5PPlayer {
      * @param options Display options.
      * @returns Object with URL params.
      */
-    getUrlParamsFromDisplayOptions(options?: CoreH5PDisplayOptions): {[name: string]: string} {
-        const params: {[name: string]: string} = {};
+    getUrlParamsFromDisplayOptions(options?: CoreH5PDisplayOptions): { [name: string]: string } {
+        const params: { [name: string]: string } = {};
 
         if (!options) {
             return params;

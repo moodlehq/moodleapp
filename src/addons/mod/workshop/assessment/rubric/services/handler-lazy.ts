@@ -59,7 +59,7 @@ export class AddonModWorkshopAssessmentStrategyRubricHandlerLazyService
 
             originalValues[n] = {};
             originalValues[n].chosenlevelid = form.current[n].chosenlevelid || '';
-            originalValues[n].number = field.number; // eslint-disable-line id-blacklist
+            originalValues[n].number = field.number; // eslint-disable-line id-denylist
         });
 
         return originalValues;

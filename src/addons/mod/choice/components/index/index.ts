@@ -65,7 +65,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
 
     choice?: AddonModChoiceChoice;
     options: AddonModChoiceOption[] = [];
-    selectedOption: {id: number} = { id: -1 };
+    selectedOption: { id: number } = { id: -1 };
     showPreview = false;
     showResultsMessage = false;
     canEdit = false;
@@ -260,7 +260,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     ): Promise<AddonModChoiceOption[]> {
         const response = await AddonModChoiceOffline.getResponse(choice.id);
 
-        const optionsMap: {[id: number]: AddonModChoiceOption} = {};
+        const optionsMap: { [id: number]: AddonModChoiceOption } = {};
         options.forEach((option) => {
             optionsMap[option.id] = option;
         });

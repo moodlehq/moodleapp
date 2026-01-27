@@ -30,8 +30,8 @@ export class CoreH5PContentValidator {
 
     protected typeMap = {
         text: 'validateText',
-        number: 'validateNumber', // eslint-disable-line id-blacklist
-        boolean: 'validateBoolean', // eslint-disable-line id-blacklist
+        number: 'validateNumber', // eslint-disable-line id-denylist
+        boolean: 'validateBoolean', // eslint-disable-line id-denylist
         list: 'validateList',
         group: 'validateGroup',
         file: 'validateFile',
@@ -43,10 +43,10 @@ export class CoreH5PContentValidator {
     };
 
     protected nextWeight = 1;
-    protected libraries: {[libString: string]: CoreH5PLibraryData} = {};
-    protected dependencies: {[key: string]: CoreH5PContentDepsTreeDependency} = {};
+    protected libraries: { [libString: string]: CoreH5PLibraryData } = {};
+    protected dependencies: { [key: string]: CoreH5PContentDepsTreeDependency } = {};
     protected relativePathRegExp = /^((\.\.\/){1,2})(.*content\/)?(\d+|editor)\/(.+)$/;
-    protected allowedHtml: {[tag: string]: string} = {};
+    protected allowedHtml: { [tag: string]: string } = {};
     protected allowedStyles?: RegExp[];
     protected metadataSemantics?: CoreH5PSemantics[];
     protected copyrightSemantics?: CoreH5PSemantics;
@@ -77,7 +77,7 @@ export class CoreH5PContentValidator {
      *
      * @returns Dependencies.
      */
-    getDependencies(): {[key: string]: CoreH5PContentDepsTreeDependency} {
+    getDependencies(): { [key: string]: CoreH5PContentDepsTreeDependency } {
         return this.dependencies;
     }
 
@@ -164,7 +164,7 @@ export class CoreH5PContentValidator {
             // Allow styling of tables if they are allowed
             if (semantics.tags?.indexOf('table') != -1) {
                 // CKEditor outputs border as width style color
-                // eslint-disable-next-line max-len
+                // eslint-disable-next-line @stylistic/max-len
                 stylePatterns.push(/^border: *[0-9.]+(em|px|%|) *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
                 stylePatterns.push(/^border-style: *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *;?$/i);
                 stylePatterns.push(/^border-width: *[0-9.]+(em|px|%|) *;?$/i);
@@ -207,7 +207,7 @@ export class CoreH5PContentValidator {
      * @returns True if all files are valid.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    validateContentFiles(contentPath: string, isLibrary: boolean = false): boolean {
+    validateContentFiles(contentPath: string, isLibrary = false): boolean {
         // Nothing to do, already checked by Moodle.
         return true;
     }
@@ -494,7 +494,7 @@ export class CoreH5PContentValidator {
      * @param flatten Whether to flatten.
      * @returns Promise resolved when done.
      */
-    async validateGroup(group: unknown, semantics: CoreH5PSemantics, flatten: boolean = true): Promise<unknown> {
+    async validateGroup(group: unknown, semantics: CoreH5PSemantics, flatten = true): Promise<unknown> {
         if (!semantics.fields) {
             return group;
         }
@@ -676,7 +676,7 @@ export class CoreH5PContentValidator {
      * @param store Whether to store m.
      * @returns string If the element isn't allowed, an empty string. Otherwise, the cleaned up version of the HTML element.
      */
-    protected filterXssSplit(tags: string[], store: boolean = false): string {
+    protected filterXssSplit(tags: string[], store = false): string {
         if (store) {
             this.allowedHtml = CoreArray.toObject(tags);
 
@@ -878,7 +878,7 @@ export class CoreH5PContentValidator {
      * @param decode Whether to decode entities in the str.
      * @returns Cleaned up and HTML-escaped version of str.
      */
-    filterXssBadProtocol(str: string, decode: boolean = true): string {
+    filterXssBadProtocol(str: string, decode = true): string {
         // Get the plain text representation of the attribute value (i.e. its meaning).
         if (decode) {
             str = CoreText.decodeHTMLEntities(str);

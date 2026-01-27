@@ -589,10 +589,10 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async getUserContacts(
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
-    ): Promise<{contacts: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ contacts: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetUserContactsWSParams = {
@@ -633,10 +633,10 @@ export class AddonMessagesProvider {
      * @since 3.6
      */
     async getContactRequests(
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_CONTACTS,
         siteId?: string,
-    ): Promise<{requests: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ requests: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesGetContactRequestsWSParams = {
@@ -721,13 +721,13 @@ export class AddonMessagesProvider {
      */
     async getConversation(
         conversationId: number,
-        includeContactRequests: boolean = false,
-        includePrivacyInfo: boolean = false,
-        messageOffset: number = 0,
-        messageLimit: number = 1,
-        memberOffset: number = 0,
-        memberLimit: number = 2,
-        newestFirst: boolean = true,
+        includeContactRequests = false,
+        includePrivacyInfo = false,
+        messageOffset = 0,
+        messageLimit = 1,
+        memberOffset = 0,
+        memberLimit = 2,
+        newestFirst = true,
         siteId?: string,
         userId?: number,
     ): Promise<AddonMessagesConversationFormatted> {
@@ -782,11 +782,11 @@ export class AddonMessagesProvider {
         otherUserId: number,
         includeContactRequests?: boolean,
         includePrivacyInfo?: boolean,
-        messageOffset: number = 0,
-        messageLimit: number = 1,
-        memberOffset: number = 0,
-        memberLimit: number = 2,
-        newestFirst: boolean = true,
+        messageOffset = 0,
+        messageLimit = 1,
+        memberOffset = 0,
+        memberLimit = 2,
+        newestFirst = true,
         siteId?: string,
         userId?: number,
         preferCache?: boolean,
@@ -831,12 +831,12 @@ export class AddonMessagesProvider {
      */
     async getConversationMembers(
         conversationId: number,
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitTo?: number,
         includeContactRequests?: boolean,
         siteId?: string,
         userId?: number,
-    ): Promise<{members: AddonMessagesConversationMember[]; canLoadMore: boolean}> {
+    ): Promise<{ members: AddonMessagesConversationMember[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
         limitTo = limitTo ?? ADDON_MESSAGES_LIMIT_MESSAGES;
@@ -963,12 +963,12 @@ export class AddonMessagesProvider {
     async getConversations(
         type?: number,
         favourites?: boolean,
-        limitFrom: number = 0,
+        limitFrom = 0,
         siteId?: string,
         userId?: number,
         forceCache?: boolean,
         ignoreCache?: boolean,
-    ): Promise<{conversations: AddonMessagesConversationFormatted[]; canLoadMore: boolean}> {
+    ): Promise<{ conversations: AddonMessagesConversationFormatted[]; canLoadMore: boolean }> {
 
         const site = await CoreSites.getSite(siteId);
         userId = userId || site.getUserId();
@@ -1033,7 +1033,7 @@ export class AddonMessagesProvider {
      *         individual, group and self conversation counts.
      * @since 3.6
      */
-    async getConversationCounts(siteId?: string): Promise<{favourites: number; individual: number; group: number; self: number}> {
+    async getConversationCounts(siteId?: string): Promise<{ favourites: number; individual: number; group: number; self: number }> {
         const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
@@ -1224,9 +1224,9 @@ export class AddonMessagesProvider {
      * @since 3.7
      */
     async getSelfConversation(
-        messageOffset: number = 0,
-        messageLimit: number = 1,
-        newestFirst: boolean = true,
+        messageOffset = 0,
+        messageLimit = 1,
+        newestFirst = true,
         siteId?: string,
         userId?: number,
     ): Promise<AddonMessagesConversationFormatted> {
@@ -1257,7 +1257,7 @@ export class AddonMessagesProvider {
      */
     async getUnreadConversationCounts(
         siteId?: string,
-    ): Promise<{favourites: number; individual: number; group: number; self: number; orMore?: boolean}> {
+    ): Promise<{ favourites: number; individual: number; group: number; self: number; orMore?: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const preSets: CoreSiteWSPreSets = {
@@ -1707,7 +1707,7 @@ export class AddonMessagesProvider {
      */
     async refreshUnreadConversationCounts(
         siteId?: string,
-    ): Promise<{favourites: number; individual: number; group: number; orMore?: boolean}> {
+    ): Promise<{ favourites: number; individual: number; group: number; orMore?: boolean }> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         await this.invalidateUnreadConversationCounts(siteId);
@@ -1759,10 +1759,10 @@ export class AddonMessagesProvider {
     async searchMessages(
         query: string,
         userId?: number,
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
-    ): Promise<{messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean}> {
+    ): Promise<{ messages: AddonMessagesMessageAreaContact[]; canLoadMore: boolean }> {
         const site = await CoreSites.getSite(siteId);
 
         const params: AddonMessagesDataForMessageareaSearchMessagesWSParams = {
@@ -1812,7 +1812,7 @@ export class AddonMessagesProvider {
      */
     async searchUsers(
         query: string,
-        limitFrom: number = 0,
+        limitFrom = 0,
         limitNum: number = ADDON_MESSAGES_LIMIT_SEARCH,
         siteId?: string,
     ): Promise<{

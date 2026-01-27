@@ -1609,7 +1609,7 @@ export class AddonModQuizProvider {
      */
     async logViewAttempt(
         attemptId: number,
-        page: number = 0,
+        page = 0,
         preflightData: Record<string, string> = {},
         offline?: boolean,
         siteId?: string,

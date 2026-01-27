@@ -158,7 +158,7 @@ export class CoreUserToursUserTourComponent implements AfterViewInit, OnDestroy 
      *
      * @param acknowledge Whether to confirm that the user has seen the User Tour.
      */
-    async dismiss(acknowledge: boolean = true): Promise<void> {
+    async dismiss(acknowledge = true): Promise<void> {
         this.beforeDismiss.emit();
 
         if (this.active()) {

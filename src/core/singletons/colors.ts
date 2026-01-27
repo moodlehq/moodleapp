@@ -77,7 +77,7 @@ export class CoreColors {
      * @param color Color to get darker.
      * @returns Darker Hex RGB color.
      */
-    static darker(color: string, percent: number = 48): string {
+    static darker(color: string, percent = 48): string {
         const inversePercent = 1 - (percent / 100);
 
         const rgba = CoreColors.getColorRGBA(color);
@@ -100,7 +100,7 @@ export class CoreColors {
      * @param color Color to get lighter.
      * @returns Lighter Hex RGB color.
      */
-    static lighter(color: string, percent: number = 80): string {
+    static lighter(color: string, percent = 80): string {
         percent = percent / 100;
         const inversePercent = 1 - percent;
 

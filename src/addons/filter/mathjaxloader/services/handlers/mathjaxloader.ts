@@ -212,7 +212,7 @@ export class AddonFilterMathJaxLoaderHandlerService extends CoreFilterDefaultHan
      * @param text The text to filter.
      * @returns Object containing the potentially modified text and a boolean that is true if any changes were made to the text.
      */
-    protected wrapMathInNoLink(text: string): {text: string; changed: boolean} {
+    protected wrapMathInNoLink(text: string): { text: string; changed: boolean } {
         let len = text.length;
         let i = 1;
         let displayStart = -1;

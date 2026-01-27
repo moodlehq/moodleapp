@@ -59,7 +59,7 @@ export class AddonModWorkshopAssessmentStrategyNumErrorsHandlerLazyService
 
             originalValues[n] = {};
             originalValues[n].peercomment = form.current[n].peercomment || '';
-            originalValues[n].number = field.number; // eslint-disable-line id-blacklist
+            originalValues[n].number = field.number; // eslint-disable-line id-denylist
             originalValues[n].grade = form.current[n].grade || '';
         });
 

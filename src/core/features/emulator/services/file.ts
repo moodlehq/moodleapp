@@ -493,7 +493,7 @@ export class FileMock extends File {
      * @param name Name to fix.
      * @returns Fixed values.
      */
-    protected fixPathAndName(path: string, name: string): {path: string; name: string} {
+    protected fixPathAndName(path: string, name: string): { path: string; name: string } {
 
         const fullPath = CorePath.concatenatePaths(path, name);
 

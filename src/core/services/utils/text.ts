@@ -120,7 +120,7 @@ export class CoreTextUtilsProvider {
      *
      * @deprecated since 4.5. Use CoreText.bytesToSize instead.
      */
-    bytesToSize(bytes: number, precision: number = 2): string {
+    bytesToSize(bytes: number, precision = 2): string {
        return CoreText.bytesToSize(bytes, precision);
     }
 
@@ -428,7 +428,7 @@ export class CoreTextUtilsProvider {
         siteUrl: string,
         text: string,
         files: CoreWSFile[],
-    ): { text: string; replaceMap?: {[url: string]: string} } {
+    ): { text: string; replaceMap?: { [url: string]: string } } {
         return CoreFileHelper.replaceDraftfileUrls(siteUrl, text, files);
     }
 
@@ -485,7 +485,7 @@ export class CoreTextUtilsProvider {
      *
      * @deprecated since 4.5. Use CoreText.roundToDecimals instead.
      */
-    roundToDecimals(num: number, decimals: number = 2): number {
+    roundToDecimals(num: number, decimals = 2): number {
         return CoreText.roundToDecimals(num, decimals);
     }
 

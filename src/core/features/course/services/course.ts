@@ -468,8 +468,8 @@ export class CoreCourseProvider {
         moduleId: number,
         courseId?: number,
         sectionId?: number,
-        preferCache: boolean = false,
-        ignoreCache: boolean = false,
+        preferCache = false,
+        ignoreCache = false,
         siteId?: string,
         modName?: string,
     ): Promise<CoreCourseModuleData> {
@@ -818,11 +818,11 @@ export class CoreCourseProvider {
      */
     async getSections(
         courseId: number,
-        excludeModules: boolean = false,
-        excludeContents: boolean = false,
+        excludeModules = false,
+        excludeContents = false,
         preSets?: CoreSiteWSPreSets,
         siteId?: string,
-        includeStealthModules: boolean = true,
+        includeStealthModules = true,
     ): Promise<CoreCourseWSSection[]> {
         return await firstValueFrom(this.getSectionsObservable(courseId, {
             excludeModules,
@@ -967,7 +967,7 @@ export class CoreCourseProvider {
      */
     getSectionsModules<
         Section extends CoreCourseWSSection,
-        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>
+        Module = Extract<ArrayElement<Section['contents']>, CoreCourseModuleData>,
     >(
         sections: Section[],
         options: CoreCourseGetSectionsModulesOptions<Section, Module> = {},

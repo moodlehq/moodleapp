@@ -88,7 +88,7 @@ export class CoreFileUtils {
      * path/            -> directory: 'path', name: ''
      * path             -> directory: '', name: 'path'
      */
-    static getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
+    static getFileAndDirectoryFromPath(path: string): { directory: string; name: string } {
         const file = {
             directory: '',
             name: '',

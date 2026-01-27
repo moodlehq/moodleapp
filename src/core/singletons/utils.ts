@@ -30,7 +30,7 @@ export class CoreUtils {
     protected static readonly DONT_CLONE = ['[object FileEntry]', '[object DirectoryEntry]', '[object DOMFileSystem]'];
 
     protected static logger = CoreLogger.getInstance('CoreUtils');
-    protected static uniqueIds: {[name: string]: number} = {};
+    protected static uniqueIds: { [name: string]: number } = {};
 
     /**
      * Clone a variable. It should be an object, array or primitive type.
@@ -39,7 +39,7 @@ export class CoreUtils {
      * @param level Depth we are right now inside a cloned object. It's used to prevent reaching max call stack size.
      * @returns Cloned variable.
      */
-    static clone<T>(source: T, level: number = 0): T {
+    static clone<T>(source: T, level = 0): T {
         if (level >= 20) {
             // Max 20 levels.
             CoreUtils.logger.error('Max depth reached when cloning object.', source);
@@ -111,10 +111,10 @@ export class CoreUtils {
      */
     static formatTree<T>(
         list: T[],
-        parentFieldName: string = 'parent',
-        idFieldName: string = 'id',
-        rootParentId: number = 0,
-        maxDepth: number = 5,
+        parentFieldName = 'parent',
+        idFieldName = 'id',
+        rootParentId = 0,
+        maxDepth = 5,
     ): TreeNode<T>[] {
         const map = {};
         const mapDepth = {};
@@ -229,7 +229,7 @@ export class CoreUtils {
     static makeMenuFromList<T>(
         list: string,
         defaultLabel?: string,
-        separator: string = ',',
+        separator = ',',
         defaultValue?: T,
     ): CoreMenuItem<T>[] {
         // Split and format the list.
@@ -304,7 +304,7 @@ export class CoreUtils {
         const debounced = (...args: T): void => {
             clearTimeout(timeoutID);
 
-            timeoutID = window.setTimeout(() => fn.apply(null, args), delay);
+            timeoutID = window.setTimeout(() => fn(...args), delay);
         };
 
         return debounced;
@@ -322,7 +322,7 @@ export class CoreUtils {
 
         const throttled = (...args: T): void => {
             if (!shouldWait) {
-                fn.apply(null, args);
+                fn(...args);
 
                 shouldWait = true;
 

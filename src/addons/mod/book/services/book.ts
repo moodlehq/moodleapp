@@ -211,7 +211,7 @@ export class AddonModBookProvider {
         const getChapterInfo = (
             chapter: AddonModBookTocChapterParsed,
             chapterNumber: number,
-            previousNumber: string = '',
+            previousNumber = '',
         ): AddonModBookTocChapter => {
             const hidden = !!parseInt(chapter.hidden, 10);
 
@@ -377,7 +377,7 @@ type AddonModBookTocChapterParsed = {
 export type AddonModBookContentsMap = {
     [chapter: string]: {
         indexUrl?: string;
-        paths: {[path: string]: string};
+        paths: { [path: string]: string };
         timemodified?: number;
         tags?: CoreTagItem[];
     };

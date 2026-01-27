@@ -81,7 +81,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     protected messagesBeingSent = 0;
     protected pagesLoaded = 1;
     protected lastMessage?: { text: string; timecreated: number };
-    protected keepMessageMap: {[hash: string]: boolean} = {};
+    protected keepMessageMap: { [hash: string]: boolean } = {};
     protected syncObserver: CoreEventObserver;
     protected oldContentHeight = 0;
     protected scrollBottom = true;
@@ -108,7 +108,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
     showDelete = false;
     canDelete = false;
     isGroup = false;
-    members: {[id: number]: AddonMessagesConversationMember} = {}; // Members that wrote a message, indexed by ID.
+    members: { [id: number]: AddonMessagesConversationMember } = {}; // Members that wrote a message, indexed by ID.
     favouriteIcon = 'fas-star';
     deleteIcon = 'fas-trash';
     blockIcon = 'fas-user-lock';
@@ -188,7 +188,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      */
     protected addMessage(
         message: AddonMessagesConversationMessageFormatted,
-        keep: boolean = true,
+        keep = true,
     ): boolean {
 
         /* Create a hash to identify the message. The text of online messages isn't reliable because it can have random data
@@ -311,7 +311,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      *
      * @param messagesAreNew If messages loaded are new messages.
      */
-    protected async fetchMessages(messagesAreNew: boolean = true): Promise<void> {
+    protected async fetchMessages(messagesAreNew = true): Promise<void> {
         this.loadMoreError = false;
 
         if (this.messagesBeingSent > 0) {
@@ -360,7 +360,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      */
     protected loadMessages(
         messages: AddonMessagesConversationMessageFormatted[],
-        messagesAreNew: boolean = true,
+        messagesAreNew = true,
     ): void {
 
         if (this.viewDestroyed) {
@@ -552,7 +552,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      */
     protected async getConversationMessages(
         pagesToLoad: number,
-        offset: number = 0,
+        offset = 0,
     ): Promise<AddonMessagesConversationMessageFormatted[]> {
 
         if (!this.conversationId) {

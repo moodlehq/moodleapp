@@ -29,7 +29,7 @@ export class CoreSyncProvider {
 
     constructor() {
         // Unblock all blocks on logout.
-        CoreEvents.on(CoreEvents.LOGOUT, (data: {siteId: string}) => {
+        CoreEvents.on(CoreEvents.LOGOUT, (data: { siteId: string }) => {
             this.clearAllBlocks(data.siteId);
         });
     }

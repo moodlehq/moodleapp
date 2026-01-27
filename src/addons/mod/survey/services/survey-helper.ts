@@ -46,7 +46,7 @@ export class AddonModSurveyHelperProvider {
      * @param questions Questions.
      * @returns Object with parent questions.
      */
-    protected getParentQuestions(questions: AddonModSurveyQuestion[]): {[id: number]: AddonModSurveyQuestion} {
+    protected getParentQuestions(questions: AddonModSurveyQuestion[]): { [id: number]: AddonModSurveyQuestion } {
         const parents: { [id: number]: AddonModSurveyQuestion } = {};
 
         questions.forEach((question) => {

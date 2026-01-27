@@ -31,7 +31,7 @@ import { CorePromiseUtils } from '@singletons/promise-utils';
  */
 export class CoreListItemsManager<
     Item = unknown,
-    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>
+    Source extends CoreRoutedItemsManagerSource<Item> = CoreRoutedItemsManagerSource<Item>,
 > extends CoreRoutedItemsManager<Item, Source> {
 
     protected pageRouteLocator?: unknown | ActivatedRoute;

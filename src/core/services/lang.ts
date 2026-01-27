@@ -625,7 +625,7 @@ export const CoreLang = makeSingleton(CoreLangProvider);
 
 export const enum CoreLangFormat {
     LMS = 'lms',
-    App = 'app'
+    App = 'app',
 }
 
 /**

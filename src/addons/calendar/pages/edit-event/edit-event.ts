@@ -658,7 +658,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         const { CoreRemindersSetReminderMenuComponent } =
             await import('@features/reminders/components/set-reminder-menu/set-reminder-menu');
 
-        const reminderTime = await CorePopovers.open<{timeBefore: number}>({
+        const reminderTime = await CorePopovers.open<{ timeBefore: number }>({
             component: CoreRemindersSetReminderMenuComponent,
             componentProps: {
                 eventTime,
@@ -698,9 +698,11 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
      * Value of repeat input changed.
      */
     repeatChanged(): void {
-        this.form.controls.repeat.value ?
-            this.form.controls.repeats.enable() :
+        if (this.form.controls.repeat.value) {
+            this.form.controls.repeats.enable();
+        } else {
             this.form.controls.repeats.disable();
+        }
     }
 
     /**

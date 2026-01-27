@@ -582,7 +582,7 @@ export class CoreDom {
      * @param setTabIndex Whether to set tabindex and role.
      */
     static initializeClickableElementA11y(
-        element: HTMLElement & {disabled?: boolean},
+        element: HTMLElement & { disabled?: boolean },
         callback: (event: MouseEvent | KeyboardEvent) => void,
         setTabIndex = true,
     ): void {
@@ -1145,7 +1145,7 @@ export class CoreDom {
      * @param map Mapping of the classes to replace. Keys must be the value to replace, values must be
      *            the new class name. Example: {'correct': 'core-question-answer-correct'}.
      */
-    static replaceClassesInElement(element: HTMLElement, map: {[currentValue: string]: string}): void {
+    static replaceClassesInElement(element: HTMLElement, map: { [currentValue: string]: string }): void {
         for (const key in map) {
             const foundElements = element.querySelectorAll(`.${key}`);
 
@@ -1166,7 +1166,7 @@ export class CoreDom {
      */
     static restoreSourcesInHtml(
         html: string,
-        paths: {[url: string]: string},
+        paths: { [url: string]: string },
         anchorFn?: (anchor: HTMLElement, href: string) => void,
     ): string {
         const element = convertTextToHTMLElement(html);

@@ -83,7 +83,7 @@ export class AddonEnrolSelfService {
      * @returns Promise resolved if the user is enrolled. If the password is invalid, the promise is rejected
      *         with an object with errorcode = CORE_COURSES_ENROL_INVALID_KEY.
      */
-    async selfEnrol(courseId: number, password: string = '', instanceId?: number, siteId?: string): Promise<boolean> {
+    async selfEnrol(courseId: number, password = '', instanceId?: number, siteId?: string): Promise<boolean> {
 
         const site = await CoreSites.getSite(siteId);
 

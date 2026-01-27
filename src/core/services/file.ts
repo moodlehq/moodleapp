@@ -667,7 +667,7 @@ export class CoreFileProvider {
         file: Blob,
         path: string,
         onProgress?: CoreFileProgressFunction,
-        offset: number = 0,
+        offset = 0,
         append?: boolean,
     ): Promise<FileEntry> {
         offset = offset || 0;
@@ -929,7 +929,7 @@ export class CoreFileProvider {
      * @returns Plain object containing the file name and directory.
      * @deprecated since 5.0. Use CoreFileUtils.getFileAndDirectoryFromPath instead.
      */
-    getFileAndDirectoryFromPath(path: string): {directory: string; name: string} {
+    getFileAndDirectoryFromPath(path: string): { directory: string; name: string } {
         return CoreFileUtils.getFileAndDirectoryFromPath(path);
     }
 
@@ -1004,7 +1004,7 @@ export class CoreFileProvider {
         path: string,
         destFolder?: string,
         onProgress?: (progress: ProgressEvent) => void,
-        recreateDir: boolean = true,
+        recreateDir = true,
     ): Promise<void> {
         // Get the source file.
         const fileEntry = await this.getFile(path);
@@ -1253,7 +1253,7 @@ export class CoreFileProvider {
                 return;
             }
 
-            const filesMap: {[fullPath: string]: FileEntry} = {};
+            const filesMap: { [fullPath: string]: FileEntry } = {};
             const promises: Promise<void>[] = [];
 
             // Index the received files by fullPath and ignore the invalid ones.

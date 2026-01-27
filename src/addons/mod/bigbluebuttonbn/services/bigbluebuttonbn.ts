@@ -45,7 +45,7 @@ export class AddonModBBBService {
      */
     async endMeeting(
         id: number,
-        groupId: number = 0,
+        groupId = 0,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -108,7 +108,7 @@ export class AddonModBBBService {
      */
     async getJoinUrl(
         cmId: number,
-        groupId: number = 0,
+        groupId = 0,
         siteId?: string,
     ): Promise<string> {
         const site = await CoreSites.getSite(siteId);
@@ -148,7 +148,7 @@ export class AddonModBBBService {
      */
     async getMeetingInfo(
         id: number,
-        groupId: number = 0,
+        groupId = 0,
         options: AddonModBBBGetMeetingInfoOptions = {},
     ): Promise<AddonModBBBMeetingInfo> {
         const site = await CoreSites.getSite(options.siteId);
@@ -194,7 +194,7 @@ export class AddonModBBBService {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @returns Cache key.
      */
-    protected getMeetingInfoCacheKey(id: number, groupId: number = 0): string {
+    protected getMeetingInfoCacheKey(id: number, groupId = 0): string {
         return this.getMeetingInfoCacheKeyPrefix(id) + groupId;
     }
 
@@ -218,7 +218,7 @@ export class AddonModBBBService {
      */
     async getRecordings(
         id: number,
-        groupId: number = 0,
+        groupId = 0,
         options: AddonModBBBGetMeetingInfoOptions = {},
     ): Promise<AddonModBBBRecordingsTableData> {
         const site = await CoreSites.getSite(options.siteId);
@@ -259,7 +259,7 @@ export class AddonModBBBService {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @returns Cache key.
      */
-    protected getRecordingsCacheKey(id: number, groupId: number = 0): string {
+    protected getRecordingsCacheKey(id: number, groupId = 0): string {
         return this.getRecordingsCacheKeyPrefix(id) + groupId;
     }
 
@@ -313,7 +313,7 @@ export class AddonModBBBService {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateMeetingInfo(id: number, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateMeetingInfo(id: number, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getMeetingInfoCacheKey(id, groupId));
@@ -338,7 +338,7 @@ export class AddonModBBBService {
      * @param groupId Group ID, 0 means that the function will determine the user group.
      * @param siteId Site ID. If not defined, current site.
      */
-    async invalidateRecordings(id: number, groupId: number = 0, siteId?: string): Promise<void> {
+    async invalidateRecordings(id: number, groupId = 0, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         await site.invalidateWsCacheForKey(this.getRecordingsCacheKey(id, groupId));

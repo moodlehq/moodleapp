@@ -282,7 +282,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
 
                     if (typeof this[name] === 'function') {
                         // Call the function.
-                        Promise.resolve(this[name].apply(this, pendingCall.params)).then(pendingCall.defer.resolve)
+                        Promise.resolve(this[name](...pendingCall.params)).then(pendingCall.defer.resolve)
                             .catch(pendingCall.defer.reject);
                     } else {
                         // Function not defined, resolve the promise.
@@ -365,7 +365,7 @@ export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {
     callComponentFunction(name: string, params?: unknown[], callWhenCreated = true): unknown {
         if (this.componentInstance) {
             if (typeof this.componentInstance[name] === 'function') {
-                return this.componentInstance[name].apply(this.componentInstance, params);
+                return this.componentInstance[name](...(params || []));
             }
         } else if (callWhenCreated) {
             // Call it when the component is created.

@@ -111,9 +111,11 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         AddonMessages.getContactRequestsCount(this.siteId); // Badge already updated by the observer.
 
-        this.selected === 'confirmed'
-            ? await this.initConfirmed()
-            : await this.initRequests();
+        if (this.selected === 'confirmed') {
+            await this.initConfirmed();
+        } else {
+            await this.initRequests();
+        }
     }
 
     /**
@@ -166,7 +168,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param refresh True if we are refreshing contacts, false if we are loading more.
      * @returns Promise resolved when done.
      */
-    async confirmedFetchData(refresh: boolean = false): Promise<void> {
+    async confirmedFetchData(refresh = false): Promise<void> {
         this.confirmedLoadMoreError = false;
 
         const limitFrom = refresh ? 0 : this.confirmedContacts.length;
@@ -192,7 +194,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
      * @param refresh True if we are refreshing contact requests, false if we are loading more.
      * @returns Promise resolved when done.
      */
-    async requestsFetchData(refresh: boolean = false): Promise<void> {
+    async requestsFetchData(refresh = false): Promise<void> {
         this.requestsLoadMoreError = false;
 
         const limitFrom = refresh ? 0 : this.requests.length;

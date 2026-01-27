@@ -135,7 +135,7 @@ export class CoreEvents {
 
     protected static logger = CoreLogger.getInstance('CoreEvents');
     protected static observables: { [eventName: string]: Subject<unknown> } = {};
-    protected static uniqueEvents: { [eventName: string]: {data: unknown} } = {};
+    protected static uniqueEvents: { [eventName: string]: { data: unknown } } = {};
 
     // Avoid creating singleton instances.
     private constructor() {

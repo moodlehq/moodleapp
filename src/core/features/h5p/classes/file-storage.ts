@@ -200,7 +200,7 @@ export class CoreH5PFileStorage {
                     'WHERE hcl.libraryid = ?';
         const queryArgs = [libraryId];
 
-        const entries = await db.getRecordsSql<{foldername: string}>(query, queryArgs);
+        const entries = await db.getRecordsSql<{ foldername: string }>(query, queryArgs);
 
         await Promise.all(entries.map(async (entry) => {
             try {
@@ -234,7 +234,7 @@ export class CoreH5PFileStorage {
      * @param key Hashed key for cached asset
      * @returns Promise resolved with the files.
      */
-    async getCachedAssets(key: string): Promise<{scripts?: CoreH5PDependencyAsset[]; styles?: CoreH5PDependencyAsset[]} | null> {
+    async getCachedAssets(key: string): Promise<{ scripts?: CoreH5PDependencyAsset[]; styles?: CoreH5PDependencyAsset[] } | null> {
 
         // Get JS and CSS cached assets if they exist.
         const results = await Promise.all([

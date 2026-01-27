@@ -401,7 +401,7 @@ export class CoreFileHelperProvider {
      * @param file The file to check.
      * @returns bool.
      */
-    isOpenableInApp(file: {filename?: string; name?: string}): boolean {
+    isOpenableInApp(file: { filename?: string; name?: string }): boolean {
         const regex = /(?:\.([^.]+))?$/;
         const regexResult = regex.exec(file.filename || file.name || '');
 
@@ -420,7 +420,7 @@ export class CoreFileHelperProvider {
      * @param file The file that will be opened.
      * @returns Promise resolved if confirmed, rejected otherwise.
      */
-    async showConfirmOpenUnsupportedFile(onlyDownload = false, file: {filename?: string; name?: string}): Promise<void> {
+    async showConfirmOpenUnsupportedFile(onlyDownload = false, file: { filename?: string; name?: string }): Promise<void> {
         file = file || {}; // Just in case some plugin doesn't pass it. This can be removed in the future, @since app 4.1.
 
         // Check if the user decided not to see the warning.
@@ -516,7 +516,7 @@ export class CoreFileHelperProvider {
         siteUrl: string,
         text: string,
         files: CoreWSFile[],
-    ): { text: string; replaceMap?: {[url: string]: string} } {
+    ): { text: string; replaceMap?: { [url: string]: string } } {
 
         if (!text || !files || !files.length) {
             return { text };
@@ -530,7 +530,7 @@ export class CoreFileHelperProvider {
         }
 
         // Index the pluginfile URLs by file name.
-        const pluginfileMap: {[name: string]: string} = {};
+        const pluginfileMap: { [name: string]: string } = {};
         files.forEach((file) => {
             if (!file.filename) {
                 return;
@@ -539,7 +539,7 @@ export class CoreFileHelperProvider {
         });
 
         // Replace each draftfile with the corresponding pluginfile URL.
-        const replaceMap: {[url: string]: string} = {};
+        const replaceMap: { [url: string]: string } = {};
         matches.forEach((url) => {
             if (replaceMap[url]) {
                 // URL already treated, same file embedded more than once.

@@ -53,8 +53,8 @@ export class CoreSitePluginsProvider {
     static readonly UPDATE_COURSE_CONTENT = CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT;
 
     protected logger: CoreLogger;
-    protected sitePlugins: {[name: string]: CoreSitePluginsHandler} = {}; // Site plugins registered.
-    protected sitePluginPromises: {[name: string]: Promise<void>} = {}; // Promises of loading plugins.
+    protected sitePlugins: { [name: string]: CoreSitePluginsHandler } = {}; // Site plugins registered.
+    protected sitePluginPromises: { [name: string]: Promise<void> } = {}; // Promises of loading plugins.
     protected fetchPluginsDeferred: CorePromisedValue<void>;
     protected moduleHandlerInstances: Record<string, CoreSitePluginsModuleHandler> = {};
 

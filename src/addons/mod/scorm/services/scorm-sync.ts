@@ -97,7 +97,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
             await CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));
 
-            // eslint-disable-next-line id-blacklist
+            // eslint-disable-next-line id-denylist
             warnings.push(Translate.instant('addon.mod_scorm.warningofflinedatadeleted', { number: attempt }));
         } else {
             // Add the attempt at the end.
@@ -248,7 +248,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         attempt: number,
         cmId: number,
         siteId: string,
-    ): Promise<{incomplete: boolean; timecreated?: number}> {
+    ): Promise<{ incomplete: boolean; timecreated?: number }> {
 
         // Check if last offline attempt is incomplete.
         const incomplete = await AddonModScorm.isAttemptIncomplete(scormId, attempt, {
@@ -745,8 +745,8 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         const warnings: string[] = [];
         const newAttemptsSameOrder: number[] = []; // Attempts that will be created as new attempts but keeping the current order.
         const newAttemptsAtEnd: Record<number, number> = {}; // Attempts that'll be created at the end of list (should be max 1).
-        const lastCollision = Math.max.apply(Math, collisions);
-        let lastOffline = Math.max.apply(Math, offlineAttempts);
+        const lastCollision = Math.max(...collisions);
+        let lastOffline = Math.max(...offlineAttempts);
 
         // Get needed data from the last offline attempt.
         const lastOfflineData = await this.getOfflineAttemptData(scormId, lastOffline, cmId, siteId);
