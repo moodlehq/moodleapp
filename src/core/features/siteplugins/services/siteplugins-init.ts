@@ -327,11 +327,8 @@ export class CoreSitePluginsInitService {
             return;
         }
 
-        for (const lang in plugin.parsedLang) {
-            const prefix = this.getPrefixForStrings(plugin.addon);
-
-            CoreLang.addSitePluginsStrings(lang, plugin.parsedLang[lang], prefix);
-        }
+        const prefix = this.getPrefixForStrings(plugin.addon);
+        CoreLang.addSitePluginsStrings(plugin.parsedLang, prefix);
     }
 
     /**

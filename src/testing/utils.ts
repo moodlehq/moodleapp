@@ -28,7 +28,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslatePipe, TranslateService, TranslateStore } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
@@ -49,7 +49,7 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
         get: key => of(key),
         onTranslationChange: new EventEmitter(),
         onLangChange: new EventEmitter(),
-        onDefaultLangChange: new EventEmitter(),
+        onFallbackLangChange: new EventEmitter(),
     })],
     [CoreDB, mock({ getDB: () => mock() })],
     [CoreNavigator, mock({ navigateToSitePath: () => Promise.resolve(true) })],
@@ -100,7 +100,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
                 BrowserModule,
                 // eslint-disable-next-line @typescript-eslint/no-deprecated
                 NoopAnimationsModule,
-                TranslateModule.forChild(),
+                TranslatePipe,
                 CoreExternalContentDirectiveStub,
                 ...config.imports,
             ],
@@ -179,9 +179,7 @@ function getDefaultProviders(config: RenderConfig): unknown[] {
             useFactory: () => {
                 const store = new TranslateStore();
 
-                store.translations = {
-                    en: config.translations ?? {},
-                };
+                store.setTranslations('en', config.translations ?? {}, false);
 
                 return store;
             },
