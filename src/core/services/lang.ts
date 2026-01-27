@@ -27,6 +27,7 @@ import { CoreLogger } from '@singletons/logger';
 import { CoreSites } from './sites';
 import { MoodleTranslateLoader } from '@classes/lang-loader';
 import { firstValueFrom } from 'rxjs';
+import { CoreEvents } from '@singletons/events';
 
 /**
  * Service to handle language features, like changing the current language.
@@ -243,6 +244,9 @@ export class CoreLangProvider {
             if (saveSetting) {
                 await CoreConfig.set('current_language', language);
             }
+
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, language);
         } catch (error) {
             if (language !== previousLanguage) {
                 this.logger.error(`Language ${language} not available, reverting to ${previousLanguage}`, error);
