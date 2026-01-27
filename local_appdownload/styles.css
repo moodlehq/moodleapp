@@ -1,0 +1,159 @@
+.app-download-content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.app-icon {
+    border-radius: 22%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.app-title {
+    color: #4A9B8E;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.app-tagline {
+    font-size: 1.1rem;
+}
+
+.app-description {
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+}
+
+/* Download buttons - pixel perfect sizing */
+.download-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.download-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.download-button:hover {
+    transform: scale(1.05);
+    opacity: 0.9;
+}
+
+/* Both badges: 135px x 40px for visual consistency */
+.download-button img {
+    height: 40px;
+    width: auto;
+}
+
+/* Section styling - consistent cards */
+.app-features,
+.app-section {
+    text-align: left;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+}
+
+.app-features h2,
+.app-section h2 {
+    color: #4A9B8E;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.features-list {
+    margin: 0;
+    padding: 0;
+}
+
+.features-list li {
+    padding: 0.5rem 0 0.5rem 1.5rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    list-style: none;
+}
+
+.features-list li::before {
+    content: "•";
+    color: #4A9B8E;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+/* Parents section - slightly different shade */
+.app-parents {
+    background: #f0f7f6;
+}
+
+.app-parents p {
+    margin-bottom: 1rem;
+    font-style: italic;
+    color: #555;
+}
+
+/* Requirements section */
+.app-requirements {
+    text-align: left;
+    padding: 1rem 0;
+}
+
+.app-requirements h2 {
+    color: #4A9B8E;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.app-requirements p {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+/* Support section */
+.app-support {
+    text-align: left;
+    background: #e8f5f2;
+    padding: 1.5rem;
+    border-radius: 12px;
+}
+
+.app-support h2 {
+    color: #4A9B8E;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.app-support a {
+    color: #4A9B8E;
+    font-weight: 600;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .download-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .download-button {
+        margin: 0.5rem 0;
+    }
+
+    .app-features,
+    .app-section,
+    .app-support {
+        padding: 1rem;
+    }
+}
