@@ -76,9 +76,8 @@ export class CoreFormatDatePipe implements PipeTransform, OnDestroy {
      * @param convert If true, convert the format from PHP to DayJS. Set it to false for DayJS formats.
      * @returns Formatted date.
      */
-    protected formatDate(timestamp: string | number, format?: string, convert?: boolean): string {
+    protected formatDate(timestamp: string | number, format = 'strftimedaydatetime', convert?: boolean): string {
         timestamp = timestamp || Date.now();
-        format = format || 'strftimedaydatetime';
 
         if (typeof timestamp === 'string') {
             // Convert the value to a number.
