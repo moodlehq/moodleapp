@@ -232,12 +232,25 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
     /**
      * Check if current user is Admin.
-     * Works properly since v3.8. See more in: {@link https://moodle.atlassian.net/browse/MDL-65550}
+     * Works properly since Moodle 3.8. See more in: {@link https://moodle.atlassian.net/browse/MDL-65550}
      *
      * @returns Whether the user is Admin.
      */
     isAdmin(): boolean {
-        return this.getInfo()?.userissiteadmin ?? false;
+        const info = this.getInfo();
+
+        return (info?.userissiteadmin || info?.usercanchangeconfig) ?? false;
+    }
+
+    /**
+     * Check if current user is Manager.
+     * Works properly since Moodle 5.2. See more in: {@link https://moodle.atlassian.net/browse/MDL-87034}
+     *
+     * @returns Whether the user is Manager. Will return false if cannot be determined.
+     * @since 5.2
+     */
+    isManager(): boolean {
+        return this.getInfo()?.usercanviewconfig ?? false;
     }
 
     /**

@@ -34,6 +34,7 @@ import { CoreText } from '@singletons/text';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 
 /**
  * Page that displays the developer options.
@@ -61,6 +62,8 @@ export default class CoreSettingsDevPage implements OnInit {
     stagingSitesCount = 0;
     enableStagingSites?: boolean;
     previousEnableStagingSites?: boolean;
+    isAdmin = false;
+    isManager?: boolean;
 
     disabledFeatures: string[] = [];
 
@@ -115,23 +118,28 @@ export default class CoreSettingsDevPage implements OnInit {
         this.autoLoginTimeBetweenRequests = await currentSite.getAutoLoginMinTimeBetweenRequests();
         this.lastAutoLoginTime = currentSite.getLastAutoLoginTime();
 
+        this.isAdmin = currentSite.isAdmin();
+        // Check isManager only if LMS version is >= 5.2 because the function works properly since that version.
+        if (currentSite.isVersionGreaterEqualThan('5.2')) {
+            this.isManager = currentSite.isManager();
+        }
+
         document.head.querySelectorAll('style').forEach((style) => {
             if (this.siteId && style.id.endsWith(this.siteId)) {
                 if (style.innerHTML.length > 0) {
                     this.remoteStylesCount++;
                 }
-                this.remoteStyles = this.remoteStyles || style.getAttribute('media') != 'disabled';
+                this.remoteStyles = this.remoteStyles || style.getAttribute('media') !== 'disabled';
             }
 
             if (style.id.startsWith('siteplugin-')) {
                 if (style.innerHTML.length > 0) {
                     this.pluginStylesCount++;
                 }
-                this.pluginStyles = this.pluginStyles || style.getAttribute('media') != 'disabled';
+                this.pluginStyles = this.pluginStyles || style.getAttribute('media') !== 'disabled';
             }
         });
 
-        const { CoreSitePlugins } = await import('@features/siteplugins/services/siteplugins');
         this.sitePlugins = CoreSitePlugins.getCurrentSitePluginList().map((plugin) => ({
             addon: plugin.addon,
             component: plugin.component,
