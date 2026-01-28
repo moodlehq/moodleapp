@@ -18,6 +18,9 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_WIKI_MODNAME, ADDON_MOD_WIKI_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModWiki } from '../wiki';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support wiki modules.
@@ -50,6 +53,19 @@ export class AddonModWikiModuleHandlerService extends CoreModuleHandlerBase impl
         const { AddonModWikiIndexComponent } = await import('../../components/index');
 
         return AddonModWikiIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModWiki.getWiki(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

@@ -18,6 +18,9 @@ import { Injectable, Type } from '@angular/core';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleHandler } from '@features/course/services/module-delegate';
 import { makeSingleton } from '@singletons';
+import { AddonModWorkshop } from '../workshop';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support workshop modules.
@@ -48,6 +51,19 @@ export class AddonModWorkshopModuleHandlerService extends CoreModuleHandlerBase 
         const { AddonModWorkshopIndexComponent } = await import('../../components/index');
 
         return AddonModWorkshopIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModWorkshop.getWorkshop(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

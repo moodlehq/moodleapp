@@ -155,10 +155,12 @@ const mainMenuChildrenRoutes: Routes = [
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => getCompetencyCourseDetailsRoutes(),
+        data: { checkForcedLanguage: 'course' },
     },
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${ADDON_COMPETENCY_COMPETENCIES_PAGE}`,
         loadChildren: () => getCompetencyCourseDetailsRoutes(),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

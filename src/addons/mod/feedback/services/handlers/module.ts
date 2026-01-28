@@ -18,6 +18,9 @@ import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { ADDON_MOD_FEEDBACK_MODNAME, ADDON_MOD_FEEDBACK_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModFeedback } from '../feedback';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support feedback modules.
@@ -49,6 +52,19 @@ export class AddonModFeedbackModuleHandlerService extends CoreModuleHandlerBase 
         const { AddonModFeedbackIndexComponent } = await import('../../components/index');
 
         return AddonModFeedbackIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModFeedback.getFeedback(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }
