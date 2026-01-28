@@ -253,6 +253,7 @@ export class CoreUnauthenticatedSite {
      * Get the public config of this site.
      *
      * @param options Options.
+     * @param options.readingStrategy Reading strategy to use.
      * @returns Promise resolved with public config. Rejected with an object if error, see CoreWS.callAjax.
      */
     async getPublicConfig(options: { readingStrategy?: CoreSitesReadingStrategy } = {}): Promise<CoreSitePublicConfigResponse> {
@@ -571,7 +572,9 @@ export class CoreUnauthenticatedSite {
 }
 
 /**
- * Result of WS core_webservice_get_site_info.
+ * Data returned by core_webservice_get_site_info WS.
+ *
+ * WS Description: Return some site info / user info / list web service functions
  */
 export type CoreSiteInfoResponse = {
     sitename: string; // Site name.
@@ -583,6 +586,11 @@ export type CoreSiteInfoResponse = {
     userid: number; // User id.
     siteurl: string; // Site url.
     userpictureurl: string; // The user profile picture.
+                // Warning: this url is the public URL that only works when forcelogin is set to NO and guestaccess is set to YES.
+                // In order to retrieve user profile pictures independently of the Moodle config, replace "pluginfile.php" by
+                // "webservice/pluginfile.php?token=WSTOKEN&file="
+                // Of course the user can only see profile picture depending
+                // on his/her permissions. Moreover it is recommended to use HTTPS too.
     functions: {
         name: string; // Function name.
         version: string; // The version number of the component to which the function belongs.
@@ -600,7 +608,7 @@ export type CoreSiteInfoResponse = {
     userquota?: number; // User quota (bytes). 0 means user can ignore the quota.
     usermaxuploadfilesize?: number; // User max upload file size (bytes). -1 means the user can ignore the upload file size.
     userhomepage?: CoreSiteInfoUserHomepage; // The default home page for the user.
-    userhomepageurl?: string; // @since 4.5. The URL of the custom user home page when using HOMEPAGE_URL.
+    userhomepageurl?: string; // @since 4.5. The URL of default home page when userhomepage is 4 (HOMEPAGE_URL).
     userprivateaccesskey?: string; // Private user access key for fetching files.
     siteid?: number; // Site course ID.
     sitecalendartype?: string; // Calendar type set in the site.
@@ -608,8 +616,12 @@ export type CoreSiteInfoResponse = {
     userissiteadmin?: boolean; // Whether the user is a site admin or not.
     theme?: string; // Current theme for the user.
     limitconcurrentlogins?: number; // @since 4.0. Number of concurrent sessions allowed.
-    usersessionscount?: number; // @since 4.0. Number of active sessions for current user. Only if limitconcurrentlogins is used.
+    usersessionscount?: number; // @since 4.0. Number of active sessions for current user.
+                // Only returned when limitconcurrentlogins is used.
     policyagreed?: number; // @since 4.4. Whether user accepted all the policies.
+    usercanchangeconfig?: boolean; // @since 5.2. Whether the user can change the site configuration.
+    usercanviewconfig?: boolean; // @since 5.2. Whether the user can view the site administration tree.
+    sitesecret?: string; // @since 5.2. The site secret, only returned to users with moodle/site:config capability (usually admins).
 };
 
 /**
