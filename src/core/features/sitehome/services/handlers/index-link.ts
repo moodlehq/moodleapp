@@ -21,7 +21,7 @@ import { CoreSiteHome } from '../sitehome';
 import { makeSingleton } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
-import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
+import { CORE_SITEHOME_MENU_FEATURE_NAME, CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 
 /**
@@ -31,7 +31,7 @@ import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandlerBase {
 
     name = 'CoreSiteHomeIndexLinkHandler';
-    featureName = 'CoreMainMenuDelegate_CoreSiteHome';
+    featureName = CORE_SITEHOME_MENU_FEATURE_NAME;
     pattern = /(\/course\/view\.php.*([?&]id=\d+)|\/index\.php(\?redirect=0)?|\/?\?redirect=0)/;
 
     /**

@@ -1373,4 +1373,28 @@ class behat_app extends behat_app_helper {
         $this->runtime_js('waitToastDismiss()');
     }
 
+
+    /**
+     * Override app environment variables.
+     *
+     * @Given /^the environment config is patched with:$/
+     * @param TableNode $data Table data
+     */
+    public function the_environment_config_is_patched_with(TableNode $data) {
+        $overrides = [];
+        foreach ($data->getRows() as $row) {
+            $name = $row[0];
+            $value = json_decode($this->replace_wwwroot($row[1]));
+            $overrides[$name] = $value;
+        }
+
+        $json = json_encode($overrides);
+
+        $result = $this->zone_js("patchEnvironment($json)");
+
+        if ($result !== 'OK') {
+            throw new DriverException('Error patching environment - ' . $result);
+        }
+    }
+
 }

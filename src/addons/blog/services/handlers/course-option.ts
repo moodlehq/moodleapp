@@ -26,7 +26,7 @@ import { CoreSites } from '@services/sites';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
-import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME, ADDONS_BLOG_COMPONENT_NAME } from '@addons/blog/constants';
 
 /**
  * Course nav handler.
@@ -34,7 +34,7 @@ import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 @Injectable({ providedIn: 'root' })
 export class AddonBlogCourseOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'AddonBlog';
+    name = ADDONS_BLOG_COMPONENT_NAME;
     priority = 100;
 
     /**

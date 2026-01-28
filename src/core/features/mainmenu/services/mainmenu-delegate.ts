@@ -19,6 +19,11 @@ import { CoreDelegateDisplayHandler, CoreDelegateToDisplay } from '@classes/dele
 import { CoreSortedDelegate } from '@classes/delegate-sorted';
 import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { makeSingleton } from '@singletons';
+import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
+import { CoreConstants } from '@/core/constants';
+import { CoreEvents } from '@singletons/events';
+import { CoreConfigProvider } from '@services/config';
+import { CoreMainMenuOverrideItem } from './mainmenu';
 
 /**
  * Interface that all main menu handlers must implement.
@@ -123,7 +128,46 @@ export type CoreMainMenuHandlerToDisplay = CoreMainMenuPageNavHandlerToDisplay |
 @Injectable({ providedIn: 'root' })
 export class CoreMainMenuDelegateService extends CoreSortedDelegate<CoreMainMenuHandlerToDisplay, CoreMainMenuHandler> {
 
-    protected featurePrefix = 'CoreMainMenuDelegate_';
+    protected featurePrefix = MAIN_MENU_FEATURE_PREFIX;
+    protected previousEnvironment: CoreMainMenuOverrideItem[] = [];
+
+    constructor() {
+        super();
+
+        CoreEvents.on(CoreConfigProvider.ENVIRONMENT_UPDATED, (config) => {
+            const newConfig = config.overrideMainMenuButtons ?? [];
+            if (JSON.stringify(this.previousEnvironment) === JSON.stringify(newConfig)) {
+                return;
+            }
+
+            this.previousEnvironment = newConfig;
+
+            this.updateHandlers();
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected getHandlerDisplayData(name: string): CoreMainMenuHandlerToDisplay {
+        const data = super.getHandlerDisplayData(name);
+
+        // Override priority and icon if needed.
+        const config = CoreConstants.CONFIG.overrideMainMenuButtons ?? [];
+        this.previousEnvironment = config;
+
+        const override = config.find((entry) => entry.handler === name);
+        if (override) {
+            if (override.priority !== undefined) {
+                data.priority = override.priority;
+            }
+            if ('icon' in data && override.icon !== undefined) {
+                data.icon = override.icon;
+            }
+        }
+
+        return data;
+    }
 
     /**
      * Check if a handler needs to be displayed only in the More menu.

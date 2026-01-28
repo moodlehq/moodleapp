@@ -33,6 +33,7 @@ import {
     CORE_USER_PROFILE_REFRESHED,
     CORE_USER_PROFILE_PICTURE_UPDATED,
     CORE_USER_PARTICIPANTS_LIST_LIMIT,
+    CORE_USER_PICTURE_FEATURE_NAME,
 } from '../constants';
 import { CoreUserPreferences } from './user-preferences';
 
@@ -491,7 +492,7 @@ export class CoreUserProvider {
     isUpdatePictureDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreUserDelegate_picture');
+        return !!site?.isFeatureDisabled(CORE_USER_PICTURE_FEATURE_NAME);
     }
 
     /**

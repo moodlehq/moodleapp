@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
+
 // Routing.
 export const POLICY_PAGE_NAME = 'policy';
 export const SITE_POLICY_PAGE_NAME = 'sitepolicy';
 export const ACCEPTANCES_PAGE_NAME = 'acceptances';
+
+export const CORE_POLICY_COMPONENT_NAME = 'CorePolicy';
+export const CORE_POLICY_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${CORE_POLICY_COMPONENT_NAME}`;

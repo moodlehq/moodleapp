@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
+
 // Routing.
 export const CORE_DATAPRIVACY_PAGE_NAME = 'dataprivacy';
 
-export const CORE_DATAPRIVACY_FEATURE_NAME = 'CoreUserDelegate_CoreDataPrivacy';
+export const CORE_DATAPRIVACY_COMPONENT_NAME = 'CoreDataPrivacy';
+export const CORE_DATAPRIVACY_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${CORE_DATAPRIVACY_COMPONENT_NAME}`;
