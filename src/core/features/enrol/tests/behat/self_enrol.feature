@@ -1,4 +1,4 @@
-@app_parallel_run_enrol @core_enrol @app @enrol @enrol_self @javascript @lms_from5.1
+@app_parallel_run_enrol @core_enrol @app @enrol @enrol_self @javascript
 Feature: Users can auto-enrol themself in courses where self enrolment is allowed
   In order to participate in courses while using the mobile app
   As a user
@@ -121,6 +121,7 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
       | Student 1  | student1@example.com | Student | Group 1   |
       | Student 2  | student2@example.com | Student | No groups |
 
+  @lms_from5.2
   Scenario: Self-enrolment enabled with simultaneous guest access
     Given I log in as "teacher1"
     And I am on the "Course 1" "enrolment methods" page
