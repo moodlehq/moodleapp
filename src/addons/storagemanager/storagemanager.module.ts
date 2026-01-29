@@ -28,6 +28,7 @@ const routes: Routes = [
     {
         path: `${ADDON_STORAGE_MANAGER_PAGE_NAME}/:courseId`,
         loadComponent: () => import('./pages/course-storage/course-storage'),
+        data: { checkForcedLanguage: 'course' },
     },
 ];
 

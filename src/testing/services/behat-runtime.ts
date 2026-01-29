@@ -34,7 +34,6 @@ import { GetClosureArgs } from '@/core/utils/types';
 import { CoreIframeComponent } from '@components/iframe/iframe';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { CoreLang } from '@services/lang';
-import { CoreEvents } from '@singletons/events';
 import { CoreBrowser } from '@singletons/browser';
 import { CoreText } from '@singletons/text';
 
@@ -946,7 +945,6 @@ export class TestingBehatRuntimeService {
         const sites = await CoreSites.getSitesInstances();
         await CorePromiseUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
 
-        CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, language);
 
         CoreNavigator.navigate('/reload', {
             reset: true,

@@ -12,43 +12,62 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Translate } from '@singletons';
 import { CoreLogger } from '@singletons/logger';
 import { CoreTime } from '@singletons/time';
+import { Subscription } from 'rxjs';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.
  */
 @Pipe({
     name: 'coreDuration',
+    pure: false,
 })
-export class CoreDurationPipe implements PipeTransform {
+export class CoreDurationPipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
+    protected value?: string;
+    protected subscription: Subscription;
+
+    protected lastSeconds?: number | string;
+    protected lastPrecision?: number;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreBytesToSizePipe');
+
+        this.subscription = Translate.onLangChange.subscribe(() => {
+            this.value = undefined;
+        });
     }
 
     /**
      * Turn a number of seconds to a duration. E.g. 60 -> 1 minute.
      *
      * @param seconds The number of seconds.
+     * @param precision Number of elements to have in precision.
      * @returns Formatted duration.
      */
-    transform(seconds: string | number): string {
-        if (typeof seconds == 'string') {
-            // Convert the value to a number.
-            const numberSeconds = parseInt(seconds, 10);
-            if (isNaN(numberSeconds)) {
-                this.logger.error('Invalid value received', seconds);
-
-                return seconds;
-            }
-            seconds = numberSeconds;
+    transform(seconds: number, precision = 2): string {
+        if (this.lastSeconds !== seconds || this.lastPrecision !== precision) {
+            this.lastSeconds = seconds;
+            this.lastPrecision = precision;
+            this.value = undefined;
         }
 
-        return CoreTime.formatTime(seconds);
+        if (this.value === undefined) {
+            this.value = CoreTime.formatTime(seconds, precision);
+        }
+
+        return this.value;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
 }
