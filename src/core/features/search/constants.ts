@@ -12,6 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const CORE_TAG_MAIN_MENU_PAGE_NAME = 'tag';
+export const CORE_SEARCH_COMPONENT_NAME = 'CoreSearch';
 
-export const CORE_TAG_COMPONENT_NAME = 'CoreTag';
+export const CORE_SEARCH_PAGE_NAME = 'search';

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonMessages } from '../messages';
-import { ADDON_MESSAGES_SETTINGS_PAGE_NAME } from '@addons/messages/constants';
+import { ADDON_MESSAGES_SETTINGS_PAGE_NAME, ADDONS_MESSAGES_COMPONENT_NAME } from '@addons/messages/constants';
 
 /**
  * Message settings handler.
@@ -24,7 +24,7 @@ import { ADDON_MESSAGES_SETTINGS_PAGE_NAME } from '@addons/messages/constants';
 @Injectable({ providedIn: 'root' })
 export class AddonMessagesSettingsHandlerService implements CoreSettingsHandler {
 
-    name = 'AddonMessages';
+    name = ADDONS_MESSAGES_COMPONENT_NAME;
     priority = 600;
 
     /**

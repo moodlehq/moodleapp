@@ -22,7 +22,11 @@ import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@singletons/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreTextFormat } from '@singletons/text';
-import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '../constants';
+import {
+    AddonCompetencyLearningPlanStatus,
+    AddonCompetencyReviewStatus,
+    ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME,
+} from '../constants';
 import { CoreCourseSummaryExporterData } from '@features/courses/services/courses';
 
 /**
@@ -47,7 +51,7 @@ export class AddonCompetencyProvider {
         }
 
         return site.canUseAdvancedFeature('enablecompetencies') &&
-            !(site.isFeatureDisabled('CoreUserDelegate_AddonCompetency') &&
+            !(site.isFeatureDisabled(ADDONS_COMPETENCY_USER_MENU_FEATURE_NAME) &&
             site.isFeatureDisabled('CoreCourseOptionsDelegate_AddonCompetency'));
     }
 

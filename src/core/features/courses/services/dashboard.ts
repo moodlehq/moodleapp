@@ -24,7 +24,7 @@ import { firstValueFrom } from 'rxjs';
 import { asyncObservable } from '@/core/utils/rxjs';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreCoursesMyPageName } from '../constants';
+import { CORE_COURSES_DASHBOARD_MENU_FEATURE_NAME, CoreCoursesMyPageName } from '../constants';
 import { CORE_BLOCKS_DASHBOARD_FALLBACK_MYOVERVIEW_BLOCK, CoreBlocksRegion } from '@features/block/constants';
 
 /**
@@ -235,7 +235,7 @@ export class CoreCoursesDashboardProvider {
     isDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreMainMenuDelegate_CoreCoursesDashboard');
+        return !!site?.isFeatureDisabled(CORE_COURSES_DASHBOARD_MENU_FEATURE_NAME);
     }
 
 }

@@ -23,6 +23,7 @@ import { AddonModForumData } from '@addons/mod/forum/services/forum';
 import { CoreError } from '@classes/errors/error';
 import { CoreBlockHelper } from '@features/block/services/block-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
+import { CORE_SITEHOME_MENU_FEATURE_NAME } from '../constants';
 
 /**
  * Items with index 1 and 3 were removed on 2.5 and not being supported in the app.
@@ -148,7 +149,7 @@ export class CoreSiteHomeProvider {
     isDisabledInSite(site: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return site.isFeatureDisabled('CoreMainMenuDelegate_CoreSiteHome');
+        return site.isFeatureDisabled(CORE_SITEHOME_MENU_FEATURE_NAME);
     }
 
     /**

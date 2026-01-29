@@ -13,3 +13,5 @@
 // limitations under the License.
 
 export const ADDON_PRIVATE_FILES_PAGE_NAME = 'private';
+
+export const ADDON_PRIVATE_FILES_COMPONENT_NAME = 'AddonPrivateFiles';

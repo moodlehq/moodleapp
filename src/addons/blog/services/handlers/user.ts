@@ -23,6 +23,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
+import {
+    ADDONS_BLOG_USER_MENU_FEATURE_NAME,
+    ADDONS_BLOG_USER_PROFILE_FEATURE_NAME,
+    ADDONS_BLOG_COMPONENT_NAME,
+} from '@addons/blog/constants';
 
 /**
  * Profile item handler.
@@ -31,7 +36,7 @@ import { AddonBlog } from '../blog';
 export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
 
     readonly type = CoreUserProfileHandlerType.LIST_ITEM;
-    name = 'AddonBlog'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = ADDONS_BLOG_COMPONENT_NAME; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
     priority = 200;
 
     /**
@@ -52,10 +57,10 @@ export class AddonBlogUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBlog:account')) {
+            if (currentSite.isFeatureDisabled(ADDONS_BLOG_USER_MENU_FEATURE_NAME)) {
                 return false;
             }
-        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBlog:blogs')) {
+        } else if (currentSite.isFeatureDisabled(ADDONS_BLOG_USER_PROFILE_FEATURE_NAME)) {
             return false;
         }
 

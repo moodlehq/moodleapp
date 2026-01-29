@@ -12,11 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
+
 export const ADDON_BLOG_MAINMENU_PAGE_NAME = 'blog';
 export const ADDON_BLOG_ENTRY_UPDATED = 'blog_entry_updated';
 export const ADDON_BLOG_AUTO_SYNCED = 'addon_blog_autom_synced';
 export const ADDON_BLOG_MANUAL_SYNCED = 'addon_blog_manual_synced';
 export const ADDON_BLOG_SYNC_ID = 'blog';
+
+export const ADDONS_BLOG_COMPONENT_NAME = 'AddonBlog';
+
+const ADDONS_BLOG_GLOBAL_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${ADDONS_BLOG_COMPONENT_NAME}`;
+export const ADDONS_BLOG_USER_MENU_FEATURE_NAME = `${ADDONS_BLOG_GLOBAL_FEATURE_NAME}:account`;
+export const ADDONS_BLOG_USER_PROFILE_FEATURE_NAME = `${ADDONS_BLOG_GLOBAL_FEATURE_NAME}:blogs`;
 
 /**
  * Restriction level of user blog visualization.

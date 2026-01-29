@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const CORE_TAG_MAIN_MENU_PAGE_NAME = 'tag';
+import { CORE_USER_FEATURE_PREFIX } from '@features/user/constants';
 
-export const CORE_TAG_COMPONENT_NAME = 'CoreTag';
+export const ADDONS_BADGES_COMPONENT_NAME = 'AddonBadges';
+
+export const ADDONS_BADGES_USER_PROFILE_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${ADDONS_BADGES_COMPONENT_NAME}`;
+export const ADDONS_BADGES_USER_MENU_FEATURE_NAME = `${ADDONS_BADGES_USER_PROFILE_FEATURE_NAME}:account`;

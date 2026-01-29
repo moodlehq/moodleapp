@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { makeSingleton } from '@singletons';
 import { AddonBlog } from '../blog';
-import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
+import { ADDON_BLOG_MAINMENU_PAGE_NAME, ADDONS_BLOG_COMPONENT_NAME } from '@addons/blog/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -24,7 +24,7 @@ import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
 @Injectable({ providedIn: 'root' })
 export class AddonBlogMainMenuHandlerService implements CoreMainMenuHandler {
 
-    name = 'AddonBlog';
+    name = ADDONS_BLOG_COMPONENT_NAME;
     priority = 500;
 
     /**

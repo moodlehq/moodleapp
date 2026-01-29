@@ -24,6 +24,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { AddonBadges } from '../badges';
+import {
+    ADDONS_BADGES_USER_MENU_FEATURE_NAME,
+    ADDONS_BADGES_COMPONENT_NAME,
+    ADDONS_BADGES_USER_PROFILE_FEATURE_NAME,
+} from '@addons/badges/constants';
 
 /**
  * Profile badges handler.
@@ -32,7 +37,8 @@ import { AddonBadges } from '../badges';
 export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
 
     readonly type = CoreUserProfileHandlerType.LIST_ITEM;
-    name = 'AddonBadges:fakename'; // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    // This name doesn't match any disabled feature, they'll be checked in isEnabledForContext.
+    name = `${ADDONS_BADGES_COMPONENT_NAME}:fakename`;
     priority = 300;
 
     /**
@@ -57,10 +63,10 @@ export class AddonBadgesUserHandlerService implements CoreUserProfileHandler {
         }
 
         if (context === CoreUserDelegateContext.USER_MENU) {
-            if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges:account')) {
+            if (currentSite.isFeatureDisabled(ADDONS_BADGES_USER_MENU_FEATURE_NAME)) {
                 return false;
             }
-        } else if (currentSite.isFeatureDisabled('CoreUserDelegate_AddonBadges')) {
+        } else if (currentSite.isFeatureDisabled(ADDONS_BADGES_USER_PROFILE_FEATURE_NAME)) {
             return false;
         }
 

@@ -19,7 +19,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@singletons/events';
-import { ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
+import { ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME, ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
 
 /**
  * Notifications cron handler.
@@ -59,7 +59,7 @@ export class AddonNotificationsCronHandlerService implements CoreCronHandler {
         if (
             !CoreSites.isCurrentSite(siteId) ||
             !site ||
-            site.isFeatureDisabled('CoreMainMenuDelegate_AddonNotifications')
+            site.isFeatureDisabled(ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME)
         ) {
             return;
         }

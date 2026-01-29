@@ -24,7 +24,7 @@ import { AddonCompetency } from '../competency';
 import { CoreCourseAnyCourseData, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { ContextLevel } from '@/core/constants';
-import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/constants';
+import { ADDON_COMPETENCY_COMPETENCIES_PAGE, ADDONS_COMPETENCY_COMPONENT_NAME } from '@addons/competency/constants';
 
 /**
  * Course nav handler.
@@ -32,7 +32,7 @@ import { ADDON_COMPETENCY_COMPETENCIES_PAGE } from '@addons/competency/constants
 @Injectable( { providedIn: 'root' })
 export class AddonCompetencyCourseOptionHandlerService implements CoreCourseOptionsHandler {
 
-    name = 'AddonCompetency';
+    name = ADDONS_COMPETENCY_COMPONENT_NAME;
     priority = 300;
 
     /**

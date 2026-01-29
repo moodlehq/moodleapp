@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { AddonCalendar } from '../calendar';
 import { makeSingleton } from '@singletons';
 import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
-import { ADDON_CALENDAR_PAGE_NAME } from '@addons/calendar/constants';
+import { ADDON_CALENDAR_PAGE_NAME, ADDONS_CALENDAR_COMPONENT_NAME } from '@addons/calendar/constants';
 
 /**
  * Handler to inject an option into main menu.
@@ -24,7 +24,7 @@ import { ADDON_CALENDAR_PAGE_NAME } from '@addons/calendar/constants';
 @Injectable({ providedIn: 'root' })
 export class AddonCalendarMainMenuHandlerService implements CoreMainMenuHandler {
 
-    name = 'AddonCalendar';
+    name = ADDONS_CALENDAR_COMPONENT_NAME;
     priority = 550;
 
     /**

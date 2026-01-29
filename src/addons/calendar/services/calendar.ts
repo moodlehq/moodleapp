@@ -55,6 +55,7 @@ import {
     ADDON_CALENDAR_STARTING_WEEK_DAY,
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
     AddonCalendarEventType,
+    ADDONS_CALENDAR_MENU_FEATURE_NAME,
 } from '../constants';
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
@@ -1252,7 +1253,7 @@ export class AddonCalendarProvider {
     isCalendarDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();
 
-        return !!site?.isFeatureDisabled('CoreMainMenuDelegate_AddonCalendar');
+        return !!site?.isFeatureDisabled(ADDONS_CALENDAR_MENU_FEATURE_NAME);
     }
 
     /**

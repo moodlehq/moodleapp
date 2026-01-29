@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { makeSingleton } from '@singletons';
 import { CoreSettingsHandler, CoreSettingsHandlerData } from '@features/settings/services/settings-delegate';
-import { ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from '@addons/notifications/constants';
+import { ADDONS_NOTIFICATIONS_COMPONENT_NAME, ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME } from '@addons/notifications/constants';
 
 /**
  * Notifications settings handler.
@@ -24,7 +24,7 @@ import { ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from '@addons/notifications/con
 @Injectable({ providedIn: 'root' })
 export class AddonNotificationsSettingsHandlerService implements CoreSettingsHandler {
 
-    name = 'AddonNotifications';
+    name = ADDONS_NOTIFICATIONS_COMPONENT_NAME;
     priority = 500;
 
     /**
@@ -45,7 +45,7 @@ export class AddonNotificationsSettingsHandlerService implements CoreSettingsHan
         return {
             icon: 'fas-bell',
             title: 'addon.notifications.notifications',
-            page: ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME,
+            page: ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME,
             class: 'addon-notifications-settings-handler',
         };
     }

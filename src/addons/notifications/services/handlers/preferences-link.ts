@@ -19,7 +19,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME } from '@addons/notifications/constants';
+import { ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME, ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME } from '@addons/notifications/constants';
 
 /**
  * Handler to treat links to notification preferences.
@@ -30,7 +30,7 @@ export class AddonNotificationsPreferencesLinkHandlerService extends CoreContent
     name = 'AddonNotificationsPreferencesLinkHandler';
     pattern = /\/message\/notificationpreferences\.php/;
     checkAllUsers = true;
-    featureName = 'CoreMainMenuDelegate_AddonNotifications';
+    featureName = ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME;
 
     /**
      * @inheritdoc
@@ -39,7 +39,7 @@ export class AddonNotificationsPreferencesLinkHandlerService extends CoreContent
         return [{
             action: async (siteId: string): Promise<void> => {
                 await CoreNavigator.navigateToSitePath(
-                    `preferences/${ADDONS_NOTICATIONS_SETTINGS_PAGE_NAME}`,
+                    `preferences/${ADDONS_NOTIFICATIONS_SETTINGS_PAGE_NAME}`,
                     { siteId },
                 );
             },

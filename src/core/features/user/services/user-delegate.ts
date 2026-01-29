@@ -22,8 +22,8 @@ import { CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
-import { CORE_USER_PROFILE_REFRESHED } from '../constants';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
+import { CORE_USER_FEATURE_PREFIX, CORE_USER_PROFILE_REFRESHED } from '../constants';
 
 export enum CoreUserProfileHandlerType {
     LIST_ITEM = 'listitem', // User profile handler type to be shown as a list item.
@@ -241,7 +241,7 @@ export class CoreUserDelegateService extends CoreDelegate<CoreUserProfileHandler
      */
     protected enabledForUserCache: Record<string, Record<string, boolean>> = {};
 
-    protected featurePrefix = 'CoreUserDelegate_';
+    protected featurePrefix = CORE_USER_FEATURE_PREFIX;
 
     // Hold the handlers and the observable to notify them for each user.
     protected userHandlers: Record<number, Record<string, CoreUserDelegateHandlersData>> = {};

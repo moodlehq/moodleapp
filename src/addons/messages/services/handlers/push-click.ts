@@ -19,7 +19,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreUtils } from '@singletons/utils';
 import { makeSingleton } from '@singletons';
 import { AddonMessages } from '../messages';
-import { ADDON_MESSAGES_PAGE_NAME } from '@addons/messages/constants';
+import { ADDON_MESSAGES_PAGE_NAME, ADDONS_MESSAGES_MENU_FEATURE_NAME } from '@addons/messages/constants';
 
 /**
  * Handler for messaging push notifications clicks.
@@ -29,7 +29,7 @@ export class AddonMessagesPushClickHandlerService implements CorePushNotificatio
 
     name = 'AddonMessagesPushClickHandler';
     priority = 200;
-    featureName = 'CoreMainMenuDelegate_AddonMessages';
+    featureName = ADDONS_MESSAGES_MENU_FEATURE_NAME;
 
     /**
      * Check if a notification click is handled by this handler.

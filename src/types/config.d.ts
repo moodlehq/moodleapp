@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CoreColorScheme, CoreZoomLevel } from '@features/settings/services/settings-helper';
+import { CoreMainMenuOverrideItem } from '@features/mainmenu/services/mainmenu';
 import { CoreCustomMenuLocalizedCustomItem } from '@features/mainmenu/services/custommenu';
 import { CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { OpenFileAction } from '@singletons/opener';
@@ -83,4 +84,5 @@ export interface EnvironmentConfig {
     disabledFeatures?: string; // Disabled features for the whole app, using the same format as tool_mobile_disabledfeatures.
     collapsibleItemsExpanded: boolean; // Expand or collapse the collapsible items by default.
     wsOverrides: Record<string, CoreWSOverride[]>; // Overrides to apply to WS calls.
+    overrideMainMenuButtons: CoreMainMenuOverrideItem[]; // Override main menu items.
 }
