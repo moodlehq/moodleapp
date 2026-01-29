@@ -65,7 +65,7 @@ export class CoreCourseForceLanguageService {
                 }
 
                 if (currentNavigationCheck === this.lastNavigationCheck.timestamp) {
-                    await CoreLang.forceCourseLanguage(lang);
+                    await CoreLang.forceContextLanguage(lang);
                 }
             });
     }
