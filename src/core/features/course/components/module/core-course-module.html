@@ -65,7 +65,7 @@
                                 @if (hasCompletion && !showLegacyCompletion) {
                                     <core-course-module-completion [completion]="module.completiondata" [moduleName]="module.name"
                                         [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
-                                        [showManualCompletion]="showManualCompletion"
+                                        [showManualCompletion]="showManualCompletion" [inCourse]="true"
                                         (completionChanged)="completionChanged.emit($event)" />
                                 }
 
@@ -92,7 +92,7 @@
 
                     <!-- Activity completion. -->
                     @if (hasCompletion && !showLegacyCompletion) {
-                        <core-course-module-completion class="activity-extra" [completion]="module.completiondata"
+                        <core-course-module-completion class="activity-extra" [completion]="module.completiondata" [inCourse]="true"
                             [moduleName]="module.name" [moduleId]="module.id" [showCompletionConditions]="showCompletionConditions"
                             [showManualCompletion]="showManualCompletion" (completionChanged)="completionChanged.emit($event)" />
                     }

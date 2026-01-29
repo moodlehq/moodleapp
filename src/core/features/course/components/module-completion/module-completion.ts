@@ -47,6 +47,7 @@ export class CoreCourseModuleCompletionComponent
 
     @Input({ transform: toBoolean }) showCompletionConditions = false; // Whether to show activity completion conditions.
     @Input({ transform: toBoolean }) showManualCompletion = false; // Whether to show manual completion.
+    @Input({ transform: toBoolean }) inCourse = false; // Whether the component is displayed in a course.
 
     completed = false;
     accessibleDescription: string | null = null;

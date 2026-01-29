@@ -1,4 +1,4 @@
-@if (completionDetails.length > 0) {
+@if (completionDetails.length > 0 || (isManual && !isTrackedUser)) {
     <!-- Completion criterias. -->
     <div class="ion-padding">
         <!-- Dialog header. -->
