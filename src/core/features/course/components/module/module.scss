@@ -16,12 +16,11 @@
     }
 
     ion-card {
-        margin: var(--vertical-spacing) var(--horizontal-spacing);
-        padding: 0px;
+        margin: var(--vertical-spacing) 0px;
+        padding: 0px var(--horizontal-spacing) var(--card-padding-bottom) var(--horizontal-spacing);
         --ion-card-border-width: var(--card-border-width);
         --ion-card-radius: var(--card-radius);
         --ion-card-background: var(--card-background);
-        padding-bottom: var(--card-padding-bottom);
         border-bottom: var(--activity-border);
     }
 
@@ -202,7 +201,7 @@
     }
 
     &.indented ion-card {
-        @include margin-horizontal(calc(var(--horizontal-spacing) + 1rem), null);
+        @include padding-horizontal(calc(var(--horizontal-spacing) + 1rem), null);
     }
 
     // Hide download folder icon meanwhile MOBILE-4147 is not solved

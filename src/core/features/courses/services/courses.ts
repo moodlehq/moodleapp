@@ -166,22 +166,19 @@ export class CoreCoursesProvider {
      * @returns Promise resolved with the list of course IDs.
      */
     protected async getCourseIdsForAdminAndNavOptions(courseIds: number[], siteId?: string): Promise<number[]> {
-        const site = await CoreSites.getSite(siteId);
-
-        const siteHomeId = site.getSiteHomeId();
         if (courseIds.length === 1) {
             // Only 1 course, check if it belongs to the user courses. If so, use all user courses.
             return this.getCourseIdsIfEnrolled(courseIds[0], siteId);
         }
 
-        if (courseIds.length > 1 && courseIds.indexOf(siteHomeId) == -1) {
+        const site = await CoreSites.getSite(siteId);
+        const siteHomeId = site.getSiteHomeId();
+        if (!courseIds.includes(siteHomeId)) {
             courseIds.push(siteHomeId);
         }
 
         // Sort the course IDs.
-        courseIds.sort((a, b) => b - a);
-
-        return courseIds;
+        return courseIds.sort((a, b) => b - a);
     }
 
     /**
@@ -199,26 +196,13 @@ export class CoreCoursesProvider {
         try {
             // Check if user is enrolled in the course.
             const courses = await this.getUserCourses(true, siteId);
-            let useAllCourses = false;
+            const courseIds = courses.map((course) => course.id);
+            // Always add the site home ID.
+            courseIds.push(siteHomeId);
 
-            if (courseId === siteHomeId) {
-                // It's site home, use all courses.
-                useAllCourses = true;
-            } else {
-                useAllCourses = !!courses.find((course) => course.id === courseId);
-            }
-
-            if (useAllCourses) {
-                // User is enrolled, return all the courses.
-                const courseIds = courses.map((course) => course.id);
-
-                // Always add the site home ID.
-                courseIds.push(siteHomeId);
-
-                // Sort the course IDs.
-                courseIds.sort((a, b) => b - a);
-
-                return courseIds;
+            if (courseIds.includes(courseId)) {
+                // It's enrolled, sort the course IDs.
+                return courseIds.sort((a, b) => b - a);
             }
         } catch {
             // Ignore errors.
@@ -777,6 +761,7 @@ export class CoreCoursesProvider {
     /**
      * Get cache key for get user navigation options WS call.
      *
+     * @param courseIds IDs of courses to get the cache key.
      * @returns Cache key.
      */
     protected getUserNavigationOptionsCacheKey(courseIds: number[]): string {

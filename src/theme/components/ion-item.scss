@@ -12,6 +12,20 @@ ion-item.item {
         color: var(--ion-item-icon-color);
     }
 
+    &.item-lines-centered {
+        --inner-border-width: 0px;
+        --border-width: 0px;
+
+        ion-label {
+            margin-bottom: 0px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+    }
+    &.item-lines-centered::part(native) .input-wrapper {
+        border-bottom: 1px solid var(--border-color);
+    }
+
     &.item-lines-default,
     &.item-has-interactive-control {
         /** Remove lines by default and interactive control (toggles, radios, checkbox and selects) */

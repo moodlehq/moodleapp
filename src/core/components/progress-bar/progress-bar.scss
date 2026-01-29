@@ -9,6 +9,8 @@
     --height: var(--core-progressbar-height);
 
     --text-color: var(--core-progressbar-text-color);
+    --text-size: var(--core-progressbar-text-size, 0.9rem);
+    --text-width: var(--core-progressbar-text-width, 55px);
     --progressbar-color: var(--core-progressbar-color);
     --progressbar-background: var(--core-progressbar-background);
 
@@ -21,9 +23,9 @@
 
     .core-progress-text {
         line-height: var(--line-height);
-        font-size: 0.9rem;
+        font-size: var(--text-size);
         color: var(--text-color);
-        width: 55px;
+        width: var(--text-width);
         text-align: center;
     }
 
