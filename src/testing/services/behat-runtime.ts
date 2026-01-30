@@ -79,7 +79,7 @@ export class TestingBehatRuntimeService {
     }
 
     /**
-     * Init behat functions and set options like skipping onboarding.
+     * Init behat functions and set options like site finder settings.
      *
      * @param options Options to set on the app.
      */

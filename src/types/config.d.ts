@@ -52,7 +52,6 @@ export interface EnvironmentConfig {
     forcedefaultlanguage: boolean;
     privacypolicy: string;
     notificoncolor: string;
-    enableonboarding: boolean;
     forceColorScheme: CoreColorScheme;
     forceLoginLogo: boolean;
     showTopLogo: 'online' | 'offline' | 'hidden';

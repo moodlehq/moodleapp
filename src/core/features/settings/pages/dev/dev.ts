@@ -18,7 +18,6 @@ import {
     ALWAYS_SHOW_LOGIN_FORM,
     ALWAYS_SHOW_LOGIN_FORM_CHANGED,
     FAQ_QRCODE_INFO_DONE,
-    ONBOARDING_DONE,
 } from '@features/login/constants';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
@@ -234,11 +233,9 @@ export default class CoreSettingsDevPage implements OnInit {
      */
     async resetUserTours(): Promise<void> {
         await CoreUserTours.resetTours();
-
-        await CoreConfig.delete(ONBOARDING_DONE);
         await CoreConfig.delete(FAQ_QRCODE_INFO_DONE);
 
-        CoreToasts.show({ message: 'User tours have been reseted' });
+        CoreToasts.show({ message: 'User tours have been reset' });
     }
 
     /**
