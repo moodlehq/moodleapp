@@ -63,7 +63,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Promise resolved with the translations object or empty object if not found.
      */
     protected async loadLanguage(lang: string): Promise<TranslationObject> {
-        // Return the imported translations for the requested language
+        // Return the imported translations for the requested language.
         let translation = await this.fetchLanguageFile(lang);
 
         this.translations[lang] = translation;
@@ -103,7 +103,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
         } catch (error) {
             this.logger.error('Error fetching language file', lang, error);
 
-            return {};
+            throw error;
         }
     }
 
@@ -115,7 +115,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Parent language code or undefined if not found.
      */
     getParentLanguage(lang: string): string | undefined {
-        const parentLang = this.translations[lang][MoodleTranslateLoader.PARENT_LANG_KEY] as string | undefined;
+        const parentLang = this.translations[lang]?.[MoodleTranslateLoader.PARENT_LANG_KEY] as string | undefined;
         if (parentLang && parentLang !== MoodleTranslateLoader.PARENT_LANG_KEY && parentLang !== lang) {
             return parentLang;
         }
