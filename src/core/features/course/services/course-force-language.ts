@@ -18,12 +18,12 @@ import { ActivatedRoute, NavigationEnd } from '@angular/router';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Router } from '@singletons';
 import {
+    CoreCourseAnyCourseData,
     CoreCourses,
     CoreCourseSearchedData,
 } from '../../courses/services/courses';
 import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
-import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLang } from '@services/lang';
 import { CoreCourse } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
@@ -84,9 +84,30 @@ export class CoreCourseForceLanguageService {
      * @returns Language code if forced.
      */
     protected async getForcedLanguageFromRoute(source: CoreCourseForceLanguageSource): Promise<string | undefined> {
-        let course = CoreNavigator.getRouteParam<CoreCourseSearchedData>('course');
-        let courseId = course?.id ?? CoreNavigator.getRouteNumberParam('courseId');
+        const course = CoreNavigator.getRouteParam<CoreCourseSearchedData>('course');
+        const courseId = course?.id ?? CoreNavigator.getRouteNumberParam('courseId');
 
+        let cmId: number | undefined;
+        if (source === CoreCourseForceLanguageSource.MODULE) {
+            cmId = CoreNavigator.getRouteNumberParam('cmId');
+        }
+
+        return this.getForcedLanguageFromCourseOrModule(course, courseId, cmId);
+    }
+
+    /**
+     * Get forced language from course or module.
+     *
+     * @param course Course object.
+     * @param courseId Course ID.
+     * @param cmId Course module ID.
+     * @returns Language code if forced.
+     */
+    async getForcedLanguageFromCourseOrModule(
+        course?: CoreCourseAnyCourseData,
+        courseId?: number,
+        cmId?: number,
+): Promise<string | undefined> {
         if (!courseId) {
             // Not in a course/module, empty the cache and return.
             this.lastNavigationCheck.courseId = 0;
@@ -97,8 +118,8 @@ export class CoreCourseForceLanguageService {
             return;
         }
 
-        if (source === CoreCourseForceLanguageSource.MODULE) {
-            const modLang = await this.getModuleForcedLangFromRoute(courseId);
+        if (cmId) {
+            const modLang = await this.getModuleForcedLang(courseId, cmId);
             if (modLang) {
                 return modLang;
             }
@@ -114,8 +135,8 @@ export class CoreCourseForceLanguageService {
             lang = course.lang;
         } else {
             try {
-                course = await
-                    CoreCourses.getCourseByField('id', courseId, { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE });
+                course =
+                    await CoreCourses.getCourseByField('id', courseId, { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE });
                 lang = course.lang;
             } catch {
                 lang = undefined;
@@ -133,26 +154,24 @@ export class CoreCourseForceLanguageService {
      * Get module forced language from route.
      *
      * @param courseId Course ID of the module.
+     * @param cmId Course module ID.
      * @returns Module forced language if found.
      */
-    protected async getModuleForcedLangFromRoute(courseId: number): Promise<string | undefined> {
-        const cmId = CoreNavigator.getRouteNumberParam('cmId');
+    protected async getModuleForcedLang(courseId: number, cmId: number): Promise<string | undefined> {
         let lang: string | undefined = undefined;
-        if (cmId) {
-            if (this.lastNavigationCheck.cmId === cmId) {
-                lang = this.lastNavigationCheck.cmLang;
-            } else {
+
+        if (this.lastNavigationCheck.cmId === cmId) {
+            lang = this.lastNavigationCheck.cmLang;
+        } else {
+            try {
                 // TODO: In the future this should directly return the module language instead of checking the delegate.
                 // See: MDL-87241
-                const module = await CorePromiseUtils.ignoreErrors(
-                    CoreCourse.getModule(cmId, courseId, undefined, true),
-                );
+                const module = await CoreCourse.getModule(cmId, courseId, undefined, true);
 
-                if (module) {
-                    lang = await CorePromiseUtils.ignoreErrors(
-                        CoreCourseModuleDelegate.getModuleForcedLang(module),
-                    );
-                }
+                lang = await CoreCourseModuleDelegate.getModuleForcedLang(module);
+            } catch {
+                lang = undefined;
+                cmId = 0;
             }
         }
 
