@@ -16,7 +16,6 @@ import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core'
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
-import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@static/utils';
 import {
@@ -39,10 +38,8 @@ import { CoreErrorAccordion } from '@services/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CorePlatform } from '@services/platform';
 import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreKeyboard } from '@static/keyboard';
 import { CoreModals } from '@services/overlays/modals';
@@ -111,17 +108,8 @@ export default class CoreLoginSitePage implements OnInit {
         } else {
             url = await this.consumeInstallReferrerUrl() ?? '';
 
-            const showOnboarding = CoreConstants.CONFIG.enableonboarding && !CorePlatform.isIOS();
-
             if (url) {
                 this.connect(url);
-
-                if (showOnboarding) {
-                    // Don't display onboarding in this case, and don't display it again later.
-                    CoreConfig.set(ONBOARDING_DONE, 1);
-                }
-            } else if (showOnboarding) {
-                this.initOnboarding();
             }
         }
 
@@ -197,20 +185,6 @@ export default class CoreLoginSitePage implements OnInit {
     }
 
     /**
-     * Initialize and show onboarding if needed.
-     *
-     * @returns Promise resolved when done.
-     */
-    protected async initOnboarding(): Promise<void> {
-        const onboardingDone = await CoreConfig.get(ONBOARDING_DONE, false);
-
-        if (!onboardingDone) {
-            // Check onboarding.
-            this.showOnboarding();
-        }
-    }
-
-    /**
      * Extend info of Login Site Info to get UI tweaks.
      *
      * @param sites Sites list.
@@ -275,19 +249,6 @@ export default class CoreLoginSitePage implements OnInit {
 
         await CoreModals.openModal({
             component: CoreLoginSiteHelpComponent,
-            cssClass: 'core-modal-fullscreen',
-        });
-    }
-
-    /**
-     * Show an onboarding modal.
-     */
-    async showOnboarding(): Promise<void> {
-        const { CoreLoginSiteOnboardingComponent } =
-            await import('@features/login/components/site-onboarding/site-onboarding');
-
-        await CoreModals.openModal({
-            component: CoreLoginSiteOnboardingComponent,
             cssClass: 'core-modal-fullscreen',
         });
     }
