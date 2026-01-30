@@ -29,7 +29,7 @@ import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
 import { CoreGradesCourseParticipantsOptionHandler } from '@features/grades/services/handlers/course-participants-option';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
-import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH, CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get grades services.
@@ -54,6 +54,7 @@ const mobileRoutes: Routes = [
     {
         path: ':courseId',
         loadComponent: () => import('@features/grades/pages/course/course'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 
@@ -65,6 +66,7 @@ const tabletRoutes: Routes = [
             {
                 path: ':courseId',
                 loadComponent: () => import('@features/grades/pages/course/course'),
+                data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
             },
         ],
     },
@@ -82,6 +84,7 @@ const mainMenuChildrenRoutes: Routes = [
     {
         path: `${CORE_COURSE_PAGE_NAME}/:courseId/${PARTICIPANTS_PAGE_NAME}/:userId/${GRADES_PAGE_NAME}`,
         loadComponent: () => import('@features/grades/pages/course/course'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
     ...conditionalRoutes([
         {

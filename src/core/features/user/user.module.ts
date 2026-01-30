@@ -33,7 +33,7 @@ import { CoreUserHelper } from './services/user-helper';
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreEvents } from '@static/events';
-import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH } from '@features/course/constants';
+import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH, CoreCourseForceLanguageSource } from '@features/course/constants';
 import { PARTICIPANTS_PAGE_NAME } from './constants';
 import { CoreUserParticipantsLinkHandler } from './services/handlers/participants-link';
 import { CoreUserProfileDetailsHandler } from './services/handlers/profile-details';
@@ -99,6 +99,7 @@ const routes: Routes = [
                 loadComponent: () => import('@features/user/pages/about/about'),
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
     ...conditionalRoutes([
         {
@@ -106,6 +107,7 @@ const routes: Routes = [
             loadComponent: () => import('@features/user/pages/profile/profile'),
             data: {
                 swipeManagerSource: 'participants',
+                checkForcedLanguage: CoreCourseForceLanguageSource.COURSE,
             },
         },
     ], () => CoreScreen.isMobile),

@@ -35,6 +35,7 @@ import { AddonModQuizReviewLinkHandler } from './services/handlers/review-link';
 import { AddonModQuizSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, ADDON_MOD_QUIZ_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get mod Quiz services.
@@ -75,6 +76,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/review/review'),
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

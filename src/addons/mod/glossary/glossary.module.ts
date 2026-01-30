@@ -16,7 +16,7 @@ import { conditionalRoutes } from '@/app/app-routing.module';
 import { NgModule, provideAppInitializer } from '@angular/core';
 import { Route, Routes } from '@angular/router';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
-import { CORE_COURSE_CONTENTS_PATH } from '@features/course/constants';
+import { CORE_COURSE_CONTENTS_PATH, CoreCourseForceLanguageSource } from '@features/course/constants';
 import { CoreCourseContentsRoutingModule } from '@features/course/course-contents-routing.module';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -89,6 +89,7 @@ const mainMenuRoutes: Routes = [
             ...conditionalRoutes(mobileRoutes, () => CoreScreen.isMobile),
             ...conditionalRoutes(tabletRoutes, () => CoreScreen.isTablet),
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 
     // Single Activity format navigation.

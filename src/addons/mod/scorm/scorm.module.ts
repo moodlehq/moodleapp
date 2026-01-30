@@ -32,6 +32,7 @@ import { AddonModScormPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModScormPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModScormSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_SCORM_COMPONENT_LEGACY, ADDON_MOD_SCORM_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -50,6 +51,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/online-player/online-player'),
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

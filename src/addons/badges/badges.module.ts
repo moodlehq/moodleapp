@@ -28,6 +28,7 @@ import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonBadgesTagAreaHandler } from './services/handlers/tag-area';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get badges services.
@@ -47,11 +48,12 @@ const mobileRoutes: Routes = [
         path: '',
         pathMatch: 'full',
         loadComponent: () => import('./pages/user-badges/user-badges'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
     {
         path: ':badgeHash',
         loadComponent: () => import('./pages/issued-badge/issued-badge'),
-        data: { usesSwipeNavigation: true },
+        data: { usesSwipeNavigation: true, checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 
@@ -66,6 +68,7 @@ const tabletRoutes: Routes = [
                 data: { usesSwipeNavigation: true },
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 

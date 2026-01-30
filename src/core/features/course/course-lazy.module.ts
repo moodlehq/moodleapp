@@ -16,7 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 import { resolveIndexRoutes } from '@features/course/course-routing.module';
 import { CoreCourseHelper } from './services/course-helper';
-import { CORE_COURSE_INDEX_PATH } from './constants';
+import { CORE_COURSE_INDEX_PATH, CoreCourseForceLanguageSource } from './constants';
 
 /**
  * Build module routes.
@@ -41,18 +41,22 @@ function buildRoutes(injector: Injector): Routes {
                 },
                 ...indexRoutes.siblings,
             ],
+            data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
         },
         {
             path: ':courseId/:cmId/module-preview',
             loadComponent: () => import('@features/course/pages/module-preview/module-preview'),
+            data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
         },
         {
             path: ':courseId/list-mod-type',
             loadComponent: () => import('@features/course/pages/list-mod-type/list-mod-type'),
+            data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
         },
         {
             path: ':courseId/summary',
             loadComponent: () => CoreCourseHelper.getCourseSummaryPage(),
+            data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
         },
     ];
 }

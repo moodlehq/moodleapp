@@ -67,7 +67,6 @@ export const CoreCourseAccessDataType = {
     ACCESS_DEFAULT: 'courses_access_default', // eslint-disable-line @typescript-eslint/naming-convention
 } as const;
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type CoreCourseAccessDataType = typeof CoreCourseAccessDataType[keyof typeof CoreCourseAccessDataType];
 
 /**
@@ -91,4 +90,9 @@ export const enum CoreCourseDownloadStatusIcon {
     NOT_DOWNLOADED = 'fas-cloud-arrow-down',
     OUTDATED = 'fam-cloud-refresh',
     NOT_DOWNLOADABLE = '',
+};
+
+export enum CoreCourseForceLanguageSource {
+    COURSE = 'course',
+    MODULE = 'module',
 };

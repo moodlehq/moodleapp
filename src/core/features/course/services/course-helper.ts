@@ -478,7 +478,7 @@ export class CoreCourseHelperProvider {
             // Not enrolled or an error happened. Try to use another WebService.
         }
 
-        const course = await CoreCourses.getCourseByField('id', courseId, siteId);
+        const course = await CoreCourses.getCourseByField('id', courseId, { siteId });
 
         return ({ enrolled: false, course: course });
     }
@@ -1136,7 +1136,7 @@ export class CoreCourseHelperProvider {
             return course.communicationroomurl;
         }
 
-        course = await CoreCourses.getCourseByField('id', course.id, site.id);
+        course = await CoreCourses.getCourseByField('id', course.id, { siteId: site.id });
         if ('communicationroomurl' in course) {
             return course.communicationroomurl;
         }

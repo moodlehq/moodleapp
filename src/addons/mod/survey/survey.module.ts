@@ -27,11 +27,13 @@ import { AddonModSurveyModuleHandler } from './services/handlers/module';
 import { getPrefetchHandlerInstance } from './services/handlers/prefetch';
 import { getCronHandlerInstance } from './services/handlers/sync-cron';
 import { ADDON_MOD_SURVEY_PAGE_NAME } from '@addons/mod/survey/constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: `${ADDON_MOD_SURVEY_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

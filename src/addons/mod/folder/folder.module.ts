@@ -25,6 +25,7 @@ import { AddonModFolderModuleHandler } from './services/handlers/module';
 import { AddonModFolderPluginFileHandler } from './services/handlers/pluginfile';
 import { AddonModFolderPrefetchHandler } from './services/handlers/prefetch';
 import { ADDON_MOD_FOLDER_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -40,6 +41,7 @@ const routes: Routes = [
                 pathMatch: 'full',
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

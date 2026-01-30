@@ -15,7 +15,6 @@
 import { Component, Type } from '@angular/core';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@static/events';
 import { CoreLang } from '@services/lang';
 import { CoreSettingsHelper, CoreColorScheme, CoreZoomLevel } from '../../services/settings-helper';
 import { CoreIframe } from '@static/iframe';
@@ -185,8 +184,6 @@ export default class CoreSettingsGeneralPage {
         // Invalidate cache for all sites to get the content in the right language.
         const sites = await CoreSites.getSitesInstances();
         await CorePromiseUtils.ignoreErrors(Promise.all(sites.map((site) => site.invalidateWsCache())));
-
-        CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, this.selectedLanguage);
 
         CoreNavigator.navigate('/reload', {
             reset: true,
