@@ -17,13 +17,13 @@ import { Injectable } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { LangChangeEvent, TranslationObject } from '@ngx-translate/core';
 import { CoreConfig } from '@services/config';
-import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreSubscriptions } from '@static/subscriptions';
 import { makeSingleton, Translate } from '@singletons';
 
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSites } from './sites';
 import { MoodleTranslateLoader } from '@classes/lang-loader';
 import { firstValueFrom } from 'rxjs';

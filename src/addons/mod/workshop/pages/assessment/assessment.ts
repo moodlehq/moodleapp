@@ -21,10 +21,10 @@ import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreForms } from '@singletons/form';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreForms } from '@static/form';
 import {
     AddonModWorkshop,
     AddonModWorkshopAssessmentSavedChangedEventData,
@@ -34,7 +34,7 @@ import {
 } from '../../services/workshop';
 import { AddonModWorkshopHelper, AddonModWorkshopSubmissionAssessmentWithFormData } from '../../services/workshop-helper';
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,

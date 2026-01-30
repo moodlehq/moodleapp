@@ -20,7 +20,7 @@ import { CoreLoginHelper } from './services/login-helper';
 import { redirectGuard } from '@guards/redirect';
 import { CoreLoginCronHandler } from './services/handlers/cron';
 import { CoreCronDelegate } from '@services/cron';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { hasSitesGuard } from './guards/has-sites';
 
 /**

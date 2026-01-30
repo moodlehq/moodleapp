@@ -14,8 +14,8 @@
 
 import { Component, Input, ElementRef, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreFormFields, CoreForms } from '@singletons/form';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreFormFields, CoreForms } from '@static/form';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ModalController } from '@singletons';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../../services/assign';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';

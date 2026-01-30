@@ -26,7 +26,7 @@ import {
     DirectoryEntry,
     DirectoryReader,
 } from '@awesome-cordova-plugins/file/ngx';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 
 /**
  * Implement the File Error because the ionic-native plugin doesn't implement it.

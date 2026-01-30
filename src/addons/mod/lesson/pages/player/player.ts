@@ -21,11 +21,11 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreUrl } from '@singletons/url';
-import { CoreObject } from '@singletons/object';
+import { CoreUrl } from '@static/url';
+import { CoreObject } from '@static/object';
 import { CoreWSExternalFile } from '@services/ws';
 import { ModalController, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import {
     AddonModLesson,
     AddonModLessonEOLPageDataEntry,
@@ -49,13 +49,13 @@ import {
 } from '../../services/lesson-helper';
 import { AddonModLessonOffline } from '../../services/lesson-offline';
 import { AddonModLessonSync } from '../../services/lesson-sync';
-import { CoreFormFields, CoreForms } from '@singletons/form';
+import { CoreFormFields, CoreForms } from '@static/form';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_COMPONENT_LEGACY, AddonModLessonJumpTo } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';

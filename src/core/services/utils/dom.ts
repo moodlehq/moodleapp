@@ -23,7 +23,7 @@ import { AlertController, makeSingleton, Translate } from '@singletons';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CorePasswordModalParams, CorePasswordModalResponse } from '@components/password-modal/password-modal';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreToasts, ToastDuration, ShowToastOptions } from '../overlays/toasts';
 import { CoreModals, OpenModalOptions } from '@services/overlays/modals';
 import { CorePopovers, OpenPopoverOptions } from '@services/overlays/popovers';
@@ -31,12 +31,12 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreHTMLClasses } from '@singletons/html-classes';
-import { CoreDom, VerticalPoint } from '@singletons/dom';
+import { CoreHTMLClasses } from '@static/html-classes';
+import { CoreDom, VerticalPoint } from '@static/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { PromptButton } from '@services/overlays/prompts';
-import { CoreBootstrap } from '@singletons/bootstrap';
-import { CoreAngular } from '@singletons/angular';
+import { CoreBootstrap } from '@static/bootstrap';
+import { CoreAngular } from '@static/angular';
 
 /**
  * Utils service with helper functions for UI, DOM elements and HTML code.

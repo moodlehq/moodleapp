@@ -19,7 +19,7 @@ import { CoreLang, CoreLangFormat, CoreLangLanguage } from '@services/lang';
 import { Device, makeSingleton } from '@singletons';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 
 /**
  * Service that provides some features regarding custom main and user menu.

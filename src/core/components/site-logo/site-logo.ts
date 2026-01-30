@@ -14,10 +14,10 @@
 
 import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSite } from '@classes/sites/site';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreConstants } from '@/core/constants';
 import { CoreBaseModule } from '@/core/base.module';

@@ -17,7 +17,7 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCourses } from '../courses';
 import { Params } from '@angular/router';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreSites } from '@services/sites';

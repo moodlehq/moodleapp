@@ -14,9 +14,9 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { ModalController } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonCalendarFilter } from '@addons/calendar/services/calendar-helper';
 import { ALL_COURSES_ID } from '@features/courses/services/courses-helper';
 import { CoreSharedModule } from '@/core/shared.module';

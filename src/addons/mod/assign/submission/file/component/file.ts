@@ -18,7 +18,7 @@ import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offlin
 import { Component, OnInit } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileSession } from '@services/file-session';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';

@@ -18,9 +18,9 @@ import {
     AddonBlockRecentlyAccessedItems,
     AddonBlockRecentlyAccessedItemsItemCalculatedData,
 } from '../../services/recentlyaccesseditems';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 

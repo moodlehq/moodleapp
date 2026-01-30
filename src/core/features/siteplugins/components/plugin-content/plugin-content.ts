@@ -31,7 +31,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigator } from '@services/navigator';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
 import { CoreSharedModule } from '@/core/shared.module';

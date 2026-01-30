@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, ElementRef, effect, input, inject } from '@angular/core';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 
 /**
  * Component to add a <style> tag.

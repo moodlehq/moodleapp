@@ -23,7 +23,7 @@ import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonModWikiPageDBRecord } from './database/wiki';
 import { AddonModWikiOffline } from './wiki-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -33,8 +33,8 @@ import {
     ADDON_MOD_WIKI_PAGE_CREATED_OFFLINE_EVENT,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
@@ -850,7 +850,7 @@ export class AddonModWikiProvider {
 
 export const AddonModWiki = makeSingleton(AddonModWikiProvider);
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

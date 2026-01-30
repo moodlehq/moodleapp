@@ -16,12 +16,12 @@ import { Injectable } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from './sites';
 import { CoreConfig, CoreConfigProvider } from './config';
 import { CoreConfigSettingKey } from '../constants';
-import { CoreText } from '@singletons/text';
-import { CoreUrl } from '@singletons/url';
+import { CoreText } from '@static/text';
+import { CoreUrl } from '@static/url';
 
 /**
  * Helper service to support analytics.

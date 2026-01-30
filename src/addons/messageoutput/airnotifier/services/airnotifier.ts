@@ -20,9 +20,9 @@ import { CoreCacheUpdateFrequency, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
-import { CoreOpener } from '@singletons/opener';
-import { CorePath } from '@singletons/path';
+import { CoreEvents, CoreEventSiteData } from '@static/events';
+import { CoreOpener } from '@static/opener';
+import { CorePath } from '@static/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CorePrompts } from '@services/overlays/prompts';
 

@@ -18,22 +18,22 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
-import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@singletons/events';
+import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@static/events';
 import { CoreSites, CoreLoginSiteInfo, CoreSiteBasicInfo } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
-import { CoreObject } from '@singletons/object';
+import { CoreText } from '@static/text';
+import { CoreObject } from '@static/object';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { DomSanitizer, makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
-import { CoreUrl, CoreUrlParams } from '@singletons/url';
+import { CoreLogger } from '@static/logger';
+import { CoreUrl, CoreUrlParams } from '@static/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
@@ -60,9 +60,9 @@ import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreSSO } from '@singletons/sso';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreOpener } from '@singletons/opener';
+import { CoreSSO } from '@static/sso';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
 import {
@@ -1422,7 +1422,7 @@ export type CoreLoginSiteFinderSettings = {
     defaultimageurl?: string;
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

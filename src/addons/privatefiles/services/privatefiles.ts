@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';

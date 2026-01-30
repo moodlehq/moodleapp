@@ -20,14 +20,14 @@ import { CoreAppDB } from '@services/app-db';
 import { CoreSites } from '@services/sites';
 import { CorePushNotificationsDelegate } from './push-delegate';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreUtils } from '@singletons/utils';
-import { CoreText } from '@singletons/text';
+import { CoreUtils } from '@static/utils';
+import { CoreText } from '@static/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Badge, Device, Translate, ApplicationInit, NgZone } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
-import { CoreEvents } from '@singletons/events';
+import { CoreLogger } from '@static/logger';
+import { CoreEvents } from '@static/events';
 import {
     APP_SCHEMA,
     BADGE_TABLE_NAME,
@@ -47,16 +47,16 @@ import { CoreSitesFactory } from '@services/sites-factory';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { CorePlatform } from '@services/platform';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { Push } from '@features/native/plugins';
 import { CoreNavigator } from '@services/navigator';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
 /**

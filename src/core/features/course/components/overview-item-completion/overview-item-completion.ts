@@ -18,7 +18,7 @@ import { CoreCourseModuleWSCompletionData } from '@features/course/services/cour
 import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';
 import { CoreCourseHelper, CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 import { CoreCourseModuleCompletionTracking } from '@features/course/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseOverview, CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 
 /**

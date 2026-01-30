@@ -19,8 +19,8 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@singletons/utils';
+import { CoreTime } from '@static/time';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModForum,
@@ -32,7 +32,7 @@ import {
 import { AddonModForumDiscussionOptions, AddonModForumOffline, AddonModForumOfflineReply } from './forum-offline';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_FORUM_ALL_GROUPS, ADDON_MOD_FORUM_COMPONENT_LEGACY } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
 /**

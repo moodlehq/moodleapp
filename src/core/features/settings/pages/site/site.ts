@@ -15,7 +15,7 @@
 import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 
 import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';

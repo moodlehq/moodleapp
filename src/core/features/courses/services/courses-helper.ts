@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import {
     CoreCourseAnyCourseData,
@@ -34,7 +34,7 @@ import { catchError, map } from 'rxjs/operators';
 import { chainRequests, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { DEFAULT_TEXT_FORMAT } from '@static/text';
 
 // Id for a course item representing all courses (for example, for course filters).
 export const ALL_COURSES_ID = -1;

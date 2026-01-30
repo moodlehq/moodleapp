@@ -22,8 +22,8 @@ import { makeSingleton, Translate } from '@singletons';
 import { AddonNotesOffline } from './notes-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
 
 /**
  * Service to handle notes.

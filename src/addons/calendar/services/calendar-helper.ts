@@ -25,14 +25,14 @@ import {
     AddonCalendarWeekDay,
 } from './calendar';
 import { CoreConfig } from '@services/config';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ContextLevel, CoreTimeConstants } from '@/core/constants';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { CoreCategoryData } from '@features/courses/services/courses';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreReminders, CoreRemindersService } from '@features/reminders/services/reminders';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import {
@@ -43,8 +43,8 @@ import {
 } from '../constants';
 import { AddonCalendarSyncInvalidateEvent } from './calendar-sync';
 import { REMINDERS_DISABLED, REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { DEFAULT_TEXT_FORMAT } from '@static/text';
 
 /**
  * Service that provides some features regarding lists of courses and categories.

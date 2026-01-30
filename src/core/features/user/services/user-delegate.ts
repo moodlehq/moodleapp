@@ -16,8 +16,8 @@ import { Injectable, Type } from '@angular/core';
 import { Subject, BehaviorSubject } from 'rxjs';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreEvents } from '@singletons/events';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreEvents } from '@static/events';
 import { CoreUserProfile } from './user';
 import { makeSingleton } from '@singletons';
 import { CoreCourses, CoreCourseUserAdminOrNavOptionIndexed } from '@features/courses/services/courses';
@@ -37,7 +37,7 @@ type HandlerDataPerType = {
   [CoreUserProfileHandlerType.BUTTON]: CoreUserProfileButtonHandlerData;
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

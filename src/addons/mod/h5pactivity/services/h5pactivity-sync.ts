@@ -23,7 +23,7 @@ import { CoreXAPI, XAPI_STATE_DELETED } from '@features/xapi/services/xapi';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityAttempt,
@@ -33,13 +33,13 @@ import { CoreXAPIStateDBRecord, CoreXAPIStatementDBRecord } from '@features/xapi
 import { CoreXAPIIRI } from '@features/xapi/classes/iri';
 import { CoreXAPIItemAgent } from '@features/xapi/classes/item-agent';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
     ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
@@ -420,7 +420,7 @@ export type AddonModH5PActivityAutoSyncData = {
     warnings: string[];
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

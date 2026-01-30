@@ -14,7 +14,7 @@
 
 import { CanActivateFn } from '@angular/router';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreRedirects } from '@singletons/redirects';
+import { CoreRedirects } from '@static/redirects';
 
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';

@@ -19,7 +19,7 @@ import { AddonModAssignAssign, AddonModAssignSubmission, AddonModAssignPlugin, A
 import { makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignSubmissionsDBRecordFormatted } from './assign-offline';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreSites } from '@services/sites';
 import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../constants';

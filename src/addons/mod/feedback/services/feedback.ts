@@ -19,7 +19,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreWSExternalFile, CoreWSExternalWarning, CoreWSStoredFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackOffline } from './feedback-offline';
@@ -37,9 +37,9 @@ import {
     AddonModFeedbackQuestionType,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
@@ -1239,7 +1239,7 @@ export class AddonModFeedbackProvider {
 
 export const AddonModFeedback = makeSingleton(AddonModFeedbackProvider);
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

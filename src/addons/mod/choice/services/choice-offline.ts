@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { makeSingleton } from '@singletons';
 import { AddonModChoiceResponsesDBRecord, RESPONSES_TABLE_NAME } from './database/choice';
 

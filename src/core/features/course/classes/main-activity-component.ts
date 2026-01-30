@@ -16,9 +16,9 @@ import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreCourse } from '../services/course';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSites } from '@services/sites';
 import { CoreSyncResult } from '@services/sync';
 import { CoreAlerts } from '@services/overlays/alerts';

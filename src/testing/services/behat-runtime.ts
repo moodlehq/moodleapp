@@ -22,8 +22,8 @@ import { CoreNetwork, CoreNetworkService } from '@services/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesProvider } from '@services/sites';
 import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
@@ -32,11 +32,11 @@ import { Swiper } from 'swiper';
 import { LocalNotificationsMock } from '@features/emulator/services/local-notifications';
 import { GetClosureArgs } from '@/core/utils/types';
 import { CoreIframeComponent } from '@components/iframe/iframe';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLang } from '@services/lang';
-import { CoreEvents } from '@singletons/events';
-import { CoreBrowser } from '@singletons/browser';
-import { CoreText } from '@singletons/text';
+import { CoreEvents } from '@static/events';
+import { CoreBrowser } from '@static/browser';
+import { CoreText } from '@static/text';
 
 /**
  * Behat runtime servive with public API.

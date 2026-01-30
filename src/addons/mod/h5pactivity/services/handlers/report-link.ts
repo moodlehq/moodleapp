@@ -19,7 +19,7 @@ import { CoreContentLinksAction } from '@features/contentlinks/services/contentl
 import { CoreCourse, CoreCourseModuleBasicInfo } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModH5PActivity } from '../h5pactivity';
 import {

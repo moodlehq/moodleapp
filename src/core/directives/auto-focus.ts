@@ -14,8 +14,8 @@
 
 import { Directive, ElementRef, AfterViewInit, inject, input } from '@angular/core';
 
-import { CoreDom } from '@singletons/dom';
-import { CoreWait } from '@singletons/wait';
+import { CoreDom } from '@static/dom';
+import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 
 /**

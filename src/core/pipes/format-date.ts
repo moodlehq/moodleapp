@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreTime } from '@singletons/time';
-import { CoreLogger } from '@singletons/logger';
+import { CoreTime } from '@static/time';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Filter to format a date.

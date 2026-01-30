@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreSites } from '@services/sites';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { makeSingleton } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreEditorDraft, CoreEditorDraftPrimaryData, DRAFT_TABLE } from './database/editor';
 import { ContextLevel } from '@/core/constants';
 

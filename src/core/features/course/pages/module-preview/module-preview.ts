@@ -20,7 +20,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '../../components/module-navigation/module-navigation';
 import { CoreCourseUnsupportedModuleComponent } from '../../components/unsupported-module/unsupported-module';

@@ -28,9 +28,9 @@ import {
     CoreSitePluginsPlugin,
 } from '@features/siteplugins/services/siteplugins';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
-import { CoreLogger } from '@singletons/logger';
-import { CoreEvents } from '@singletons/events';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreLogger } from '@static/logger';
+import { CoreEvents } from '@static/events';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '@features/siteplugins/constants';
 import { ModFeature } from '@addons/mod/constants';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';

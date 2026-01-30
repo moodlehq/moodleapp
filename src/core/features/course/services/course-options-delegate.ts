@@ -14,9 +14,9 @@
 
 import { Injectable } from '@angular/core';
 import { CoreDelegate, CoreDelegateHandler, CoreDelegateToDisplay } from '@classes/delegate';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import {
     CoreCourseAnyCourseData,
     CoreCourseAnyCourseDataWithOptions,

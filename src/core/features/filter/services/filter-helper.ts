@@ -29,13 +29,13 @@ import {
 import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { makeSingleton } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents, CoreEventSiteData } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { firstValueFrom } from 'rxjs';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Helper service to provide filter functionalities.

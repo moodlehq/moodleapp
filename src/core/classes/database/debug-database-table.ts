@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import {
     CoreDatabaseTable,
     CoreDatabaseConditions,

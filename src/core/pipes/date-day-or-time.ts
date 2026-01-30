@@ -15,9 +15,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { dayjs } from '@/core/utils/dayjs';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Filter to display a date using the day, or the time.

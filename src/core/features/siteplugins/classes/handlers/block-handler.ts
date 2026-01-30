@@ -18,7 +18,7 @@ import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CoreBlockDelegate, CoreBlockHandler, CoreBlockHandlerData } from '@features/block/services/block-delegate';
 import { CoreCourseBlock } from '@features/course/services/course';
 import { CoreSitePluginsBlockHandlerData, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSitePluginsBaseHandler } from './base-handler';
 import { ContextLevel } from '@/core/constants';
 

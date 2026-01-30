@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 
 /**
  * xAPI IRI values generator.

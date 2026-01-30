@@ -15,15 +15,15 @@
 import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { ScrollDetail } from '@ionic/core';
 import { IonContent } from '@ionic/angular';
-import { CoreUtils } from '@singletons/utils';
-import { CoreMath } from '@singletons/math';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreUtils } from '@static/utils';
+import { CoreMath } from '@static/math';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver } from '@static/events';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDom } from '@singletons/dom';
-import { CoreWait } from '@singletons/wait';
+import { CoreDom } from '@static/dom';
+import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 
 /**

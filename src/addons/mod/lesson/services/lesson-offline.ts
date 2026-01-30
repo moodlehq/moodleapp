@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreFormFields } from '@singletons/form';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreObject } from '@singletons/object';
+import { CoreFormFields } from '@static/form';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreObject } from '@static/object';
 import { makeSingleton } from '@singletons';
 import {
     AddonModLessonPageAttemptDBRecord,
@@ -28,7 +28,7 @@ import {
 
 import { AddonModLessonPageWSData } from './lesson';
 import { AddonModLessonPageType } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Service to handle offline lesson.

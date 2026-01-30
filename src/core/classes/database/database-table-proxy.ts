@@ -16,7 +16,7 @@ import { CoreConstants } from '@/core/constants';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     CoreDatabaseConfiguration,
     CoreDatabaseReducer,

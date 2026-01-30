@@ -16,7 +16,7 @@ import { Params } from '@angular/router';
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUser } from '@features/user/services/user';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { AddonModChat, AddonModChatSession, AddonModChatSessionUser } from '../services/chat';
 

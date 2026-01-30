@@ -16,7 +16,7 @@ import { Component, input, computed, signal } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreTimeConstants } from '@/core/constants';
 import { dayjs } from '@/core/utils/dayjs';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 /**

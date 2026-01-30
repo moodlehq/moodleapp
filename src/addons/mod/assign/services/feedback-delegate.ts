@@ -25,7 +25,7 @@ import {
 import { makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { CoreSites } from '@services/sites';
 import { ADDON_MOD_ASSIGN_FEATURE_NAME } from '../constants';

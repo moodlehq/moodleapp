@@ -15,18 +15,18 @@
 import { Injectable } from '@angular/core';
 
 import { CoreAppDB, CoreAppSchema } from './app-db';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { makeSingleton, StatusBar } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
-import { CoreColors } from '@singletons/colors';
+import { CoreLogger } from '@static/logger';
+import { CoreColors } from '@static/colors';
 import { CoreRedirectPayload } from './navigator';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreSSO } from '@singletons/sso';
-import { CoreRedirectData, CoreRedirects } from '@singletons/redirects';
+import { CoreKeyboard } from '@static/keyboard';
+import { CoreSSO } from '@static/sso';
+import { CoreRedirectData, CoreRedirects } from '@static/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
 
 /**

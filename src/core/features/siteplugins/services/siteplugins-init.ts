@@ -36,11 +36,11 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWS } from '@services/ws';
-import { CoreEvents } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreSitePluginsAssignFeedbackHandler } from '../classes/handlers/assign-feedback-handler';
 import { CoreSitePluginsAssignSubmissionHandler } from '../classes/handlers/assign-submission-handler';
 import { CoreSitePluginsBlockHandler } from '../classes/handlers/block-handler';
@@ -83,9 +83,9 @@ import { CoreSitePluginsWorkshopAssessmentStrategyHandler } from '../classes/han
 import { CoreContentLinksModuleIndexHandler } from '@features/contentlinks/classes/module-index-handler';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreContentLinksModuleListHandler } from '@features/contentlinks/classes/module-list-handler';
-import { CoreObject } from '@singletons/object';
-import { CoreUrl } from '@singletons/url';
-import { CorePath } from '@singletons/path';
+import { CoreObject } from '@static/object';
+import { CoreUrl } from '@static/url';
+import { CorePath } from '@static/path';
 import { CoreEnrolAction, CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';
 import { CoreSitePluginsEnrolHandler } from '../classes/handlers/enrol-handler';
 import { CORE_SITE_PLUGINS_COMPONENT } from '../constants';

@@ -24,10 +24,10 @@ import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreForms } from '@singletons/form';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreForms } from '@static/form';
 import { AddonModWorkshopAssessmentStrategyComponent } from '../../components/assessment-strategy/assessment-strategy';
 import {
     AddonModWorkshop,
@@ -44,7 +44,7 @@ import {
 import { AddonModWorkshopOffline } from '../../services/workshop-offline';
 import { AddonModWorkshopAutoSyncData } from '../../services/workshop-sync';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
     ADDON_MOD_WORKSHOP_ASSESSMENT_SAVED,

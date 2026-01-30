@@ -16,13 +16,13 @@ import { CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
+import { CoreText } from '@static/text';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreWS, CoreWSAjaxPreSets, CoreWSExternalWarning } from '@services/ws';
-import { CorePath } from '@singletons/path';
-import { CoreJsonPatch, JsonPatchOperation } from '@singletons/json-patch';
-import { CoreUtils } from '@singletons/utils';
-import { CoreLogger } from '@singletons/logger';
+import { CorePath } from '@static/path';
+import { CoreJsonPatch, JsonPatchOperation } from '@static/json-patch';
+import { CoreUtils } from '@static/utils';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Class that represents a Moodle site where the user still hasn't authenticated.

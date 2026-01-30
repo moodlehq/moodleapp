@@ -18,8 +18,8 @@ import { CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import {

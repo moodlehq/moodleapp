@@ -34,8 +34,8 @@ import {
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
 
-import { CoreAngular } from '@singletons/angular';
-import { CoreLogger } from '@singletons/logger';
+import { CoreAngular } from '@static/angular';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Component to create another component dynamically.

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreSSO } from '@singletons/sso';
+import { CoreSSO } from '@static/sso';
 import { CoreNetwork } from '@services/network';
-import { CoreEventData, CoreEvents } from '@singletons/events';
+import { CoreEventData, CoreEvents } from '@static/events';
 import {
     CoreWS,
     CoreWSPreSets,
@@ -22,8 +22,8 @@ import {
     CoreWSTypeExpected,
 } from '@services/ws';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import {
     CoreCacheUpdateFrequency,
     CoreConstants,
@@ -33,7 +33,7 @@ import {
 } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { Translate } from '@singletons';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -52,12 +52,12 @@ import {
 } from './unauthenticated-site';
 import { Md5 } from 'ts-md5';
 import { CoreSiteWSCacheRecord } from '@services/database/sites';
-import { CoreErrorLogs } from '@singletons/error-logs';
-import { CoreWait } from '@singletons/wait';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
-import { CoreArray } from '@singletons/array';
-import { CoreBrowser } from '@singletons/browser';
+import { CoreErrorLogs } from '@static/error-logs';
+import { CoreWait } from '@static/wait';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
+import { CoreArray } from '@static/array';
+import { CoreBrowser } from '@static/browser';
 
 /**
  * Class that represents a site (combination of site + user) where the user has authenticated but the site hasn't been validated

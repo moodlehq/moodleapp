@@ -15,7 +15,7 @@
 import { Component, Output, OnInit, OnDestroy, EventEmitter, effect, input, model, computed, inject } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 
 /**
  * This directive adds a item to the Context Menu popover.

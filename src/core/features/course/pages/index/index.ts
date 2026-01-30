@@ -19,10 +19,10 @@ import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-out
 import { CoreCourseFormatDelegate } from '../../services/format-delegate';
 import { CoreCourseOptionsDelegate } from '../../services/course-options-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreCourse, CoreCourseWSSection } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
 import {
     CORE_COURSE_CONTENTS_PAGE_NAME,
@@ -30,9 +30,9 @@ import {
     CORE_COURSE_SELECT_TAB,
 } from '@features/course/constants';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CoreSites } from '@services/sites';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CorePlatform } from '@services/platform';

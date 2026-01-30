@@ -15,14 +15,14 @@
 import { Injectable } from '@angular/core';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
 import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
 import { CorePlatform } from '@services/platform';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';

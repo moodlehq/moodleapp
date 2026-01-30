@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { Translate } from '@singletons';
 import { CoreH5PCore, CoreH5PLibraryData, CoreH5PLibraryAddonData, CoreH5PContentDepsTreeDependency } from './core';
-import { CoreArray } from '@singletons/array';
-import { CoreObject } from '@singletons/object';
+import { CoreArray } from '@static/array';
+import { CoreObject } from '@static/object';
 
 const ALLOWED_STYLEABLE_TAGS = ['span', 'p', 'div', 'h1', 'h2', 'h3', 'table', 'col', 'figure', 'td', 'th', 'li'];
 

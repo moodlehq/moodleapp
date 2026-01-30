@@ -34,9 +34,9 @@ import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-component';
-import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreWait } from '@singletons/wait';
-import { CoreDom } from '@singletons/dom';
+import { CoreEventFormActionData, CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreWait } from '@static/wait';
+import { CoreDom } from '@static/dom';
 import { ContextLevel } from '@/core/constants';
 import { FormControl } from '@angular/forms';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -46,15 +46,15 @@ import { CoreEditorService } from '@features/editor/services/editor';
 import { CoreEditorOffline } from '@features/editor/services/editor-offline';
 import { CoreEditorDraft } from '@features/editor/services/database/editor';
 import { NgZone } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUrl } from '@static/url';
+import { CoreUtils } from '@static/utils';
 import { CoreFilepool } from '@services/filepool';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreToasts } from '@services/overlays/toasts';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 
 /**
  * Component that displays a rich text editor.

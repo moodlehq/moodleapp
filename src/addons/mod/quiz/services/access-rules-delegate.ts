@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { CoreSites } from '@services/sites';

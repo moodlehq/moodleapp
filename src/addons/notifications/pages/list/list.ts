@@ -14,8 +14,8 @@
 
 import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { CoreUtils } from '@singletons/utils';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreUtils } from '@static/utils';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonNotifications, AddonNotificationsNotificationMessageFormatted,
 } from '../../services/notifications';
@@ -24,14 +24,14 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { AddonNotificationsNotificationsSource } from '@addons/notifications/classes/notifications-source';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonLegacyNotificationsNotificationsSource } from '@addons/notifications/classes/legacy-notifications-source';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
 import { CorePlatform } from '@services/platform';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';

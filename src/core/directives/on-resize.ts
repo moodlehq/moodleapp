@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, ElementRef, OnInit, Output, EventEmitter, OnDestroy, inject } from '@angular/core';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 
 /**
  * Directive to listen for element resize events.

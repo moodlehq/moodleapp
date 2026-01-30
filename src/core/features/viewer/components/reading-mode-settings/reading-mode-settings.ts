@@ -22,7 +22,7 @@ import {
 import { CoreViewer } from '@features/viewer/services/viewer';
 
 import { ModalController } from '@singletons';
-import { CoreMath } from '@singletons/math';
+import { CoreMath } from '@static/math';
 
 /**
  * Component to display a text modal.

@@ -19,7 +19,7 @@ import {
     CoreReminderValueAndUnit,
 } from '@features/reminders/services/reminders';
 import { CorePopovers } from '@services/overlays/popovers';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { PopoverController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/constants';

@@ -20,7 +20,7 @@ import { CoreWSExternalWarning, CoreWSExternalFile, CoreWSFile } from '@services
 import { makeSingleton } from '@singletons';
 import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreGrades } from '@features/grades/services/grades';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
 import { CoreNetwork } from '@services/network';
@@ -29,9 +29,9 @@ import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';
 import { AddonModAssignSubmissionFormatted } from './assign-helper';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreIonicColorNames } from '@static/colors';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import {
@@ -45,11 +45,11 @@ import {
     AddonModAssignGradingStates,
     AddonModAssignSubmissionStatusValues,
 } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreUserDescriptionExporter } from '@features/user/services/user';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

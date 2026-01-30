@@ -18,7 +18,7 @@ import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import {
     AddonModDataData,
     AddonModDataEntry,

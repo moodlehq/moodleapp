@@ -21,7 +21,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
 /*
  * Service to handle groups.

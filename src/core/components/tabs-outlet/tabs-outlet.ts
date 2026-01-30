@@ -25,13 +25,13 @@ import {
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave, AnimationBuilder } from '@ionic/angular';
 
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { NavigationExtras, Params } from '@angular/router';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTabBase, CoreTabsBaseComponent } from '@classes/tabs';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CorePath } from '@singletons/path';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CorePath } from '@static/path';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';

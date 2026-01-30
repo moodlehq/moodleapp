@@ -22,11 +22,11 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl } from '@singletons/url';
+import { CoreTime } from '@static/time';
+import { CoreUrl } from '@static/url';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord, RETAKES_FINISHED_SYNC_TABLE_NAME } from './database/lesson';
 import { AddonModLesson, AddonModLessonLessonWSData } from './lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
@@ -36,7 +36,7 @@ import {
     ADDON_MOD_LESSON_COMPONENT_LEGACY,
     ADDON_MOD_LESSON_MODNAME,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { AddonModLessonGetPasswordResult, AddonModLessonHelper } from './lesson-helper';
 
 /**
@@ -512,7 +512,7 @@ export type AddonModLessonAutoSyncData = {
     warnings: string[];
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

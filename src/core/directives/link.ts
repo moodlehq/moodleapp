@@ -17,14 +17,14 @@ import { SafeUrl } from '@angular/platform-browser';
 
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreUrl } from '@singletons/url';
-import { CoreOpener } from '@singletons/opener';
+import { CoreUrl } from '@static/url';
+import { CoreOpener } from '@static/opener';
 import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { toBoolean } from '../transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';

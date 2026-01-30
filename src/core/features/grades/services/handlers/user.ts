@@ -26,7 +26,7 @@ import {
 import { PARTICIPANTS_PAGE_NAME } from '@features/user/constants';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import {
     CORE_GRADES_USER_MENU_FEATURE_NAME,

@@ -13,13 +13,13 @@
 // limitations under the License.
 
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Subscription } from 'rxjs';
 import type { AsyncDirective } from '../types/async-directive';
 import { PageLoadsManager } from './page-loads-manager';
 import { CorePromisedValue } from './promised-value';
 import { WSObservable } from './sites/authenticated-site';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 
 /**
  * Class to watch requests from a page load (including requests from page sub-components).

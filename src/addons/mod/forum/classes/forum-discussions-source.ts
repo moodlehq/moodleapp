@@ -27,7 +27,7 @@ import {
 import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '../services/forum-offline';
 import { ADDON_MOD_FORUM_DISCUSSIONS_PER_PAGE, AddonModForumType } from '../constants';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource<AddonModForumDiscussionItem> {
 

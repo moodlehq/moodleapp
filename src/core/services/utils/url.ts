@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { makeSingleton } from '@singletons';
-import { CoreUrl, CoreUrlParams as CoreUrlParamsNew, CoreUrlPartNames } from '@singletons/url';
+import { CoreUrl, CoreUrlParams as CoreUrlParamsNew, CoreUrlPartNames } from '@static/url';
 
 /**
  * "Utils" service with helper functions for URLs.

@@ -27,11 +27,11 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { CoreCourseManualCompletionDBRecord } from './database/course';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CORE_COURSE_AUTO_SYNCED, CoreCourseModuleCompletionStatus, CoreCourseModuleCompletionTracking } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTime } from '@static/time';
 
 /**
  * Service to sync course offline data. This only syncs the offline data of the course itself, not the offline data of
@@ -302,7 +302,7 @@ export type CoreCourseAutoSyncData = {
     warnings: CoreWSExternalWarning[];
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

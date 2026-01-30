@@ -21,14 +21,14 @@ import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CoreObject } from '@singletons/object';
+import { CoreTime } from '@static/time';
+import { CoreObject } from '@static/object';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
 /**
  * Service to handle blog entries.

@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { makeSingleton } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
-import { CorePath } from '@singletons/path';
+import { CoreFormFields } from '@static/form';
+import { CorePath } from '@static/path';
 import {
     AddonModWorkshopAssessmentDBRecord,
     AddonModWorkshopEvaluateAssessmentDBRecord,

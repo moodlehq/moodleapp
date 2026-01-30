@@ -27,10 +27,10 @@ import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
-import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreDom } from '@static/dom';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import {
@@ -59,8 +59,8 @@ import {
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModForumPostComponent } from '../../components/post/post';
 import { CoreSharedModule } from '@/core/shared.module';

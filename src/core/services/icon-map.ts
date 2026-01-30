@@ -17,7 +17,7 @@ import { makeSingleton } from '@singletons';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from './sites';
 import { CoreCacheUpdateFrequency } from '../constants';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 
 /**
  * Service to provide some features regarding LMS icon map.

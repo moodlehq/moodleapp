@@ -16,13 +16,13 @@ import { Injectable } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { makeSingleton } from '@singletons';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSites } from './sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreRedirects } from '@singletons/redirects';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreRedirects } from '@static/redirects';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreFile } from './file';

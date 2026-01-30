@@ -26,17 +26,17 @@ import {
     AddonModAssignSavePluginData,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreFile } from '@services/file';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
 import { makeSingleton } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, AddonModAssignSubmissionStatusValues } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Service that provides some helper functions for assign.

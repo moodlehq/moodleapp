@@ -20,8 +20,8 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { AddonQtypeDdMarkerQuestion } from '../classes/ddmarker';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreWait } from '@singletons/wait';
-import { CoreText } from '@singletons/text';
+import { CoreWait } from '@static/wait';
+import { CoreText } from '@static/text';
 
 /**
  * Component to render a drag-and-drop markers question.

@@ -17,7 +17,7 @@ import { CoreAnyError, CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CoreNetworkError } from '@classes/errors/network-error';

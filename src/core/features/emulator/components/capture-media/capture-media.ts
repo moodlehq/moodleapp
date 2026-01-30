@@ -16,13 +16,13 @@ import { Component, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, Input, inj
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreTime } from '@singletons/time';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreTime } from '@static/time';
 import { ModalController } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';

@@ -22,10 +22,10 @@ import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
-import { CoreArray } from '@singletons/array';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreDom } from '@static/dom';
+import { CoreTime } from '@static/time';
+import { CoreArray } from '@static/array';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonModData,
     AddonModDataEntry,
@@ -38,7 +38,7 @@ import { AddonModDataHelper, AddonModDatDisplayFieldsOptions } from '../../servi
 import { AddonModDataAutoSyncData, AddonModDataSyncResult } from '../../services/data-sync';
 import { AddonModDataPrefetchHandler } from '../../services/handlers/prefetch-lazy';
 
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
     ADDON_MOD_DATA_COMPONENT_LEGACY,
@@ -49,8 +49,8 @@ import {
     AddonModDataTemplateMode,
 } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';

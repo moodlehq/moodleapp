@@ -15,13 +15,13 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChange } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreUtils } from '@static/utils';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreUserHelper } from '@features/user/services/user-helper';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';

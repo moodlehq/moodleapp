@@ -16,7 +16,7 @@ import { CoreReminderData, CoreReminders } from '@features/reminders/services/re
 import { Component, computed, input, signal } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreToasts } from '@services/overlays/toasts';
 import { REMINDERS_DISABLED } from '@features/reminders/constants';
 import { CoreSharedModule } from '@/core/shared.module';

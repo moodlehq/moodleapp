@@ -16,7 +16,7 @@ import { AfterViewInit, Component, viewChild } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModAssignIndexComponent } from '../../components/index/index';
 import { CoreNavigator } from '@services/navigator';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

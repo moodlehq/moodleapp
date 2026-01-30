@@ -18,7 +18,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreErrorHelper } from '@services/error-helper';
 import { Translate } from '@singletons';
 import {
@@ -31,10 +31,10 @@ import {
     AddonModLessonUserAttemptAnswerPageWSData,
 } from '../../services/lesson';
 import { AddonModLessonAnswerData, AddonModLessonHelper } from '../../services/lesson-helper';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_LESSON_COMPONENT_LEGACY } from '../../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

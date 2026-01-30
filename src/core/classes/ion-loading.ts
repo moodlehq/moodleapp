@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { LoadingController } from '@singletons';
 import { CoreToasts } from '@services/overlays/toasts';
 

@@ -18,7 +18,7 @@ import { signal } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreEnrolledCourseDataWithOptions } from '@features/courses/services/courses-helper';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 
 /**
  * A collection of events displayed in the timeline block.

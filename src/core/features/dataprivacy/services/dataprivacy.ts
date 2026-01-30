@@ -19,7 +19,7 @@ import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
 /**
  * Service to handle data privacy.

@@ -16,12 +16,12 @@ import { Input, Output, EventEmitter, Component, ElementRef, OnInit, inject } fr
 import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
-import { CoreText } from '@singletons/text';
-import { CoreUrl } from '@singletons/url';
+import { CoreDom } from '@static/dom';
+import { CoreText } from '@static/text';
+import { CoreUrl } from '@static/url';
 import { CoreWSFile } from '@services/ws';
-import { CoreIonicColorNames } from '@singletons/colors';
-import { CoreLogger } from '@singletons/logger';
+import { CoreIonicColorNames } from '@static/colors';
+import { CoreLogger } from '@static/logger';
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '../services/question-helper';
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';

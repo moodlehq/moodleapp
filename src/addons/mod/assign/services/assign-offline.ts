@@ -17,10 +17,10 @@ import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { makeSingleton } from '@singletons';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { AddonModAssignOutcomes, AddonModAssignSavePluginData } from './assign';
 import {
     AddonModAssignSubmissionsDBRecord,

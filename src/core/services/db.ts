@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreBrowser } from '@singletons/browser';
+import { CoreBrowser } from '@static/browser';
 import { SQLite, makeSingleton } from '@singletons';
 import { CorePlatform } from '@services/platform';
 import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';

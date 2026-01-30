@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSite } from '@classes/sites/site';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { Subject, BehaviorSubject } from 'rxjs';
 import { CorePromisedValue } from './promised-value';
 

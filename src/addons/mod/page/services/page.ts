@@ -18,12 +18,12 @@ import { CoreWSExternalWarning, CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCourse } from '@features/course/services/course';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**

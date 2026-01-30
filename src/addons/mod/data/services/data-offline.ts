@@ -16,14 +16,14 @@ import { Injectable } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { AddonModDataEntryWSField } from './data';
 import { AddonModDataEntryDBRecord, DATA_ENTRY_TABLE } from './database/data';
 import { AddonModDataAction } from '../constants';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 
 /**
  * Service to handle Offline data.

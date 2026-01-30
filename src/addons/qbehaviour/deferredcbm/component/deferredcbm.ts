@@ -20,7 +20,7 @@ import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/que
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
-import { CoreMarkdown } from '@singletons/markdown';
+import { CoreMarkdown } from '@static/markdown';
 
 /**
  * Component to render the deferred CBM in a question.

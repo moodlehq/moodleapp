@@ -19,13 +19,13 @@ import { AddonModForum } from '@addons/mod/forum/services/forum';
 import { CoreNavigator } from '@services/navigator';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUrl } from '@static/url';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton } from '@singletons';
 
 import { isSafeNumber } from '@/core/utils/types';
 import { ADDON_MOD_FORUM_FEATURE_NAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Handler for forum push notifications clicks.

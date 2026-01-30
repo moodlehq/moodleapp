@@ -18,8 +18,8 @@ import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offlin
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { AddonModAssignSubmissionOnlineTextPluginData } from '../services/handler';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';

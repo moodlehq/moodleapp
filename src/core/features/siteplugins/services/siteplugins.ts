@@ -21,12 +21,12 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang, CoreLangFormat, CoreLangTranslationByLanguage } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreSitePluginsModuleHandler } from '../classes/handlers/module-handler';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
@@ -34,7 +34,7 @@ import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enr
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
 import { CORE_SITE_PLUGINS_COMPONENT, CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '../constants';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 
 /**
  * Service to provide functionalities regarding site plugins.
@@ -1002,7 +1002,7 @@ export type CoreSitePluginsUpdateCourseContentEvent = {
     alreadyFetched?: boolean; // Whether course data has already been fetched (no need to fetch it again).
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreDom } from '@static/dom';
+import { CoreEventObserver } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { AddonModQuizDdImageOrTextQuestionData } from '../component/ddimageortext';
 import { CoreLinkDirective } from '@directives/link';
 import { ElementRef } from '@angular/core';

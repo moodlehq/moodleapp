@@ -16,10 +16,10 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, OnDestroy, ElementRef, input, output, signal, computed, effect, inject } from '@angular/core';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreSecondsToHMSPipe } from '@pipes/seconds-to-hms';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * This directive shows a timer in format HH:MM:SS. When the countdown reaches 0, a function is called.

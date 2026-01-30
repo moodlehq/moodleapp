@@ -15,7 +15,7 @@
 import { Component } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
-import { CoreOpener } from '@singletons/opener';
+import { CoreOpener } from '@static/opener';
 import { GET_STARTED_URL, ONBOARDING_DONE } from '@features/login/constants';
 import { ModalController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';

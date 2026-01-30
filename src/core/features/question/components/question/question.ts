@@ -32,12 +32,12 @@ import { CoreQuestionBehaviourDelegate } from '@features/question/services/behav
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 
 import { CoreQuestionBehaviourButton, CoreQuestionHelper, CoreQuestionQuestion } from '@features/question/services/question-helper';
-import { CoreDom } from '@singletons/dom';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreDom } from '@static/dom';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreLogger } from '@singletons/logger';
-import { CoreObject } from '@singletons/object';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreLogger } from '@static/logger';
+import { CoreObject } from '@static/object';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import type { AsyncDirective } from '@coretypes/async-directive';

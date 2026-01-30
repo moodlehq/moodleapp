@@ -21,13 +21,13 @@ import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { DownloadStatus } from '@/core/constants';
-import { CoreEvents } from '@singletons/events';
-import { CoreTime } from '@singletons/time';
+import { CoreEvents } from '@static/events';
+import { CoreTime } from '@static/time';
 import { CORE_COURSE_ALL_COURSES_CLEARED, COURSE_STATUS_CHANGED_EVENT } from '../constants';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

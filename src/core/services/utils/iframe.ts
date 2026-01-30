@@ -18,7 +18,7 @@ import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { makeSingleton } from '@singletons';
 import { FrameElement } from '@classes/element-controllers/FrameElementController';
 import { CoreSite } from '@classes/sites/site';
-import { CoreIframe } from '@singletons/iframe';
+import { CoreIframe } from '@static/iframe';
 
 /**
  * "Utils" service with helper functions for iframes, embed and similar.

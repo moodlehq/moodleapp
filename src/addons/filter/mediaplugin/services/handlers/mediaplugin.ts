@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { AddonFilterMediaPluginVideoJS } from '@addons/filter/mediaplugin/services/videojs';
 import { Injectable } from '@angular/core';
 
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { makeSingleton } from '@singletons';
-import { CoreMedia } from '@singletons/media';
+import { CoreMedia } from '@static/media';
 
 /**
  * Handler to support the Multimedia filter.

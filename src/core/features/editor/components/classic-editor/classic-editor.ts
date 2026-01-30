@@ -24,21 +24,21 @@ import {
     viewChild,
 } from '@angular/core';
 import { IonTextarea } from '@ionic/angular';
-import { CoreUtils } from '@singletons/utils';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreUtils } from '@static/utils';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreScreen } from '@services/screen';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CorePlatform } from '@services/platform';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { CoreSwiper } from '@singletons/swiper';
-import { CoreWait } from '@singletons/wait';
+import { CoreSwiper } from '@static/swiper';
+import { CoreWait } from '@static/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-component';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreEventObserver } from '@static/events';
 
 /**
  * Implementation of the classic rich text editor.

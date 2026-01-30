@@ -15,7 +15,7 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, ElementRef, input, viewChild, output, effect, signal, inject } from '@angular/core';
 import { IonInfiniteScroll } from '@ionic/angular';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 

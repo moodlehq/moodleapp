@@ -20,7 +20,7 @@ import {
     AddonModAssignFeedbackCommentsPluginData,
 } from '../services/handler';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ContextLevel } from '@/core/constants';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';

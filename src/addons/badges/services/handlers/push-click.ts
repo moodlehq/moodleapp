@@ -14,14 +14,14 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { AddonBadges } from '../badges';
 import { makeSingleton } from '@singletons';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { CoreNavigator } from '@services/navigator';
 import { AddonBadgesHelper } from '../badges-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ADDONS_BADGES_USER_PROFILE_FEATURE_NAME } from '@addons/badges/constants';
 
 /**

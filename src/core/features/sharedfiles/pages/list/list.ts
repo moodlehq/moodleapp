@@ -14,7 +14,7 @@
 
 import { Component, OnInit } from '@angular/core';
 
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';

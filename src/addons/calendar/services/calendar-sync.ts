@@ -15,9 +15,9 @@
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
 import { CoreNetwork } from '@services/network';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import {
     AddonCalendar,
     AddonCalendarEvent,
@@ -35,9 +35,9 @@ import {
     ADDON_CALENDAR_MANUAL_SYNCED,
     ADDON_CALENDAR_SYNC_ID,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { DEFAULT_TEXT_FORMAT } from '@static/text';
 
 /**
  * Service to sync calendar.
@@ -320,7 +320,7 @@ export type AddonCalendarSyncInvalidateEvent = {
     repeated: number;
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

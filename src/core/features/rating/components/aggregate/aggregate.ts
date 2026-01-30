@@ -22,7 +22,7 @@ import {
 } from '@features/rating/services/rating';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreSites } from '@services/sites';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

@@ -18,13 +18,13 @@ import { Subscription } from 'rxjs';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 
 import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';
 import { CoreRoutedItemsManager } from './routed-items-manager';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreDom } from '@static/dom';
+import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Helper class to manage the state and routing of a list of items in a page.

@@ -16,14 +16,14 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { CoreH5P } from '../services/h5p';
 import { CoreH5PCore, CoreH5PDisplayOptions, CoreH5PLocalization } from './core';
 import { CoreError } from '@classes/errors/error';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePluginFileTreatDownloadedFileOptions } from '@services/plugin-file-delegate';
 import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Equivalent to Moodle's H5P helper class.

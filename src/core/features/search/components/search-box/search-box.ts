@@ -30,7 +30,7 @@ import { CoreSites } from '@services/sites';
 import { CoreSearchHistory } from '../../services/search-history.service';
 import { Translate } from '@singletons';
 import { CoreSearchHistoryDBRecord } from '../../services/search-history-db';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 

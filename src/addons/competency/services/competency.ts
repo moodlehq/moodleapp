@@ -19,9 +19,9 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreCommentsArea } from '@features/comments/services/comments';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 import {
     AddonCompetencyLearningPlanStatus,
     AddonCompetencyReviewStatus,

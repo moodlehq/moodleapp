@@ -21,8 +21,8 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroups, CoreGroupInfo } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreArray } from '@singletons/array';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreArray } from '@static/array';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 
 import {
     AddonModData,
@@ -33,7 +33,7 @@ import {
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import {
     ADDON_MOD_DATA_AUTO_SYNCED,
     ADDON_MOD_DATA_COMPONENT_LEGACY,
@@ -42,7 +42,7 @@ import {
     AddonModDataTemplateType,
     AddonModDataTemplateMode,
 } from '../../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';

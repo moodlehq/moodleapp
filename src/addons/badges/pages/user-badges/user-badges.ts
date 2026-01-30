@@ -15,14 +15,14 @@
 import { AfterViewInit, Component, OnDestroy, signal, viewChild, WritableSignal } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonBadgesUserBadgesSource } from '@addons/badges/classes/user-badges-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';

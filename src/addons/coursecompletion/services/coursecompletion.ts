@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseAnyCourseData, CoreCourses } from '@features/courses/services/courses';

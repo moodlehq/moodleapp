@@ -15,7 +15,7 @@
 import { Component, ElementRef, viewChild, input, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { ModalController } from '@singletons';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreBaseModule } from '@/core/base.module';

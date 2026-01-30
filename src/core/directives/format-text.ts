@@ -29,8 +29,8 @@ import {
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CoreIframe } from '@singletons/iframe';
-import { CoreText } from '@singletons/text';
+import { CoreIframe } from '@static/iframe';
+import { CoreText } from '@static/text';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSite } from '@classes/sites/site';
 import { NgZone, Translate } from '@singletons';
@@ -39,28 +39,28 @@ import { CoreLinkDirective } from './link';
 import { CoreFilter, CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreFilterDelegate } from '@features/filter/services/filter-delegate';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreSubscriptions } from '@singletons/subscriptions';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreSubscriptions } from '@static/subscriptions';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import type { AsyncDirective } from '@coretypes/async-directive';
-import { CoreDom } from '@singletons/dom';
-import { CoreEvents } from '@singletons/events';
+import { CoreDom } from '@static/dom';
+import { CoreEvents } from '@static/events';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 import { CorePlatform } from '@services/platform';
 import { ElementController } from '@classes/element-controllers/ElementController';
 import { MediaElementController } from '@classes/element-controllers/MediaElementController';
 import { FrameElement, FrameElementController } from '@classes/element-controllers/FrameElementController';
-import { CoreUrl } from '@singletons/url';
-import { CoreIcons } from '@singletons/icons';
+import { CoreUrl } from '@static/url';
+import { CoreIcons } from '@static/icons';
 import { ContextLevel, CoreLinkOpenMethod } from '../constants';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
-import { CoreBootstrap } from '@singletons/bootstrap';
+import { CoreBootstrap } from '@static/bootstrap';
 
 /**
  * Directive to format text rendered. It renders the HTML and treats all links and media, using CoreLinkDirective

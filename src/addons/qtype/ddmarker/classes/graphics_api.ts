@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { AddonQtypeDdMarkerQuestion } from './ddmarker';
 
 /**

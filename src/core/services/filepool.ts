@@ -17,21 +17,21 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
-import { CoreEventPackageStatusChanged, CoreEvents } from '@singletons/events';
+import { CoreEventPackageStatusChanged, CoreEvents } from '@static/events';
 import { CoreFile } from '@services/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
-import { CoreDom } from '@singletons/dom';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreArray } from '@singletons/array';
+import { CoreDom } from '@static/dom';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
+import { CoreArray } from '@static/array';
 import { CoreError } from '@classes/errors/error';
 import { CoreBytesConstants, DownloadStatus } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import {
     APP_SCHEMA,
     FILES_TABLE_NAME,
@@ -55,12 +55,12 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
 
 /**
  * Filepool queue management.

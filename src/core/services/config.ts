@@ -19,14 +19,14 @@ import { CoreAppDB } from './app-db';
 import { APP_SCHEMA, ConfigDBEntry, CONFIG_TABLE_NAME } from '@services/database/config';
 import { makeSingleton } from '@singletons';
 import { CoreConstants } from '../constants';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { asyncInstance } from '../utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreBrowser } from '@singletons/browser';
-import { CoreText } from '@singletons/text';
+import { CoreBrowser } from '@static/browser';
+import { CoreText } from '@static/text';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

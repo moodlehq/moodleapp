@@ -15,8 +15,8 @@
 import { CoreErrorHelper } from '@services/error-helper';
 import { ElementController } from './ElementController';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreMedia } from '@singletons/media';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreMedia } from '@static/media';
 import { AddonFilterMediaPluginVideoJS, VIDEO_JS_PLAYER_CREATED } from '@addons/filter/mediaplugin/services/videojs';
 import type { VideoJSPlayer } from 'video.js';
 

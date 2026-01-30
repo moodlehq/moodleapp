@@ -17,12 +17,12 @@ import { Injectable } from '@angular/core';
 import { CoreFilterDefaultHandler } from '@features/filter/services/handlers/default-filter';
 import { CoreFilterFilter, CoreFilterFormatTextOptions } from '@features/filter/services/filter';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton } from '@singletons';
-import { CoreDom } from '@singletons/dom';
-import { CoreLogger } from '@singletons/logger';
+import { CoreDom } from '@static/dom';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Handler to support the MathJax filter.

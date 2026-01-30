@@ -16,9 +16,9 @@ import { Component, OnDestroy, ElementRef, viewChild } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { AddonQtypeDdwtosQuestion } from '../classes/ddwtos';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

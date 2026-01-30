@@ -14,7 +14,7 @@
 
 import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-items-manager-source';
 import { CoreUserProfile } from '@features/user/services/user';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import {
     AddonCompetency,
     AddonCompetencyDataForPlanPageCompetency,

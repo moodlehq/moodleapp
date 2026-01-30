@@ -18,7 +18,7 @@ import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors 
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import {
     CoreLoginHelper,
     CoreLoginSiteFinderSettings,
@@ -27,11 +27,11 @@ import {
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { AlertButton } from '@ionic/core';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreUserSupport } from '@features/user/services/support';
@@ -44,12 +44,12 @@ import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { ONBOARDING_DONE } from '@features/login/constants';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreCountries } from '@singletons/countries';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreCountries } from '@static/countries';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

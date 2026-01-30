@@ -29,11 +29,11 @@ import {
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@singletons/utils';
+import { CoreTime } from '@static/time';
+import { CoreUtils } from '@static/utils';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { AddonModQuizAccessRuleDelegate } from './access-rules-delegate';
 import { AddonModQuizOffline, AddonModQuizQuestionsWithAnswers } from './quiz-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -52,14 +52,14 @@ import {
     ADDON_MOD_QUIZ_IMMEDIATELY_AFTER_PERIOD,
     AddonModQuizNavMethods,
 } from '../constants';
-import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreIonicColorNames } from '@static/colors';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreObject } from '@singletons/object';
-import { CoreArray } from '@singletons/array';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreObject } from '@static/object';
+import { CoreArray } from '@static/array';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

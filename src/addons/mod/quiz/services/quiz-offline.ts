@@ -18,10 +18,10 @@ import { CoreQuestionBehaviourDelegate, CoreQuestionQuestionWithAnswers } from '
 import { CoreQuestionAnswerDBRecord } from '@features/question/services/database/question';
 import { CoreQuestion, CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { AddonModQuizAttemptDBRecord, ATTEMPTS_TABLE_NAME } from './database/quiz';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from './quiz';
 import { ADDON_MOD_QUIZ_COMPONENT_LEGACY } from '../constants';

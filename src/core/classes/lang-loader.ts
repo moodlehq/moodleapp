@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { mergeDeep, TranslateLoader, TranslationObject } from '@ngx-translate/core';
 import { Http, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { firstValueFrom, from, Observable, of } from 'rxjs';
 
 @Injectable()

@@ -27,7 +27,7 @@ import { AddonModForumOffline, AddonModForumOfflineDiscussion } from '@addons/mo
 import { Translate } from '@singletons';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreGroupInfo } from '@services/groups';
-import { CoreEvents, CoreEventObserver } from '@singletons/events';
+import { CoreEvents, CoreEventObserver } from '@static/events';
 import {
     AddonModForumAutoSyncData,
     AddonModForumManualSyncData,

@@ -19,8 +19,8 @@ import { CoreCourseBasicData, CoreCourses } from '@features/courses/services/cou
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCoursesLinksHandlerBase } from '@features/courses/services/handlers/base-link-handler';
-import { CoreLogger } from '@singletons/logger';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreLogger } from '@static/logger';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Handler to treat links to course section.

@@ -14,8 +14,8 @@
 
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CorePath } from '@singletons/path';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CorePath } from '@static/path';
 import { CoreH5PCore, CoreH5PLibraryBasicData } from './core';
 import { CoreH5PFramework } from './framework';
 import { CoreH5PMetadata } from './metadata';

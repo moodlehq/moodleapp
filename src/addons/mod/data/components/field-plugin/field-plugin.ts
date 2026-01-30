@@ -15,7 +15,7 @@
 import { Component, OnInit, OnChanges, Input, Output, SimpleChange, Type, EventEmitter, viewChild } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModDataEntryFieldInitialized, AddonModDataFieldPluginBaseComponent } from '../../classes/base-field-plugin-component';
 import { AddonModDataData, AddonModDataField } from '../../services/data';
 import { AddonModDataFieldsDelegate } from '../../services/data-fields-delegate';

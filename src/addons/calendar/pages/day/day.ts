@@ -14,9 +14,9 @@
 
 import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { CoreNetwork } from '@services/network';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
@@ -31,7 +31,7 @@ import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { Params } from '@angular/router';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { CoreSyncIcon } from '@/core/constants';
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
@@ -42,7 +42,7 @@ import {
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { AddonCalendarEventsSource } from '@addons/calendar/classes/events-source';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreModals } from '@services/overlays/modals';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
@@ -55,7 +55,7 @@ import {
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
     AddonCalendarEventType,
 } from '@addons/calendar/constants';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';

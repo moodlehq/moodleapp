@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreComments, CoreCommentsProvider } from './comments';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreSites } from '@services/sites';
@@ -26,7 +26,7 @@ import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/co
 import { CoreSyncResult } from '@services/sync';
 import { ContextLevel } from '@/core/constants';
 import { CORE_COMMENTS_AUTO_SYNCED } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Service to sync omments.
@@ -340,7 +340,7 @@ export type CoreCommentsSyncAutoSyncData = {
     warnings: string[];
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

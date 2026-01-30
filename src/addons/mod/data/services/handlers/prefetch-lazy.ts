@@ -19,15 +19,15 @@ import { CoreCourses } from '@features/courses/services/courses';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CoreObject } from '@singletons/object';
+import { CoreTime } from '@static/time';
+import { CoreObject } from '@static/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { AddonModDataEntry, AddonModData, AddonModDataData } from '../data';
 import { AddonModDataSync, AddonModDataSyncResult } from '../data-sync';
 import { ContextLevel } from '@/core/constants';
 import { AddonModDataPrefetchHandlerService } from '@addons/mod/data/services/handlers/prefetch';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ADDON_MOD_DATA_MODNAME } from '../../constants';
 
 /**

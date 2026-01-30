@@ -17,7 +17,7 @@ import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
 
-import { CoreEvents, CoreEventObserver } from '@singletons/events';
+import { CoreEvents, CoreEventObserver } from '@static/events';
 import { CoreMainMenu } from '../../services/mainmenu';
 import {
     CoreMainMenuDelegate,
@@ -25,16 +25,16 @@ import {
     CoreMainMenuPageNavHandlerToDisplay,
 } from '../../services/mainmenu-delegate';
 import { Router } from '@singletons';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from '@classes/aria-role-tab';
 import { CoreNavigator } from '@services/navigator';
 import { filter } from 'rxjs/operators';
 import { NavigationEnd } from '@angular/router';
 import { CoreSites } from '@services/sites';
-import { CoreDom } from '@singletons/dom';
-import { CoreLogger } from '@singletons/logger';
+import { CoreDom } from '@static/dom';
+import { CoreLogger } from '@static/logger';
 import { CorePlatform } from '@services/platform';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreMainMenuDeepLinkManager } from '@features/mainmenu/classes/deep-link-manager';
 import { CoreSiteInfoUserHomepage } from '@classes/sites/unauthenticated-site';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
@@ -47,7 +47,7 @@ import {
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { BackButtonPriority } from '@/core/constants';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 
 /**
  * Page that displays the main menu of the app.

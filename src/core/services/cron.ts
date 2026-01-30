@@ -17,12 +17,12 @@ import { Injectable } from '@angular/core';
 import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
 import { CoreConfig } from '@services/config';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreConfigSettingKey, CoreTimeConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { APP_SCHEMA, CRON_TABLE_NAME, CronDBEntry } from '@services/database/cron';
 import { asyncInstance } from '../utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';

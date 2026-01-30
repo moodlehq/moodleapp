@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, viewChild, effect } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import {
     AddonModScorm,
     AddonModScormAttemptCountResult,
@@ -29,7 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreIframeComponent } from '@components/iframe/iframe';
 import { CoreAlerts } from '@services/overlays/alerts';
 

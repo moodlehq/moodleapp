@@ -15,10 +15,10 @@
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 

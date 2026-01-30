@@ -19,8 +19,8 @@ import { Md5 } from 'ts-md5';
 import { CoreSharedFiles } from '@features/sharedfiles/services/sharedfiles';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CorePath } from '@singletons/path';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CorePath } from '@static/path';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 

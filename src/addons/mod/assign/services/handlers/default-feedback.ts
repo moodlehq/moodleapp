@@ -17,7 +17,7 @@ import { CoreWSFile } from '@services/ws';
 import { Translate } from '@singletons';
 import { AddonModAssignPlugin } from '../assign';
 import { AddonModAssignFeedbackHandler } from '../feedback-delegate';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 
 /**
  * Default handler used when a feedback plugin doesn't have a specific implementation.

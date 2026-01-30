@@ -18,9 +18,9 @@ import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreOpener } from '@singletons/opener';
+import { CoreOpener } from '@static/opener';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

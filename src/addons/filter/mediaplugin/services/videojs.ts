@@ -16,16 +16,16 @@ import { Injectable } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLang } from '@services/lang';
-import { CoreText } from '@singletons/text';
-import { CoreUrl } from '@singletons/url';
+import { CoreText } from '@static/text';
+import { CoreUrl } from '@static/url';
 import { makeSingleton } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreEvents } from '@singletons/events';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreEvents } from '@static/events';
 import type videojs from 'video.js';
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
 import { CoreSites } from '@services/sites';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

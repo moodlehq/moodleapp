@@ -28,7 +28,7 @@ import {
 } from '../constants';
 import { CoreCustomMenuItem } from './custommenu';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

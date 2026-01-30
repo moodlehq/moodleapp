@@ -29,7 +29,7 @@ import {
     CoreSitePluginsCourseModuleHandlerData,
 } from '@features/siteplugins/services/siteplugins';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreSitePluginsPluginContentComponent, CoreSitePluginsPluginContentLoadedData } from '../plugin-content/plugin-content';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleInfoComponent } from '../../../course/components/module-info/module-info';

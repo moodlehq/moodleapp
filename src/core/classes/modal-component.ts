@@ -14,7 +14,7 @@
 
 import { ElementRef, inject } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 
 /**
  * Helper class to build modals.

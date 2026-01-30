@@ -30,16 +30,16 @@ import { Subscription } from 'rxjs';
 
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { CoreAriaRoleTab, CoreAriaRoleTabFindable } from './aria-role-tab';
-import { CoreEventObserver } from '@singletons/events';
-import { CoreDom } from '@singletons/dom';
-import { CoreWait } from '@singletons/wait';
+import { CoreEventObserver } from '@static/events';
+import { CoreDom } from '@static/dom';
+import { CoreWait } from '@static/wait';
 import { CoreError } from './errors/error';
 import { CorePromisedValue } from './promised-value';
 import type { AsyncDirective } from '../types/async-directive';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { CoreSwiper } from '@singletons/swiper';
+import { CoreSwiper } from '@static/swiper';
 import { toBoolean } from '../transforms/boolean';
 import { BackButtonPriority } from '../constants';
 

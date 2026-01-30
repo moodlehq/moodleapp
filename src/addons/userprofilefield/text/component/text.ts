@@ -16,7 +16,7 @@ import { Component } from '@angular/core';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/signup';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

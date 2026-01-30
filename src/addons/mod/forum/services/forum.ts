@@ -23,8 +23,8 @@ import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUrl } from '@static/url';
+import { CoreUtils } from '@static/utils';
 import {
     CoreStatusWithWarningsWSResponse,
     CoreWSExternalFile,
@@ -49,14 +49,14 @@ import {
     AddonModForumType,
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreObject } from '@singletons/object';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreObject } from '@static/object';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

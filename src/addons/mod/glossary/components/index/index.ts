@@ -26,9 +26,9 @@ import { CoreRatingOffline } from '@features/rating/services/rating-offline';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonModGlossaryEntriesSource,
     AddonModGlossaryEntryItem,
@@ -46,7 +46,7 @@ import {
     AddonModGlossarySyncResult,
 } from '../../services/glossary-sync';
 import { AddonModGlossaryPrefetchHandler } from '../../services/handlers/prefetch';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import {
     ADDON_MOD_GLOSSARY_COMPONENT_LEGACY,
     ADDON_MOD_GLOSSARY_ENTRY_ADDED,

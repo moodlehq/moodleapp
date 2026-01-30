@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

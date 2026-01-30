@@ -19,7 +19,7 @@ import {
 } from '@classes/sites/unauthenticated-site';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUserSupportConfig } from './support-config';
 import { CoreSitesFactory } from '@services/sites-factory';
 

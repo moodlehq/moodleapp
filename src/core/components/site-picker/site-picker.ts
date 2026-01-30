@@ -16,7 +16,7 @@ import { Component, OnInit, input, output, signal } from '@angular/core';
 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
 

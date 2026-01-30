@@ -14,10 +14,10 @@
 
 import { Component, ElementRef, Input, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { DomSanitizer, ModalController, Translate } from '@singletons';
-import { CoreMath } from '@singletons/math';
+import { CoreMath } from '@static/math';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
-import { CoreSwiper } from '@singletons/swiper';
+import { CoreSwiper } from '@static/swiper';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { CoreSharedModule } from '@/core/shared.module';
 

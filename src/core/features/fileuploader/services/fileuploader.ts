@@ -19,22 +19,22 @@ import { MediaFile, CaptureError, CaptureVideoOptions } from '@awesome-cordova-p
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@singletons/utils';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreTime } from '@static/time';
+import { CoreUtils } from '@static/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
 import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/overlays/modals';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreBytesConstants } from '@/core/constants';
 
 /**

@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, inject, viewChild } from '@angular/core';
 import { AccordionGroupChangeEventDetail, IonAccordionGroup, IonContent } from '@ionic/angular';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessagesConversationFormatted,
@@ -32,7 +32,7 @@ import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 import { ActivatedRoute, Params } from '@angular/router';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CorePlatform } from '@services/platform';

@@ -15,10 +15,10 @@
 import { CoreFile } from '@services/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CorePath } from '@singletons/path';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CorePath } from '@static/path';
 import {
     CoreH5PCore,
     CoreH5PDependencyAsset,
@@ -29,7 +29,7 @@ import {
 } from './core';
 import { CONTENTS_LIBRARIES_TABLE_NAME, CONTENT_TABLE_NAME, CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
 import { CoreH5PLibraryBeingSaved } from './storage';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Equivalent to Moodle's implementation of H5PFileStorage.

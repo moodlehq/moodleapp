@@ -19,7 +19,7 @@ import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 import { ModalController } from '@singletons';
 import { CoreLoadings } from '@services/overlays/loadings';

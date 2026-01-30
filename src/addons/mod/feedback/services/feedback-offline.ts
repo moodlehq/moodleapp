@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { makeSingleton } from '@singletons';
 import { AddonModFeedbackResponseDBRecord, FEEDBACK_TABLE_NAME } from './database/feedback';
 import { AddonModFeedbackResponseValue } from './feedback';

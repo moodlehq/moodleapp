@@ -14,8 +14,8 @@
 
 import { Component, ElementRef, OnInit, ChangeDetectorRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { CoreText } from '@singletons/text';
-import { CoreCountries, CoreCountry } from '@singletons/countries';
+import { CoreText } from '@static/text';
+import { CoreCountries, CoreCountry } from '@static/countries';
 import { Translate } from '@singletons';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profile-field-delegate';
@@ -26,16 +26,16 @@ import {
     CoreAuthSignupUserInfo,
 } from '@features/login/services/signup';
 import { CoreNavigator } from '@services/navigator';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { CoreRecaptchaComponent } from '@components/recaptcha/recaptcha';
-import { CorePath } from '@singletons/path';
-import { CoreDom } from '@singletons/dom';
+import { CorePath } from '@static/path';
+import { CoreDom } from '@static/dom';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreOpener } from '@singletons/opener';
+import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from '@features/user/components/user-profile-field/user-profile-field';

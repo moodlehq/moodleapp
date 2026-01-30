@@ -15,10 +15,10 @@
 import { Component, computed, effect, input, signal } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
-import { CoreIcons } from '@singletons/icons';
-import { CoreObject } from '@singletons/object';
+import { CoreIcons } from '@static/icons';
+import { CoreObject } from '@static/object';
 import { CoreIconMap } from '@services/icon-map';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Component to display a pix icon in an overview item.

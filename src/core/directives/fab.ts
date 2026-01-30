@@ -14,7 +14,7 @@
 
 import { Directive, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 
 /**
  * Directive to move ion-fab components as direct children of the nearest ion-content.

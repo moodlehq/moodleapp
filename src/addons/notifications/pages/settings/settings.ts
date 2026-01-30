@@ -17,12 +17,12 @@ import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { AddonMessageOutputDelegate, AddonMessageOutputHandlerData } from '@addons/messageoutput/services/messageoutput-delegate';
 import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import {
     AddonNotifications,
     AddonNotificationsPreferencesNotificationProcessorState,
@@ -35,7 +35,7 @@ import {
     AddonNotificationsPreferencesProcessorFormatted,
 } from '@addons/notifications/services/notifications-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CoreErrorHelper } from '@services/error-helper';

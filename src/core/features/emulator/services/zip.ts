@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Zip } from '@features/native/plugins/zip';
 import JSZip from 'jszip';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { File } from '@singletons';
 
 /**

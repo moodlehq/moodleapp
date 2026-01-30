@@ -18,8 +18,8 @@ import { Subscription } from 'rxjs';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
-import { CoreLogger } from '@singletons/logger';
-import { CoreFormFields, CoreForms } from '@singletons/form';
+import { CoreLogger } from '@static/logger';
+import { CoreFormFields, CoreForms } from '@static/form';
 
 /**
  * Base class for directives that need to call a WS.

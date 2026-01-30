@@ -17,9 +17,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 import { timeout } from 'rxjs/operators';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreWS } from '@services/ws';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreConstants, MINIMUM_MOODLE_VERSION, MOODLE_RELEASES } from '@/core/constants';
 import {
     CoreSite,
@@ -29,7 +29,7 @@ import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sq
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import {
     APP_SCHEMA,
     SCHEMA_VERSIONS_TABLE_SCHEMA,
@@ -41,7 +41,7 @@ import {
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSitesFactory } from './sites-factory';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -61,15 +61,15 @@ import { CoreCacheManager } from '@services/cache-manager';
 import { CoreSiteInfo, CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { firstValueFrom } from 'rxjs';
-import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreErrorHelper } from './error-helper';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreAppDB } from './app-db';
-import { CoreRedirects } from '@singletons/redirects';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreOpener } from '@singletons/opener';
+import { CoreRedirects } from '@static/redirects';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from './overlays/alerts';
-import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreErrorLogs } from '@static/error-logs';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';

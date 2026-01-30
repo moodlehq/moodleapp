@@ -16,20 +16,20 @@ import { Injectable } from '@angular/core';
 
 import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
 
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreBytesConstants, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { makeSingleton, File, WebView } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CorePlatform } from '@services/platform';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { Zip } from '@features/native/plugins';
-import { CoreUrl } from '@singletons/url';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreUrl } from '@static/url';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Progress event used when writing a file data into a file.

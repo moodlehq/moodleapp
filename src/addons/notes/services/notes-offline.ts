@@ -14,11 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { makeSingleton } from '@singletons';
 import { AddonNotesDBRecord, AddonNotesDeletedDBRecord, NOTES_DELETED_TABLE, NOTES_TABLE } from './database/notes';
 import { AddonNotesPublishState } from './notes';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { DEFAULT_TEXT_FORMAT } from '@static/text';
 
 /**
  * Service to handle offline notes.

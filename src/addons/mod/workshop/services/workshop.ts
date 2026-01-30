@@ -19,11 +19,11 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreArray } from '@singletons/array';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CoreArray } from '@static/array';
 import { CoreStatusWithWarningsWSResponse, CoreWS, CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModWorkshopOffline } from './workshop-offline';
 import {
     ADDON_MOD_WORKSHOP_ASSESSMENT_INVALIDATED,
@@ -42,10 +42,10 @@ import {
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

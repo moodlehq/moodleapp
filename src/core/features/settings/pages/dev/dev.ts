@@ -24,13 +24,13 @@ import { CoreSettingsHelper } from '@features/settings/services/settings-helper'
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';

@@ -15,10 +15,10 @@
 import { Component } from '@angular/core';
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { Translate } from '@singletons';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CorePlatform } from '@services/platform';
 import { CoreSharedModule } from '@/core/shared.module';
 

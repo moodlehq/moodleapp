@@ -16,19 +16,19 @@ import { Injectable } from '@angular/core';
 
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreCountries } from '@singletons/countries';
-import { CoreLogger } from '@singletons/logger';
+import { CoreCountries } from '@static/countries';
+import { CoreLogger } from '@static/logger';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@singletons/events';
+import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@static/events';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTextFormat } from '@static/text';
 import {
     CORE_USER_PROFILE_REFRESHED,
     CORE_USER_PROFILE_PICTURE_UPDATED,
@@ -37,7 +37,7 @@ import {
 } from '../constants';
 import { CoreUserPreferences } from './user-preferences';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

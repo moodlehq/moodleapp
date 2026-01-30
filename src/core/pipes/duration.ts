@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Pipe, PipeTransform } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
-import { CoreTime } from '@singletons/time';
+import { CoreLogger } from '@static/logger';
+import { CoreTime } from '@static/time';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.

@@ -16,7 +16,7 @@ import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-e
 import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { Translate } from '@singletons';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CoreH5PSemantics } from './content-validator';
 import { CoreH5PCore, CoreH5PLibraryBasicData, CoreH5PMissingLibrary } from './core';
 import { CoreH5PFramework } from './framework';

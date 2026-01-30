@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, inject } from '@angular/core';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreTime } from '@singletons/time';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreTime } from '@static/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourses,
@@ -26,8 +26,8 @@ import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/servi
 import { CoreCourseOptionsDelegate } from '@features/course/services/course-options-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreSite } from '@classes/sites/site';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreText } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreText } from '@static/text';
 import { AddonCourseCompletion } from '@addons/coursecompletion/services/coursecompletion';
 import { IonSearchbar } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';

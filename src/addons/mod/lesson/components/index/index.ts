@@ -21,10 +21,10 @@ import { CoreUser } from '@features/user/services/user';
 import { IonInput } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
-import { CoreForms } from '@singletons/form';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreForms } from '@static/form';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { AddonModLessonRetakeFinishedInSyncDBRecord } from '../../services/database/lesson';
 import { AddonModLessonPrefetchHandler } from '../../services/handlers/prefetch';
 import {
@@ -41,7 +41,7 @@ import {
     AddonModLessonSync,
     AddonModLessonSyncResult,
 } from '../../services/lesson-sync';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
 import {

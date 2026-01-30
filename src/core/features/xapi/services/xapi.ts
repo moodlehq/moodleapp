@@ -23,9 +23,9 @@ import { makeSingleton } from '@singletons';
 import { CoreXAPIItemAgent } from '../classes/item-agent';
 import { CoreXAPIIRI } from '../classes/iri';
 import { CoreError } from '@classes/errors/error';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 export const XAPI_STATE_DELETED = 'STATE_DELETED';
 

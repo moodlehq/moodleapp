@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourses,
@@ -33,10 +33,10 @@ import {
     CoreGradesTableLeaderColumn,
     CoreGradesTableRow,
 } from '@features/grades/services/grades';
-import { CoreText } from '@singletons/text';
-import { CoreUrl } from '@singletons/url';
-import { CoreMenuItem, CoreUtils } from '@singletons/utils';
-import { CoreDom } from '@singletons/dom';
+import { CoreText } from '@static/text';
+import { CoreUrl } from '@static/url';
+import { CoreMenuItem, CoreUtils } from '@static/utils';
+import { CoreDom } from '@static/dom';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -46,8 +46,8 @@ import { CoreCourseAccess } from '@features/course/services/course-options-deleg
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreCourseAccessDataType } from '@features/course/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreArray } from '@singletons/array';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreArray } from '@static/array';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CORE_GRADES_COURSE_OPTION_NAME, GRADES_PAGE_NAME } from '../constants';
 

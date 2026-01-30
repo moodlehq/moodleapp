@@ -43,10 +43,10 @@ import {
 import { CorePromisedValue } from '@classes/promised-value';
 
 import { CoreCompile } from '@features/compile/services/compile';
-import { CoreAngular } from '@singletons/angular';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreAngular } from '@static/angular';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWS } from '@services/ws';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

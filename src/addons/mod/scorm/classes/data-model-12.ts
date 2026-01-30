@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreUtils } from '@singletons/utils';
-import { CoreEvents } from '@singletons/events';
+import { CoreUtils } from '@static/utils';
+import { CoreEvents } from '@static/events';
 import {
     AddonModScorm,
     AddonModScormCommonEventData,

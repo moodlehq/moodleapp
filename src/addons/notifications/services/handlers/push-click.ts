@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton } from '@singletons';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
@@ -23,8 +23,8 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { AddonNotifications } from '../notifications';
 import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreOpener } from '@singletons/opener';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreOpener } from '@static/opener';
 import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME } from '@addons/notifications/constants';
 
 /**

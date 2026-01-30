@@ -22,7 +22,7 @@ import {
 } from '@addons/mod/workshop/services/workshop';
 import { Injectable, Type } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModWorkshopAssessmentStrategyNumErrorsHandlerService } from './handler';
 
 /**

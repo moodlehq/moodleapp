@@ -20,21 +20,21 @@ import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CoreArray } from '@singletons/array';
+import { CoreTime } from '@static/time';
+import { CoreArray } from '@static/array';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseModuleContentFile } from './course';
 import { CoreCache } from '@classes/cache';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { DownloadStatus, DownloadedStatus, ContextLevel } from '@/core/constants';
 import { CoreDelegate, CoreDelegateHandler } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
-import { CoreEvents, CoreEventSectionStatusChangedData } from '@singletons/events';
+import { CoreEvents, CoreEventSectionStatusChangedData } from '@static/events';
 import { CoreError } from '@classes/errors/error';
 import { CoreWSFile, CoreWSExternalWarning } from '@services/ws';
 import { CHECK_UPDATES_TIMES_TABLE, CoreCourseCheckUpdatesDBRecord } from './database/module-prefetch';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 
 /**

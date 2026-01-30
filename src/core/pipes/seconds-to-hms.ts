@@ -14,8 +14,8 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { CoreText } from '@singletons/text';
-import { CoreLogger } from '@singletons/logger';
+import { CoreText } from '@static/text';
+import { CoreLogger } from '@static/logger';
 import { CoreTimeConstants } from '@/core/constants';
 
 /**

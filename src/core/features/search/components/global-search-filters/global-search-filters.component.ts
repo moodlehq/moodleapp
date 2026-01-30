@@ -20,9 +20,9 @@ import {
     CoreSearchGlobalSearchSearchAreaCategory,
     CORE_SEARCH_GLOBAL_SEARCH_FILTERS_UPDATED,
 } from '@features/search/services/global-search';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { ModalController } from '@singletons';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 

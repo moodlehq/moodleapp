@@ -19,7 +19,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitePluginsPluginContentComponent } from '../components/plugin-content/plugin-content';
 import { CoreSitePlugins } from '../services/siteplugins';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ContextLevel } from '@/core/constants';
 

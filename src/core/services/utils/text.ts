@@ -19,9 +19,9 @@ import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { DomSanitizer, makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreUrl } from '@singletons/url';
-import { CoreDom } from '@singletons/dom';
-import { CoreText } from '@singletons/text';
+import { CoreUrl } from '@static/url';
+import { CoreDom } from '@static/dom';
+import { CoreText } from '@static/text';
 import { CoreViewer, CoreViewerTextOptions } from '@features/viewer/services/viewer';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 

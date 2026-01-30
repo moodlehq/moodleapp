@@ -23,9 +23,9 @@ import { CoreCourseFormatCurrentSectionData, CoreCourseFormatDelegate } from '@f
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseCompletion } from '@features/course/services/course-completion';
 import { CoreSites } from '@services/sites';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { ModalController } from '@singletons';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
 
 /**

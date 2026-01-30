@@ -19,13 +19,13 @@ import { CoreModalComponent } from '@classes/modal-component';
 import { CoreModalLateralTransitionEnter, CoreModalLateralTransitionLeave } from '@classes/modal-lateral-transition';
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
 import { AngularFrameworkDelegate, makeSingleton, ModalController, Router } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { Subscription, filter } from 'rxjs';
 import { Md5 } from 'ts-md5';
 import { fixOverlayAriaHidden } from '../../utils/fix-aria-hidden';
 import { ModalOptions } from '@ionic/angular';
 import { CorePasswordModalResponse, CorePasswordModalParams } from '@components/password-modal/password-modal';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 
 /**
  * Handles application modals.

@@ -14,7 +14,7 @@
 
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { IonContent } from '@ionic/angular';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonMessagesConversationFormatted,
@@ -25,8 +25,8 @@ import {
 } from '../../services/messages';
 import { AddonMessagesOffline } from '../../services/messages-offline';
 import { AddonMessagesSync } from '../../services/messages-sync';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreLogger } from '@singletons/logger';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreLogger } from '@static/logger';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { Md5 } from 'ts-md5/dist/md5';
 import { dayjs } from '@/core/utils/dayjs';
@@ -36,10 +36,10 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { LOADING_ICON } from '@/core/constants';
-import { CoreDom } from '@singletons/dom';
-import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreText } from '@singletons/text';
-import { CoreWait } from '@singletons/wait';
+import { CoreDom } from '@static/dom';
+import { CoreKeyboard } from '@static/keyboard';
+import { CoreText } from '@static/text';
+import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import {

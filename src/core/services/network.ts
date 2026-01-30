@@ -17,7 +17,7 @@ import { CorePlatform } from '@services/platform';
 import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
-import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreHTMLClasses } from '@static/html-classes';
 
 enum CoreNetworkConnection {
     UNKNOWN = 'unknown',

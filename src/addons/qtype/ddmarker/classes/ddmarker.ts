@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreText } from '@singletons/text';
-import { CoreCoordinates, CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreText } from '@static/text';
+import { CoreCoordinates, CoreDom } from '@static/dom';
+import { CoreEventObserver } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { AddonQtypeDdMarkerQuestionData } from '../component/ddmarker';
 import { AddonQtypeDdMarkerGraphicsApi } from './graphics_api';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreLinkDirective } from '@directives/link';
 import { ElementRef } from '@angular/core';

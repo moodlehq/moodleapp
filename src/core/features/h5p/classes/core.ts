@@ -15,8 +15,8 @@
 import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PFileStorage } from './file-storage';
 import { CoreH5PFramework } from './framework';
@@ -24,7 +24,7 @@ import { CoreH5PContentValidator, CoreH5PSemantics } from './content-validator';
 import { Translate } from '@singletons';
 import { CoreH5PContentBeingSaved } from './storage';
 import { CoreH5PLibraryAddTo } from './validator';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 
 /**
  * Equivalent to H5P's H5PCore class.

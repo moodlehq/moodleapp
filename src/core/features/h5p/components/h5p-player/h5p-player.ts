@@ -17,12 +17,12 @@ import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChang
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { CoreEvents, CoreEventObserver } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents, CoreEventObserver } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '../../classes/core';
 import { BehaviorSubject } from 'rxjs';
