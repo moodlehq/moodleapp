@@ -56,11 +56,11 @@ export class CoreCourseFormatSingleActivityHandlerService implements CoreCourseF
      * @inheritdoc
      */
     getCourseTitle(course: CoreCourseAnyCourseData, sections?: CoreCourseWSSection[]): string {
-        if (sections?.[0]?.contents?.[0]) {
-            return sections[0].contents[0].name;
+        if (course.fullname) {
+            return course.fullname;
         }
 
-        return course.fullname || '';
+        return sections?.[0]?.contents?.[0].name || '';
     }
 
     /**

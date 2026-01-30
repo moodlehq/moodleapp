@@ -9,8 +9,8 @@ Feature: Test single activity of assign type in app
       | username | firstname | lastname |
       | student1 | First     | Student  |
     And the following "courses" exist:
-      | fullname | shortname | category | format         | activitytype |
-      | Course 1 | C1        | 0        | singleactivity | assign       |
+      | fullname                      | shortname | category | format         | activitytype |
+      | Single activity assign course | C1        | 0        | singleactivity | assign       |
     And the following "course enrolments" exist:
       | user     | course | role    |
       | student1 | C1     | student |
@@ -19,7 +19,7 @@ Feature: Test single activity of assign type in app
       | assign     | Single activity assign | Test assign description | C1     | 1        | 1                                   | 1                               | ## 20 August 2002 12:00 PM ## | manual              | -1          |
 
   Scenario: Single activity assign
-    Given I entered the course "Course 1" as "student1" in the app
+    Given I entered the course "Single activity assign course" as "student1" in the app
     Then I should find "Attempt 1" in the app
 
     When I set "page-core-course-index core-course-image" styles to "background" "lightblue"
