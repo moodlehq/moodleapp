@@ -37,6 +37,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ModFeature } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCoursePrefetch } from '@features/course/services/course-prefetch';
 
 /**
  * Component to display a module summary modal.
@@ -210,7 +211,7 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
         }
 
         const moduleInfo =
-            await CoreCourseHelper.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
+            await CoreCoursePrefetch.getModulePrefetchInfo(this.module, this.courseId, refresh, this.component);
 
         const site = CoreSites.getRequiredCurrentSite();
         this.isOfflineUseDisabled = site.isFeatureDisabled('NoDelegate_CoreOffline');
@@ -342,10 +343,10 @@ export class CoreCourseModuleSummaryComponent implements OnInit, OnDestroy {
 
             this.removeFilesLoading = true;
 
-            await CoreCourseHelper.removeModuleStoredData(this.module, this.courseId);
+            await CoreCoursePrefetch.removeModuleStoredData(this.module, this.courseId);
 
         } catch (error) {
-            if (!this.isDestroyed &&error) {
+            if (!this.isDestroyed && error) {
                 CoreAlerts.showError(error);
             }
         } finally {

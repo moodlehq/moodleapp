@@ -18,7 +18,7 @@ import {
     CoreCourseDownloadStatusHelper,
     CoreEventCourseStatusChanged,
 } from '@features/course/services/course-download-status-helper';
-import { CoreCourseHelper, CorePrefetchStatusInfo } from '@features/course/services/course-helper';
+import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -47,6 +47,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
+import { CoreCoursePrefetch, CorePrefetchStatusInfo } from '@features/course/services/course-prefetch';
 
 /**
  * This directive is meant to display an item for a list of courses.
@@ -201,7 +202,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         if (this.prefetchCourseData.loading) {
             // Course is being downloaded. Get the download promise.
-            const promise = CoreCourseHelper.getCourseDownloadPromise(this.course.id);
+            const promise = CoreCoursePrefetch.getCourseDownloadPromise(this.course.id);
             if (promise) {
                 // There is a download promise. If it fails, show an error.
                 promise.catch((error) => {
@@ -223,7 +224,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * @param status Status to show.
      */
     protected updateCourseStatus(status: DownloadStatus): void {
-        const statusData = CoreCourseHelper.getCoursePrefetchStatusInfo(status);
+        const statusData = CoreCoursePrefetch.getCoursePrefetchStatusInfo(status);
 
         this.courseStatus = status;
         this.prefetchCourseData.status = statusData.status;
@@ -243,7 +244,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         event?.stopPropagation();
 
         try {
-            await CoreCourseHelper.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
+            await CoreCoursePrefetch.confirmAndPrefetchCourse(this.prefetchCourseData, this.course);
         } catch (error) {
             if (!this.isDestroyed) {
                 CoreAlerts.showError(error, { default: Translate.instant('core.course.errordownloadingcourse') });
@@ -270,7 +271,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
         const modal = await CoreLoadings.show();
 
         try {
-            await CoreCourseHelper.deleteCourseFiles(this.course.id);
+            await CoreCoursePrefetch.deleteCourseFiles(this.course.id);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('core.errordeletefile') });
         } finally {

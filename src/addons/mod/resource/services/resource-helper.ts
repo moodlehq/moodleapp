@@ -16,7 +16,7 @@ import { CoreTimeConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
-import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
@@ -33,6 +33,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreOpenerOpenFileOptions } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ModResourceDisplay } from '@addons/mod/constants';
+import { CoreCoursePrefetch } from '@features/course/services/course-prefetch';
 
 /**
  * Service that provides helper functions for resources.
@@ -49,7 +50,7 @@ export class AddonModResourceHelperProvider {
     async getEmbeddedHtml(module: CoreCourseModuleData): Promise<string> {
         const contents = await CoreCourse.getModuleContents(module);
 
-        const result = await CoreCourseHelper.downloadModuleWithMainFileIfNeeded(
+        const result = await CoreCoursePrefetch.downloadModuleWithMainFileIfNeeded(
             module,
             module.course,
             ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
@@ -189,7 +190,7 @@ export class AddonModResourceHelperProvider {
 
         try {
             // Download and open the file from the resource contents.
-            await CoreCourseHelper.downloadModuleAndOpenFile(
+            await CoreCoursePrefetch.downloadModuleAndOpenFile(
                 module,
                 courseId,
                 ADDON_MOD_RESOURCE_COMPONENT_LEGACY,
