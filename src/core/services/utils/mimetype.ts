@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 
 interface MimeTypeGroupInfo {
     mimetypes: string[];

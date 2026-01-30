@@ -17,7 +17,7 @@ import { CoreRoutedItemsManagerSource } from '@classes/items-management/routed-i
 import { ADDON_COMPETENCY_COMPETENCIES_PAGE, AddonCompetencyLearningPlanStatus } from '../constants';
 import { AddonCompetency, AddonCompetencyPlan } from '../services/competency';
 import { AddonCompetencyHelper } from '../services/competency-helper';
-import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreIonicColorNames } from '@static/colors';
 
 /**
  * Provides a collection of learning plans.

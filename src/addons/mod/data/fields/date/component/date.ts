@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreSharedModule } from '@/core/shared.module';

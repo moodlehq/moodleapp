@@ -23,11 +23,11 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreForms } from '@singletons/form';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreForms } from '@static/form';
 import {
     AddonModGlossary,
     AddonModGlossaryCategory,

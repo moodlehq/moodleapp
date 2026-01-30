@@ -15,7 +15,7 @@
 import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
-import { CoreEvents, CoreEventObserver } from '@singletons/events';
+import { CoreEvents, CoreEventObserver } from '@static/events';
 import { CoreGroup, CoreGroups, CoreGroupsProvider } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import {
@@ -30,18 +30,18 @@ import { CoreSites } from '@services/sites';
 import { Translate } from '@singletons';
 import { CoreSync } from '@services/sync';
 import { AddonModForumDiscussionOptions, AddonModForumOffline } from '@addons/mod/forum/services/forum-offline';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { AddonModForumHelper } from '@addons/mod/forum/services/forum-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CanLeave } from '@guards/can-leave';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { AddonModForumDiscussionsSwipeManager } from '../../classes/forum-discussions-swipe-manager';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { AddonModForumDiscussionsSource } from '../../classes/forum-discussions-source';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
     ADDON_MOD_FORUM_ALL_GROUPS,
@@ -53,7 +53,7 @@ import {
 } from '../../constants';
 import CoreCourseContentsPage from '@features/course/pages/contents/contents';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

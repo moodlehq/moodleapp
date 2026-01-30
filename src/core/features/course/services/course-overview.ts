@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
@@ -21,7 +21,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CORE_COURSE_OVERVIEW_OPTION_NAME } from '../constants';

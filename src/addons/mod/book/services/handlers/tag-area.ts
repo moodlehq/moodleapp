@@ -17,7 +17,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreTagAreaHandler } from '@features/tag/services/tag-area-delegate';
 import { CoreTagFeedElement, CoreTagHelper } from '@features/tag/services/tag-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { makeSingleton } from '@singletons';
 import { AddonModBook } from '../book';
 import { ADDON_MOD_BOOK_MODNAME } from '../../constants';

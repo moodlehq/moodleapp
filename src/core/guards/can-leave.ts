@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CanDeactivateFn } from '@angular/router';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Check if a component implements the canLeave interface.

@@ -24,7 +24,7 @@ import {
     KeyValueDiffer,
     inject,
 } from '@angular/core';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonCalendarEventToDisplay,
@@ -35,8 +35,8 @@ import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
 import { CoreTimeConstants } from '@/core/constants';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrl } from '@singletons/url';
-import { CoreTime } from '@singletons/time';
+import { CoreUrl } from '@static/url';
+import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';
 import { CoreAlerts } from '@services/overlays/alerts';

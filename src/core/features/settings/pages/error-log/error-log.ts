@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreText } from '@singletons/text';
-import { CoreErrorLogs, CoreSettingsErrorLog } from '@singletons/error-logs';
+import { CoreText } from '@static/text';
+import { CoreErrorLogs, CoreSettingsErrorLog } from '@static/error-logs';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

@@ -21,8 +21,8 @@ import {
     CorePluginFileTreatDownloadedFileOptions,
 } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreUrl } from '@singletons/url';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreUrl } from '@static/url';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSFile } from '@services/ws';
 import { CoreH5P } from '../h5p';

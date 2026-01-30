@@ -23,8 +23,8 @@ import { CoreQuestionHelper } from '@features/question/services/question-helper'
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreText } from '@singletons/text';
-import { CoreObject } from '@singletons/object';
+import { CoreText } from '@static/text';
+import { CoreObject } from '@static/object';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';

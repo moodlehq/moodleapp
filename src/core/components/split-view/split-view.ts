@@ -20,7 +20,7 @@ import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreEmptyBoxComponent } from '../empty-box/empty-box';
 import { CoreContentDirective } from '@directives/content';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 
 export enum CoreSplitViewMode {
     MENU_ONLY = 'menu-only', // Hides content.

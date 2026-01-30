@@ -16,13 +16,13 @@ import { Injectable } from '@angular/core';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreError } from '@classes/errors/error';
 import { SafeNumber } from '@/core/utils/types';
 import { CoreGradeType } from '../constants';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
 /**
  * Service to provide grade functionalities.

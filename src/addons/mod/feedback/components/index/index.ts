@@ -19,10 +19,10 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonModFeedback,
     AddonModFeedbackGetFeedbackAccessInformationWSResponse,

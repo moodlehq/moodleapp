@@ -27,7 +27,7 @@ import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreWSFile } from '@services/ws';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../assign-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSync, AddonModAssignSyncResult } from '../assign-sync';

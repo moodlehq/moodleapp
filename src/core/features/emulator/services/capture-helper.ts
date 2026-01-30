@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { makeSingleton, ModalController } from '@singletons';
 import { CaptureMediaComponentInputs, CoreEmulatorCaptureMediaComponent } from '../components/capture-media/capture-media';
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { BehaviorSubject, Subject } from 'rxjs';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreDelegate, CoreDelegateDisplayHandler, CoreDelegateToDisplay } from './delegate';
 import { CoreSites } from '@services/sites';
 

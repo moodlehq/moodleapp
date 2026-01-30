@@ -16,7 +16,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { CoreQuestionsAnswers } from '@features/question/services/question';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { AddonModQuiz, AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '../services/quiz';
 import { CorePopovers } from '@services/overlays/popovers';
 

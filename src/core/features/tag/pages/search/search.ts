@@ -13,15 +13,15 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreUrl } from '@singletons/url';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreUrl } from '@static/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
 import { Translate } from '@singletons';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 import { CoreSites } from '@services/sites';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';

@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 
 import { makeSingleton, Translate } from '@singletons';
 import { CoreUser, CoreUserRole } from './user';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 
 /**
  * Service that provides some features regarding users information.

@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, ElementRef, ViewContainerRef, inject, viewChild } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
 
 const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 

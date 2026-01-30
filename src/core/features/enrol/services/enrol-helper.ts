@@ -15,9 +15,9 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreEnrolAction, CoreEnrolDelegate, CoreEnrolInfoIcon } from './enrol-delegate';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreEnrol, CoreEnrolEnrolmentMethod } from './enrol';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 
 /**
  * Service that provides helper functions for enrolment plugins.

@@ -14,11 +14,11 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreSites } from '@services/sites';
 import { CoreFilepool } from '@services/filepool';
 import { CoreWS } from '@services/ws';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleContentFile } from '@features/course/services/course';
 import { ADDON_MOD_PAGE_COMPONENT_LEGACY } from '../constants';

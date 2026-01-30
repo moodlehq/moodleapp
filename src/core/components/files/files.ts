@@ -16,7 +16,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, input, computed } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFileComponent } from '../file/file';
 import { CoreLocalFileComponent } from '../local-file/local-file';

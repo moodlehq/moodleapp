@@ -22,7 +22,7 @@ import {
     CoreGradesHelper,
 } from '@features/grades/services/grades-helper';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { Translate } from '@singletons';
@@ -31,8 +31,8 @@ import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/
 import { CoreUserParticipantsSource } from '@features/user/classes/participants-source';
 import { CoreUserDescriptionExporter, CoreUserParticipant } from '@features/user/services/user';
 import { CoreGradesCoursesSource } from '@features/grades/classes/grades-courses-source';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
+import { CoreDom } from '@static/dom';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';

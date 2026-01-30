@@ -19,13 +19,13 @@ import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
-import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreEvents } from '@static/events';
+import { CoreSubscriptions } from '@static/subscriptions';
 import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreOpener } from '@singletons/opener';
+import { CoreOpener } from '@static/opener';
 
 /**
  * Handle site support.

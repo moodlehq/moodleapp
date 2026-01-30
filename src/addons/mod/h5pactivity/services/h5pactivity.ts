@@ -21,10 +21,10 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import { CoreH5PDisplayOptions } from '@features/h5p/classes/core';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { makeSingleton } from '@singletons/index';
+import { makeSingleton } from '@singletons';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreError } from '@classes/errors/error';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
@@ -33,9 +33,9 @@ import {
 } from '../constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileHelper } from '@services/file-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
 /**
@@ -797,6 +797,7 @@ export class AddonModH5PActivityProvider {
     /**
      * Delete launcher.
      *
+     * @param siteId
      * @returns Promise resolved when the launcher file is deleted.
      * @since 3.9
      */

@@ -16,7 +16,7 @@ import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugin
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
-import { CoreEventData, CoreEvents } from '@singletons/events';
+import { CoreEventData, CoreEvents } from '@static/events';
 import { CoreFile } from '@services/file';
 import {
     CoreWS,
@@ -24,13 +24,13 @@ import {
     CoreWSExternalWarning,
     CoreWSUploadFileResult,
 } from '@services/ws';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl } from '@singletons/url';
-import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
+import { CoreTime } from '@static/time';
+import { CoreUrl } from '@static/url';
+import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@static/opener';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { Translate } from '@singletons';
 import { CoreIonLoadingElement } from '../ion-loading';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -54,7 +54,7 @@ import { CoreAuthenticatedSite, CoreAuthenticatedSiteOptionalData, CoreSiteWSPre
 import { firstValueFrom } from 'rxjs';
 import { CorePlatform } from '@services/platform';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**

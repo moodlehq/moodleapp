@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
-import { CoreText, CoreTextFormat } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl } from '@singletons/url';
-import { CoreObject } from '@singletons/object';
+import { CoreText, CoreTextFormat } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreUrl } from '@static/url';
+import { CoreObject } from '@static/object';
 import { CoreGroups } from '@services/groups';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreConfig } from '@services/config';
@@ -34,14 +34,14 @@ import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { AddonCalendarOfflineEventDBRecord } from './database/calendar-offline';
 import { SafeUrl } from '@angular/platform-browser';
 import { CoreNavigator } from '@services/navigator';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';
 import {
     CoreReminderData,
     CoreReminders,
     CoreRemindersPushNotificationData,
 } from '@features/reminders/services/reminders';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
     ADDON_CALENDAR_COMPONENT,
@@ -59,11 +59,11 @@ import {
 } from '../constants';
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';
 import { AddonCalendarFilter } from './calendar-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { ModPurpose } from '@addons/mod/constants';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

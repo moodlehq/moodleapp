@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 import { AddonModForum, AddonModForumTracking } from '../forum';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import {
     CoreCourseModuleHandler,
@@ -24,7 +24,7 @@ import {
 } from '@features/course/services/module-delegate';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreUser } from '@features/user/services/user';
 import { ADDON_MOD_FORUM_MARK_READ_EVENT, ADDON_MOD_FORUM_MODNAME, ADDON_MOD_FORUM_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';

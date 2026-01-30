@@ -17,7 +17,7 @@ import { CoreQuestionHandler } from '@features/question/services/question-delega
 import { makeSingleton, Translate } from '@singletons';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**

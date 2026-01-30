@@ -15,7 +15,7 @@
 import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreUserTours, CoreUserToursFocusedOptions, CoreUserToursUserTour } from '@features/usertours/services/user-tours';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 
 /**
  * Directive to control a User Tour linked to the lifecycle of the element where it's defined.

@@ -18,7 +18,7 @@ import { Component } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { DomSanitizer } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 
 /**
  * Component to render data latlong field.

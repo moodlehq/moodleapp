@@ -16,7 +16,7 @@ import { mock, mockSingleton } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CorePluginFileDelegateService, CorePluginFileHandler } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 
 describe('CorePluginFileDelegate', () => {
 

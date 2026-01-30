@@ -20,13 +20,13 @@ import {
     input,
     effect,
 } from '@angular/core';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CorePromisedValue } from '@classes/promised-value';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CorePlatform } from '@services/platform';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreTimesPipe } from '@pipes/times';

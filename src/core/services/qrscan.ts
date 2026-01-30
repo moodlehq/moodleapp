@@ -23,7 +23,7 @@ import { Subscription } from 'rxjs';
 import { CoreCustomURLSchemes } from './urlschemes';
 import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
 import { CoreAlerts } from './overlays/alerts';
-import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreHTMLClasses } from '@static/html-classes';
 
 /**
  * Handles qr scan services.

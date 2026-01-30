@@ -24,13 +24,13 @@ import { timeout } from 'rxjs/operators';
 import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileFormat } from '@services/file';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreText } from '@singletons/text';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreText } from '@static/text';
 import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
 import { makeSingleton, Translate, Http, NativeHttp } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
 import { CoreAjaxWSError } from '@classes/errors/ajaxwserror';
@@ -42,9 +42,9 @@ import { CoreSiteError, CoreSiteErrorOptions } from '@classes/errors/siteerror';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreSites } from '@services/sites';
 import { CoreLang, CoreLangFormat } from './lang';
-import { CoreErrorLogs } from '@singletons/error-logs';
+import { CoreErrorLogs } from '@static/error-logs';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 
 /**

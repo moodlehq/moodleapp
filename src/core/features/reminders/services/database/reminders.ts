@@ -15,7 +15,7 @@
 import { ADDON_CALENDAR_COMPONENT, ADDON_CALENDAR_EVENTS_TABLE } from '@addons/calendar/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreReminderData } from '../reminders';
 import { AddonCalendarEventDBRecord } from '@addons/calendar/services/database/calendar';
 import { REMINDERS_DEFAULT_REMINDER_TIMEBEFORE } from '@features/reminders/constants';

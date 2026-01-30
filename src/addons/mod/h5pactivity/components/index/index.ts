@@ -26,7 +26,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSFile } from '@services/ws';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityAccessInfo,
@@ -40,8 +40,8 @@ import {
     AddonModH5PActivitySyncResult,
 } from '../../services/h5pactivity-sync';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreText } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import {
     ADDON_MOD_H5PACTIVITY_AUTO_SYNCED,
     ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,

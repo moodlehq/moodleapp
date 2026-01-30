@@ -15,8 +15,8 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
-import { CoreUrl } from '@singletons/url';
+import { CoreLogger } from '@static/logger';
+import { CoreUrl } from '@static/url';
 
 /**
  * @deprecated since 5.0. Geo location is no longer available in the app.

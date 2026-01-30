@@ -18,7 +18,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreNavigationOptions, CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
-import { CoreRedirects } from '@singletons/redirects';
+import { CoreRedirects } from '@static/redirects';
 import { NO_SITE_ID } from '@features/login/constants';
 
 /**

@@ -16,7 +16,7 @@ import { NgModule, provideAppInitializer } from '@angular/core';
 import { Routes } from '@angular/router';
 
 import { AppRoutingModule } from '@/app/app-routing.module';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { ACCEPTANCES_PAGE_NAME, POLICY_PAGE_NAME, SITE_POLICY_PAGE_NAME } from './constants';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { CorePolicyUserHandler } from './services/handlers/user';

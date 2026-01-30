@@ -23,8 +23,8 @@ import {
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
-import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';

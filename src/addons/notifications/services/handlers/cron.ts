@@ -18,7 +18,7 @@ import { CoreCronHandler } from '@services/cron';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME, ADDONS_NOTIFICATIONS_READ_CRON_EVENT } from '@addons/notifications/constants';
 
 /**

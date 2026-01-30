@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { makeSingleton, NgZone } from '@singletons';
 import { TestingBehatElementLocator, TestingBehatFindOptions } from './behat-runtime';
 import { TestingBehatBlocking } from './behat-blocking';

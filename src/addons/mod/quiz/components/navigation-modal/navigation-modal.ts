@@ -19,7 +19,7 @@ import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { ModalController } from '@singletons';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 
 /**
  * Modal that renders the quiz navigation.

@@ -17,7 +17,7 @@ import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/
 import { AddonModBook, AddonModBookBookWSData, AddonModBookTocChapter } from '../../services/book';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ADDON_MOD_BOOK_MODNAME, ADDON_MOD_BOOK_PAGE_NAME, AddonModBookNumbering } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';

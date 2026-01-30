@@ -21,15 +21,15 @@ import { AddonCalendarEventReminder, AddonCalendarHelper } from '../../services/
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents } from '../../services/calendar-sync';
 import { CoreNetwork } from '@services/network';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreText } from '@singletons/text';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreText } from '@static/text';
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { DomSanitizer, Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreConfigSettingKey, CoreSyncIcon } from '@/core/constants';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -42,7 +42,7 @@ import { CoreConfig } from '@services/config';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import {
     ADDON_CALENDAR_AUTO_SYNCED,
     ADDON_CALENDAR_DELETED_EVENT_EVENT,

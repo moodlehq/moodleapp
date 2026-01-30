@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreConfigSettingKey } from '@/core/constants';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreConfig } from '@services/config';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourseResourcePrefetchHandlerBase } from '@features/course/classes/resource-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModPage } from '../page';
 import { ADDON_MOD_PAGE_COMPONENT, ADDON_MOD_PAGE_COMPONENT_LEGACY, ADDON_MOD_PAGE_MODNAME } from '../../constants';

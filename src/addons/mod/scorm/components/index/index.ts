@@ -19,9 +19,9 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSync } from '@services/sync';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { AddonModScormPrefetchHandler } from '../../services/handlers/prefetch';
 import {
     AddonModScorm,
@@ -47,8 +47,8 @@ import {
     ADDON_MOD_SCORM_PAGE_NAME,
     ADDON_MOD_SCORM_COMPONENT,
 } from '../../constants';
-import { CoreWait } from '@singletons/wait';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreWait } from '@static/wait';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNetwork } from '@services/network';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';

@@ -15,7 +15,7 @@
 import { CoreError } from '@classes/errors/error';
 import { ILocalNotification, ILocalNotificationAction, LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Observable, Subject } from 'rxjs';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CorePlatform } from '@services/platform';
 
 /**

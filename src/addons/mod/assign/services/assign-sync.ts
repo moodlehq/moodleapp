@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSyncBlockedError } from '@classes/base-sync';
 import {
@@ -46,7 +46,7 @@ import {
     ADDON_MOD_ASSIGN_MANUAL_SYNCED,
     ADDON_MOD_ASSIGN_MODNAME,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Service to sync assigns.
@@ -563,7 +563,7 @@ export type AddonModAssignManualSyncData = AddonModAssignAutoSyncData & {
     submitId?: number;
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

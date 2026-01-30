@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import {
@@ -29,7 +29,7 @@ import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { CORE_COURSE_CORE_MODULES } from '../constants';
 import { ModFeature } from '@addons/mod/constants';
 import { CoreCourseModuleSummary } from './course';

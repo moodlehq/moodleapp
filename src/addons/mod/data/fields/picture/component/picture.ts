@@ -16,7 +16,7 @@ import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { Component } from '@angular/core';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreFile } from '@services/file';
 import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';

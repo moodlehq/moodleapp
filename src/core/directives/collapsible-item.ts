@@ -16,12 +16,12 @@ import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angula
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
-import { CoreColors } from '@singletons/colors';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
+import { CoreColors } from '@static/colors';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
+import { CoreEventObserver } from '@static/events';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreConstants } from '../constants';

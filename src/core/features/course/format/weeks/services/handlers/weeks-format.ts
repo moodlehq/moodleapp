@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreCourseFormatCurrentSectionData, CoreCourseFormatHandler } from '@features/course/services/format-delegate';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';

@@ -15,7 +15,7 @@
 import { Injectable, Type } from '@angular/core';
 import { CoreDelegateHandler, CoreDelegate } from '@classes/delegate';
 import { makeSingleton } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModWorkshopGetAssessmentFormDefinitionData, AddonModWorkshopGetAssessmentFormFieldsParsedData } from './workshop';
 import { CoreSites } from '@services/sites';
 import { ADDON_MOD_WORKSHOP_FEATURE_NAME } from '../constants';

@@ -15,7 +15,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 

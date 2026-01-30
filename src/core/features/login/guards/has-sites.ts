@@ -14,7 +14,7 @@
 
 import { CanActivateFn } from '@angular/router';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Router } from '@singletons';
 import { CoreLoginHelper } from '../services/login-helper';
 

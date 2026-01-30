@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreRedirects } from '@singletons/redirects';
+import { CoreRedirects } from '@static/redirects';
 import { CoreUpdateManager } from '@services/update-manager';
 
 /**

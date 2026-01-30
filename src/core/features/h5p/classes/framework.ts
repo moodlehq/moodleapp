@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreH5P } from '@features/h5p/services/h5p';
 import {
     CoreH5PCore,
@@ -56,9 +56,9 @@ import { SubPartial } from '@/core/utils/types';
 import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreArray } from '@singletons/array';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreArray } from '@static/array';
 
 /**
  * Equivalent to Moodle's implementation of H5PFrameworkInterface.

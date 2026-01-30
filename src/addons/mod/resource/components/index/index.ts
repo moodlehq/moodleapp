@@ -21,8 +21,8 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreNetwork } from '@services/network';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CoreMimetype } from '@singletons/mimetype';
-import { CoreText } from '@singletons/text';
+import { CoreMimetype } from '@static/mimetype';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
 import {
     AddonModResource,
@@ -31,8 +31,8 @@ import {
 import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { OpenFileAction } from '@singletons/opener';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { OpenFileAction } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';

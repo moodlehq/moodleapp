@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreEnrolAction, CoreEnrolDelegate } from './enrol-delegate';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 

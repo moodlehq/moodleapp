@@ -21,7 +21,7 @@ import { ReloadableComponent } from '@coretypes/reloadable-component';
 import { makeSingleton } from '@singletons';
 import { MAIN_MENU_FEATURE_PREFIX } from '../constants';
 import { CoreConstants } from '@/core/constants';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreConfigProvider } from '@services/config';
 import { CoreMainMenuOverrideItem } from './mainmenu';
 

@@ -21,7 +21,7 @@ import { CoreSites } from '@services/sites';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreRating } from './rating';
 import { CoreRatingItemSet, CoreRatingOffline } from './rating-offline';
 
@@ -288,7 +288,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider<CoreRatingSyncI
 }
 export const CoreRatingSync = makeSingleton(CoreRatingSyncProvider);
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

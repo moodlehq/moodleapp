@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { CoreFormatTextDirective } from '@directives/format-text';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreCoordinates, CoreDom } from '@singletons/dom';
-import { CoreEventObserver } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreCoordinates, CoreDom } from '@static/dom';
+import { CoreEventObserver } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { AddonModQuizDdwtosQuestionData } from '../component/ddwtos';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreLinkDirective } from '@directives/link';
 import { ElementRef } from '@angular/core';
 

@@ -18,8 +18,8 @@ import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreTime } from '@singletons/time';
-import { CoreUtils } from '@singletons/utils';
+import { CoreTime } from '@static/time';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModFeedback,
@@ -44,7 +44,7 @@ import {
     AddonModFeedbackQuestionTemplateMultichoicePrefix,
 } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 const MODE_RESPONSETIME = 1;

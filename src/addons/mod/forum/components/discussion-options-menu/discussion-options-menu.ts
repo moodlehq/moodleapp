@@ -15,7 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { PopoverController } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonModForum, AddonModForumDiscussion } from '../../services/forum';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT } from '../../constants';
 import { CoreToasts } from '@services/overlays/toasts';

@@ -15,8 +15,8 @@
 import { CorePlatform } from '@services/platform';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { NgZone } from '@singletons';
-import { CoreEvents } from '@singletons/events';
-import { CoreUrl } from '@singletons/url';
+import { CoreEvents } from '@static/events';
+import { CoreUrl } from '@static/url';
 
 /**
  * Asynchronous function to handle custom URLs when the app is launched.

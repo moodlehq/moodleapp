@@ -19,8 +19,8 @@ import {
 import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
 import { CoreCronHandler } from '@services/cron';
 import { CoreSites } from '@services/sites';
-import { CoreEvents } from '@singletons/events';
-import { CoreUtils } from '@singletons/utils';
+import { CoreEvents } from '@static/events';
+import { CoreUtils } from '@static/utils';
 import {
     CorePushNotificationsNotificationBasicData,
 } from '@features/pushnotifications/services/pushnotifications';

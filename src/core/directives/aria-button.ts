@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Directive, ElementRef, OnInit, inject, input, effect, output } from '@angular/core';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { toBoolean } from '../transforms/boolean';
 
 /**

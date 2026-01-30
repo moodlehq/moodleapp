@@ -36,7 +36,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteLogoComponent } from '@/core/components/site-logo/site-logo';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
 import { CoreCustomMenuItemComponent } from '../custom-menu-item/custom-menu-item';

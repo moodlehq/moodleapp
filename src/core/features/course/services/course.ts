@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
 import { CoreNetwork } from '@services/network';
-import { CoreEvents } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
@@ -46,8 +46,8 @@ import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CoreSiteWSPreSets, WSObservable } from '@classes/sites/authenticated-site';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreArray } from '@singletons/array';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CoreArray } from '@static/array';
+import { CoreText, CoreTextFormat } from '@static/text';
 import { ArrayElement } from '@/core/utils/types';
 import { CORE_COURSES_MY_COURSES_UPDATED_EVENT, CoreCoursesMyCoursesUpdatedEventAction } from '@features/courses/constants';
 import {
@@ -61,20 +61,20 @@ import {
     CORE_COURSE_STEALTH_MODULES_SECTION_ID,
     CORE_COURSE_SELECT_TAB,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper, CoreCourseStoreModuleViewedOptions } from './course-module-helper';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
 
 export type CoreCourseProgressUpdated = { progress: number; courseId: number };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

@@ -14,8 +14,8 @@
 
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { CoreLogger } from '@singletons/logger';
-import { CoreText } from '@singletons/text';
+import { CoreLogger } from '@static/logger';
+import { CoreText } from '@static/text';
 
 /**
  * Pipe to turn a number in bytes to a human readable size (e.g. 5,25 MB).

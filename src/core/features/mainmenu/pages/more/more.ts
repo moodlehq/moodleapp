@@ -23,18 +23,18 @@ import {
     CoreMainMenuPageNavHandlerToDisplay,
 } from '../../services/mainmenu-delegate';
 import { CoreMainMenu } from '../../services/mainmenu';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { ReloadableComponent } from '@coretypes/reloadable-component';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
 import { CoreCustomMenuItemComponent } from '@features/mainmenu/components/custom-menu-item/custom-menu-item';
 import { CORE_QRREADER_MENU_FEATURE_NAME } from '@features/viewer/constants';

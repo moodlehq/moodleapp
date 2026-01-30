@@ -20,18 +20,18 @@ import { CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { ScrollDetail } from '@ionic/core';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreMath } from '@singletons/math';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreMath } from '@static/math';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

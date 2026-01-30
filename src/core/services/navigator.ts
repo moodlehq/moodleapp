@@ -25,11 +25,11 @@ import {
 } from '@angular/router';
 import { NO_SITE_ID } from '@features/login/constants';
 import { CoreMainMenu } from '@features/mainmenu/services/mainmenu';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
-import { CoreUrl, CoreUrlPartNames } from '@singletons/url';
-import { CoreText } from '@singletons/text';
+import { CoreUtils } from '@static/utils';
+import { CoreUrl, CoreUrlPartNames } from '@static/url';
+import { CoreText } from '@static/text';
 import { makeSingleton, NavController, Router } from '@singletons';
 import { CoreScreen } from './screen';
 import { CoreError } from '@classes/errors/error';
@@ -39,9 +39,9 @@ import { filter } from 'rxjs/operators';
 import { CorePromisedValue } from '@classes/promised-value';
 import { BehaviorSubject } from 'rxjs';
 import { CoreLoadings } from './overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { AnimationBuilder } from '@ionic/angular';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 
 /**
  * Redirect payload.

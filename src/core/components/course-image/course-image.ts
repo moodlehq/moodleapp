@@ -16,7 +16,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, ElementRef, input, effect, inject } from '@angular/core';
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
-import { CoreColors } from '@singletons/colors';
+import { CoreColors } from '@static/colors';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreExternalContentDirective } from '@directives/external-content';
 import { CoreFaIconDirective } from '@directives/fa-icon';

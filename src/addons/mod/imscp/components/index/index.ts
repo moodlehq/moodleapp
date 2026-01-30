@@ -17,7 +17,7 @@ import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/
 import { CoreCourse } from '@features/course/services/course';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModImscp, AddonModImscpTocItem } from '../../services/imscp';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ADDON_MOD_IMSCP_COMPONENT_LEGACY, ADDON_MOD_IMSCP_PAGE_NAME } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';

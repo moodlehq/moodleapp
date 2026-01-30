@@ -23,7 +23,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';

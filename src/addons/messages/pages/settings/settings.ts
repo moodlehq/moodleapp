@@ -21,7 +21,7 @@ import {
 } from '../../services/messages';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreConfig } from '@services/config';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreConfigSettingKey } from '@/core/constants';
 import { CorePlatform } from '@services/platform';

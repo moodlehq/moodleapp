@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { makeSingleton, NgZone, Router } from '@singletons';
 import { BehatTestsWindow, TestingBehatRuntime } from './behat-runtime';
 import {

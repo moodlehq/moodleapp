@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreXAPIStateDBRecord, CoreXAPIStatementDBRecord, STATEMENTS_TABLE_NAME, STATES_TABLE_NAME } from './database/xapi';
 import { CoreXAPIStateOptions } from './xapi';

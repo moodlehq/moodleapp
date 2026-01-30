@@ -14,7 +14,7 @@
 
 import { Component, OnDestroy, OnInit, Input, HostBinding } from '@angular/core';
 import { ActionSheetButton } from '@ionic/angular';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     CoreCourseCustomField,
@@ -29,12 +29,12 @@ import {
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { ActionSheetController, ModalController, NgZone, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { Subscription } from 'rxjs';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreEnrolHelper } from '@features/enrol/services/enrol-helper';
 import { CoreEnrolDelegate } from '@features/enrol/services/enrol-delegate';

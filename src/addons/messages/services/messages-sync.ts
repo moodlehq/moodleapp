@@ -21,7 +21,7 @@ import {
     AddonMessages,
     AddonMessagesGetMessagesWSParams,
 } from './messages';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
@@ -32,7 +32,7 @@ import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { ADDON_MESSAGES_AUTO_SYNCED } from '../constants';
 import { CoreWS } from '@services/ws';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

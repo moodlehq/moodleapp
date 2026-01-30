@@ -16,7 +16,7 @@ import { Injectable, Type } from '@angular/core';
 
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { makeSingleton, Translate } from '@singletons';
 import { QuestionCompleteGradableResponse } from '@features/question/constants';
 

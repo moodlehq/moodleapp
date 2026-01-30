@@ -17,22 +17,22 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
-import { CoreUrl } from '@singletons/url';
-import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@singletons/opener';
+import { CoreUrl } from '@static/url';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@static/opener';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreConfig } from './config';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { CorePlatform } from './platform';
-import { CorePath } from '@singletons/path';
-import { CoreText } from '@singletons/text';
+import { CorePath } from '@static/path';
+import { CoreText } from '@static/text';
 import { CorePrompts } from './overlays/prompts';
 
 /**

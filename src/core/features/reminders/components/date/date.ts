@@ -14,7 +14,7 @@
 
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { Component, computed, effect, input, signal } from '@angular/core';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRemindersSetButtonComponent } from '../set-button/set-button';

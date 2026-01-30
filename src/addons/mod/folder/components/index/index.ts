@@ -20,7 +20,7 @@ import { CoreNavigator } from '@services/navigator';
 import { Md5 } from 'ts-md5';
 import { AddonModFolder, AddonModFolderFolder } from '../../services/folder';
 import { AddonModFolderFolderFormattedData, AddonModFolderHelper } from '../../services/folder-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ADDON_MOD_FOLDER_COMPONENT_LEGACY, ADDON_MOD_FOLDER_PAGE_NAME } from '../../constants';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';

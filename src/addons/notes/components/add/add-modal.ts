@@ -15,9 +15,9 @@
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { Component, ElementRef, Input, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { ModalController } from '@singletons';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';

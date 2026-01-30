@@ -37,8 +37,8 @@ import {
 } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 
-import { CoreLogger } from '@singletons/logger';
-import { CoreEvents } from '@singletons/events';
+import { CoreLogger } from '@static/logger';
+import { CoreEvents } from '@static/events';
 import { makeSingleton } from '@singletons';
 import { effectWithInjectionContext } from '@/core/utils/signals';
 
@@ -82,31 +82,31 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 // Import core classes that can be useful for site plugins.
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreArray } from '@singletons/array';
-import { CoreColors } from '@singletons/colors';
-import { CoreCountries } from '@singletons/countries';
+import { CoreArray } from '@static/array';
+import { CoreColors } from '@static/colors';
+import { CoreCountries } from '@static/countries';
 import { CoreDelegate } from '@classes/delegate';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
-import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreForms } from '@singletons/form';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
+import { CoreFileUtils } from '@static/file-utils';
+import { CoreForms } from '@static/form';
 import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
-import { CoreIframe } from '@singletons/iframe';
-import { CoreKeyboard } from '@singletons/keyboard';
-import { CoreMedia } from '@singletons/media';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreIframe } from '@static/iframe';
+import { CoreKeyboard } from '@static/keyboard';
+import { CoreMedia } from '@static/media';
+import { CoreMimetype } from '@static/mimetype';
 import { CoreNetwork } from '@services/network';
-import { CoreObject } from '@singletons/object';
-import { CoreOpener } from '@singletons/opener';
-import { CorePath } from '@singletons/path';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreSSO } from '@singletons/sso';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl } from '@singletons/url';
-import { CoreUtils } from '@singletons/utils';
-import { CoreWait } from '@singletons/wait';
-import { CoreWindow } from '@singletons/window';
+import { CoreObject } from '@static/object';
+import { CoreOpener } from '@static/opener';
+import { CorePath } from '@static/path';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreSSO } from '@static/sso';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreUrl } from '@static/url';
+import { CoreUtils } from '@static/utils';
+import { CoreWait } from '@static/wait';
+import { CoreWindow } from '@static/window';
 import { getCoreErrorsExportedObjects } from '@classes/errors/errors';
 
 // Import addon providers. Do not import database module because it causes circular dependencies.

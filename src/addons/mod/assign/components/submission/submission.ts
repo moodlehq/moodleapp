@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit, OnDestroy, inject, viewChildren } from '@angular/core';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonModAssignAssign,
@@ -37,13 +37,13 @@ import { Translate } from '@singletons';
 import { CoreCourse } from '@features/course/services/course';
 import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';
-import { CoreIonicColorNames } from '@singletons/colors';
+import { CoreIonicColorNames } from '@static/colors';
 import {
     ADDON_MOD_ASSIGN_AUTO_SYNCED,
     ADDON_MOD_ASSIGN_COMPONENT_LEGACY,
@@ -58,13 +58,13 @@ import {
 } from '../../constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedback-plugin';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 
 /**
  * Component that displays an assignment submission.

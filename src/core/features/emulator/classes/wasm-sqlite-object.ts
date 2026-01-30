@@ -17,7 +17,7 @@
 
 import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { Sqlite3Worker1Promiser, sqlite3Worker1Promiser } from '@sqlite.org/sqlite-wasm';
 
 /**

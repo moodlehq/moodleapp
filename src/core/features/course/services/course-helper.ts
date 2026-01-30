@@ -29,10 +29,10 @@ import {
     CoreCourseModuleOrSection,
 } from './course';
 import { DownloadStatus, ContextLevel, CoreTimeConstants } from '@/core/constants';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreFilepool } from '@services/filepool';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import {
     CoreCourseAnyCourseData,
     CoreCourseBasicData,
@@ -57,9 +57,9 @@ import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreNetwork } from '@services/network';
 import { CoreSite } from '@classes/sites/site';
-import { CoreUrl } from '@singletons/url';
-import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreUrl } from '@static/url';
+import { CoreText, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CoreTime } from '@static/time';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
@@ -81,8 +81,8 @@ import {
     CORE_COURSE_COMPONENT,
     CoreCourseDownloadStatusIcon,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';

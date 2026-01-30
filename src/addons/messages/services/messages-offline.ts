@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreNetwork } from '@services/network';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import {
     AddonMessagesOfflineConversationMessagesDBRecord,
     AddonMessagesOfflineMessagesDBRecord,

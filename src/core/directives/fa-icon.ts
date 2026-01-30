@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { AfterViewInit, Directive, ElementRef, Input, OnChanges, SimpleChange, inject } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
-import { CoreIcons } from '@singletons/icons';
+import { CoreLogger } from '@static/logger';
+import { CoreIcons } from '@static/icons';
 import { CoreConstants } from '../constants';
 
 /**

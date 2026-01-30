@@ -15,7 +15,7 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, AfterViewInit, ElementRef, input, effect, inject } from '@angular/core';
 
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';

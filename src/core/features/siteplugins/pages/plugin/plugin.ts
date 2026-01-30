@@ -17,7 +17,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreSitePluginsPluginContentComponent } from '../../components/plugin-content/plugin-content';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ContextLevel } from '@/core/constants';

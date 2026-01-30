@@ -18,7 +18,7 @@ import { REMINDERS_DISABLED } from '@features/reminders/constants';
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreConfig } from '@services/config';
 import { CoreSiteSchema } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Database variables for AddonCalendarProvider service.

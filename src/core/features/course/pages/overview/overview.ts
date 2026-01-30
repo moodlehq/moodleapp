@@ -24,16 +24,16 @@ import {
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype, ModPurpose, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreObject } from '@singletons/object';
+import { CoreUrl } from '@static/url';
+import { CoreObject } from '@static/object';
 import { IonAccordionGroup } from '@ionic/angular';
 import { CoreCourse } from '@features/course/services/course';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -44,8 +44,8 @@ import {
     CORE_COURSE_SELECT_TAB,
     CoreCourseOverviewContentType,
 } from '@features/course/constants';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreDom } from '@singletons/dom';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreDom } from '@static/dom';
 
 /**
  * Page that displays an overview of all activities in a course.

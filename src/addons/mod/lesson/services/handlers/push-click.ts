@@ -19,7 +19,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { CorePushNotificationsClickHandler } from '@features/pushnotifications/services/push-delegate';
 import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_LESSON_FEATURE_NAME } from '../../constants';
 

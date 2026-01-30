@@ -23,11 +23,11 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreWSError } from '@classes/errors/wserror';
 import { Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
-import { CoreForms } from '@singletons/form';
+import { CoreEvents } from '@static/events';
+import { CoreForms } from '@static/form';
 import {
     AddonModWorkshop,
     AddonModWorkshopSubmissionChangedEventData,
@@ -44,11 +44,11 @@ import {
     AddonModWorkshopSubmissionType,
 } from '@addons/mod/workshop/constants';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Page that displays the workshop edit submission.

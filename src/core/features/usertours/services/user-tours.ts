@@ -20,13 +20,13 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreAppDB } from '@services/app-db';
 import { AngularFrameworkDelegate, makeSingleton } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
-import { CoreDom } from '@singletons/dom';
-import { CoreSubscriptions } from '@singletons/subscriptions';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
+import { CoreDom } from '@static/dom';
+import { CoreSubscriptions } from '@static/subscriptions';
 import type { CoreUserToursUserTourComponent } from '../components/user-tour/user-tour';
 import { APP_SCHEMA, CoreUserToursDBEntry, USER_TOURS_TABLE_NAME } from './database/user-tours';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 
 /**

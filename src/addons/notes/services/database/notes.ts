@@ -14,7 +14,7 @@
 
 import { CoreSiteSchema } from '@services/sites';
 import { AddonNotesPublishState } from '../notes';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
 /**
  * Database variables for AddonNotesOfflineProvider.

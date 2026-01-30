@@ -19,7 +19,7 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModQuizEssayQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreFileSession } from '@services/file-session';
 import { CoreQuestion } from '@features/question/services/question';
 import { CoreFileEntry } from '@services/file-helper';

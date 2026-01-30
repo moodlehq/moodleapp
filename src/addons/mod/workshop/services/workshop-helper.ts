@@ -19,10 +19,10 @@ import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreText, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModWorkshopAssessmentStrategyFieldErrors } from '../components/assessment-strategy/assessment-strategy';
 import { AddonWorkshopAssessmentStrategyDelegate } from './assessment-strategy-delegate';
 import {
@@ -45,8 +45,8 @@ import {
     AddonModWorkshopOverallFeedbackMode,
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
 import { CoreNetwork } from '@services/network';
 
 /**

@@ -16,10 +16,10 @@ import { Injectable } from '@angular/core';
 
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CoreTime } from '@static/time';
 import { CoreUser } from '@features/user/services/user';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { AddonNotificationsPushNotification } from './handlers/push-click';
@@ -33,7 +33,7 @@ import {
 } from '../constants';
 import { CORE_USER_NOREPLY_USER } from '@features/user/constants';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

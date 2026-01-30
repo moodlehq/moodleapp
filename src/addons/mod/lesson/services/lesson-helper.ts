@@ -15,10 +15,10 @@
 import { Injectable, inject } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 
-import { CoreDom } from '@singletons/dom';
-import { CoreFormFields } from '@singletons/form';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreDom } from '@static/dom';
+import { CoreFormFields } from '@static/form';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { makeSingleton, Translate } from '@singletons';
 import {
     AddonModLesson,
@@ -27,13 +27,13 @@ import {
     AddonModLessonGetPageDataWSResponse,
     AddonModLessonLessonWSData,
 } from './lesson';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { AddonModLessonPageSubtype } from '../constants';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CoreError } from '@classes/errors/error';
 import { CorePrompts } from '@services/overlays/prompts';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 
 /**

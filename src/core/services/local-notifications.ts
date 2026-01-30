@@ -18,13 +18,13 @@ import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications
 
 import { CoreAppDB } from '@services/app-db';
 import { CoreConfig } from '@services/config';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
-import { CoreText } from '@singletons/text';
+import { CoreEventObserver, CoreEvents } from '@static/events';
+import { CoreText } from '@static/text';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreError } from '@classes/errors/error';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { makeSingleton, NgZone, Translate, LocalNotifications, ApplicationInit } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import {
     APP_SCHEMA,
     TRIGGERED_TABLE_NAME,
@@ -43,7 +43,7 @@ import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreSites } from './sites';
 import { CoreNavigator } from './navigator';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreAlerts } from './overlays/alerts';
 
 /**

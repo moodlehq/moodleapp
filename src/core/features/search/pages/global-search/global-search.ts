@@ -15,11 +15,11 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
-import { CoreEvents, CoreEventObserver } from '@singletons/events';
+import { CoreUrl } from '@static/url';
+import { CoreEvents, CoreEventObserver } from '@static/events';
 import {
     CoreSearchGlobalSearchResult,
     CoreSearchGlobalSearchFilters,
@@ -29,7 +29,7 @@ import {
 import { CoreNavigator } from '@services/navigator';
 import { CoreSearchBoxComponent } from '@features/search/components/search-box/search-box';
 import { CoreModals } from '@services/overlays/modals';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/user-menu-button/user-menu-button';

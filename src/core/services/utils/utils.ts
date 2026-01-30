@@ -15,23 +15,23 @@
 import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { CoreFileUtils } from '@singletons/file-utils';
-import { CoreRedirects } from '@singletons/redirects';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreFileUtils } from '@static/file-utils';
+import { CoreRedirects } from '@static/redirects';
+import { CoreMimetype } from '@static/mimetype';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
-import { CoreArray } from '@singletons/array';
-import { CoreText } from '@singletons/text';
-import { CoreWait, CoreWaitOptions } from '@singletons/wait';
+import { CoreArray } from '@static/array';
+import { CoreText } from '@static/text';
+import { CoreWait, CoreWaitOptions } from '@static/wait';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CorePromiseUtils, OrderedPromiseData } from '@singletons/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@singletons/opener';
-import { CoreCountries, CoreCountry } from '@singletons/countries';
-import { CoreObject } from '@singletons/object';
+import { CorePromiseUtils, OrderedPromiseData } from '@static/promise-utils';
+import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@static/opener';
+import { CoreCountries, CoreCountry } from '@static/countries';
+import { CoreObject } from '@static/object';
 import { CoreSites } from '@services/sites';
-import { CoreMenuItem, CoreUtils as CoreUtilsSingleton, TreeNode } from '@singletons/utils';
+import { CoreMenuItem, CoreUtils as CoreUtilsSingleton, TreeNode } from '@static/utils';
 import { CoreWSError } from '@classes/errors/wserror';
 
 /**

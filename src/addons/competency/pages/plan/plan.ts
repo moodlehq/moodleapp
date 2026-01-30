@@ -22,7 +22,7 @@ import { AddonCompetencyPlansSource } from '@addons/competency/classes/competenc
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { AddonCompetencyPlanCompetenciesSource } from '@addons/competency/classes/competency-plan-competencies-source';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 

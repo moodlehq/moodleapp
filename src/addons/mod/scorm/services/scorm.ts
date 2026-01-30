@@ -19,14 +19,14 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreUrl } from '@singletons/url';
-import { CoreObject } from '@singletons/object';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreUrl } from '@static/url';
+import { CoreObject } from '@static/object';
 import { CoreWS, CoreWSExternalWarning, CoreWSFile, CoreWSPreSets } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
-import { CorePath } from '@singletons/path';
+import { CoreEvents } from '@static/events';
+import { CorePath } from '@static/path';
 import { AddonModScormOffline } from './scorm-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import {
@@ -42,7 +42,7 @@ import {
     ADDON_MOD_SCORM_UPDATE_TOC_EVENT,
     ADDON_MOD_SCORM_COMPONENT,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 // Private constants.
@@ -2076,7 +2076,7 @@ export type AddonModScormGetScoSrcForOnlinePlayerOptions = {
     newAttempt?: boolean; // Whether to start a new attempt.
 };
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

@@ -29,8 +29,8 @@ import {
 import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreFile } from '@services/file';
-import { CoreUrl } from '@singletons/url';
-import { CoreIframe } from '@singletons/iframe';
+import { CoreUrl } from '@static/url';
+import { CoreIframe } from '@static/iframe';
 import { DomSanitizer, Router, StatusBar, Translate } from '@singletons';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 import { Subscription } from 'rxjs';
@@ -38,7 +38,7 @@ import { filter } from 'rxjs/operators';
 import { NavigationStart } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import { toBoolean } from '@/core/transforms/boolean';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreBaseModule } from '@/core/base.module';

@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 import { Translate, makeSingleton } from '@singletons';
-import { CoreWait } from '@singletons/wait';
-import { CoreDom } from '@singletons/dom';
-import { CoreForms } from '@singletons/form';
-import { CoreLogger } from '@singletons/logger';
+import { CoreWait } from '@static/wait';
+import { CoreDom } from '@static/dom';
+import { CoreForms } from '@static/form';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Service used to render an Error Accordion component.

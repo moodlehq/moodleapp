@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';

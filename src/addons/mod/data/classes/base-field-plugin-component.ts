@@ -14,7 +14,7 @@
 
 import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonModDataData, AddonModDataEntryField, AddonModDataField } from '../services/data';
 import { AddonModDataTemplateMode } from '../constants';
 import { toBoolean } from '@/core/transforms/boolean';

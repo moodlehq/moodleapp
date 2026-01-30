@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { AddonModChat, AddonModChatChat } from '../../services/chat';
 import { ADDON_MOD_CHAT_COMPONENT_LEGACY, ADDON_MOD_CHAT_PAGE_NAME } from '../../constants';
 import { CoreSharedModule } from '@/core/shared.module';

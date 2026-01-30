@@ -17,12 +17,12 @@ import { Injectable } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUserPreferencesOffline } from './user-preferences-offline';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CORE_USER_CALENDAR_DEFAULT_STARTING_WEEKDAY, CORE_USER_TF_12, CORE_USER_TF_24 } from '../constants';
 
 /**

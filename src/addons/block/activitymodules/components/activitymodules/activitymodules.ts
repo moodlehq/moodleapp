@@ -19,9 +19,9 @@ import { CoreBlockBaseComponent } from '@features/block/classes/base-block-compo
 import { CoreSites } from '@services/sites';
 import { ContextLevel } from '@/core/constants';
 import { Translate } from '@singletons';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModFeature, ModArchetype, RESOURCE_ARCHETYPE_NAME } from '@addons/mod/constants';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';

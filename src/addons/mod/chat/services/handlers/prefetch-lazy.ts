@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { AddonModChatPrefetchHandlerService } from './prefetch';
 import { AddonModChat, AddonModChatSession } from '../chat';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreGroups } from '@services/groups';

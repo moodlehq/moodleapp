@@ -15,12 +15,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
-import { CoreObject } from '@singletons/object';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreObject } from '@static/object';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 
 import { CoreSettingsHelper } from '../../services/settings-helper';
 import { CoreAccountsList } from '@features/login/services/login-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

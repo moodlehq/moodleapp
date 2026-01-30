@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
 import { SubPartial } from '@/core/utils/types';
 

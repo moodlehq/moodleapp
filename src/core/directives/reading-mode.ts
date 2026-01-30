@@ -15,14 +15,14 @@
 import { AfterViewInit, Directive, ElementRef, OnDestroy, inject } from '@angular/core';
 
 import { Translate } from '@singletons';
-import { CoreIcons } from '@singletons/icons';
-import { CoreDom } from '@singletons/dom';
-import { CoreWait } from '@singletons/wait';
+import { CoreIcons } from '@static/icons';
+import { CoreDom } from '@static/dom';
+import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreCollapsibleHeaderDirective } from './collapsible-header';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Directive to add the reading mode to the selected html tag.

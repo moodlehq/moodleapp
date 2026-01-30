@@ -18,14 +18,14 @@ import { AccordionGroupCustomEvent } from '@ionic/angular';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityAttempt,
     AddonModH5PActivityData,
     AddonModH5PActivityUserAttempts,
 } from '../../services/h5pactivity';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';

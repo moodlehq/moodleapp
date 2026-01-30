@@ -21,10 +21,10 @@ import { IonContent } from '@ionic/angular';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreForms } from '@singletons/form';
-import { CoreUtils } from '@singletons/utils';
+import { CoreForms } from '@static/form';
+import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 
 import {
     AddonModDataData,
@@ -37,15 +37,15 @@ import {
     AddonModDataEntryWSField,
 } from '../../services/data';
 import { AddonModDataHelper } from '../../services/data-helper';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { AddonModDataEntryFieldInitialized } from '../../classes/base-field-plugin-component';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_DATA_COMPONENT_LEGACY, ADDON_MOD_DATA_ENTRY_CHANGED, AddonModDataTemplateType } from '../../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSharedModule } from '@/core/shared.module';

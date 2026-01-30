@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { OnInit, Input, Component, OnChanges, SimpleChanges } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
-import { CoreArray } from '@singletons/array';
-import { CoreText } from '@singletons/text';
+import { CoreLogger } from '@static/logger';
+import { CoreArray } from '@static/array';
+import { CoreText } from '@static/text';
 import { CoreCourseBlock } from '../../course/services/course';
 import { Params } from '@angular/router';
 import { ContextLevel } from '@/core/constants';

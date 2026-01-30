@@ -18,11 +18,11 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
-import { CoreUtils } from '@singletons/utils';
+import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
+import { CoreUtils } from '@static/utils';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonModLessonPasswordDBRecord, PASSWORD_TABLE_NAME } from './database/lesson';
 import { AddonModLessonOffline, AddonModLessonPageAttemptRecord } from './lesson-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
@@ -36,12 +36,12 @@ import {
 } from '../constants';
 import { CoreGradeType } from '@features/grades/constants';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreObject } from '@singletons/object';
-import { CoreArray } from '@singletons/array';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreObject } from '@static/object';
+import { CoreArray } from '@static/array';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

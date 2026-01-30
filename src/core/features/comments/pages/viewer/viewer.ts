@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, OnInit, AfterViewInit, effect, inject, viewChild } from '@angular/core';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { ActivatedRoute } from '@angular/router';
 import { CoreSites } from '@services/sites';
 import {
@@ -29,25 +29,25 @@ import { IonContent } from '@ionic/angular';
 import { ContextLevel, CoreRefreshIcon, CoreSyncIcon } from '@/core/constants';
 import { CoreNavigator } from '@services/navigator';
 import { Translate } from '@singletons';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUser } from '@features/user/services/user';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreNetwork } from '@services/network';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreWait } from '@singletons/wait';
-import { CoreDom } from '@singletons/dom';
+import { CoreWait } from '@static/wait';
+import { CoreDom } from '@static/dom';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '@addons/mod/assign/submission/comments/constants';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreKeyboard } from '@singletons/keyboard';
+import { CoreKeyboard } from '@static/keyboard';
 
 /**
  * Page that displays comments.

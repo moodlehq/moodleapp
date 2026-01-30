@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreQueueRunner } from '@classes/queue-runner';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 
 describe('CoreQueueRunner', () => {
 

@@ -15,8 +15,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     CoreUser,
     CoreUserProfile,
@@ -25,11 +25,11 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
-import { CoreMimetype } from '@singletons/mimetype';
+import { CoreMimetype } from '@static/mimetype';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from '../../components/user-profile-field/user-profile-field';
@@ -40,7 +40,7 @@ import {
 } from '@features/user/constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFile } from '@services/file';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Page that displays info about a user.

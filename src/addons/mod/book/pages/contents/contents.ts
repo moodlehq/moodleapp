@@ -25,7 +25,7 @@ import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreNetwork } from '@services/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import {
     AddonModBook,
@@ -34,7 +34,7 @@ import {
     AddonModBookTocChapter,
 } from '../../services/book';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { ADDON_MOD_BOOK_COMPONENT, ADDON_MOD_BOOK_MODNAME, AddonModBookNavStyle } from '../../constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';

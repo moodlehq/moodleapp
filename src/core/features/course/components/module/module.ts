@@ -28,7 +28,7 @@ import {
     CoreCourseModulePrefetchHandler,
 } from '@features/course/services/module-prefetch-delegate';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreRemindersDateComponent } from '../../../reminders/components/date/date';
 import { CoreCourseModuleCompletionComponent } from '../module-completion/module-completion';

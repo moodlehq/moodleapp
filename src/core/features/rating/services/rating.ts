@@ -20,11 +20,11 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreRatingOffline } from './rating-offline';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 
 /**
  * Service to handle ratings.
@@ -433,7 +433,7 @@ export class CoreRatingProvider {
 }
 export const CoreRating = makeSingleton(CoreRatingProvider);
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

@@ -20,8 +20,8 @@ import {
 } from '@addons/mod/data/services/data';
 import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-delegate';
 import { Injectable, Type } from '@angular/core';
-import { CoreFormFields } from '@singletons/form';
-import { CoreTime } from '@singletons/time';
+import { CoreFormFields } from '@static/form';
+import { CoreTime } from '@static/time';
 import { makeSingleton, Translate } from '@singletons';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 

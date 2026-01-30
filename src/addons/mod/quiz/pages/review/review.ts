@@ -17,9 +17,9 @@ import { CoreQuestionQuestionForView } from '@features/question/services/questio
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreDom } from '@static/dom';
+import { CoreTime } from '@static/time';
 import {
     AddonModQuizNavigationModalReturn,
     AddonModQuizNavigationQuestion,
@@ -41,7 +41,7 @@ import { AddonModQuizQuestionCardComponent } from '../../components/question-car
 import { AddonModQuizAttemptInfoComponent } from '../../components/attempt-info/attempt-info';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreQuestionComponent } from '@features/question/components/question/question';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreLoadings } from '@services/overlays/loadings';
 
 /**

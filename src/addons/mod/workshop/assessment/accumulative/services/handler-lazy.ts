@@ -22,7 +22,7 @@ import {
 import { Injectable, Type } from '@angular/core';
 import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreFormFields } from '@singletons/form';
+import { CoreFormFields } from '@static/form';
 import { AddonWorkshopAssessmentStrategyHandler } from '../../../services/assessment-strategy-delegate';
 import { AddonModWorkshopAssessmentStrategyAccumulativeHandlerService } from './handler';
 

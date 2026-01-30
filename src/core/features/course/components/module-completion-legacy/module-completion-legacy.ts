@@ -23,7 +23,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { Translate } from '@singletons';
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { BehaviorSubject } from 'rxjs';
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';

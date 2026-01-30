@@ -20,7 +20,7 @@ import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { ApplicationInit, CoreSingletonProxy, Translate } from '@singletons';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 import { CoreNetwork } from '@services/network';

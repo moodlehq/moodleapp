@@ -21,7 +21,7 @@ import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { makeSingleton } from '@singletons';
 import { CoreUserPreferencesOffline } from './user-preferences-offline';
 import { CoreUserPreferences } from './user-preferences';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Service to sync user preferences.

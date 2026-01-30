@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CorePlatform } from '@services/platform';
-import { CoreIframe } from '@singletons/iframe';
+import { CoreIframe } from '@static/iframe';
 import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 
 /**

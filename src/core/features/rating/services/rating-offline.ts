@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreRatingDBPrimaryData, CoreRatingDBRecord, RATINGS_TABLE } from './database/rating';
 

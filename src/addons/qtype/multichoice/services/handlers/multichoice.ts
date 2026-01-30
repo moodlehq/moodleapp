@@ -17,9 +17,9 @@ import { Injectable, Type } from '@angular/core';
 import { AddonModQuizMultichoiceQuestion } from '@features/question/classes/base-question-component';
 import { CoreQuestionQuestionParsed, CoreQuestionsAnswers } from '@features/question/services/question';
 import { CoreQuestionHandler } from '@features/question/services/question-delegate';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { QuestionCompleteGradableResponse } from '@features/question/constants';
 
 /**

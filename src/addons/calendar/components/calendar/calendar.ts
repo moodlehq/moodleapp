@@ -21,10 +21,10 @@ import {
     output,
     effect,
 } from '@angular/core';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
-import { CoreTime } from '@singletons/time';
-import { CoreArray } from '@singletons/array';
+import { CoreTime } from '@static/time';
+import { CoreArray } from '@static/array';
 import {
     AddonCalendar,
     AddonCalendarWeek,
@@ -44,7 +44,7 @@ import {
 import { CoreSwipeSlidesDynamicItemsManager } from '@classes/items-management/swipe-slides-dynamic-items-manager';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { Translate } from '@singletons';
 import { toBoolean } from '@/core/transforms/boolean';
 import { ADDON_CALENDAR_UNDELETED_EVENT_EVENT } from '@addons/calendar/constants';

@@ -20,14 +20,14 @@ import { CoreContentLinksDelegate } from '@features/contentlinks/services/conten
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreLoginHelper, CoreLoginSSOData } from '@features/login/services/login-helper';
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
-import { CorePath } from '@singletons/path';
+import { CoreLogger } from '@static/logger';
+import { CorePath } from '@static/path';
 import { CoreConstants } from '../constants';
-import { CoreSSO } from '@singletons/sso';
+import { CoreSSO } from '@static/sso';
 import { CoreNavigator, CoreRedirectPayload } from './navigator';
 import { CoreSiteCheckResponse, CoreSites } from './sites';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 import { CoreLoadings } from './overlays/loadings';
 import { CoreAlerts } from './overlays/alerts';
 import { CorePlatform } from './platform';

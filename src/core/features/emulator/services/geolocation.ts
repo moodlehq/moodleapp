@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';
-import { CoreUrl } from '@singletons/url';
+import { CoreUrl } from '@static/url';
 
 /**
  * Emulates the Cordova Geolocation plugin in desktop apps and in browser.

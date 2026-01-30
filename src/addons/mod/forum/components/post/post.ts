@@ -26,7 +26,7 @@ import {
     viewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
     AddonModForum,
@@ -42,15 +42,15 @@ import { Translate } from '@singletons';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModForumSync } from '../../services/forum-sync';
 import { CoreSync } from '@services/sync';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { AddonModForumHelper } from '../../services/forum-helper';
 import { AddonModForumOffline } from '../../services/forum-offline';
-import { CoreFileUtils } from '@singletons/file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreRatingInfo } from '@features/rating/services/rating';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { AddonModForumSharedPostFormData } from '../../pages/discussion/discussion';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { ADDON_MOD_FORUM_CHANGE_DISCUSSION_EVENT, ADDON_MOD_FORUM_COMPONENT } from '../../constants';
 import { CoreToasts } from '@services/overlays/toasts';
@@ -58,7 +58,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreWSFile } from '@services/ws';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AccordionGroupCustomEvent } from '@ionic/angular';

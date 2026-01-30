@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreSites } from '@services/sites';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { makeSingleton } from '@singletons';
 import { AddonCalendarSubmitCreateUpdateFormDataWSParams } from './calendar';
 import {

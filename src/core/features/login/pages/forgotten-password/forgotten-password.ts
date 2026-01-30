@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreForms } from '@singletons/form';
+import { CoreForms } from '@static/form';
 import { CorePlatform } from '@services/platform';
 import { CoreSitePublicConfigResponse, CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';

@@ -20,9 +20,9 @@ import { CoreCourseListItem, CoreCourses } from '@features/courses/services/cour
 import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 import { CoreUser } from '@features/user/services/user';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
-import { CoreTextFormat } from '@singletons/text';
+import { CoreTextFormat } from '@static/text';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

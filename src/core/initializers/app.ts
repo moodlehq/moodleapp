@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreApp } from '@services/app';
-import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreHTMLClasses } from '@static/html-classes';
 
 /**
  * General App initializer.

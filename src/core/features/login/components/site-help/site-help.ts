@@ -20,7 +20,7 @@ import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@fea
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 
 /**
  * Component that displays help to connect to a site.

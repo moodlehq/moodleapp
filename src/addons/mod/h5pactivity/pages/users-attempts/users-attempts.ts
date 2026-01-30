@@ -16,13 +16,13 @@ import { Component, OnInit, Signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import {
     AddonModH5PActivity,
     AddonModH5PActivityData,
     AddonModH5PActivityUserAttempts,
 } from '../../services/h5pactivity';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { AddonModH5PActivityGradeMethod } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
@@ -23,8 +23,8 @@ import {
     AddonMessagesOfflineConversationMessagesDBRecordFormatted,
     AddonMessagesOfflineMessagesDBRecordFormatted,
 } from './messages-offline';
-import { CoreTime } from '@singletons/time';
-import { CoreEvents } from '@singletons/events';
+import { CoreTime } from '@static/time';
+import { CoreEvents } from '@static/events';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -51,10 +51,10 @@ import {
     AddonMessagesMessagePrivacy,
     AddonMessagesUpdateConversationAction,
 } from '../constants';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
 
-declare module '@singletons/events' {
+declare module '@static/events' {
 
     /**
      * Augment CoreEventsData interface with events specific to this service.

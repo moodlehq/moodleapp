@@ -17,8 +17,8 @@ import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
 import { CoreUserProfileFieldHandlerData } from '@features/user/services/user-profile-field-delegate';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CorePromiseUtils } from '@singletons/promise-utils';
-import { CoreText, CoreTextFormat } from '@singletons/text';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreText, CoreTextFormat } from '@static/text';
 
 /**
  * Service to handle signup functionalities.

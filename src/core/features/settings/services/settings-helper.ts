@@ -16,11 +16,11 @@ import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
 import { CoreNetwork } from '@services/network';
 import { CoreCronDelegate } from '@services/cron';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreFilter } from '@features/filter/services/filter';
@@ -30,7 +30,7 @@ import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreHTMLClasses } from '@singletons/html-classes';
+import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
 
 /**

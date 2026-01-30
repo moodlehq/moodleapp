@@ -16,12 +16,12 @@ import { Injectable } from '@angular/core';
 
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
-import { CoreTime } from '@singletons/time';
-import { CoreArray } from '@singletons/array';
+import { CoreText } from '@static/text';
+import { CoreTime } from '@static/time';
+import { CoreArray } from '@static/array';
 import { CoreWSExternalFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { CorePath } from '@singletons/path';
+import { CorePath } from '@static/path';
 import {
     CoreQuestionAnswerDBRecord,
     CoreQuestionDBRecord,
@@ -37,7 +37,7 @@ import {
     QUESTION_NEEDS_GRADING_STATE_CLASSES,
     QUESTION_TODO_STATE_CLASSES,
 } from '@features/question/constants';
-import { CoreObject } from '@singletons/object';
+import { CoreObject } from '@static/object';
 
 const QUESTION_PREFIX_REGEX = /q\d+:(\d+)_/;
 const STATES: Record<string, CoreQuestionState> = {

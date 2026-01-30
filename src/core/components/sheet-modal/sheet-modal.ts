@@ -17,9 +17,9 @@ import { AfterViewInit, Component, ElementRef, inject, input, viewChild } from '
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { AngularFrameworkDelegate } from '@singletons';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreBaseModule } from '@/core/base.module';
 
 @Component({

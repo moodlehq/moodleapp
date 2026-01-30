@@ -16,9 +16,9 @@ import { Component, ElementRef, Input, OnInit, Type, inject, viewChild } from '@
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
-import { CoreFormFields, CoreForms } from '@singletons/form';
-import { CoreText } from '@singletons/text';
-import { CoreObject } from '@singletons/object';
+import { CoreFormFields, CoreForms } from '@static/form';
+import { CoreText } from '@static/text';
+import { CoreObject } from '@static/object';
 import { ModalController } from '@singletons';
 import {
     AddonModDataField,

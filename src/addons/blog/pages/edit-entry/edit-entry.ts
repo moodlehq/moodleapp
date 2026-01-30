@@ -39,13 +39,13 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreEvents } from '@singletons/events';
-import { CoreForms } from '@singletons/form';
+import { CoreEvents } from '@static/events';
+import { CoreForms } from '@static/form';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CoreTime } from '@singletons/time';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { DEFAULT_TEXT_FORMAT } from '@singletons/text';
+import { DEFAULT_TEXT_FORMAT } from '@static/text';
 
 @Component({
     selector: 'addon-blog-edit-entry',

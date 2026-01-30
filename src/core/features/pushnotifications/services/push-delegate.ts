@@ -16,9 +16,9 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 import { CorePushNotificationsNotificationBasicData } from './pushnotifications';
 
 /**

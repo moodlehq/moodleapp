@@ -35,9 +35,9 @@ import { CoreQuestionBehaviourButton, CoreQuestionHelper } from '@features/quest
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { ModalController, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { AddonModQuizAutoSave } from '../../classes/auto-save';
 import {
     AddonModQuizNavigationModalReturn,
@@ -53,10 +53,10 @@ import {
 import { AddonModQuizHelper } from '../../services/quiz-helper';
 import { AddonModQuizSync } from '../../services/quiz-sync';
 import { CanLeave } from '@guards/can-leave';
-import { CoreForms } from '@singletons/form';
-import { CoreDom } from '@singletons/dom';
-import { CoreTime } from '@singletons/time';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreForms } from '@static/form';
+import { CoreDom } from '@static/dom';
+import { CoreTime } from '@static/time';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import {
@@ -65,7 +65,7 @@ import {
     ADDON_MOD_QUIZ_COMPONENT_LEGACY,
     ADDON_MOD_QUIZ_COMPONENT,
 } from '../../constants';
-import { CoreWait } from '@singletons/wait';
+import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';

@@ -26,8 +26,8 @@ import {
 } from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
-import { CoreUtils } from '@singletons/utils';
-import { CoreDirectivesRegistry } from '@singletons/directives-registry';
+import { CoreUtils } from '@static/utils';
+import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreNavBarButtonsComponent } from '../navbar-buttons/navbar-buttons';
 import { CoreTabsComponent } from './tabs';
 import { CoreBaseModule } from '@/core/base.module';

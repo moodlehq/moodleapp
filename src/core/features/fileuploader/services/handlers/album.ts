@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CorePlatform } from '@services/platform';
-import { CoreArray } from '@singletons/array';
+import { CoreArray } from '@static/array';
 import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';

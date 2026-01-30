@@ -16,7 +16,7 @@ import { Directive, Input, OnInit, ElementRef, inject } from '@angular/core';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreOpenerOpenFileOptions } from '@singletons/opener';
+import { CoreOpenerOpenFileOptions } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 

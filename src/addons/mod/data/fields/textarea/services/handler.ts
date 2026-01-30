@@ -14,14 +14,14 @@
 
 import { AddonModDataEntryField, AddonModDataField, AddonModDataSubfieldData } from '@addons/mod/data/services/data';
 import { Injectable, Type } from '@angular/core';
-import { CoreFormFields } from '@singletons/form';
-import { CoreText } from '@singletons/text';
+import { CoreFormFields } from '@static/form';
+import { CoreText } from '@static/text';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { AddonModDataFieldTextHandlerService } from '../../text/services/handler';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
-import { CoreDom } from '@singletons/dom';
+import { CoreDom } from '@static/dom';
 
 /**
  * Handler for textarea data field plugin.

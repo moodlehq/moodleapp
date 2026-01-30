@@ -17,10 +17,10 @@ import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
-import { CoreObject } from '@singletons/object';
-import { CorePath } from '@singletons/path';
+import { CoreObject } from '@static/object';
+import { CorePath } from '@static/path';
 import { AddonBlogFilter } from './blog';
 import {
     AddonBlogOfflineEntryDBRecord,

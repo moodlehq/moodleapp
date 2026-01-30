@@ -20,7 +20,7 @@ import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { AddonModLesson } from '../lesson';
 import { ADDON_MOD_LESSON_COMPONENT, ADDON_MOD_LESSON_MODNAME } from '../../constants';

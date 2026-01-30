@@ -15,7 +15,7 @@
 // Based on http://roblouie.com/article/198/using-gestures-in-the-ionic-2-beta/
 
 import { Directive, ElementRef, OnInit, Output, EventEmitter, inject, input } from '@angular/core';
-import { CoreLogger } from '@singletons/logger';
+import { CoreLogger } from '@static/logger';
 
 /**
  * Directive to suppress all events on an element. This is useful to prevent keyboard closing when clicking this element.

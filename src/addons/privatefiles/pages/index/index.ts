@@ -17,9 +17,9 @@ import { Md5 } from 'ts-md5/dist/md5';
 
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
     AddonPrivateFiles,
     AddonPrivateFilesProvider,
@@ -28,9 +28,9 @@ import {
     AddonPrivateFilesGetFilesWSParams,
 } from '@addons/privatefiles/services/privatefiles';
 import { AddonPrivateFilesHelper } from '@addons/privatefiles/services/privatefiles-helper';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNavigator } from '@services/navigator';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFilepool } from '@services/filepool';

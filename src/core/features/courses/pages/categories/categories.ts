@@ -14,13 +14,13 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CoreSites } from '@services/sites';
-import { CoreUtils } from '@singletons/utils';
+import { CoreUtils } from '@static/utils';
 import { CoreCategoryData, CoreCourseListItem, CoreCourses } from '../../services/courses';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreEventObserver, CoreEvents } from '@singletons/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreTime } from '@singletons/time';
+import { CoreTime } from '@static/time';
 import {
     CORE_COURSES_MY_COURSES_UPDATED_EVENT,
     CoreCoursesMyCoursesUpdatedEventAction,

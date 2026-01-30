@@ -19,7 +19,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@singletons/events';
+import { CoreEvents } from '@static/events';
 import { ADDON_BLOG_AUTO_SYNCED, ADDON_BLOG_SYNC_ID } from '../constants';
 import { AddonBlog, AddonBlogAddEntryOption, AddonBlogAddEntryWSParams, AddonBlogProvider } from './blog';
 import { AddonBlogOffline, AddonBlogOfflineEntry } from './blog-offline';

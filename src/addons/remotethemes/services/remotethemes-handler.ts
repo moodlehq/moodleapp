@@ -20,8 +20,8 @@ import { CoreSites } from '@services/sites';
 import { CoreWS } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreStyleHandler, CoreStylesService } from '@features/styles/services/styles';
-import { CoreLogger } from '@singletons/logger';
-import { CorePromiseUtils } from '@singletons/promise-utils';
+import { CoreLogger } from '@static/logger';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 const COMPONENT = 'mmaRemoteStyles';
 

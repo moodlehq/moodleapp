@@ -18,11 +18,11 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';
-import { CoreText } from '@singletons/text';
+import { CoreText } from '@static/text';
 import { CoreFilterDelegate } from './filter-delegate';
 import { DomSanitizer, makeSingleton } from '@singletons';
-import { CoreEvents, CoreEventSiteData } from '@singletons/events';
-import { CoreLogger } from '@singletons/logger';
+import { CoreEvents, CoreEventSiteData } from '@static/events';
+import { CoreLogger } from '@static/logger';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CanActivateFn } from '@angular/router';
-import { CoreRedirects } from '@singletons/redirects';
+import { CoreRedirects } from '@static/redirects';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { Router } from '@singletons';
