@@ -13,7 +13,6 @@
 // limitations under the License.
 
 export const GET_STARTED_URL = 'https://moodle.com';
-export const ONBOARDING_DONE = 'onboarding_done';
 export const FAQ_QRCODE_INFO_DONE = 'qrcode_info_done';
 export const FAQ_URL_IMAGE_HTML = '<img src="assets/img/login/faq_url.png" role="presentation" alt="">';
 export const FAQ_QRCODE_IMAGE_HTML = '<img src="assets/img/login/faq_qrcode.png" role="presentation" alt="">';

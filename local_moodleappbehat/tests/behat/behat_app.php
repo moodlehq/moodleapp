@@ -38,7 +38,6 @@ class behat_app extends behat_app_helper {
     /** @var array Config overrides */
     protected $appconfig = [
         'disableUserTours' => true,
-        'enableonboarding' => false,
         'toastDurations' => [ // Extend toast durations in Behat so they don't disappear too soon.
             'short' => 7500,
             'long' => 10000,
@@ -129,10 +128,7 @@ class behat_app extends behat_app_helper {
      * @throws DriverException Issue with configuration or feature file
      * @throws dml_exception Problem with Moodle setup
      * @throws ExpectationException Problem with resizing window
-     * @deprecated since 5.1 "I launch the app :runtime" is deprecated, use "I launch the app" instead and
-     * "Given the app has the following config:
-     * | enableonboarding | true |"
-     * to enable onboarding in tests that need it.
+     * @deprecated since 5.1 "I launch the app :runtime" is deprecated, use "I launch the app" instead
      */
     public function i_launch_the_app(string $runtime = '') {
         // Go to page and prepare browser for app.
