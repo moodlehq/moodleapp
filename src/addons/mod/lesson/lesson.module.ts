@@ -34,6 +34,7 @@ import { AddonModLessonReportLinkHandler } from './services/handlers/report-link
 import { AddonModLessonSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_LESSON_COMPONENT_LEGACY, ADDON_MOD_LESSON_PAGE_NAME } from './constants';
 import { canLeaveGuard } from '@guards/can-leave';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -53,6 +54,7 @@ const routes: Routes = [
                 loadComponent: () => import('./pages/user-retake/user-retake'),
             },
         ],
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

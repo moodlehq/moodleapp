@@ -24,11 +24,13 @@ import { AddonModLtiModuleHandler } from './services/handlers/module';
 import { AddonModLtiPrefetchHandler } from './services/handlers/prefetch';
 import { AddonModLtiHelper } from './services/lti-helper';
 import { ADDON_MOD_LTI_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: `${ADDON_MOD_LTI_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

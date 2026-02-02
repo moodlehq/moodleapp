@@ -9,8 +9,8 @@ Feature: Test single activity of scorm type in app
       | username | firstname | lastname | email                |
       | student1 | Student   | One      | student1@example.com |
     And the following "courses" exist:
-      | fullname | shortname | format         | activitytype |
-      | Course 1 | C1        | singleactivity | scorm        |
+      | fullname                     | shortname | format         | activitytype |
+      | Single activity SCORM course | C1        | singleactivity | scorm        |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | student1 | C1     | student        |
@@ -19,7 +19,7 @@ Feature: Test single activity of scorm type in app
       | scorm    | C1     | C1 Scorm 1 | mod/scorm/tests/packages/RuntimeMinimumCalls_SCORM12.zip | 0     |
 
   Scenario: Single activity scorm
-    Given I entered the course "Course 1" as "student1" in the app
+    Given I entered the course "Single activity SCORM course" as "student1" in the app
     And I replace "/.*/" within ".addon-scorm-last-sync-date" with "[Date]"
 
     When I set "page-core-course-index core-course-image" styles to "background" "lightblue"

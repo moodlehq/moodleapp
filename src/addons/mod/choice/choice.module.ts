@@ -30,11 +30,13 @@ import { AddonModChoicePrefetchHandler } from './services/handlers/prefetch';
 import { AddonModChoiceSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_CHOICE_COMPONENT_LEGACY, ADDON_MOD_CHOICE_PAGE_NAME } from './constants';
 import { AddonModChoiceReportLinkHandler } from './services/handlers/report-link';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
         path: `${ADDON_MOD_CHOICE_PAGE_NAME}/:courseId/:cmId`,
         loadComponent: () => import('./pages/index/index'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.MODULE },
     },
 ];
 

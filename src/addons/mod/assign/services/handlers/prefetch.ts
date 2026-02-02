@@ -256,7 +256,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
         promises.push(CoreCourse.getModuleBasicInfoByInstance(assign.id, ADDON_MOD_ASSIGN_MODNAME, { siteId }));
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, { siteId })));
 
         // Download intro files and attachments. Do not call getFiles because it'd call some WS twice.
         let files: CoreWSFile[] = assign.introattachments || [];

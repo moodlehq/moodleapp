@@ -18,6 +18,9 @@ import { CoreCourseModuleHandler } from '@features/course/services/module-delega
 import { makeSingleton } from '@singletons';
 import { ADDON_MOD_GLOSSARY_MODNAME, ADDON_MOD_GLOSSARY_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModGlossary } from '../glossary';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support glossary modules.
@@ -58,6 +61,19 @@ export class AddonModGlossaryModuleHandlerService extends CoreModuleHandlerBase 
      */
     displayRefresherInSingleActivity(): boolean {
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModGlossary.getGlossary(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

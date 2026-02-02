@@ -53,7 +53,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreObject } from '@static/object';
 import { CoreTextFormat } from '@static/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 declare module '@static/events' {
@@ -1375,15 +1375,12 @@ type AddonModForumGetForumsByCoursesWSParams = {
 
 /**
  * General forum activity data.
+ * We're using Omit to exclude properties because type is not consistent with the rest of the WS but
+ * it should be.
  */
-export type AddonModForumData = {
-    id: number; // Forum id.
-    course: number; // Course id.
+export type AddonModForumData =
+    Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'> & {
     type: AddonModForumType; // The forum type.
-    name: string; // Forum name.
-    intro: string; // The forum intro.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
     duedate?: number; // Duedate for the user.
     cutoffdate?: number; // Cutoffdate for the user.
     assessed: number; // Aggregate type.

@@ -19,6 +19,8 @@ import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { ADDON_MOD_PAGE_COMPONENT, ADDON_MOD_PAGE_MODNAME, ADDON_MOD_PAGE_PAGE_NAME } from '../../constants';
 import { ModFeature, ModArchetype, ModPurpose } from '@addons/mod/constants';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support page modules.
@@ -57,6 +59,19 @@ export class AddonModPageModuleHandlerService extends CoreModuleHandlerBase impl
         const { AddonModPageIndexComponent } = await import('../../components/index');
 
         return AddonModPageIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModPage.getPageData(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

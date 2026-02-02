@@ -22,6 +22,7 @@ import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonCourseCompletionStatusLinkHandler } from './services/handlers/completionstatus-link';
 import { AddonCourseCompletionCourseOptionHandler } from './services/handlers/course-option';
 import { AddonCourseCompletionUserHandler } from './services/handlers/user';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get course completion services.
@@ -40,6 +41,7 @@ const routes: Routes = [
     {
         path: 'coursecompletion',
         loadComponent: () => import('./pages/report/report'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 

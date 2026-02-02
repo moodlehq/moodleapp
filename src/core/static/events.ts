@@ -66,9 +66,11 @@ export interface CoreEventsData {
     [CoreEvents.ORIENTATION_CHANGE]: CoreEventOrientationData;
     [CoreEvents.COURSE_MODULE_VIEWED]: CoreEventCourseModuleViewed;
     [CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED]: CoreEventCompleteRequiredProfileDataFinished;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    [CoreEvents.LANGUAGE_CHANGED]: string;
 }
 
-/*
+/**
  * Static class to send and listen to events.
  */
 export class CoreEvents {
@@ -80,6 +82,9 @@ export class CoreEvents {
     static readonly SITE_POLICY_NOT_AGREED = 'site_policy_not_agreed';
     static readonly LOGIN = 'login';
     static readonly LOGOUT = 'logout';
+    /**
+     * @deprecated since 5.2. Use Translate.onLangChange subscription instead.
+     */
     static readonly LANGUAGE_CHANGED = 'language_changed';
     static readonly NOTIFICATION_SOUND_CHANGED = 'notification_sound_changed';
     static readonly SITE_ADDED = 'site_added';

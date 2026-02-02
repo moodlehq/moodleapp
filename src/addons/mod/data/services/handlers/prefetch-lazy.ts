@@ -262,7 +262,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
         promises.push(CoreCourse.getModuleBasicInfoByInstance(database.id, ADDON_MOD_DATA_MODNAME, { siteId }));
 
         // Get course data, needed to determine upload max size if it's configured to be course limit.
-        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, siteId)));
+        promises.push(CorePromiseUtils.ignoreErrors(CoreCourses.getCourseByField('id', courseId, { siteId })));
 
         await Promise.all(promises);
     }

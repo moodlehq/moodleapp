@@ -19,6 +19,9 @@ import { makeSingleton } from '@singletons';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 import { ADDON_MOD_QUIZ_MODNAME, ADDON_MOD_QUIZ_PAGE_NAME } from '../../constants';
 import { ModFeature, ModPurpose } from '@addons/mod/constants';
+import { AddonModQuiz } from '../quiz';
+import { CoreCourseModuleData } from '@features/course/services/course-helper';
+import { CoreSitesReadingStrategy } from '@services/sites';
 
 /**
  * Handler to support quiz modules.
@@ -53,6 +56,19 @@ export class AddonModQuizModuleHandlerService extends CoreModuleHandlerBase impl
         const { AddonModQuizIndexComponent } = await import('../../components/index');
 
         return AddonModQuizIndexComponent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        const mod = await AddonModQuiz.getQuiz(
+            module.course,
+            module.id,
+            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+        );
+
+        return mod?.lang;
     }
 
 }

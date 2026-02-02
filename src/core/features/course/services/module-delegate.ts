@@ -138,6 +138,14 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
         activity: CoreCourseOverviewActivity,
         courseId: number,
     ): Promise<CoreCourseOverviewItemContent | undefined>;
+
+    /**
+     * Get the forced language for a module, if any.
+     *
+     * @param module The module data.
+     * @returns The forced language, undefined if not set.
+     */
+    getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined>;
 }
 
 /**
@@ -482,6 +490,16 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         const result = await this.executeFunctionOnEnabled<boolean>(module.modname, 'manualCompletionAlwaysShown', [module]);
 
         return !!result;
+    }
+
+    /**
+     * Get the forced language for a module, if any.
+     *
+     * @param module The module data.
+     * @returns The forced language, undefined if not set.
+     */
+    async getModuleForcedLang(module: CoreCourseModuleData): Promise<string | undefined> {
+        return await this.executeFunctionOnEnabled<string>(module.modname, 'getModuleForcedLang', [module]);
     }
 
 }

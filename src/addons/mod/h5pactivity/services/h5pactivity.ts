@@ -35,8 +35,7 @@ import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
-import { CoreTextFormat } from '@static/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
  * Service that provides some features for H5P activity.
@@ -875,23 +874,19 @@ export const AddonModH5PActivity = makeSingleton(AddonModH5PActivityProvider);
 
 /**
  * Basic data for an H5P activity, exported by Moodle class h5pactivity_summary_exporter.
+ * We're using Omit to exclude properties because type is not consistent with the rest of the WS but
+ * it should be.
  */
-export type AddonModH5PActivityWSData = {
-    id: number; // The primary key of the record.
-    course: number; // Course id this h5p activity is part of.
-    name: string; // The name of the activity module instance.
+export type AddonModH5PActivityWSData =
+    Omit<CoreCourseModuleStandardElements, 'section'|'visible'|'groupmode'|'groupingid'|'lang'> & {
     timecreated?: number; // Timestamp of when the instance was added to the course.
     timemodified?: number; // Timestamp of when the instance was last modified.
-    intro: string; // H5P activity description.
-    introformat: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     grade?: number; // The maximum grade for submission.
     displayoptions: number; // H5P Button display options.
     enabletracking: number; // Enable xAPI tracking.
     grademethod: AddonModH5PActivityGradeMethod; // Which H5P attempt is used for grading.
     contenthash?: string; // Sha1 hash of file content.
-    coursemodule: number; // Coursemodule.
     context: number; // Context ID.
-    introfiles: CoreWSExternalFile[];
     package: CoreWSExternalFile[];
     deployedfile?: {
         filename?: string; // File name.

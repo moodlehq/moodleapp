@@ -46,7 +46,7 @@ import {
     AddonModAssignSubmissionStatusValues,
 } from '../constants';
 import { CoreTextFormat } from '@static/text';
-import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
+import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 import { CoreUserDescriptionExporter } from '@features/user/services/user';
 
 declare module '@static/events' {
@@ -1460,12 +1460,12 @@ export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptions
 
 /**
  * Assign data returned by mod_assign_get_assignments.
+ * We're using Omit to exclude properties because type is not consistent with the rest of the WS but
+ * it should be.
  */
-export type AddonModAssignAssign = {
-    id: number; // Assignment id.
+export type AddonModAssignAssign =
+    Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'|'lang'> & {
     cmid: number; // Course module id.
-    course: number; // Course id.
-    name: string; // Assignment name.
     nosubmissions: number; // No submissions.
     submissiondrafts: number; // Submissions drafts.
     sendnotifications: number; // Send notifications.
@@ -1493,9 +1493,6 @@ export type AddonModAssignAssign = {
     submissionstatement?: string; // Submission statement formatted.
     submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
     configs: AddonModAssignConfig[]; // Configuration settings.
-    intro?: string; // Assignment intro, not allways returned because it deppends on the activity configuration.
-    introformat?: CoreTextFormat; // Intro format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    introfiles?: CoreWSExternalFile[];
     introattachments?: CoreWSExternalFile[];
     activity?: string; // @since 4.0. Description of activity.
     activityformat?: CoreTextFormat; // @since 4.0. Format of activity.

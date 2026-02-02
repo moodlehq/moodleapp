@@ -22,6 +22,8 @@ import { CoreCourse } from '@features/course/services/course';
 import type { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-course-format-component';
+import { CoreCourseForceLanguage } from '@features/course/services/course-force-language';
+import { CoreLang } from '@services/lang';
 
 /**
  * Component to display single activity format. It will determine the right component to use and instantiate it.
@@ -60,12 +62,15 @@ export class CoreCourseFormatSingleActivityComponent extends CoreCourseFormatDyn
 
         this.data.courseId = this.course.id;
         this.data.module = module;
+        this.moduleId = module?.id;
 
         if (module && !this.componentClass) {
             // We haven't obtained the class yet. Get it now.
             const component = await CoreCourseModuleDelegate.getMainComponent(this.course, module);
             this.componentClass = component || CoreCourseUnsupportedModuleComponent;
         }
+
+        await this.refreshLanguage();
     }
 
     /**
@@ -93,8 +98,9 @@ export class CoreCourseFormatSingleActivityComponent extends CoreCourseFormatDyn
     /**
      * User entered the page that contains the component.
      */
-    ionViewDidEnter(): void {
+    async ionViewDidEnter(): Promise<void> {
         this.dynamicComponent()?.callComponentMethod('ionViewDidEnter');
+        await this.refreshLanguage();
     }
 
     /**
@@ -102,6 +108,20 @@ export class CoreCourseFormatSingleActivityComponent extends CoreCourseFormatDyn
      */
     ionViewDidLeave(): void {
         this.dynamicComponent()?.callComponentMethod('ionViewDidLeave');
+    }
+
+    /**
+     * Refresh the language according to course/module forced language.
+     */
+    async refreshLanguage(): Promise<void> {
+        try {
+            const lang =
+                await CoreCourseForceLanguage.getForcedLanguageFromCourseOrModule(this.course, this.course?.id, this.moduleId);
+
+            await CoreLang.forceContextLanguage(lang);
+        } catch {
+            // Ignore errors.
+        }
     }
 
 }

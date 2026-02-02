@@ -27,6 +27,7 @@ import { CoreLogger } from '@static/logger';
 import { CoreSites } from './sites';
 import { MoodleTranslateLoader } from '@classes/lang-loader';
 import { firstValueFrom } from 'rxjs';
+import { CoreEvents } from '@static/events';
 
 /**
  * Service to handle language features, like changing the current language.
@@ -227,9 +228,10 @@ export class CoreLangProvider {
      * Change current language.
      *
      * @param language New language to use.
+     * @param saveSetting Whether to save the setting. Defaults to true.
      * @returns Promise resolved when the change is finished.
      */
-    async changeCurrentLanguage(language: string): Promise<void> {
+    async changeCurrentLanguage(language: string, saveSetting = true): Promise<void> {
         language = this.formatLanguage(language, CoreLangFormat.App);
         await this.loadDayJSLocale(language);
 
@@ -239,12 +241,17 @@ export class CoreLangProvider {
 
         try {
             await firstValueFrom(Translate.use(language));
-            await CoreConfig.set('current_language', language);
+            if (saveSetting) {
+                await CoreConfig.set('current_language', language);
+            }
+
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            CoreEvents.trigger(CoreEvents.LANGUAGE_CHANGED, language);
         } catch (error) {
             if (language !== previousLanguage) {
                 this.logger.error(`Language ${language} not available, reverting to ${previousLanguage}`, error);
 
-                return this.changeCurrentLanguage(previousLanguage);
+                return this.changeCurrentLanguage(previousLanguage, saveSetting);
             }
 
             throw error;
@@ -329,6 +336,7 @@ export class CoreLangProvider {
     /**
      * Get current language.
      *
+     * @param format Format to return the language code.
      * @returns Promise resolved with the current language.
      */
     async getCurrentLanguage(format?: CoreLangFormat): Promise<string> {
@@ -342,6 +350,7 @@ export class CoreLangProvider {
     /**
      * Get current language sync.
      *
+     * @param format Format to return the language code.
      * @returns Current language or undefined.
      */
     getCurrentLanguageSync(format?: CoreLangFormat): string | undefined {
@@ -426,20 +435,28 @@ export class CoreLangProvider {
 
         // No forced language, try to get current language from browser.
         let preferredLanguage = navigator.language.toLowerCase();
-        if (preferredLanguage.includes('-')) {
-            // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
-            if (CoreConstants.CONFIG.languages && CoreConstants.CONFIG.languages[preferredLanguage] === undefined) {
-                // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
-                preferredLanguage = preferredLanguage.substring(0, preferredLanguage.indexOf('-'));
-            }
+        // Language code defined by locale has a dash, like en-US or es-ES. Check if it's supported.
+        if (preferredLanguage.includes('-') && !this.isLanguageSupported(preferredLanguage)) {
+            // Code is NOT supported. Fallback to language without dash. E.g. 'en-US' would fallback to 'en'.
+            preferredLanguage = preferredLanguage.substring(0, preferredLanguage.indexOf('-'));
         }
 
-        if (CoreConstants.CONFIG.languages[preferredLanguage] === undefined) {
+        if (!this.isLanguageSupported(preferredLanguage)) {
             // Language not supported, use default language.
             return this.defaultLanguage;
         }
 
         return preferredLanguage;
+    }
+
+    /**
+     * Check if a language is supported in the app.
+     *
+     * @param lang Language code.
+     * @returns Whether the language is supported.
+     */
+    protected isLanguageSupported(lang: string): boolean {
+        return CoreConstants.CONFIG.languages[lang] !== undefined;
     }
 
     /**
@@ -617,6 +634,27 @@ export class CoreLangProvider {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async loadLangStrings(langObject: unknown, lang: string): Promise<boolean> {
         return false;
+    }
+
+    /**
+     * Force the app to use a certain language when inside a course or module.
+     *
+     * @param lang Language code to force. If not defined, restore the detected language.
+     */
+    async forceContextLanguage(lang?: string): Promise<void> {
+        if (!lang) {
+            // Restore the language to the detected one.
+            lang = await this.detectLanguage();
+        }
+
+        if (!this.isLanguageSupported(lang)) {
+            return;
+        }
+
+        if (this.currentLanguage !== lang) {
+            // Force the language.
+            await this.changeCurrentLanguage(lang, false);
+        }
     }
 
 }

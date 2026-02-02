@@ -19,6 +19,7 @@ import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-si
 import { CoreSettingsDelegate } from '@features/settings/services/settings-delegate';
 import { AddonStorageManagerSettingsHandler } from './services/handlers/settings';
 import { ADDON_STORAGE_MANAGER_PAGE_NAME } from './constants';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const routes: Routes = [
     {
@@ -28,6 +29,7 @@ const routes: Routes = [
     {
         path: `${ADDON_STORAGE_MANAGER_PAGE_NAME}/:courseId`,
         loadComponent: () => import('./pages/course-storage/course-storage'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
 ];
 
