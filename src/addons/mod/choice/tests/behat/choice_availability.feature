@@ -27,8 +27,8 @@ Feature: Restrict availability of the choice module to a deadline
   Scenario: Enable the choice activity with a start deadline in the future
     Given I set the following fields to these values:
       | timeopen[enabled] | 1 |
-      | timeopen[day] | 30 |
       | timeopen[month] | December |
+      | timeopen[day] | 30 |
       | timeopen[year] | 2037 |
       | timeopen[hour] | 00 |
       | timeopen[minute] | 00 |
@@ -45,8 +45,8 @@ Feature: Restrict availability of the choice module to a deadline
   Scenario: Enable the choice activity with a start deadline in the future with show preview options
     Given I set the following fields to these values:
       | timeopen[enabled] | 1 |
-      | timeopen[day] | 30 |
       | timeopen[month] | December |
+      | timeopen[day] | 30 |
       | timeopen[year] | 2037 |
       | timeopen[hour] | 00 |
       | timeopen[minute] | 00 |
@@ -64,8 +64,8 @@ Feature: Restrict availability of the choice module to a deadline
   Scenario: Enable the choice activity with a start deadline in the past
     Given I set the following fields to these values:
       | timeopen[enabled] | 1 |
-      | timeopen[day] | 30 |
       | timeopen[month] | December |
+      | timeopen[day] | 30 |
       | timeopen[year] | 2007 |
       | timeopen[hour] | 00 |
       | timeopen[minute] | 00 |
@@ -86,8 +86,8 @@ Feature: Restrict availability of the choice module to a deadline
   Scenario: Enable the choice activity with a end deadline in the future
     Given I set the following fields to these values:
       | timeclose[enabled] | 1 |
-      | timeclose[day] | 30 |
       | timeclose[month] | December |
+      | timeclose[day] | 30 |
       | timeclose[year] | 2037 |
       | timeclose[hour] | 00 |
       | timeclose[minute] | 00 |
@@ -108,8 +108,8 @@ Feature: Restrict availability of the choice module to a deadline
   Scenario: Enable the choice activity with a end deadline in the past
     Given I set the following fields to these values:
       | timeclose[enabled] | 1 |
-      | timeclose[day] | 30 |
       | timeclose[month] | December |
+      | timeclose[day] | 30 |
       | timeclose[year] | 2007 |
       | timeclose[hour] | 00 |
       | timeclose[minute] | 00 |
