@@ -12,32 +12,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreTime } from '@static/time';
+import { Subscription } from 'rxjs';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.
  */
 @Pipe({
     name: 'coreDuration',
+    pure: false,
 })
-export class CoreDurationPipe implements PipeTransform {
+export class CoreDurationPipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
+    protected cachedResult?: string;
+    protected subscription: Subscription;
+
+    protected lastSeconds?: number | string;
+    protected lastPrecision?: number;
 
     constructor() {
-        this.logger = CoreLogger.getInstance('CoreBytesToSizePipe');
+        this.logger = CoreLogger.getInstance('CoreDurationPipe');
+
+        this.subscription = Translate.onLangChange.subscribe(() => {
+            this.cachedResult = undefined;
+        });
     }
 
     /**
      * Turn a number of seconds to a duration. E.g. 60 -> 1 minute.
      *
      * @param seconds The number of seconds.
+     * @param precision Number of elements to have in precision.
      * @returns Formatted duration.
      */
-    transform(seconds: string | number): string {
-        if (typeof seconds == 'string') {
+    transform(seconds: string | number, precision = 2): string {
+        if (this.lastSeconds !== seconds || this.lastPrecision !== precision) {
+            this.lastSeconds = seconds;
+            this.lastPrecision = precision;
+            this.cachedResult = undefined;
+        }
+
+        if (this.cachedResult === undefined) {
+            this.cachedResult = this.formatTime(seconds, precision);
+        }
+
+        return this.cachedResult;
+    }
+
+    /**
+     * Format duration given the number of seconds.
+     *
+     * @param seconds Number of seconds.
+     * @param precision Number of elements to have in precision.
+     * @returns Formatted time.
+     */
+    protected formatTime(seconds: string | number, precision: number): string {
+        if (typeof seconds === 'string') {
             // Convert the value to a number.
             const numberSeconds = parseInt(seconds, 10);
             if (isNaN(numberSeconds)) {
@@ -45,10 +79,18 @@ export class CoreDurationPipe implements PipeTransform {
 
                 return seconds;
             }
+
             seconds = numberSeconds;
         }
 
-        return CoreTime.formatTime(seconds);
+        return CoreTime.formatTime(seconds, precision);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
 }
