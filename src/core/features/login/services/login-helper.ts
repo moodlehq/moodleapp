@@ -174,7 +174,7 @@ export class CoreLoginHelperProvider {
         site = site || CoreSites.getCurrentSite();
         const config = site?.getStoredConfig();
 
-        return `core.mainmenu.${config && config.tool_mobile_forcelogout == '1' ? 'logout' : 'switchaccount'}`;
+        return `core.mainmenu.${config && config.tool_mobile_forcelogout === '1' ? 'logout' : 'switchaccount'}`;
     }
 
     /**
@@ -380,8 +380,11 @@ export class CoreLoginHelperProvider {
 
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url)) ||
                 (!!demoModeSite && CoreUrl.sameDomainAndPath(siteUrl, demoModeSite.url));
-        } else if (CoreConstants.CONFIG.multisitesdisplay == 'sitefinder' && CoreConstants.CONFIG.onlyallowlistedsites &&
-                checkSiteFinder) {
+        } else if (
+            CoreConstants.CONFIG.multisitesdisplay === 'sitefinder' &&
+            CoreConstants.CONFIG.onlyallowlistedsites &&
+            checkSiteFinder
+        ) {
             // Call the sites finder to validate the site.
             const result = await CoreSites.findSites(siteUrl.replace(/^https?:\/\/|\.\w{2,3}\/?$/g, ''));
 
@@ -396,20 +399,20 @@ export class CoreLoginHelperProvider {
      * Check if SSO login should use an embedded browser.
      *
      * @param code Code to check.
-     * @returns True if embedded browser, false othwerise.
+     * @returns True if embedded browser, false otherwise.
      */
     isSSOEmbeddedBrowser(code: TypeOfLogin): boolean {
-        return code == TypeOfLogin.EMBEDDED;
+        return code === TypeOfLogin.EMBEDDED;
     }
 
     /**
      * Check if SSO login is needed based on code returned by the WS.
      *
      * @param code Code to check.
-     * @returns True if SSO login is needed, false othwerise.
+     * @returns True if SSO login is needed, false otherwise.
      */
     isSSOLoginNeeded(code: TypeOfLogin): boolean {
-        return code == TypeOfLogin.BROWSER || code == TypeOfLogin.EMBEDDED;
+        return code === TypeOfLogin.BROWSER || code === TypeOfLogin.EMBEDDED;
     }
 
     /**
@@ -966,9 +969,9 @@ export class CoreLoginHelperProvider {
 
         // Validate the signature.
         // We need to check both http and https.
-        let signature = Md5.hashAsciiStr(launchSiteURL + passport);
-        if (signature != params[0]) {
-            if (launchSiteURL.indexOf('https://') != -1) {
+        let signature: string = Md5.hashAsciiStr(launchSiteURL + passport);
+        if (signature !== params[0]) {
+            if (launchSiteURL.includes('https://')) {
                 launchSiteURL = launchSiteURL.replace('https://', 'http://');
             } else {
                 launchSiteURL = launchSiteURL.replace('http://', 'https://');
@@ -976,7 +979,7 @@ export class CoreLoginHelperProvider {
             signature = Md5.hashAsciiStr(launchSiteURL + passport);
         }
 
-        if (signature == params[0]) {
+        if (signature === params[0]) {
             this.logger.debug('Signature validated');
 
             return {
@@ -1102,7 +1105,7 @@ export class CoreLoginHelperProvider {
         // Not a custom URL scheme, check if it's a URL scheme to another app.
         const scheme = CoreUrl.getUrlProtocol(text);
 
-        if (scheme && scheme != 'http' && scheme != 'https') {
+        if (scheme && scheme !== 'http' && scheme !== 'https') {
             CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
         } else {
             CoreAlerts.showError(Translate.instant('core.login.errorqrnoscheme'));
@@ -1126,7 +1129,7 @@ export class CoreLoginHelperProvider {
         let siteUrl = '';
 
         if (currentSiteId) {
-            siteUrl = sites.find((site) => site.id == currentSiteId)?.siteUrlWithoutProtocol ?? '';
+            siteUrl = sites.find((site) => site.id === currentSiteId)?.siteUrlWithoutProtocol ?? '';
         }
 
         const otherSites: Record<string, CoreSiteBasicInfo[]> = {};
@@ -1137,7 +1140,7 @@ export class CoreLoginHelperProvider {
 
             if (site.id === currentSiteId) {
                 accountsList.currentSite = site;
-            } else if (site.siteUrlWithoutProtocol == siteUrl) {
+            } else if (site.siteUrlWithoutProtocol === siteUrl) {
                 accountsList.sameSite.push(site);
             } else {
                 if (!otherSites[site.siteUrlWithoutProtocol]) {
@@ -1168,8 +1171,8 @@ export class CoreLoginHelperProvider {
         let index = 0;
 
         // Found on same site.
-        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrlWithoutProtocol == siteUrl) {
-            index = accountsList.sameSite.findIndex((listedSite) => listedSite.id == site.id);
+        if (accountsList.sameSite.length > 0 && accountsList.sameSite[0].siteUrlWithoutProtocol === siteUrl) {
+            index = accountsList.sameSite.findIndex((listedSite) => listedSite.id === site.id);
             if (index >= 0) {
                 accountsList.sameSite.splice(index, 1);
                 accountsList.count--;
@@ -1179,19 +1182,19 @@ export class CoreLoginHelperProvider {
         }
 
         const otherSiteIndex = accountsList.otherSites.findIndex((sites) =>
-            sites.length > 0 && sites[0].siteUrlWithoutProtocol == siteUrl);
+            sites.length > 0 && sites[0].siteUrlWithoutProtocol === siteUrl);
         if (otherSiteIndex < 0) {
             // Site Url not found.
             return;
         }
 
-        index = accountsList.otherSites[otherSiteIndex].findIndex((listedSite) => listedSite.id == site.id);
+        index = accountsList.otherSites[otherSiteIndex].findIndex((listedSite) => listedSite.id === site.id);
         if (index >= 0) {
             accountsList.otherSites[otherSiteIndex].splice(index, 1);
             accountsList.count--;
         }
 
-        if (accountsList.otherSites[otherSiteIndex].length == 0) {
+        if (!accountsList.otherSites[otherSiteIndex].length) {
             accountsList.otherSites.splice(otherSiteIndex, 1);
         }
     }
