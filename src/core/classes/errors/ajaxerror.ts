@@ -21,7 +21,7 @@ export class CoreAjaxError extends CoreSiteError {
 
     status?: number;
 
-    constructor(messageOrOptions: string | CoreSiteErrorOptions, available?: number, status?: number) {
+    constructor(messageOrOptions: string | CoreSiteErrorOptions, status?: number) {
         super(typeof messageOrOptions === 'string' ? { message: messageOrOptions } : messageOrOptions);
 
         this.status = status;

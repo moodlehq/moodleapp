@@ -189,7 +189,7 @@ export class CoreWSProvider {
                     }
                     value = stripped;
                 }
-            } else if (typeof value == 'boolean') {
+            } else if (typeof value === 'boolean') {
                 /* Moodle does not allow "true" or "false" in WS parameters, only in POST parameters.
                    We've been using "true" and "false" for WS settings "filter" and "fileurl",
                    we keep it this way to avoid changing cache keys. */
@@ -198,7 +198,7 @@ export class CoreWSProvider {
                 } else {
                     value = value ? '1' : '0';
                 }
-            } else if (typeof value == 'number') {
+            } else if (typeof value === 'number') {
                 value = String(value);
             } else {
                 // Unknown type.
@@ -621,7 +621,7 @@ export class CoreWSProvider {
                 }
             }
 
-            throw new CoreAjaxError(options, 1, data.status);
+            throw new CoreAjaxError(options, data.status);
         }).catch(error => {
             const type = `CoreAjaxError - ${error.errorcode}`;
             CoreErrorLogs.addErrorLog({ method, type, message: error, time: new Date().getTime(), data });
@@ -766,7 +766,7 @@ export class CoreWSProvider {
                 });
             } else if (typeof data !== typeExpected) {
                 // If responseType is text an string will be returned, parse before returning.
-                if (typeof data == 'string') {
+                if (typeof data === 'string') {
                     if (typeExpected === 'number') {
                         data = Number(data);
                         if (isNaN(data)) {
@@ -998,7 +998,7 @@ export class CoreWSProvider {
                 throw new CoreError(Translate.instant('core.serverconnection', {
                     details: Translate.instant('core.errorinvalidresponse', { method }),
                 }));
-            } else if (typeof data != preSets.typeExpected) {
+            } else if (typeof data !== preSets.typeExpected) {
                 this.logger.warn(`Response of type "${typeof data}" received, expecting "${preSets.typeExpected}"`);
                 throw new CoreError(Translate.instant('core.errorinvalidresponse', { method }));
             }
