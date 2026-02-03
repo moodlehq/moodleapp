@@ -26,6 +26,9 @@ import { ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, ADDON_MESSAGES_MEMBER_INFO
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
+import { Subscription } from 'rxjs';
+import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
+import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifications/services/pushnotifications';
 
 /**
  * Page that displays contacts and contact requests.
@@ -42,6 +45,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
     readonly splitView = viewChild.required(CoreSplitViewComponent);
 
+    protected pushObserver: Subscription;
     selected: 'confirmed' | 'requests' = 'confirmed';
     requestsBadge = '';
     selectedUserId?: number; // User id of the conversation opened in the split view.
@@ -103,6 +107,19 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
             CoreSites.getCurrentSiteId(),
         );
 
+        this.pushObserver = CorePushNotificationsDelegate.on<CorePushNotificationsNotificationBasicData>('receive')
+            .subscribe((notification) => {
+                if (notification.name === 'messagecontactrequests') {
+                    AddonMessages.refreshContactRequestsCount();
+
+                    if (this.requestsLoaded) {
+                        // Contact requests notification, refresh contact requests list.
+                        this.requestsFetchData(true);
+                    } else {
+                        AddonMessages.invalidateContactRequestsCache();
+                    }
+                }
+        });
     }
 
     /**
@@ -310,6 +327,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
      */
     ngOnDestroy(): void {
         this.contactRequestsCountObserver?.off();
+        this.pushObserver?.unsubscribe();
     }
 
 }
