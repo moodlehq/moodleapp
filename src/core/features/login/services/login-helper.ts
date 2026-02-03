@@ -107,22 +107,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Check if a site allows requesting a password reset through the app.
-     *
-     * @param siteUrl URL of the site.
-     * @returns Promise resolved with boolean: whether can be done through the app.
-     */
-    async canRequestPasswordReset(siteUrl: string): Promise<boolean> {
-        try {
-            await this.requestPasswordReset(siteUrl);
-
-            return true;
-        } catch (error) {
-            return error.available == 1 || (error.errorcode && error.errorcode != 'invalidrecord');
-        }
-    }
-
-    /**
      * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
      */
     checkLogout(): void {
@@ -157,19 +141,13 @@ export class CoreLoginHelperProvider {
         const modal = await CoreLoadings.show();
 
         try {
-            const canReset = await this.canRequestPasswordReset(siteUrl);
-
-            if (canReset) {
-                await CoreNavigator.navigate('/login/forgottenpassword', {
-                    params: {
-                        siteUrl,
-                        siteConfig,
-                        username,
-                    },
-                });
-            } else {
-                this.openForgottenPassword(siteUrl);
-            }
+            await CoreNavigator.navigate('/login/forgottenpassword', {
+                params: {
+                    siteUrl,
+                    siteConfig,
+                    username,
+                },
+            });
         } finally {
             modal.dismiss();
         }
@@ -542,15 +520,6 @@ export class CoreLoginHelperProvider {
     }
 
     /**
-     * Open forgotten password in inappbrowser.
-     *
-     * @param siteUrl URL of the site.
-     */
-    openForgottenPassword(siteUrl: string): void {
-        CoreOpener.openInApp(`${siteUrl}/login/forgot_password.php`);
-    }
-
-    /**
      * Function to open in app browser to change password or complete user profile.
      *
      * @param siteId The site ID.
@@ -815,6 +784,8 @@ export class CoreLoginHelperProvider {
 
     /**
      * Show a modal warning that the credentials introduced were not correct.
+     *
+     * @param error Error object.
      */
     protected showInvalidLoginModal(error: CoreError): void {
         const errorDetails = error instanceof CoreSiteError ? error.debug?.details : null;
