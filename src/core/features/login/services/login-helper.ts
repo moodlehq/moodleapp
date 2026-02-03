@@ -472,7 +472,6 @@ export class CoreLoginHelperProvider {
 
             // Always open it in browser because the user might have the session stored in there.
             CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
-            CoreApp.closeApp();
 
             return true;
         } catch (error) {
@@ -514,7 +513,6 @@ export class CoreLoginHelperProvider {
                 });
             } else {
                 CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
-                CoreApp.closeApp();
             }
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error opening browser' });
@@ -815,6 +813,8 @@ export class CoreLoginHelperProvider {
 
     /**
      * Show a modal warning that the credentials introduced were not correct.
+     *
+     * @param error Error object.
      */
     protected showInvalidLoginModal(error: CoreError): void {
         const errorDetails = error instanceof CoreSiteError ? error.debug?.details : null;
