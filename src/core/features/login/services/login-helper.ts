@@ -381,7 +381,7 @@ export class CoreLoginHelperProvider {
             return sites.some((site) => CoreUrl.sameDomainAndPath(siteUrl, site.url)) ||
                 (!!demoModeSite && CoreUrl.sameDomainAndPath(siteUrl, demoModeSite.url));
         } else if (
-            CoreConstants.CONFIG.multisitesdisplay === 'sitefinder' &&
+            CoreConstants.CONFIG.multisitesdisplay === CoreLoginSiteSelectorListMethod.SITE_FINDER &&
             CoreConstants.CONFIG.onlyallowlistedsites &&
             checkSiteFinder
         ) {
@@ -1374,11 +1374,12 @@ type StoredLoginLaunchData = CoreRedirectPayload & {
     ssoUrlParams: CoreUrlParams;
 };
 
-export type CoreLoginSiteSelectorListMethod =
-    'url'|
-    'sitefinder'|
-    'list'|
-    '';
+export const enum CoreLoginSiteSelectorListMethod {
+    URL = 'url',
+    SITE_FINDER = 'sitefinder',
+    LIST = 'list',
+    NONE = '',
+}
 
 export type CoreLoginMethod = {
     name: string; // Name of the login method.
