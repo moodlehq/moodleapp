@@ -614,7 +614,9 @@ export class CoreCourseProvider {
             };
         }
 
-        const canDisplay = CoreCourseModuleDelegate.supportsFeature(module.modname, ModFeature.CAN_DISPLAY, true);
+        const canDisplay = 'candisplay' in module ?
+            !!module.candisplay :
+            CoreCourseModuleDelegate.supportsFeature(module.modname, ModFeature.CAN_DISPLAY, true);
 
         return  {
             ...module,
@@ -797,7 +799,7 @@ export class CoreCourseProvider {
         }
 
         const sections = await this.getSections(courseId, excludeModules, excludeContents, undefined, siteId);
-        const section = sections.find((section) => section.id == sectionId);
+        const section = sections.find((section) => section.id === sectionId);
 
         if (section) {
             return section;
@@ -1688,6 +1690,7 @@ export type CoreCourseGetContentsWSModule = {
     };
     customdata?: string; // Custom data (JSON encoded).
     noviewlink?: boolean; // Whether the module has no view page.
+    candisplay?: boolean; // @since 5.2 (& backport to 5.0.4 & 5.1.1). Whether the module should be displayed on the course page.
     completion?: CoreCourseModuleCompletionTracking; // Type of completion tracking: 0 means none, 1 manual, 2 automatic.
     completiondata?: CoreCourseModuleWSCompletionData; // Module completion data.
     contents?: CoreCourseModuleContentFile[];
