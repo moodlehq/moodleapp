@@ -64,6 +64,7 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
         isIOS: () => false,
         ready: () => Promise.resolve(),
         resume: new Subject<void>(),
+        isAutomated: () => true,
     })],
     [CoreNetwork, mock({
         isOnline: () => true,
