@@ -68,7 +68,7 @@ export default class CoreLoginSitePage implements OnInit {
     siteForm!: FormGroup;
     fixedSites?: CoreLoginSiteInfoExtended[];
     filteredSites?: CoreLoginSiteInfoExtended[];
-    siteSelector: CoreLoginSiteSelectorListMethod = 'sitefinder';
+    siteSelector = CoreLoginSiteSelectorListMethod.SITE_FINDER;
     showKeyboard = false;
     filter = '';
     sites: CoreLoginSiteInfoExtended[] = [];
@@ -149,7 +149,7 @@ export default class CoreLoginSitePage implements OnInit {
     protected async initSiteSelector(): Promise<string> {
         const availableSites = await CoreLoginHelper.getAvailableSites();
         this.fixedSites = this.extendCoreLoginSiteInfo(<CoreLoginSiteInfoExtended[]> availableSites);
-        this.siteSelector = 'list'; // In case it's not defined
+        this.siteSelector = CoreLoginSiteSelectorListMethod.LIST; // In case it's not defined
 
         // Do not show images if none are set.
         if (!this.fixedSites.some((site) => !!site.imageurl)) {
@@ -304,7 +304,7 @@ export default class CoreLoginSitePage implements OnInit {
                 // Attempt guessing the domain if the initial check failed
                 const domain = CoreUrl.guessMoodleDomain(url);
 
-                if (domain && domain != url) {
+                if (domain && domain !== url) {
                     try {
                         checkResult = await CoreSites.checkSite(domain, undefined, 'Site URL page');
                     } catch (secondError) {
@@ -540,7 +540,7 @@ export default class CoreLoginSitePage implements OnInit {
         // Not a custom URL scheme, check if it's a URL scheme to another app.
         const scheme = CoreUrl.getUrlProtocol(text);
 
-        if (scheme && scheme != 'http' && scheme != 'https') {
+        if (scheme && scheme !== 'http' && scheme !== 'https') {
             CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
 
             return;

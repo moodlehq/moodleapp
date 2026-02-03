@@ -815,7 +815,7 @@ export class CoreUrl {
      * @param url URL to treat.
      * @returns Protocol, undefined if no protocol found.
      */
-    static getUrlProtocol(url: string): string | void {
+    static getUrlProtocol(url: string): string | undefined {
         return CoreUrl.parse(url)?.protocol;
     }
 
