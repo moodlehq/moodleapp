@@ -18,6 +18,7 @@ import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreText } from '@static/text';
 import { Subscription } from 'rxjs';
+import { CoreResultMemoiser } from '@classes/result-memoiser';
 
 /**
  * Pipe to turn a number in bytes to a human readable size (e.g. 5,25 MB).
@@ -29,16 +30,14 @@ import { Subscription } from 'rxjs';
 export class CoreBytesToSizePipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
-    protected cachedResult?: string;
+    protected memoiser = new CoreResultMemoiser<string>();
     protected subscription: Subscription;
-
-    protected lastValue?: number | string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreBytesToSizePipe');
 
         this.subscription = Translate.onLangChange.subscribe(() => {
-            this.cachedResult = undefined;
+            this.memoiser.invalidate();
         });
     }
 
@@ -49,16 +48,10 @@ export class CoreBytesToSizePipe implements PipeTransform, OnDestroy {
      * @returns Readable bytes.
      */
     transform(value: number | string): string {
-        if (this.lastValue !== value) {
-            this.lastValue = value;
-            this.cachedResult = undefined;
-        }
-
-        if (this.cachedResult === undefined) {
-            this.cachedResult = this.formatBytes(value);
-        }
-
-        return this.cachedResult;
+        return this.memoiser.memoise(
+            () => this.formatBytes(value),
+            value,
+        );
     }
 
     /**

@@ -17,6 +17,7 @@ import { CoreTime } from '@static/time';
 import { CoreLogger } from '@static/logger';
 import { Translate } from '@singletons';
 import { Subscription } from 'rxjs';
+import { CoreResultMemoiser } from '@classes/result-memoiser';
 
 /**
  * Filter to format a date.
@@ -28,18 +29,14 @@ import { Subscription } from 'rxjs';
 export class CoreFormatDatePipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
-    protected cachedResult?: string;
+    protected memoiser = new CoreResultMemoiser<string>();
     protected subscription: Subscription;
-
-    protected lastFormat?: string;
-    protected lastTimestamp?: string | number;
-    protected lastConvert?: boolean;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreFormatDatePipe');
 
         this.subscription = Translate.onLangChange.subscribe(() => {
-            this.cachedResult = undefined;
+            this.memoiser.invalidate();
         });
     }
 
@@ -53,18 +50,12 @@ export class CoreFormatDatePipe implements PipeTransform, OnDestroy {
      * @returns Formatted date.
      */
     transform(timestamp: string | number, format = 'strftimedaydatetime', convert?: boolean): string {
-        if (this.lastTimestamp !== timestamp || this.lastFormat !== format || this.lastConvert !== convert) {
-            this.lastTimestamp = timestamp;
-            this.lastFormat = format;
-            this.lastConvert = convert;
-            this.cachedResult = undefined;
-        }
-
-        if (this.cachedResult === undefined) {
-            this.cachedResult = this.formatDate(timestamp, format, convert);
-        }
-
-        return this.cachedResult;
+        return this.memoiser.memoise(
+            () => this.formatDate(timestamp, format, convert),
+            timestamp,
+            format,
+            convert,
+        );
     }
 
     /**
