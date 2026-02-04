@@ -160,6 +160,9 @@ describe('Lang', () => {
 
     /**
      * Test multilang filter (normalizing whitespace).
+     *
+     * @param text The multilang text to filter.
+     * @param expected The expected result.
      */
     async function expectMultilangFilter(text: string, expected: string): Promise<void> {
         const actual = await lang.filterMultilang(text);

@@ -22,7 +22,7 @@ describe('CoreUrl', () => {
     const config = { platform: 'android' };
 
     beforeEach(() => {
-        mockSingleton(CorePlatform, [], {
+        mockSingleton(CorePlatform, {
             isAndroid: () => config.platform === 'android',
             isIOS: () => config.platform === 'ios',
         });
