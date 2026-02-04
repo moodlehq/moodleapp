@@ -28,7 +28,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator } from '@services/navigator';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { TranslatePipe, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
@@ -44,10 +44,14 @@ abstract class WrapperComponent<U> {
 type ServiceInjectionToken<Service = unknown> = ProviderToken<Service>;
 
 let testBedInitialized = false;
+
+// Global translation store for test mocks
+let testTranslations: Record<string, string> = {};
+
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [Translate, mock({
-        instant: key => key,
-        get: key => of(key),
+        instant: (key: string | string[], replacements?: Record<string, string | number>) => interpolateTranslation(key, replacements),
+        get: (key: string | string[], replacements?: Record<string, string | number>) => of(interpolateTranslation(key, replacements)),
         onTranslationChange: new EventEmitter(),
         onLangChange: new EventEmitter(),
         onFallbackLangChange: new EventEmitter(),
@@ -182,19 +186,7 @@ function getDefaultProviders(config: RenderConfig, overrides: Provider[] = []): 
     );
 
     if (config.translations) {
-        // @todo Use mockTranslate when possible.
-        const translateProvider = {
-            provide: TranslateStore,
-            useFactory: () => {
-                const store = new TranslateStore();
-
-                store.setTranslations('en', config.translations ?? {}, false);
-
-                return store;
-            },
-        };
-
-        serviceProviders.push(translateProvider);
+        setTestTranslations(config.translations);
     }
 
     return [
@@ -343,9 +335,8 @@ export function mockSingleton<Service>(
  */
 export function resetTestingEnvironment(): void {
     testBedInitialized = false;
-
+    resetTestTranslations();
     TestBed.resetTestingModule();
-
     TestBed.runInInjectionContext(() => {
         for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
             // Pass mockInstance as property overrides
@@ -537,20 +528,10 @@ export function wait(time: number): Promise<void> {
  * Mocks translate service with certain translations.
  *
  * @param translations List of translations.
+ * @deprecated since 5.2 use setTestTranslations instead.
  */
 export function mockTranslate(translations: Record<string, string> = {}): void {
-    mockSingleton(Translate as CoreSingletonProxy<TranslateService>, {
-        instant: (key, replacements) => {
-            const applyReplacements = (text: string): string => Object.entries(replacements ?? {}).reduce(
-                (text, [name, value]) => text.replace(`{{${name}}}`, value),
-                text,
-            );
-
-            return Array.isArray(key)
-                ? key.map(k => applyReplacements(translations[k] ?? k))
-                : applyReplacements(translations[key] ?? key);
-        },
-    });
+    setTestTranslations(translations);
 }
 
 /**
@@ -571,4 +552,42 @@ export function expectSameTypes<A, B>(equal: Equal<A, B>): () => void {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function expectAnyType<T>(): () => void {
     return () => expect(true).toBe(true);
+}
+
+/**
+ * Set translations for all translation mocks in tests.
+ *
+ * @param translations Key-value pairs for translation strings.
+ */
+export function setTestTranslations(translations: Record<string, string>): void {
+    testTranslations = { ...translations };
+}
+
+/**
+ * Reset translations to empty (called in resetTestingEnvironment).
+ */
+export function resetTestTranslations(): void {
+    testTranslations = {};
+}
+
+/**
+ * Interpolates a translation key or keys with optional replacements.
+ *
+ * @param key The translation key or array of keys.
+ * @param replacements Optional replacements for placeholders in the translation strings.
+ * @returns The interpolated translation string or array of strings.
+ */
+function interpolateTranslation(key: string | string[], replacements?: Record<string, string | number>): string | string[] {
+    const applyReplacements = (text: string): string => {
+        let result = text;
+        for (const [name, value] of Object.entries(replacements ?? {})) {
+            result = result.replace(`{{${name}}}`, String(value));
+        }
+
+        return result;
+    };
+
+    return Array.isArray(key)
+        ? key.map(k => applyReplacements(testTranslations[k] ?? k))
+        : applyReplacements(testTranslations[key] ?? key);
 }

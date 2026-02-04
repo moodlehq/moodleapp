@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AlertController, Translate } from '@singletons';
-import { mock, mockSingleton, mockTranslate } from '@/testing/utils';
+import { mock, mockSingleton, setTestTranslations } from '@/testing/utils';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreSites } from '@services/sites';
 import { CoreAlertsService } from '@services/overlays/alerts';
@@ -28,7 +28,7 @@ describe('CoreAlertsService', () => {
 
     it('shows site unavailable errors', async () => {
         // Arrange.
-        mockTranslate({
+        setTestTranslations({
             'core.siteunavailablehelp': 'The site "{{site}}" is not available right now.',
         });
 
