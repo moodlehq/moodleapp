@@ -196,8 +196,8 @@ export class CoreTime {
 
         const years = Math.floor(totalSecs / CoreTimeConstants.SECONDS_YEAR);
         let remainder = totalSecs - (years * CoreTimeConstants.SECONDS_YEAR);
-        const days = Math.floor(remainder / CoreTimeConstants.SECONDS_DAY);
 
+        const days = Math.floor(remainder / CoreTimeConstants.SECONDS_DAY);
         remainder = remainder - (days * CoreTimeConstants.SECONDS_DAY);
 
         const hours = Math.floor(remainder / CoreTimeConstants.SECONDS_HOUR);
@@ -206,30 +206,35 @@ export class CoreTime {
         const mins = Math.floor(remainder / CoreTimeConstants.SECONDS_MINUTE);
         const secs = remainder - (mins * CoreTimeConstants.SECONDS_MINUTE);
 
-        const secondsUnit = Translate.instant(`core.${secs === 1 ? 'sec' : 'secs'}`);
-        const minutesUnit = Translate.instant(`core.${mins === 1 ? 'min' : 'mins'}`);
-        const hoursUnit = Translate.instant(`core.${hours === 1 ? 'hour' : 'hours'}`);
-        const daysUnit = Translate.instant(`core.${days === 1 ? 'day' : 'days'}`);
-        const yearsUnit = Translate.instant(`core.${years === 1 ? 'year' : 'years'}`);
         const parts: string[] = [];
 
-        if (precision && years) {
+        if (precision > 0 && years > 0) {
+            const yearsUnit = Translate.instant(`core.${years === 1 ? 'year' : 'years'}`);
+
             parts.push(`${years} ${yearsUnit}`);
             precision--;
         }
-        if (precision && days) {
+        if (precision > 0 && days > 0) {
+            const daysUnit = Translate.instant(`core.${days === 1 ? 'day' : 'days'}`);
+
             parts.push(`${days} ${daysUnit}`);
             precision--;
         }
-        if (precision && hours) {
+        if (precision > 0 && hours > 0) {
+            const hoursUnit = Translate.instant(`core.${hours === 1 ? 'hour' : 'hours'}`);
+
             parts.push(`${hours} ${hoursUnit}`);
             precision--;
         }
-        if (precision && mins) {
+        if (precision > 0 && mins > 0) {
+            const minutesUnit = Translate.instant(`core.${mins === 1 ? 'min' : 'mins'}`);
+
             parts.push(`${mins} ${minutesUnit}`);
             precision--;
         }
-        if (precision && secs) {
+        if (precision > 0 && secs > 0) {
+            const secondsUnit = Translate.instant(`core.${secs === 1 ? 'sec' : 'secs'}`);
+
             parts.push(`${secs} ${secondsUnit}`);
             precision--;
         }

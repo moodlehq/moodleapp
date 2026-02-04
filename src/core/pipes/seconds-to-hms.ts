@@ -38,6 +38,7 @@ export class CoreSecondsToHMSPipe implements PipeTransform {
      * Convert a number of seconds to Hours:Minutes:Seconds.
      *
      * @param seconds Number of seconds.
+     * @param showHours Whether to always show hours (even if 0).
      * @returns Formatted seconds.
      */
     transform(seconds: string | number, showHours = true): string {

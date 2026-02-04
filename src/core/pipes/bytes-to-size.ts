@@ -12,23 +12,53 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, OnDestroy } from '@angular/core';
+import { Translate } from '@singletons';
 
 import { CoreLogger } from '@static/logger';
 import { CoreText } from '@static/text';
+import { Subscription } from 'rxjs';
 
 /**
  * Pipe to turn a number in bytes to a human readable size (e.g. 5,25 MB).
  */
 @Pipe({
     name: 'coreBytesToSize',
+    pure: false,
 })
-export class CoreBytesToSizePipe implements PipeTransform {
+export class CoreBytesToSizePipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
+    protected cachedResult?: string;
+    protected subscription: Subscription;
+
+    protected lastValue?: number | string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreBytesToSizePipe');
+
+        this.subscription = Translate.onLangChange.subscribe(() => {
+            this.cachedResult = undefined;
+        });
+    }
+
+    /**
+     * Pipes a number into a human readable size.
+     *
+     * @param value The bytes to convert.
+     * @returns Readable bytes.
+     */
+    transform(value: number | string): string {
+        if (this.lastValue !== value) {
+            this.lastValue = value;
+            this.cachedResult = undefined;
+        }
+
+        if (this.cachedResult === undefined) {
+            this.cachedResult = this.formatBytes(value);
+        }
+
+        return this.cachedResult;
     }
 
     /**
@@ -37,8 +67,8 @@ export class CoreBytesToSizePipe implements PipeTransform {
      * @param value The bytes to convert.
      * @returns Readable bytes.
      */
-    transform(value: number | string): string {
-        if (typeof value == 'string') {
+    protected formatBytes(value: number | string): string {
+        if (typeof value === 'string') {
             // Convert the value to a number.
             const numberValue = parseInt(value, 10);
             if (isNaN(numberValue)) {
@@ -50,6 +80,13 @@ export class CoreBytesToSizePipe implements PipeTransform {
         }
 
         return CoreText.bytesToSize(value);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
 }

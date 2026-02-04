@@ -12,23 +12,52 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, OnDestroy } from '@angular/core';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { dayjs } from '@/core/utils/dayjs';
+import { Subscription } from 'rxjs';
 
 /**
  * Pipe to turn a UNIX timestamp to "time ago".
  */
 @Pipe({
     name: 'coreTimeAgo',
+    pure: false,
 })
-export class CoreTimeAgoPipe implements PipeTransform {
+export class CoreTimeAgoPipe implements PipeTransform, OnDestroy {
 
-    private logger: CoreLogger;
+    protected logger: CoreLogger;
+    protected cachedResult?: string;
+    protected subscription: Subscription;
+
+    protected lastTimestamp?: number | string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreTimeAgoPipe');
+
+        this.subscription = Translate.onLangChange.subscribe(() => {
+            this.cachedResult = undefined;
+        });
+    }
+
+    /**
+     * Pipes a timestamp into a "time ago" format.
+     *
+     * @param timestamp The UNIX timestamp (without milliseconds).
+     * @returns Formatted time.
+     */
+    transform(timestamp: string | number): string {
+        if (this.lastTimestamp !== timestamp) {
+            this.lastTimestamp = timestamp;
+            this.cachedResult = undefined;
+        }
+
+        if (this.cachedResult === undefined) {
+            this.cachedResult = this.formatTimeAgo(timestamp);
+        }
+
+        return this.cachedResult;
     }
 
     /**
@@ -37,7 +66,7 @@ export class CoreTimeAgoPipe implements PipeTransform {
      * @param timestamp The UNIX timestamp (without milliseconds).
      * @returns Formatted time.
      */
-    transform(timestamp: string | number): string {
+    protected formatTimeAgo(timestamp: string | number): string {
         if (typeof timestamp === 'string') {
             // Convert the value to a number.
             const numberTimestamp = parseInt(timestamp, 10);
@@ -50,6 +79,13 @@ export class CoreTimeAgoPipe implements PipeTransform {
         }
 
         return Translate.instant('core.ago', { $a: dayjs(timestamp * 1000).fromNow(true) });
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.subscription.unsubscribe();
     }
 
 }
