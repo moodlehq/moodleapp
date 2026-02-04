@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, ProviderToken, Signal, Type, viewChild } from '@angular/core';
+import {
+    Component,
+    CUSTOM_ELEMENTS_SCHEMA,
+    EventEmitter,
+    ProviderToken,
+    Signal,
+    Type,
+    viewChild,
+    type Provider,
+} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
@@ -33,7 +42,6 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
 import { Equal } from '@/core/utils/types';
-import type { Provider } from '@angular/core';
 
 abstract class WrapperComponent<U> {
 
@@ -50,8 +58,10 @@ let testTranslations: Record<string, string> = {};
 
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [Translate, mock({
-        instant: (key: string | string[], replacements?: Record<string, string | number>) => interpolateTranslation(key, replacements),
-        get: (key: string | string[], replacements?: Record<string, string | number>) => of(interpolateTranslation(key, replacements)),
+        instant: (key: string | string[], replacements?: Record<string, string | number>) =>
+            interpolateTranslation(key, replacements),
+        get: (key: string | string[], replacements?: Record<string, string | number>) =>
+            of(interpolateTranslation(key, replacements)),
         onTranslationChange: new EventEmitter(),
         onLangChange: new EventEmitter(),
         onFallbackLangChange: new EventEmitter(),
@@ -102,6 +112,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
             providers,
             imports: [
                 component,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 NoopAnimationsModule,
                 CoreExternalContentDirectiveStub,
                 ...(config.imports ?? []),
@@ -118,6 +129,7 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
                 BrowserModule,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
                 NoopAnimationsModule,
                 TranslatePipe,
                 CoreExternalContentDirectiveStub,
@@ -462,9 +474,9 @@ export async function renderTemplate<T>(
     const standalone = config.standalone ?? true;
 
     const renderConfig: RenderConfig = {
-        declarations: [ ...(config.declarations ?? []) ],
-        providers: [ ...(config.providers ?? []) ],
-        imports: [ ...(config.imports ?? []) ],
+        declarations: [...(config.declarations ?? [])],
+        providers: [...(config.providers ?? [])],
+        imports: [...(config.imports ?? [])],
         ...config,
     };
 
