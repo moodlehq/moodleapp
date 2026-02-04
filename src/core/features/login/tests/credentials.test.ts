@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { findElement, mock, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
+import { findElement, mockSingleton, renderPageComponent, requireElement } from '@/testing/utils';
 import { CoreLoginError } from '@classes/errors/loginerror';
 import CoreLoginCredentialsPage from '@features/login/pages/credentials/credentials';
 import { CoreLang } from '@services/lang';
@@ -29,7 +29,7 @@ describe('Credentials page', () => {
     beforeEach(() => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mockSingleton(Http, { get: () => of(null as any) });
-        mockSingleton(CoreLang, mock({ getCurrentLanguage: async () => 'en' }));
+        mockSingleton(CoreLang, { getCurrentLanguage: async () => 'en' });
     });
 
     it('renders', async () => {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mock, mockSingleton } from '@/testing/utils';
+import { mockSingleton } from '@/testing/utils';
 import { CoreSite } from '@classes/sites/site';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -28,13 +28,13 @@ describe('Site Home link handlers', () => {
         const siteUrl = 'https://school.moodledemo.net';
         const siteId = CoreSites.createSiteID(siteUrl, 'student');
 
-        mockSingleton(CoreSites, mock({
+        mockSingleton(CoreSites, {
             isStoredRootURL: () => Promise.resolve({ siteIds: [siteId] }),
             getSite: () => Promise.resolve(new CoreSite(siteId, siteUrl, '')),
             getSiteIdsFromUrl: () => Promise.resolve([siteId]),
             getCurrentSiteId: () => siteId,
             isLoggedIn: () => true,
-        }));
+        });
 
         mockSingleton(CoreLoginHelper, { getAvailableSites: async () => [{ url: siteUrl, name: 'Example Campus' }] });
 

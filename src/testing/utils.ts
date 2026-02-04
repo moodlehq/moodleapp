@@ -12,9 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, ProviderToken, Signal, Type, viewChild } from '@angular/core';
+import {
+    Component,
+    CUSTOM_ELEMENTS_SCHEMA,
+    EventEmitter,
+    ProviderToken,
+    Signal,
+    Type,
+    viewChild,
+    type Provider,
+} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, TestModuleMetadata } from '@angular/core/testing';
 import { Observable, of, Subject } from 'rxjs';
 import { sep } from 'path';
 
@@ -26,9 +35,9 @@ import { CoreExternalContentDirectiveStub } from './stubs/directives/core-extern
 import { CoreNetwork } from '@services/network';
 import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
-import { CoreNavigator, CoreNavigatorService } from '@services/navigator';
+import { CoreNavigator } from '@services/navigator';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { TranslatePipe, TranslateService, TranslateStore } from '@ngx-translate/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
@@ -43,10 +52,16 @@ abstract class WrapperComponent<U> {
 type ServiceInjectionToken<Service = unknown> = ProviderToken<Service>;
 
 let testBedInitialized = false;
+
+// Global translation store for test mocks
+let testTranslations: Record<string, string> = {};
+
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [Translate, mock({
-        instant: key => key,
-        get: key => of(key),
+        instant: (key: string | string[], replacements?: Record<string, string | number>) =>
+            interpolateTranslation(key, replacements),
+        get: (key: string | string[], replacements?: Record<string, string | number>) =>
+            of(interpolateTranslation(key, replacements)),
         onTranslationChange: new EventEmitter(),
         onLangChange: new EventEmitter(),
         onFallbackLangChange: new EventEmitter(),
@@ -64,6 +79,7 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
         isIOS: () => false,
         ready: () => Promise.resolve(),
         resume: new Subject<void>(),
+        isAutomated: () => true,
     })],
     [CoreNetwork, mock({
         isOnline: () => true,
@@ -82,19 +98,34 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
  * @returns A promise that resolves to the testing component fixture.
  */
 async function renderAngularComponent<T>(component: Type<T>, config: RenderConfig): Promise<TestingComponentFixture<T>> {
-    config.standalone = config.standalone ?? true;
 
-    if (!config.standalone) {
-        config.declarations.push(component);
+    // Default to standalone unless explicitly set to false.
+    const isStandalone = config.standalone ?? true;
 
-        TestBed.configureTestingModule({
+    const providers = getDefaultProviders(config, config.providers);
+
+    let testModuleConfig: TestModuleMetadata = {};
+
+    if (isStandalone) {
+        // For standalone components, use 'imports' only.
+        testModuleConfig = {
+            providers,
+            imports: [
+                component,
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                NoopAnimationsModule,
+                CoreExternalContentDirectiveStub,
+                ...(config.imports ?? []),
+            ],
+        };
+    } else {
+        // For non-standalone, use declarations, imports, schemas.
+        testModuleConfig = {
             declarations: [
-                ...config.declarations,
+                ...(config.declarations ?? []),
+                component,
             ],
-            providers: [
-                ...getDefaultProviders(config),
-                ...config.providers,
-            ],
+            providers,
             schemas: [CUSTOM_ELEMENTS_SCHEMA],
             imports: [
                 BrowserModule,
@@ -102,37 +133,30 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
                 NoopAnimationsModule,
                 TranslatePipe,
                 CoreExternalContentDirectiveStub,
-                ...config.imports,
+                ...(config.imports ?? []),
             ],
-        });
-    } else {
-        TestBed.configureTestingModule({
-            providers: [
-                ...getDefaultProviders(config),
-                ...config.providers,
-            ],
-            imports: [
-                component,
-                // eslint-disable-next-line @typescript-eslint/no-deprecated
-                NoopAnimationsModule,
-                CoreExternalContentDirectiveStub,
-                ...config.imports,
-            ],
-        });
+        };
     }
 
-    testBedInitialized = true;
+    try {
+        TestBed.resetTestingModule();
+        TestBed.configureTestingModule(testModuleConfig);
 
-    await TestBed.compileComponents();
+        await TestBed.compileComponents();
+        testBedInitialized = true;
 
-    const fixture = TestBed.createComponent(component);
+        const fixture = TestBed.createComponent(component);
+        fixture.autoDetectChanges();
 
-    fixture.autoDetectChanges();
+        await fixture.whenRenderingDone();
+        await fixture.whenStable();
 
-    await fixture.whenRenderingDone();
-    await fixture.whenStable();
-
-    return fixture;
+        return fixture;
+    } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error('Error in renderAngularComponent:', error);
+        throw error;
+    }
 }
 
 /**
@@ -162,71 +186,32 @@ function createWrapperComponent<U>(template: string, componentClass: Type<U>): T
  * Gets the default providers for testing.
  *
  * @param config Configuration options for rendering.
- * @returns An array of default providers.
+ * @param overrides Optional: array of providers to override or extend defaults.
+ * @returns Array of Angular providers for the test module.
  */
-function getDefaultProviders(config: RenderConfig): unknown[] {
-    const serviceProviders = DEFAULT_SERVICE_SINGLETON_MOCKS.map(
+function getDefaultProviders(config: RenderConfig, overrides: Provider[] = []): Provider[] {
+    const serviceProviders: Provider[] = DEFAULT_SERVICE_SINGLETON_MOCKS.map(
         ([singleton, mockInstance]) => ({
             provide: singleton.injectionToken,
             useValue: mockInstance,
         }),
     );
 
+    if (config.translations) {
+        setTestTranslations(config.translations);
+    }
+
     return [
         ...serviceProviders,
-        {
-            provide: TranslateStore,
-            useFactory: () => {
-                const store = new TranslateStore();
-
-                store.setTranslations('en', config.translations ?? {}, false);
-
-                return store;
-            },
-        },
         { provide: UrlSerializer, useClass: DefaultUrlSerializer },
-        { provide: CORE_SITE_SCHEMAS, multiple: true, useValue: [] },
+        { provide: CORE_SITE_SCHEMAS, multi: true, useValue: [] },
+        ...overrides,
     ];
-}
-
-/**
- * Resolves a service instance from the TestBed.
- *
- * @param injectionToken The injection token for the service.
- * @returns The service instance or null if not found.
- */
-function resolveServiceInstanceFromTestBed<Service = unknown>
-    (injectionToken: Exclude<ServiceInjectionToken<Service>, string>): Service | null {
-    if (!testBedInitialized) {
-        return null;
-    }
-
-    return TestBed.inject<Service>(injectionToken);
-}
-
-/**
- * Creates a new instance of a service.
- *
- * @param injectionToken The injection token for the service.
- * @returns The new service instance or null if an error occurs.
- */
-function createNewServiceInstance<Service = unknown>
-    (injectionToken: Exclude<ServiceInjectionToken<Service>, string>): Service | null {
-    try {
-        const constructor = injectionToken as { new (): Service };
-
-        return new constructor();
-    } catch (error){
-        // eslint-disable-next-line no-console
-        console.log(error);
-
-        return null;
-    }
 }
 
 export type RenderConfig = {
     declarations: unknown[];
-    providers: unknown[];
+    providers: Provider[];
     imports: unknown[];
     translations?: Record<string, string>;
     standalone?: boolean;
@@ -330,44 +315,27 @@ export function mock<Service>(
     return instance as Service;
 }
 
-export function mockSingleton<Service =
-    Record<string, unknown>>(singletonClass: CoreSingletonProxy<Service>, instance: Service | Partial<Service>): Service;
-export function mockSingleton<Service>(
-    singletonClass: CoreSingletonProxy<Service>,
-    methods: string[],
-    instance?: Record<string, unknown>,
-): Service;
-
 /**
  * Mocks a singleton instance for testing purposes.
  *
  * @param singleton The singleton class or proxy.
- * @param methodsOrProperties An array of method names to mock or an object containing property names and values.
- * @param properties If `methodsOrProperties` is an array, this object contains the properties to mock.
+ * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
+ * @param options Options.
+ * @param options.forceConstructorFallback Whether to force using the constructor instead of TestBed.inject.
  * @returns The mocked singleton instance.
  */
 export function mockSingleton<Service>(
     singleton: CoreSingletonProxy<Service>,
-    methodsOrProperties: string[] | Record<string, unknown> = [],
-    properties: Record<string, unknown> = {},
+    overrides: string[] | Record<string, unknown> = {},
+    { forceConstructorFallback = false } = {},
 ): Service {
-    properties = Array.isArray(methodsOrProperties) ? properties : methodsOrProperties;
+    // Get the original instance (from DI or constructor).
+    const instance = getServiceInstance<Service>(singleton.injectionToken, { forceConstructorFallback }) as Service;
 
-    const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
-    const instance = getServiceInstance(singleton.injectionToken) as Service;
-    const mockInstance = mock(instance, methods);
-    const mockInstancePrototype = Object.getPrototypeOf(mockInstance);
+    // Create the mock instance.
+    const mockInstance = mock(instance, overrides);
 
-    for (const [name, value] of Object.entries(properties)) {
-        const descriptor = Object.getOwnPropertyDescriptor(mockInstancePrototype, name);
-
-        if (descriptor && !descriptor.writable) {
-            continue;
-        }
-
-        mockInstance[name] = value;
-    }
-
+    // Set the mocked instance on the singleton proxy
     singleton.setInstance(mockInstance);
 
     return mockInstance;
@@ -379,26 +347,71 @@ export function mockSingleton<Service>(
  */
 export function resetTestingEnvironment(): void {
     testBedInitialized = false;
-
-    for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
-        mockSingleton(singleton, mockInstance);
-    }
+    resetTestTranslations();
+    TestBed.resetTestingModule();
+    TestBed.runInInjectionContext(() => {
+        for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
+            // Pass mockInstance as property overrides
+            mockSingleton(singleton, mockInstance as Record<string, unknown>);
+        }
+    });
 }
 
 /**
- * Retrieves the service instance corresponding to the provided injection token.
- * If the injection token is a string, an empty object is returned.
- * If the service instance is found in the test bed, it is returned.
- * If not found, a new service instance is created, or an empty object is returned if creation fails.
+ * Resolves a service instance for the given injection token.
+ *
+ * - Uses TestBed.inject for DI-managed services.
+ * - Falls back to direct constructor for POJOs or non-DI classes.
+ * - If the token is a string, returns an empty object (cannot instantiate).
  *
  * @param injectionToken The injection token for the desired service.
+ * @param options Options.
+ * @param options.forceConstructorFallback Whether to force using the constructor instead of TestBed.inject.
  * @returns The service instance or an empty object.
  */
-export function getServiceInstance<Service = unknown>
-    (injectionToken: ServiceInjectionToken<Service>): Record<string, unknown> {
-    return resolveServiceInstanceFromTestBed<Service>(injectionToken)
-        ?? createNewServiceInstance<Service>(injectionToken)
-        ?? {};
+export function getServiceInstance<Service = unknown>(
+    injectionToken: ServiceInjectionToken<Service>,
+    { forceConstructorFallback = false } = {},
+): Service | Record<string, unknown> | null {
+    // If the token is a string, cannot instantiate or inject.
+    if (typeof injectionToken === 'string') {
+        // eslint-disable-next-line no-console
+        console.warn('Cannot instantiate service for string injection token:', injectionToken);
+
+        return {};
+    }
+
+    // Try TestBed.inject first (preferred for DI-managed services)
+    if (!forceConstructorFallback) {
+        try {
+            const instance = TestBed.inject<Service>(injectionToken);
+
+            return instance;
+        } catch (error) {
+            if (testBedInitialized) {
+                // eslint-disable-next-line no-console
+                console.warn('TestBed.inject failed:', error);
+            }
+        }
+    }
+
+    // Fallback: direct constructor (for non-DI classes)
+    try {
+        const constructor = injectionToken as { new (): Service };
+
+        return new constructor();
+    } catch (error) {
+        // @todo Remove special case when TranslateLoader and Router issue is resolved.
+        const errorMessage = (error as Error).message || '';
+        if (errorMessage.includes('TranslateLoader') || errorMessage.includes('_Console')) {
+            return {};
+        }
+
+        // eslint-disable-next-line no-console
+        console.warn('Direct constructor failed:', error);
+    }
+
+    return {};
 }
 
 /**
@@ -431,7 +444,7 @@ export async function renderPageComponent<T>(
     component: Type<T>,
     config: Partial<RenderPageConfig> = {},
 ): Promise<TestingComponentFixture<T>> {
-    mockSingleton(CoreNavigator, mock<CoreNavigatorService>({
+    mockSingleton(CoreNavigator, {
         getRequiredRouteParam<T>(name: string) {
             if (!config.routeParams?.[name]) {
                 throw new Error();
@@ -440,7 +453,7 @@ export async function renderPageComponent<T>(
             return config.routeParams?.[name] as T;
         },
         getRouteParam: <T>(name: string) => config.routeParams?.[name] as T | undefined,
-    }));
+    });
 
     return renderComponent(component, config);
 }
@@ -458,21 +471,22 @@ export async function renderTemplate<T>(
     template: string,
     config: Partial<RenderConfig> = {},
 ): Promise<WrapperComponentFixture<T>> {
-    config.standalone = config.standalone ?? true;
+    const standalone = config.standalone ?? true;
 
-    if (!config.standalone) {
-        config.declarations = config.declarations ?? [];
-        config.declarations.push(component);
+    const renderConfig: RenderConfig = {
+        declarations: [...(config.declarations ?? [])],
+        providers: [...(config.providers ?? [])],
+        imports: [...(config.imports ?? [])],
+        ...config,
+    };
+
+    if (!standalone) {
+        renderConfig.declarations.push(component);
     }
 
     return renderAngularComponent(
         createWrapperComponent(template, component),
-        {
-            declarations: [],
-            providers: [],
-            imports: [],
-            ...config,
-        },
+        renderConfig,
     );
 }
 
@@ -526,20 +540,10 @@ export function wait(time: number): Promise<void> {
  * Mocks translate service with certain translations.
  *
  * @param translations List of translations.
+ * @deprecated since 5.2 use setTestTranslations instead.
  */
 export function mockTranslate(translations: Record<string, string> = {}): void {
-    mockSingleton(Translate as CoreSingletonProxy<TranslateService>, {
-        instant: (key, replacements) => {
-            const applyReplacements = (text: string): string => Object.entries(replacements ?? {}).reduce(
-                (text, [name, value]) => text.replace(`{{${name}}}`, value),
-                text,
-            );
-
-            return Array.isArray(key)
-                ? key.map(k => applyReplacements(translations[k] ?? k))
-                : applyReplacements(translations[key] ?? key);
-        },
-    });
+    setTestTranslations(translations);
 }
 
 /**
@@ -560,4 +564,42 @@ export function expectSameTypes<A, B>(equal: Equal<A, B>): () => void {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function expectAnyType<T>(): () => void {
     return () => expect(true).toBe(true);
+}
+
+/**
+ * Set translations for all translation mocks in tests.
+ *
+ * @param translations Key-value pairs for translation strings.
+ */
+export function setTestTranslations(translations: Record<string, string>): void {
+    testTranslations = { ...translations };
+}
+
+/**
+ * Reset translations to empty (called in resetTestingEnvironment).
+ */
+export function resetTestTranslations(): void {
+    testTranslations = {};
+}
+
+/**
+ * Interpolates a translation key or keys with optional replacements.
+ *
+ * @param key The translation key or array of keys.
+ * @param replacements Optional replacements for placeholders in the translation strings.
+ * @returns The interpolated translation string or array of strings.
+ */
+function interpolateTranslation(key: string | string[], replacements?: Record<string, string | number>): string | string[] {
+    const applyReplacements = (text: string): string => {
+        let result = text;
+        for (const [name, value] of Object.entries(replacements ?? {})) {
+            result = result.replace(`{{${name}}}`, String(value));
+        }
+
+        return result;
+    };
+
+    return Array.isArray(key)
+        ? key.map(k => applyReplacements(testTranslations[k] ?? k))
+        : applyReplacements(testTranslations[key] ?? key);
 }

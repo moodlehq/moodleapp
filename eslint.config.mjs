@@ -364,7 +364,13 @@ export default defineConfig([
         ],
     }, appConfig),
     Object.assign({ files: ['cordova-plugin-moodleapp/src/ts/**/*.ts'] }, cordovaPluginConfig),
-    Object.assign({ files: ['src/**/*.test.ts'] }, testsConfig),
+    Object.assign({
+        files: [
+            'src/**/*.test.ts',
+            'src/testing/**',
+            'src/**/tests/**',
+        ],
+    }, testsConfig),
     {
         files: ['src/**/*.html'],
         extends: [...angular.configs.templateRecommended,],

@@ -224,7 +224,7 @@ export class TestingBehatDomUtilsService {
                 if (labelElement && labelElement.innerText && labelElement.innerText.includes(text)) {
                     elements.push({
                         element: currentNode,
-                        exact: labelElement.innerText.trim() == text,
+                        exact: labelElement.innerText.trim() === text,
                     });
 
                     continue;
@@ -264,7 +264,7 @@ export class TestingBehatDomUtilsService {
                 fallbackCandidates = fallbackCandidates.filter(entry => !entry.element.contains(currentNode));
                 fallbackCandidates.push({
                     element: currentNode,
-                    exact: currentNode.innerText.trim() == text,
+                    exact: currentNode.innerText.trim() === text,
                 });
             }
         }
@@ -612,8 +612,8 @@ export class TestingBehatDomUtilsService {
      */
     async waitForElement<T extends HTMLElement = HTMLElement>(
         selector: string,
-        timeout: number = 2000,
-        retryFrequency: number = 100,
+        timeout = 2000,
+        retryFrequency = 100,
     ): Promise<T> {
         const element = document.body.querySelector<T>(selector);
 

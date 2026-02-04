@@ -12,21 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mockSingleton, mockTranslate } from '@/testing/utils';
+import { setTestTranslations } from '@/testing/utils';
 import { CoreTime } from '@static/time';
 import { dayjs } from '@/core/utils/dayjs';
-import { CorePlatform } from '@services/platform';
 
 describe('CoreTime', () => {
 
     beforeEach(async () => {
-        mockSingleton(CorePlatform, { isAutomated: () => true });
-
         await CoreTime.initialize();
     });
 
     it('formats time in a human readable format', () => {
-        mockTranslate({
+        setTestTranslations({
             'core.days': 'days',
             'core.day': 'day',
             'core.hours': 'hours',
@@ -106,7 +103,7 @@ describe('CoreTime', () => {
     });
 
     it('should convert timestamp to readable date', () => {
-        mockTranslate({
+        setTestTranslations({
             'core.strftimedaydatetime': '%Y-%m-%d %H:%M:%S',
             'core.strftimemonthyear': '%B %Y',
         });
