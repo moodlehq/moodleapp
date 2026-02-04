@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AlertController, Translate } from '@singletons';
-import { mock, mockSingleton, setTestTranslations } from '@/testing/utils';
+import { mock, mockSingleton, useTranslations } from '@/testing/utils';
 import { CoreSiteError } from '@classes/errors/siteerror';
 import { CoreSites } from '@services/sites';
 import { CoreAlertsService } from '@services/overlays/alerts';
@@ -22,16 +22,12 @@ describe('CoreAlertsService', () => {
 
     let alertsService: CoreAlertsService;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         alertsService = new CoreAlertsService();
+        await useTranslations('en');
     });
 
     it('shows site unavailable errors', async () => {
-        // Arrange.
-        setTestTranslations({
-            'core.siteunavailablehelp': 'The site "{{site}}" is not available right now.',
-        });
-
         const message = Translate.instant('core.siteunavailablehelp', { site: 'https://campus.example.edu' });
         const mockAlert = mock<HTMLIonAlertElement>({
             present: () => Promise.resolve(),

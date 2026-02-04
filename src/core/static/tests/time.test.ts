@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { setTestTranslations } from '@/testing/utils';
+import { useTranslations } from '@/testing/utils';
 import { CoreTime } from '@static/time';
 import { dayjs } from '@/core/utils/dayjs';
 
@@ -20,23 +20,10 @@ describe('CoreTime', () => {
 
     beforeEach(async () => {
         await CoreTime.initialize();
+        await useTranslations('en');
     });
 
     it('formats time in a human readable format', () => {
-        setTestTranslations({
-            'core.days': 'days',
-            'core.day': 'day',
-            'core.hours': 'hours',
-            'core.hour': 'hour',
-            'core.mins': 'mins',
-            'core.min': 'min',
-            'core.now': 'now',
-            'core.secs': 'secs',
-            'core.sec': 'sec',
-            'core.years': 'years',
-            'core.year': 'year',
-        });
-
         expect(CoreTime.formatTime(0)).toEqual('now');
         expect(CoreTime.formatTime(-5)).toEqual('5 secs');
         expect(CoreTime.formatTime(61)).toEqual('1 min 1 sec');
@@ -99,22 +86,17 @@ describe('CoreTime', () => {
 
     it('should return current timestamp in seconds', () => {
         expect(CoreTime.timestamp()).toBeLessThan(10000000000);
-        expect(CoreTime.timestamp()).toBeLessThan(10000000000);
     });
 
     it('should convert timestamp to readable date', () => {
-        setTestTranslations({
-            'core.strftimedaydatetime': '%Y-%m-%d %H:%M:%S',
-            'core.strftimemonthyear': '%B %Y',
-        });
-        expect(CoreTime.userDate(1641027600000)).toEqual('2022-01-1 17:00:00');
+        expect(CoreTime.userDate(1641027600000)).toEqual('Saturday, 1 January 2022, 5:00 PM');
         expect(CoreTime.userDate(1641027600000, 'core.strftimemonthyear')).toEqual('January 2022');
 
-        expect(CoreTime.userDate(0)).toEqual('1970-01-1 08:00:00');
+        expect(CoreTime.userDate(0)).toEqual('Thursday, 1 January 1970, 8:00 AM');
         expect(CoreTime.userDate(0, 'core.strftimemonthyear')).toEqual('January 1970');
-        expect(CoreTime.userDate(946684800000)).toEqual('2000-01-1 08:00:00');
+        expect(CoreTime.userDate(946684800000)).toEqual('Saturday, 1 January 2000, 8:00 AM');
         expect(CoreTime.userDate(946684800000, 'core.strftimemonthyear')).toEqual('January 2000');
-        expect(CoreTime.userDate(1672531199000, undefined, true, false)).toEqual('2023-01-01 07:59:59');
+        expect(CoreTime.userDate(1672531199000, undefined, true, false)).toEqual('Sunday, 01 January 2023, 7:59 AM');
         expect(CoreTime.userDate(1672531199000, 'core.strftimemonthyear')).toEqual('January 2023');
     });
 
