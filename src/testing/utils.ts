@@ -311,43 +311,26 @@ export function mock<Service>(
     return instance as Service;
 }
 
-export function mockSingleton<Service =
-    Record<string, unknown>>(singletonClass: CoreSingletonProxy<Service>, instance: Service | Partial<Service>): Service;
-export function mockSingleton<Service>(
-    singletonClass: CoreSingletonProxy<Service>,
-    methods: string[],
-    instance?: Record<string, unknown>,
-): Service;
 /**
  * Mocks a singleton instance for testing purposes.
  *
  * @param singleton The singleton class or proxy.
- * @param methodsOrProperties An array of method names to mock or an object containing property names and values.
- * @param properties If `methodsOrProperties` is an array, this object contains the properties to mock.
+ * @param overrides Object with the properties or methods to override, or a list of methods to override with an empty function.
+ * @param forceConstructorFallback Whether to force using the constructor instead of TestBed.inject.
  * @returns The mocked singleton instance.
  */
 export function mockSingleton<Service>(
     singleton: CoreSingletonProxy<Service>,
-    methodsOrProperties: string[] | Record<string, unknown> = [],
-    properties: Record<string, unknown> = {},
+    overrides: string[] | Record<string, unknown> = {},
+    { forceConstructorFallback = false } = {},
 ): Service {
-    properties = Array.isArray(methodsOrProperties) ? properties : methodsOrProperties;
+    // Get the original instance (from DI or constructor).
+    const instance = getServiceInstance<Service>(singleton.injectionToken, { forceConstructorFallback }) as Service;
 
-    const methods = Array.isArray(methodsOrProperties) ? methodsOrProperties : [];
-    const instance = getServiceInstance(singleton.injectionToken) as Service;
-    const mockInstance = mock(instance, methods);
-    const mockInstancePrototype = Object.getPrototypeOf(mockInstance);
+    // Create the mock instance.
+    let mockInstance = mock(instance, overrides);
 
-    for (const [name, value] of Object.entries(properties)) {
-        const descriptor = Object.getOwnPropertyDescriptor(mockInstancePrototype, name);
-
-        if (descriptor && !descriptor.writable) {
-            continue;
-        }
-
-        mockInstance[name] = value;
-    }
-
+    // Set the mocked instance on the singleton proxy
     singleton.setInstance(mockInstance);
 
     return mockInstance;
@@ -383,7 +366,7 @@ export function resetTestingEnvironment(): void {
  */
 export function getServiceInstance<Service = unknown>(
     injectionToken: ServiceInjectionToken<Service>,
-    forceConstructorFallback = false,
+    { forceConstructorFallback = false } = {},
 ): Service | Record<string, unknown> | null {
     // If the token is a string, cannot instantiate or inject.
     if (typeof injectionToken === 'string') {
@@ -456,7 +439,7 @@ export async function renderPageComponent<T>(
     component: Type<T>,
     config: Partial<RenderPageConfig> = {},
 ): Promise<TestingComponentFixture<T>> {
-    mockSingleton(CoreNavigator, mock<CoreNavigatorService>({
+    mockSingleton(CoreNavigator, {
         getRequiredRouteParam<T>(name: string) {
             if (!config.routeParams?.[name]) {
                 throw new Error();
@@ -465,7 +448,7 @@ export async function renderPageComponent<T>(
             return config.routeParams?.[name] as T;
         },
         getRouteParam: <T>(name: string) => config.routeParams?.[name] as T | undefined,
-    }));
+    });
 
     return renderComponent(component, config);
 }

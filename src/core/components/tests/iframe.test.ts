@@ -14,18 +14,9 @@
 
 import { CoreIframeComponent } from '@components/iframe/iframe';
 
-import { mockSingleton, renderTemplate } from '@/testing/utils';
-import { CoreScreen, CoreScreenOrientation } from '@services/screen';
-import { signal } from '@angular/core';
+import { renderTemplate } from '@/testing/utils';
 
 describe('CoreIframeComponent', () => {
-
-    beforeEach(() => {
-        mockSingleton(CoreScreen, {
-            _orientationSignal: signal(CoreScreenOrientation.PORTRAIT), // eslint-disable-line @typescript-eslint/naming-convention
-            orientationSignal: signal(CoreScreenOrientation.PORTRAIT).asReadonly(),
-        });
-    });
 
     it('should render', async () => {
         // Arrange.

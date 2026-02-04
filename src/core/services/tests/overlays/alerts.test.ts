@@ -40,8 +40,8 @@ describe('CoreAlertsService', () => {
             }),
         });
 
-        mockSingleton(AlertController, mock({ create: () => Promise.resolve(mockAlert) }));
-        mockSingleton(CoreSites, mock({ isLoggedIn: () => true }));
+        mockSingleton(AlertController, { create: () => Promise.resolve(mockAlert) });
+        mockSingleton(CoreSites, { isLoggedIn: () => true });
 
         // Act.
         await alertsService.showError(new CoreSiteError({ message }));
