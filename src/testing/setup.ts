@@ -17,6 +17,7 @@ import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
 import { setCreateSingletonMethodProxy, setSingletonsInjector } from '@singletons';
 
 import { resetTestingEnvironment, getServiceInstance } from './utils';
+import { Type, AbstractType, InjectionToken } from '@angular/core';
 
 setupZoneTestEnv();
 
@@ -43,5 +44,6 @@ setCreateSingletonMethodProxy(
             jest.fn((...args) => method.call(instance, ...args)),
 );
 
-setSingletonsInjector({ get: injectionToken => getServiceInstance(injectionToken) });
+setSingletonsInjector({ get: (injectionToken: Type<unknown> | AbstractType<unknown> | InjectionToken<unknown>) =>
+    getServiceInstance(injectionToken) });
 beforeEach(() => resetTestingEnvironment());
