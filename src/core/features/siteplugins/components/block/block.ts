@@ -74,16 +74,17 @@ export class CoreSitePluginsBlockComponent extends CoreBlockBaseComponent implem
     }
 
     /**
-     * Invalidate block data.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
     async invalidateContent(): Promise<void> {
-        if (!this.component || !this.method) {
-            return;
-        }
+        await this.content()?.invalidateContent();
+    }
 
-        return CoreSitePlugins.invalidateContent(this.component, this.method, this.args);
+    /**
+     * @inheritdoc
+     */
+    async reloadContent(): Promise<void> {
+        await this.content()?.refreshContent();
     }
 
 }
