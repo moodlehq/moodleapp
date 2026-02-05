@@ -17,6 +17,7 @@ import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreTime } from '@static/time';
 import { Subscription } from 'rxjs';
+import { CoreResultMemoiser } from '@classes/result-memoiser';
 
 /**
  * Filter to turn a number of seconds to a duration. E.g. 60 -> 1 minute.
@@ -28,17 +29,14 @@ import { Subscription } from 'rxjs';
 export class CoreDurationPipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
-    protected cachedResult?: string;
+    protected memoiser = new CoreResultMemoiser<string>();
     protected subscription: Subscription;
-
-    protected lastSeconds?: number | string;
-    protected lastPrecision?: number;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreDurationPipe');
 
         this.subscription = Translate.onLangChange.subscribe(() => {
-            this.cachedResult = undefined;
+            this.memoiser.invalidate();
         });
     }
 
@@ -50,17 +48,11 @@ export class CoreDurationPipe implements PipeTransform, OnDestroy {
      * @returns Formatted duration.
      */
     transform(seconds: string | number, precision = 2): string {
-        if (this.lastSeconds !== seconds || this.lastPrecision !== precision) {
-            this.lastSeconds = seconds;
-            this.lastPrecision = precision;
-            this.cachedResult = undefined;
-        }
-
-        if (this.cachedResult === undefined) {
-            this.cachedResult = this.formatTime(seconds, precision);
-        }
-
-        return this.cachedResult;
+        return this.memoiser.memoise(
+            () => this.formatTime(seconds, precision),
+            seconds,
+            precision,
+        );
     }
 
     /**

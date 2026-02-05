@@ -17,6 +17,7 @@ import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { dayjs } from '@/core/utils/dayjs';
 import { Subscription } from 'rxjs';
+import { CoreResultMemoiser } from '@classes/result-memoiser';
 
 /**
  * Pipe to turn a UNIX timestamp to "time ago".
@@ -28,16 +29,14 @@ import { Subscription } from 'rxjs';
 export class CoreTimeAgoPipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
-    protected cachedResult?: string;
+    protected memoiser = new CoreResultMemoiser<string>();
     protected subscription: Subscription;
-
-    protected lastTimestamp?: number | string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreTimeAgoPipe');
 
         this.subscription = Translate.onLangChange.subscribe(() => {
-            this.cachedResult = undefined;
+            this.memoiser.invalidate();
         });
     }
 
@@ -48,16 +47,10 @@ export class CoreTimeAgoPipe implements PipeTransform, OnDestroy {
      * @returns Formatted time.
      */
     transform(timestamp: string | number): string {
-        if (this.lastTimestamp !== timestamp) {
-            this.lastTimestamp = timestamp;
-            this.cachedResult = undefined;
-        }
-
-        if (this.cachedResult === undefined) {
-            this.cachedResult = this.formatTimeAgo(timestamp);
-        }
-
-        return this.cachedResult;
+        return this.memoiser.memoise(
+            () => this.formatTimeAgo(timestamp),
+            timestamp,
+        );
     }
 
     /**

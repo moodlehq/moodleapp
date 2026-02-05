@@ -19,6 +19,7 @@ import { CoreTime } from '@static/time';
 import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { Subscription } from 'rxjs';
+import { CoreResultMemoiser } from '@classes/result-memoiser';
 
 /**
  * Filter to display a date using the day, or the time.
@@ -40,16 +41,14 @@ import { Subscription } from 'rxjs';
 export class CoreDateDayOrTimePipe implements PipeTransform, OnDestroy {
 
     protected logger: CoreLogger;
-    protected cachedResult?: string;
+    protected memoiser = new CoreResultMemoiser<string>();
     protected subscription: Subscription;
-
-    protected lastTimestamp?: number | string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreDateDayOrTimePipe');
 
         this.subscription = Translate.onLangChange.subscribe(() => {
-            this.cachedResult = undefined;
+            this.memoiser.invalidate();
         });
     }
 
@@ -60,16 +59,10 @@ export class CoreDateDayOrTimePipe implements PipeTransform, OnDestroy {
      * @returns Formatted time.
      */
     transform(timestamp: string | number): string {
-        if (this.lastTimestamp !== timestamp) {
-            this.lastTimestamp = timestamp;
-            this.cachedResult = undefined;
-        }
-
-        if (this.cachedResult === undefined) {
-            this.cachedResult = this.formatTimestamp(timestamp);
-        }
-
-        return this.cachedResult;
+        return this.memoiser.memoise(
+            () => this.formatTimestamp(timestamp),
+            timestamp,
+        );
     }
 
     /**

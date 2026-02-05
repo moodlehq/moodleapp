@@ -15,7 +15,6 @@
 import {
     Component,
     CUSTOM_ELEMENTS_SCHEMA,
-    EventEmitter,
     ProviderToken,
     Signal,
     Type,
@@ -24,7 +23,7 @@ import {
 } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { ComponentFixture, TestBed, TestModuleMetadata } from '@angular/core/testing';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { sep } from 'path';
 
 import { CORE_SITE_SCHEMAS } from '@services/sites';
@@ -42,6 +41,8 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
 import { Equal } from '@/core/utils/types';
+import { translateMock } from './stubs/translate.mock';
+import { CoreLang } from '@services/lang';
 
 abstract class WrapperComponent<U> {
 
@@ -53,19 +54,8 @@ type ServiceInjectionToken<Service = unknown> = ProviderToken<Service>;
 
 let testBedInitialized = false;
 
-// Global translation store for test mocks
-let testTranslations: Record<string, string> = {};
-
 const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
-    [Translate, mock({
-        instant: (key: string | string[], replacements?: Record<string, string | number>) =>
-            interpolateTranslation(key, replacements),
-        get: (key: string | string[], replacements?: Record<string, string | number>) =>
-            of(interpolateTranslation(key, replacements)),
-        onTranslationChange: new EventEmitter(),
-        onLangChange: new EventEmitter(),
-        onFallbackLangChange: new EventEmitter(),
-    })],
+    [Translate, translateMock],
     [CoreDB, mock({ getDB: () => mock() })],
     [CoreNavigator, mock({ navigateToSitePath: () => Promise.resolve(true) })],
     [ApplicationInit, mock({
@@ -142,6 +132,8 @@ async function renderAngularComponent<T>(component: Type<T>, config: RenderConfi
         TestBed.resetTestingModule();
         TestBed.configureTestingModule(testModuleConfig);
 
+        await useTranslations(config.language);
+
         await TestBed.compileComponents();
         testBedInitialized = true;
 
@@ -198,7 +190,7 @@ function getDefaultProviders(config: RenderConfig, overrides: Provider[] = []): 
     );
 
     if (config.translations) {
-        setTestTranslations(config.translations);
+        overrideTranslations(config.translations);
     }
 
     return [
@@ -215,6 +207,7 @@ export type RenderConfig = {
     imports: unknown[];
     translations?: Record<string, string>;
     standalone?: boolean;
+    language?: string;
 };
 
 export type RenderPageConfig = RenderConfig & {
@@ -347,7 +340,7 @@ export function mockSingleton<Service>(
  */
 export function resetTestingEnvironment(): void {
     testBedInitialized = false;
-    resetTestTranslations();
+
     TestBed.resetTestingModule();
     TestBed.runInInjectionContext(() => {
         for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
@@ -537,16 +530,6 @@ export function wait(time: number): Promise<void> {
 }
 
 /**
- * Mocks translate service with certain translations.
- *
- * @param translations List of translations.
- * @deprecated since 5.2 use setTestTranslations instead.
- */
-export function mockTranslate(translations: Record<string, string> = {}): void {
-    setTestTranslations(translations);
-}
-
-/**
  * Creates a test function that asserts that two types are equal.
  *
  * @param equal The equality check function for types A and B.
@@ -567,39 +550,31 @@ export function expectAnyType<T>(): () => void {
 }
 
 /**
- * Set translations for all translation mocks in tests.
+ * Override translations for testing purposes.
  *
- * @param translations Key-value pairs for translation strings.
+ * @param translations Object with translation keys and their corresponding translated strings.
+ * @param lang Language code (e.g. 'en'). By default, it will override the current language.
  */
-export function setTestTranslations(translations: Record<string, string>): void {
-    testTranslations = { ...translations };
+export function overrideTranslations(translations: Record<string, string>, lang?: string): void {
+    lang = lang ?? Translate.getCurrentLang() ?? 'en';
+    Translate.setTranslation(lang, translations, true);
 }
 
 /**
- * Reset translations to empty (called in resetTestingEnvironment).
+ * Initializes translations for testing by setting the current language and loading its translations.
+ *
+ * @param lang Language code (e.g. 'en').
  */
-export function resetTestTranslations(): void {
-    testTranslations = {};
+export async function useTranslations(lang = 'en'): Promise<void> {
+    await CoreLang.changeCurrentLanguage(lang, false);
 }
 
 /**
- * Interpolates a translation key or keys with optional replacements.
+ * Fakes the current time for testing purposes by setting Jest's fake timers to a specific date.
  *
- * @param key The translation key or array of keys.
- * @param replacements Optional replacements for placeholders in the translation strings.
- * @returns The interpolated translation string or array of strings.
+ * @param date The date to set as the current time. Default value is 09:02 AM in Australia/Perth timezone.
  */
-function interpolateTranslation(key: string | string[], replacements?: Record<string, string | number>): string | string[] {
-    const applyReplacements = (text: string): string => {
-        let result = text;
-        for (const [name, value] of Object.entries(replacements ?? {})) {
-            result = result.replace(`{{${name}}}`, String(value));
-        }
-
-        return result;
-    };
-
-    return Array.isArray(key)
-        ? key.map(k => applyReplacements(testTranslations[k] ?? k))
-        : applyReplacements(testTranslations[key] ?? key);
+export function fakeTime(date: Date = new Date('2014-02-01T01:02:03Z')): void {
+    jest.useFakeTimers();
+    jest.setSystemTime(date);
 }

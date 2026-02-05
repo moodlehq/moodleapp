@@ -27,7 +27,7 @@ describe('CoreSitesProvider', () => {
 
     let langProvider: CoreLangProvider;
     beforeEach(() => {
-        langProvider = mockSingleton(CoreLang, { getCurrentLanguage: async () => 'en' , clearCustomStrings: () => null });
+        langProvider = mockSingleton(CoreLang, ['clearCustomStrings']);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mockSingleton(Http, { get: () => of(null as any) });
     });
