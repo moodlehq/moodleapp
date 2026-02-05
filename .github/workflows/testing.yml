@@ -19,6 +19,10 @@ jobs:
         run: |
           npm ci --no-audit
           npm ci --no-audit --prefix cordova-plugin-moodleapp
+      - name: Install languages
+        run: |
+          npx gulp lang
+          npm run lang:update-langpacks
       - name: Check langindex
         run: |
           result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
