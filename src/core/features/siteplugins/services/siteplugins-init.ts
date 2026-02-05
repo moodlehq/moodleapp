@@ -175,7 +175,7 @@ export class CoreSitePluginsInitService {
 
         if (url && handlerSchema.styles?.version) {
             // Add the version to the URL to prevent getting a cached file.
-            url += `${url.indexOf('?') != -1 ? '&' : '?'}version=${handlerSchema.styles.version}`;
+            url += `${url.includes('?') ? '&' : '?'}version=${handlerSchema.styles.version}`;
         }
 
         const uniqueName = CoreSitePlugins.getHandlerUniqueName(plugin, handlerName);
@@ -261,7 +261,7 @@ export class CoreSitePluginsInitService {
 
         const result = <CoreSitePluginsContent> await CoreSitePlugins.getContent(plugin.component, method, {}, preSets);
 
-        if (!result.javascript || CoreSites.getCurrentSiteId() != siteId) {
+        if (!result.javascript || CoreSites.getCurrentSiteId() !== siteId) {
             // No javascript or site has changed, stop.
             return result;
         }
@@ -566,6 +566,8 @@ export class CoreSitePluginsInitService {
      * @param plugin Data of the plugin.
      * @param handlerName Name of the handler in the plugin.
      * @param handlerSchema Data about the handler.
+     * @param delegate Delegate where the handler should be registered.
+     * @param createHandlerFn Function to create the handler instance.
      * @returns A promise resolved with a string to identify the handler.
      */
     protected async registerComponentInitHandler<T extends CoreDelegateHandler>(

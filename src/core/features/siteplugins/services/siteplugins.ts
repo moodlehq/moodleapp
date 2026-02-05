@@ -237,7 +237,7 @@ export class CoreSitePluginsProvider {
             for (const name in otherData) {
                 const value = otherData[name];
 
-                if (typeof value == 'string' && (value[0] == '{' || value[0] == '[')) {
+                if (typeof value === 'string' && (value[0] === '{' || value[0] === '[')) {
                     otherData[name] = CoreText.parseJSON(value);
                 }
             }
@@ -409,7 +409,7 @@ export class CoreSitePluginsProvider {
         restrictEnrolled?: boolean,
         restrict?: CoreSitePluginsContentRestrict,
     ): Promise<boolean> {
-        if (restrict?.courses?.indexOf(courseId) == -1) {
+        if (restrict?.courses && !restrict.courses.includes(courseId)) {
             // Course is not in the list of restricted courses.
             return false;
         }
@@ -435,12 +435,12 @@ export class CoreSitePluginsProvider {
      * @returns Whether the handler is enabled.
      */
     isHandlerEnabledForUser(userId: number, restrictCurrent?: boolean, restrict?: CoreSitePluginsContentRestrict): boolean {
-        if (restrictCurrent && userId != CoreSites.getCurrentSite()?.getUserId()) {
+        if (restrictCurrent && userId !== CoreSites.getCurrentSite()?.getUserId()) {
             // Only enabled for current user.
             return false;
         }
 
-        if (restrict?.users?.indexOf(userId) == -1) {
+        if (restrict?.users && !restrict.users.includes(userId)) {
             // User is not in the list of restricted users.
             return false;
         }
@@ -642,6 +642,8 @@ export class CoreSitePluginsProvider {
 
     /**
      * Set plugins fetched.
+     *
+     * @param loaded Whether plugins have been loaded.
      */
     setPluginsLoaded(loaded?: boolean): void {
         this.hasSitePluginsLoaded = !!loaded;
