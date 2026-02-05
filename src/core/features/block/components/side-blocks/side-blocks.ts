@@ -72,7 +72,7 @@ export class CoreBlockSideBlocksComponent implements OnInit {
         if (this.contextLevel() === ContextLevel.COURSE) {
             promises.push(CoreCourse.invalidateCourseBlocks(this.instanceId()));
         } else {
-            promises.push(CoreCoursesDashboard.invalidateDashboardBlocks());
+            promises.push(CoreCoursesDashboard.invalidateDashboardBlocks(this.myDashboardPage()));
         }
 
         // Invalidate the blocks.

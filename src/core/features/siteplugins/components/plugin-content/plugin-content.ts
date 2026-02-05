@@ -185,6 +185,7 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
      *               If true is supplied instead of an object, all initial variables from current page will be copied.
      * @param preSets The preSets for the WS call of the new content.
      * @param ptrEnabled Whether PTR should be enabled in the new page. Defaults to true.
+     * @param filterOptions Filter options.
      */
     openContent(
         title: string,
@@ -229,13 +230,20 @@ export class CoreSitePluginsPluginContentComponent implements OnInit, DoCheck {
             this.dataLoaded = false;
         }
 
-        this.invalidateObservable.next(); // Notify observers.
-
         try {
-            await CoreSitePlugins.invalidateContent(this.component, this.method, this.args);
+            await this.invalidateContent();
         } finally {
             await this.fetchContent(true);
         }
+    }
+
+    /**
+     * Invalidate the data.
+     */
+    async invalidateContent(): Promise<void> {
+        this.invalidateObservable.next(); // Notify observers.
+
+        await CoreSitePlugins.invalidateContent(this.component, this.method, this.args);
     }
 
     /**
