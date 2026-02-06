@@ -439,15 +439,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
                         { $a: unansweredCount },
                     );
 
-                    message += `
-                        <ion-card class="core-warning-card">
-                            <ion-item>
-                                <ion-label>
-                                    ${ warning }
-                                </ion-label>
-                            </ion-item>
-                        </ion-card>
-                    `;
+                    message += `<core-alert-card type="warning" message="${ warning }" />`;
                 }
 
                 await CoreAlerts.confirm(message, {

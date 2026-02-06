@@ -21,24 +21,12 @@
     @if (options.length) {
         @if (showPreview) {
             <!-- Activity availability messages -->
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p>{{ 'addon.mod_choice.previewing' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'addon.mod_choice.previewing' | translate" />
         }
 
         @if (publishInfo) {
             <!-- Inform what will happen with the choices. -->
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ publishInfo | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="publishInfo | translate" />
         }
 
         @if (choice) {
@@ -170,14 +158,7 @@
         }
 
         @if (!canSeeResults && showResultsMessage) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p>{{ 'addon.mod_choice.noresultsviewable' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'addon.mod_choice.noresultsviewable' | translate" />
         }
 
 

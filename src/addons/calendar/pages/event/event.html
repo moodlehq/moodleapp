@@ -56,12 +56,8 @@
                 </ion-item>
                 <!-- There is data to be synchronized -->
                 @if (hasOffline || event.deleted) {
-                    <ion-card class="core-warning-card">
-                        <ion-item>
-                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                            <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate} }}</ion-label>
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="warning"
+                        [message]="'core.hasdatatosync' | translate:{$a: 'addon.calendar.calendarevent' | translate}" />
                 }
                 <ion-item class="ion-text-wrap">
                     <ion-label>
@@ -148,21 +144,16 @@
 
         @if (remindersEnabled && event) {
             @if (!canScheduleExactAlarms && !scheduleExactWarningHidden) {
-                <ion-card class="core-warning-card core-card-with-buttons">
-                    <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            <p><strong>{{ 'core.exactalarmsturnedoff' | translate }}</strong></p>
-                            <p>{{ 'core.exactalarmsturnedoffmessage' | translate }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <div class="core-card-buttons">
+                <core-alert-card type="warning"
+                    [title]="'core.exactalarmsturnedoff' | translate"
+                    [message]="'core.exactalarmsturnedoffmessage' | translate">
+                    <div buttons>
                         <ion-button fill="clear" (click)="hideAlarmWarning()">
                             {{ 'core.dontshowagain' | translate | coreNoPeriod }}
                         </ion-button>
                         <ion-button fill="outline" (click)="openAlarmSettings()">{{ 'core.turnon' | translate }}</ion-button>
                     </div>
-                </ion-card>
+                </core-alert-card>
             }
 
             <ion-card>

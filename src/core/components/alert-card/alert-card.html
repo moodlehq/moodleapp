@@ -1,6 +1,7 @@
 @if (!dismissed()) {
     <ion-card [class]="'core-' + normalizedType() + '-card'">
-        <ion-item>
+        <ion-item class="ion-text-wrap"
+            (click)="hasAction() && itemAction.emit($event)" [button]="hasAction()" [detail]="false">
             @if (computedIcon()) {
                 <ion-icon [name]="computedIcon()" slot="start" aria-hidden="true" />
             }

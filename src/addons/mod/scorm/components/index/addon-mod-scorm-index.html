@@ -22,12 +22,7 @@
     @if (scorm) {
         @if (scorm.warningMessage) {
             <!-- Warning message. -->
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ scorm.warningMessage }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="scorm.warningMessage" />
         } @else if (!showLoading) {
             <div>
                 <!-- Attempts status. -->
@@ -227,25 +222,14 @@
                 <div class="list-item-limited-width">
                     <!-- Warning that user doesn't have any more attempts. -->
                     @if (attemptsLeft === 0) {
-                        <ion-card class="core-danger-card">
-                            <ion-item class="ion-text-wrap">
-                                <ion-label>
-                                    <p>{{ 'addon.mod_scorm.exceededmaxattempts' | translate }}</p>
-                                </ion-label>
-                            </ion-item>
-                        </ion-card>
+                        <core-alert-card type="danger" [message]="'addon.mod_scorm.exceededmaxattempts' | translate" />
                     }
 
                     @if (useOnlinePlayer && !isOnline()) {
-                        <ion-card class="core-warning-card">
-                            <ion-item class="ion-text-wrap">
-                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                <ion-label>
-                                    {{ 'core.course.activitynotavailableoffline' | translate }}
-                                    {{ 'core.needinternettoaccessit' | translate }}
-                                </ion-label>
-                            </ion-item>
-                        </ion-card>
+                        <core-alert-card type="warning"
+                            [message]="('core.course.activitynotavailableoffline' | translate) + ' ' +
+                                ('core.needinternettoaccessit' | translate)"
+                        />
                     }
 
                     @if ((!scorm.lastattemptlock || attemptsLeft > 0) && (!useOnlinePlayer || isOnline())) {

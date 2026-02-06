@@ -54,10 +54,5 @@
 
 <!-- Activity has something offline. -->
 @if (hasDataToSync) {
-    <ion-card class="core-warning-card">
-        <ion-item>
-            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-            <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleNameTranslated} }}</ion-label>
-        </ion-item>
-    </ion-card>
+    <core-alert-card type="warning" [message]="'core.hasdatatosync' | translate: {$a: moduleNameTranslated}" />
 }

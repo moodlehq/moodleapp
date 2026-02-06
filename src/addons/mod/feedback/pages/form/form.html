@@ -123,12 +123,8 @@
                                             modelValueName="value" />
                                     }
                                     @if (!item.captcha || offline()) {
-                                        <div class="core-warning-card">
-                                            <ion-item>
-                                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                                <ion-label>{{ 'addon.mod_feedback.captchaofflinewarning' | translate }}</ion-label>
-                                            </ion-item>
-                                        </div>
+                                        <core-alert-card type="warning"
+                                            [message]="'addon.mod_feedback.captchaofflinewarning' | translate" />
                                     }
                                 }
                             }
@@ -167,25 +163,20 @@
         }
 
         @if (completed) {
-            <ion-card class="core-success-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-check" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        @if (!completionPageContents && !completedOffline) {
-                            <p>
-                                {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
-                            </p>
-                        } @else if (!completionPageContents && completedOffline) {
-                            <p>
-                                {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
-                            </p>
-                        } @else {
-                            <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
-                                contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
-                        }
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="success">
+                @if (!completionPageContents && !completedOffline) {
+                    <p>
+                        {{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}
+                    </p>
+                } @else if (!completionPageContents && completedOffline) {
+                    <p>
+                        {{ 'addon.mod_feedback.feedback_submitted_offline' | translate }}
+                    </p>
+                } @else {
+                    <core-format-text [component]="component" componentId="componentId" [text]="completionPageContents"
+                        contextLevel="module" [contextInstanceId]="cmId" [courseId]="courseId" />
+                }
+            </core-alert-card>
         }
 
         @if (feedbackLoaded && completed) {

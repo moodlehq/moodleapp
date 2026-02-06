@@ -90,7 +90,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     overallFeedback?: string; // The feedback for the grade.
     buttonText?: string; // Text to display in the start/continue button.
     preventMessages: string[] = []; // List of messages explaining why the quiz cannot be attempted.
-    preventMessagesColor = 'danger'; // Color for the prevent messages.
+    preventMessagesAlertType = 'danger'; // Color for the prevent messages.
     showStatusSpinner = true; // Whether to show a spinner due to quiz status.
     gradeMethodReadable?: string; // Grade method in a readable format.
     showReviewColumn = false; // Whether to show the review column.
@@ -252,6 +252,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * Get the user attempts in the quiz and the result info.
      *
      * @param quiz Quiz instance.
+     * @param accessInfo Quiz access information.
      */
     protected async getAttempts(
         quiz: AddonModQuizQuizData,
@@ -291,7 +292,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     protected getButtonText(): void {
         const canOnlyPreview = !!this.quizAccessInfo?.canpreview && !this.quizAccessInfo?.canattempt;
         this.buttonText = '';
-        this.preventMessagesColor = canOnlyPreview ? 'warning' : 'danger';
+        this.preventMessagesAlertType = canOnlyPreview ? 'warning' : 'danger';
 
         if (this.hasQuestions) {
             if (this.attempts.length && !AddonModQuiz.isAttemptCompleted(this.attempts[0].state)) {
@@ -394,6 +395,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
     /**
      * Go to review an attempt that has just been finished.
+     *
+     * @param attempts List of attempts of the quiz.
      */
     protected async goToAutoReview(attempts: AddonModQuizAttemptWSData[]): Promise<void> {
         if (!this.autoReview) {
@@ -664,6 +667,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
 
     /**
      * Go to page to review the attempt.
+     *
+     * @param attemptId Attempt ID.
      */
     async reviewAttempt(attemptId: number): Promise<void> {
         await CoreNavigator.navigateToSitePath(

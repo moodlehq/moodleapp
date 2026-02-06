@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, EventEmitter, input, OnInit, Output, signal } from '@angular/core';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
 
@@ -34,10 +34,22 @@ enum CoreAlertCardType {
         CoreBaseModule,
     ],
 })
-export class CoreAlertCardComponent {
+export class CoreAlertCardComponent implements OnInit {
 
     readonly type = input<CoreAlertCardType>(CoreAlertCardType.WARNING);
     readonly icon = input();
+    // New output syntax doesn't have the 'observed' property, keep EventEmitter for now.
+    // See https://github.com/angular/angular/issues/54837
+    @Output() itemAction = new EventEmitter<() => void>(); // Will emit an event when the item clicked.
+
+    readonly hasAction = signal(false);
+
+    /**
+     * @inheritdoc
+     */
+    ngOnInit(): void {
+        this.hasAction.set(this.itemAction.observed);
+    }
 
     /**
      * Compute the icon to use based on the type if not provided.

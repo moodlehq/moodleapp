@@ -23,12 +23,9 @@
     <core-loading [hideUntil]="loaded">
 
         @if (warning) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label><span [innerHTML]="warning"></span></ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning">
+                <span [innerHTML]="warning"></span>
+            </core-alert-card>
         }
 
         @if (loaded) {

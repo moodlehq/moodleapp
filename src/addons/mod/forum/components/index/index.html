@@ -45,67 +45,32 @@
 
         <!-- Cut-off date or due date message -->
         @if (availabilityMessage) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ availabilityMessage }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="availabilityMessage" />
         }
 
         <!-- Q&A message. -->
         @if (showQAMessage) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'addon.mod_forum.qandanotify' | translate" />
         }
 
         <!-- Cannot add discussion to group messages. -->
         @if (usesGroups && canAddDiscussion && !canAddDiscussionToGroup) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        @if (groupId <= 0) {
-                            <span>{{ 'addon.mod_forum.cannotadddiscussionall' | translate }}</span>
-                        }
-                        @if (groupId > 0) {
-                            <span>{{ 'addon.mod_forum.cannotadddiscussion' | translate }}</span>
-                        }
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning" [message]="groupId <= 0
+                ? ('addon.mod_forum.cannotadddiscussionall' | translate)
+                : ('addon.mod_forum.cannotadddiscussion' | translate)" />
         }
 
         @if (forum) {
             @if (forum.type === 'eachuser') {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            <span>{{ 'addon.mod_forum.allowsdiscussions' | translate }}</span>
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info" [message]="'addon.mod_forum.allowsdiscussions' | translate" />
             }
 
             @if (hasBlockingEnabled) {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            <span>{{ 'addon.mod_forum.thisforumisthrottled' | translate: {
-                            $a: {
-                                blockafter: forum.blockafter,
-                                blockperiod: ('core.secondstotime' + forum.blockperiod | translate)
-                            }
-                        } }}</span>
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info"
+                    [message] ="'addon.mod_forum.thisforumisthrottled' | translate: { $a: {
+                        blockafter: forum.blockafter,
+                        blockperiod: ('core.secondstotime' + forum.blockperiod | translate)
+                    } }"/>
             }
 
             @if (discussions && sortingAvailable && selectedSortOrder) {
