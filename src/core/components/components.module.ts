@@ -15,6 +15,7 @@
 import { NgModule, Type } from '@angular/core';
 
 import { CoreAttachmentsComponent } from './attachments/attachments';
+import { CoreAlertCardComponent } from './alert-card/alert-card';
 import { CoreBSTooltipComponent } from './bs-tooltip/bs-tooltip';
 import { CoreChartComponent } from './chart/chart';
 import { CoreChronoComponent } from './chrono/chrono';
@@ -74,6 +75,7 @@ export async function getCoreDeprecatedComponents(): Promise<Type<unknown>[]> {
 
 @NgModule({
     imports: [
+        CoreAlertCardComponent,
         CoreAttachmentsComponent,
         CoreBSTooltipComponent,
         CoreButtonWithSpinnerComponent,
@@ -116,6 +118,7 @@ export async function getCoreDeprecatedComponents(): Promise<Type<unknown>[]> {
         CoreSitesListComponent,
     ],
     exports: [
+        CoreAlertCardComponent,
         CoreAttachmentsComponent,
         CoreBSTooltipComponent,
         CoreButtonWithSpinnerComponent,

@@ -1,0 +1,29 @@
+@if (!dismissed()) {
+    <ion-card [class]="'core-' + normalizedType() + '-card'">
+        <ion-item>
+            @if (computedIcon()) {
+                <ion-icon [name]="computedIcon()" slot="start" aria-hidden="true" />
+            }
+            <ion-label class="ion-text-wrap">
+                @if (title()) {
+                    <p class="item-heading font-bold">
+                        {{ title() }}
+                    </p>
+                }
+                @if (message()) {
+                    <p>
+                        {{ message() }}
+                    </p>
+                }
+                <ng-content />
+            </ion-label>
+            @if (dismissable()) {
+                <ion-button fill="clear" size="small" slot="end" (click)="dismiss($event)"
+                    [ariaLabel]="'core.close' | translate">
+                    <ion-icon name="fas-xmark" aria-hidden="true" />
+                </ion-button>
+            }
+        </ion-item>
+        <ng-content select="[buttons]" />
+    </ion-card>
+}
