@@ -23,14 +23,8 @@
     @if (survey) {
         @if (survey.surveydone) {
             <!-- Survey already done -->
-            <ion-card class="core-success-card">
-                <ion-item>
-                    <ion-icon name="fas-check" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        {{ 'addon.mod_survey.surveycompletednograph' | translate }}
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="success"
+                [message]="'addon.mod_survey.surveycompletednograph' | translate" />
         } @else if(!hasOffline && questions && questions.length) {
             <!-- Survey questions -->
             <form>

@@ -1,15 +1,8 @@
 @let groupInfoValue = groupInfo();
 @if (groupInfoValue && groupInfoValue.groups.length > 0 && (groupInfoValue.separateGroups || groupInfoValue.visibleGroups)) {
-
-    @if (multipleGroupsMessage() && groupInfoValue.groups && groupInfoValue.groups.length > 1) {
-        <ion-card class="core-info-card">
-            <ion-item class="ion-text-wrap">
-                <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                <ion-label>
-                    <p class="item-label">{{ multipleGroupsMessage() }}</p>
-                </ion-label>
-            </ion-item>
-        </ion-card>
+    @let message = multipleGroupsMessage();
+    @if (message && groupInfoValue.groups && groupInfoValue.groups.length > 1) {
+        <core-alert-card type="info" [message]="message" />
     }
 
     <ion-item class="ion-text-wrap core-group-selector" lines="full">

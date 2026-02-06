@@ -15,19 +15,13 @@
     </ion-refresher>
     <core-loading [hideUntil]="dataLoaded">
         <div class="list-item-limited-width">
-            <ion-card class="core-info-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p>{{ 'core.policy.contactdpo' | translate }}</p>
-                    </ion-label>
-                </ion-item>
+            <core-alert-card type="info" [message]="'core.policy.contactdpo' | translate">
                 @if (canContactDPO) {
-                    <div class="core-card-buttons">
+                    <div buttons>
                         <ion-button fill="outline" (click)="openContactDPO($event)">{{ 'core.contactverb' | translate }}</ion-button>
                     </div>
                 }
-            </ion-card>
+            </core-alert-card>
         </div>
 
         <div class="x-scrollable core-policy-tablet-container">

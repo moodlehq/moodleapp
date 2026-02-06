@@ -54,14 +54,8 @@
 
     @if (modType.overview(); as overview) {
         @if (!overview.hasintegration || !overview.isSupportedInApp) {
-            <ion-card class="core-info-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p>{{ 'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated } }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated }" />
         }
 
         <table class="core-table">
@@ -100,14 +94,8 @@
 
     @if (modType.overview(); as overview) {
         @if (!overview.hasintegration || !overview.isSupportedInApp) {
-            <ion-card class="core-info-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <p>{{ 'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated } }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'core.course.overview_missing_title' | translate:{ $a: modType.modNameTranslated }"/>
         }
 
         @for (activity of overview.activities; track activity.cmid) {

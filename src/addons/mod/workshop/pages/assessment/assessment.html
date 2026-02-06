@@ -77,12 +77,7 @@
                         <h3 class="item-heading">{{ 'addon.mod_workshop.assessmentsettings' | translate }}</h3>
                     </ion-label>
                 </ion-item>
-                <ion-card class="core-warning-card">
-                    <ion-item>
-                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                        <ion-label>{{ loadFeedbackToEditErrorMessage }}</ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="warning" [message]="loadFeedbackToEditErrorMessage"/>
             } @else {
                 <form [formGroup]="evaluateForm" #evaluateFormEl>
                     <ion-item class="ion-text-wrap">

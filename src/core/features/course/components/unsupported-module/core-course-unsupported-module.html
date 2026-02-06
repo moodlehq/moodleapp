@@ -1,12 +1,5 @@
 <div class="has-spacer">
-    <ion-card class="core-info-card">
-        <ion-item>
-            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-            <ion-label>
-                <p>{{ 'core.notavailablecontentinapp' | translate }}</p>
-            </ion-label>
-        </ion-item>
-    </ion-card>
+    <core-alert-card type="info" [message]="'core.notavailablecontentinapp' | translate" />
     <div class="spacer"></div>
     @if (module?.url && module?.uservisible) {
         <ion-item lines="none" class="ion-text-wrap">
