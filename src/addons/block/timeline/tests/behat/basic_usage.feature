@@ -56,7 +56,7 @@ Feature: Timeline block.
     But I should not find "Assignment 01" within "Timeline" "ion-card" in the app
     And I should not find "Course 3" within "Timeline" "ion-card" in the app
 
-    When I press "Filter timeline by date" in the app
+    When I press "Filter timeline by date" within "Timeline" "ion-card" in the app
     And I press "Overdue" in the app
     Then I should find "Assignment 01" within "Timeline" "ion-card" in the app
     And I should find "Course 2" within "Timeline" "ion-card" in the app
@@ -65,19 +65,19 @@ Feature: Timeline block.
     And I should not find "Course 1" within "Timeline" "ion-card" in the app
     And I should not find "Course 3" within "Timeline" "ion-card" in the app
 
-    When I press "Filter timeline by date" in the app
+    When I press "Filter timeline by date" within "Timeline" "ion-card" in the app
     And I press "All" in the app
     Then I should find "Assignment 19" within "Timeline" "ion-card" in the app
     And I should find "Course 3" within "Timeline" "ion-card" in the app
     But I should not find "Assignment 20" within "Timeline" "ion-card" in the app
 
-    When I press "Load more" in the app
+    When I press "Load more" within "Timeline" "ion-card" in the app
     Then I should find "Assignment 21" within "Timeline" "ion-card" in the app
     And I should find "Assignment 25" within "Timeline" "ion-card" in the app
 
-    When I press "Filter timeline by date" in the app
+    When I press "Filter timeline by date" within "Timeline" "ion-card" in the app
     And I press "Next 7 days" in the app
-    And I press "Sort by" in the app
+    And I press "Sort by" within "Timeline" "ion-card" in the app
     And I press "Sort by courses" in the app
     Then I should find "Course 1" "h3" within "Timeline" "ion-card" in the app
     And I should find "Course 2" "h3" within "Timeline" "ion-card" in the app
@@ -97,21 +97,21 @@ Feature: Timeline block.
 
     When I set the field "Search by activity type or name" to "thisdoesntexist" in the app
     And I press "Search" in the app
-    Then I should find "No activities require action" in the app
+    Then I should find "No activities require action" within "Timeline" "ion-card" in the app
     But I should not find "Assignment 00" within "Timeline" "ion-card" in the app
 
-    When I press "Clear search" in the app
+    When I press "Clear search" within "Timeline" "ion-card" in the app
     Then I should find "Assignment 00" within "Timeline" "ion-card" in the app
 
-    When I press "Sort by" in the app
+    When I press "Sort by" within "Timeline" "ion-card" in the app
     And I press "Sort by courses" in the app
-    Then I should find "Course 1" in the app
+    Then I should find "Course 1" within "Timeline" "ion-card" in the app
     And I should find "Assignment 02" within "Timeline" "ion-card" in the app
 
     When I set the field "Search by activity type or name" to "thisdoesntexist" in the app
     And I press "Search" in the app
-    Then I should find "No activities require action" in the app
-    But I should not find "Course 1" in the app
+    Then I should find "No activities require action" within "Timeline" "ion-card" in the app
+    But I should not find "Course 1" within "Timeline" "ion-card" in the app
     And I should not find "Assignment 02" within "Timeline" "ion-card" in the app
 
   @disabled_features
