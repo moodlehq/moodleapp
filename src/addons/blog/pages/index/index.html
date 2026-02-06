@@ -33,12 +33,8 @@
         }
 
         @if (hasOfflineDataToSync()) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.hasdatatosync' | translate:{ $a: 'addon.blog.blog' | translate } }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [message]="'core.hasdatatosync' | translate:{ $a: 'addon.blog.blog' | translate }" />
         }
 
         @for (entry of entries; track getEntryTemplateId(entry)) {

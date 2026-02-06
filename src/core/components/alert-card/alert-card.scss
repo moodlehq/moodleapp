@@ -1,0 +1,32 @@
+:host {
+    ion-card {
+        margin-top: var(--alert-card-margin-top, var(--ion-card-vertical-margin));
+        margin-bottom: var(--alert-card-margin-bottom, var(--ion-card-vertical-margin));
+        margin-left: var(--alert-card-margin-left, var(--ion-card-horizontal-margin));
+        margin-right: var(--alert-card-margin-right, var(--ion-card-horizontal-margin));
+    }
+
+    ion-button.button.button-clear {
+        --color: var(--card-background);
+    }
+
+    ion-label p.item-heading {
+        font-weight: 500;
+    }
+
+    ::ng-deep [buttons] {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        margin: 0px 8px 8px 8px;
+
+        ion-button.button {
+            --color: var(--text-color);
+
+            &.button-outline {
+                --background: transparent;
+            }
+        }
+    }
+
+}

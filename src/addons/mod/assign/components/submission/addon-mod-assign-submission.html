@@ -3,14 +3,8 @@
         @if (assign) {
             @if (timeLimitFinished && (canEdit || canSubmit)) {
                 <!-- Time limit is over. -->
-                <ion-card class="core-danger-card">
-                    <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            <p>{{ 'addon.mod_assign.caneditsubmission' | translate }}</p>
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="danger"
+                    [message]="'addon.mod_assign.caneditsubmission' | translate" />
             }
 
             @if (!blindMarking && user) {
@@ -452,20 +446,15 @@
                         </ion-button>
                     } @else {
                         <!-- Warning message if cannot save grades. -->
-                        <ion-card class="core-warning-card">
-                            <ion-item>
-                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                <ion-label>
-                                    <p>{{ 'addon.mod_assign.cannotgradefromapp' | translate }}</p>
-                                    @if (gradeUrl) {
-                                        <ion-button expand="block" [href]="gradeUrl" core-link [showBrowserWarning]="false">
-                                            {{ 'core.openinbrowser' | translate }}
-                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-                                        </ion-button>
-                                    }
-                                </ion-label>
-                            </ion-item>
-                        </ion-card>
+                        <core-alert-card type="warning"
+                            [message]="'addon.mod_assign.cannotgradefromapp' | translate" >
+                            @if (gradeUrl) {
+                                <ion-button expand="block" [href]="gradeUrl" core-link [showBrowserWarning]="false">
+                                    {{ 'core.openinbrowser' | translate }}
+                                    <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                                </ion-button>
+                            }
+                        </core-alert-card>
                     }
                 }
                 @if (canEdit) {

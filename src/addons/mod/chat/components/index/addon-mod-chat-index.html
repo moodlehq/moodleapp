@@ -20,12 +20,9 @@
         [courseId]="courseId" (completionChanged)="onCompletionChange()" />
 
     @if (chatTime) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-clock" slot="start" aria-hidden="true" />
-                <ion-label>{{ 'addon.mod_chat.sessionstartsin' | translate:{$a: chatTime} }}</ion-label>
-            </ion-item>
-        </ion-card>
+        <core-alert-card type="info" icon="fas-clock"
+            [message]="'addon.mod_chat.sessionstartsin' | translate:{$a: chatTime}"
+        />
     }
 
     @if (chat) {

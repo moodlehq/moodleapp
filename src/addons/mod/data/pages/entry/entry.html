@@ -18,12 +18,9 @@
     <core-loading [hideUntil]="entryLoaded && (isPullingToRefresh || !renderingEntry && !loadingRating && !loadingComments)">
         <!-- Database entries found to be synchronized -->
         @if (entry && entry.hasOffline) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.hasdatatosync' | translate: {$a: moduleName} }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card
+                type="warning"
+                [message]="('core.hasdatatosync' | translate: {$a: moduleName})" />
         }
 
         <core-group-selector [groupInfo]="groupInfo" [(selected)]="selectedGroup" (selectedChange)="setGroup(selectedGroup)"

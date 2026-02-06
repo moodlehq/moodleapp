@@ -6,12 +6,7 @@
         <ion-item class="ion-text-wrap" [hidden]="!question.loaded">
             <ion-label>
                 @if (!question.readOnly) {
-                    <ion-card class="core-info-card">
-                        <ion-item>
-                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                            <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="info" [message]="'core.question.howtodraganddrop' | translate"/>
                 }
                 <core-format-text [component]="component" [componentId]="componentId" [text]="question.text" #questiontext
                     [contextLevel]="contextLevel" [contextInstanceId]="contextInstanceId" [courseId]="courseId"

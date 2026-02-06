@@ -25,12 +25,9 @@
             <ng-template>
                 <!-- Prevent access messages. Only show the first one. -->
                 @if (lesson && preventReasons.length) {
-                    <ion-card class="core-info-card">
-                        <ion-item>
-                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                            <ion-label [innerHTML]="preventReasons[0].message" />
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="info">
+                        <div [innerHTML]="preventReasons[0].message"></div>
+                    </core-alert-card>
                 }
 
                 <!-- Input password for protected lessons. -->

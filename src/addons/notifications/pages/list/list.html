@@ -18,21 +18,16 @@
         </ion-refresher>
         <core-loading [hideUntil]="notifications.loaded" placeholderType="listwithicon" placeholderHeight="32px" placeholderWidth="32px">
             @if (!hasNotificationsPermission && !permissionWarningHidden) {
-                <ion-card class="core-warning-card core-card-with-buttons">
-                    <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            <p><strong>{{ 'core.turnonnotifications' | translate }}</strong></p>
-                            <p>{{ 'core.turnonnotificationsmessage' | translate }}</p>
-                        </ion-label>
-                    </ion-item>
-                    <div class="core-card-buttons">
+                <core-alert-card type="warning"
+                    [title]="'core.turnonnotifications' | translate"
+                    [message]="'core.turnonnotificationsmessage' | translate">
+                    <div buttons>
                         <ion-button fill="clear" (click)="hidePermissionWarning()">
                             {{ 'core.dontshowagain' | translate | coreNoPeriod }}
                         </ion-button>
                         <ion-button fill="outline" (click)="openSettings()">{{ 'core.turnon' | translate }}</ion-button>
                     </div>
-                </ion-card>
+                </core-alert-card>
             }
 
             <ion-item *ngFor="let notification of notifications.items" class="ion-text-wrap addon-notification-item"

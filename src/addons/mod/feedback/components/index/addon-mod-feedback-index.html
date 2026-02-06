@@ -113,21 +113,13 @@
         <ng-container *ngTemplateOutlet="basicInfo" />
 
         @if (access && access.cancomplete && !access.isopen) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_feedback.feedback_is_not_open' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'addon.mod_feedback.feedback_is_not_open' | translate" />
         }
 
         @if (access && access.cancomplete && access.isopen && !access.cansubmit) {
-            <ion-card class="core-success-card">
-                <ion-item>
-                    <ion-icon name="fas-check" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_feedback.this_feedback_is_already_submitted' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="success"
+                [message]="'addon.mod_feedback.this_feedback_is_already_submitted' | translate" />
         }
 
         @if (access && (access.canedititems || access.canviewreports || !access.isempty)) {
@@ -184,12 +176,7 @@
         @if (access && (access.canedititems || !access.isempty)) {
 
             @if (warning) {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                        <ion-label>{{ warning }}</ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info" [message]="warning" />
             }
 
             @if (items && items.length) {

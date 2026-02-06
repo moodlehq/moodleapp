@@ -44,14 +44,7 @@
                 <!-- Accepting all policies at once, using a URL to view them. -->
                 @if (isPoliciesURL && sitePoliciesURL) {
 
-                    <ion-card class="core-info-card">
-                        <ion-item class="ion-text-wrap">
-                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                            <ion-label>
-                                <p>{{ 'core.policy.policyagree' | translate }}</p>
-                            </ion-label>
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="info" [message]="'core.policy.policyagree' | translate" />
                     <ion-item class="ion-text-wrap core-site-policy-link">
                         <ion-label>
                             <p>

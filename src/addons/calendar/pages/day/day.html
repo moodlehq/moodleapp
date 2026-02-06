@@ -54,12 +54,8 @@
                         <!-- There is data to be synchronized -->
                         @if (day.hasOffline) {
                             <div class="list-item-limited-width">
-                                <ion-card class="core-warning-card">
-                                    <ion-item>
-                                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                        <ion-label>{{ 'core.hasdatatosync' | translate:{$a: 'core.day' | translate} }}</ion-label>
-                                    </ion-item>
-                                </ion-card>
+                                <core-alert-card type="warning"
+                                    [message]="'core.hasdatatosync' | translate:{$a: 'core.day' | translate}" />
                             </div>
                         }
 

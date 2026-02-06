@@ -22,14 +22,7 @@
         @if (site) {
             <div class="list-item-limited-width">
                 @if (!isLoggedOut) {
-                    <ion-card class="core-warning-card core-login-reconnect-warning">
-                        <ion-item>
-                            <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                            <ion-label>
-                                <p>{{ 'core.lostconnection' | translate }}</p>
-                            </ion-label>
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="warning" class="core-login-reconnect-warning" [message]="'core.lostconnection' | translate" />
                 }
 
                 <div class="ion-text-wrap ion-text-center core-login-info-box">

@@ -30,12 +30,7 @@
         </ion-card>
 
         @if (warningMessage()) {
-            <ion-card class="core-warning-card ion-margin-top">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ warningMessage() }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning" [message]="warningMessage()"/>
         } @else {
             <!-- Contactable privacy. -->
             <ion-card>

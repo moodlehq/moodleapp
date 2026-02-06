@@ -21,12 +21,7 @@
     <core-loading [hideUntil]="loaded">
         <!-- Info messages. Only show the first one. -->
         @if (lesson && messages?.length) {
-            <ion-card class="core-info-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ messages[0].message }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="messages[0].message" />
         }
 
         @if (lesson) {
@@ -190,12 +185,8 @@
                             </ion-item>
                         }
                         @if (lesson.progressbar && canManage) {
-                            <ion-card class="core-info-card">
-                                <ion-item class="ion-text-wrap">
-                                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                                    <ion-label>{{ 'addon.mod_lesson.progressbarteacherwarning2' | translate }}</ion-label>
-                                </ion-item>
-                            </ion-card>
+                            <core-alert-card type="info"
+                                [message]="'addon.mod_lesson.progressbarteacherwarning2' | translate" />
                         }
                     </ion-list>
                 }
@@ -203,12 +194,8 @@
                 @if (eolData && !processData) {
                     @if (eolData.offline?.value) {
                         <!-- End of lesson reached. -->
-                        <ion-card class="core-warning-card">
-                            <ion-item>
-                                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                                <ion-label>{{ 'addon.mod_lesson.finishretakeoffline' | translate }}</ion-label>
-                            </ion-item>
-                        </ion-card>
+                        <core-alert-card type="warning"
+                            [message]="'addon.mod_lesson.finishretakeoffline' | translate" />
                     }
 
                     <ion-card>

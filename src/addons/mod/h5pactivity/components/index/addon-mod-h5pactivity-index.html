@@ -32,30 +32,17 @@
 
     <!-- User tried to play in offline a package that must be played in online. -->
     @if (triedToPlay && !isOnline() && (!siteCanDownload || hasMissingDependencies)) {
-        <ion-card class="core-warning-card">
-            <ion-item>
-                <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                <ion-label>
-                    @if (!siteCanDownload) {
-                        {{ 'core.h5p.offlinedisabled' | translate }} {{ 'addon.mod_h5pactivity.offlinedisabledwarning' | translate }}
-                    } @else {
-                        {{ 'core.course.activitynotavailableoffline' | translate }} {{ 'core.needinternettoaccessit' | translate }}
-                    }
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        <core-alert-card type="warning"
+            [message]="!siteCanDownload
+                ? ('core.h5p.offlinedisabled' | translate) + ' ' + ('addon.mod_h5pactivity.offlinedisabledwarning' | translate)
+                : ('core.course.activitynotavailableoffline' | translate) + ' ' + ('core.needinternettoaccessit' | translate)" />
     }
 
     <!-- Preview mode. -->
     @if (accessInfo && !accessInfo.cansubmit) {
-        <ion-card class="core-info-card">
-            <ion-item>
-                <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                <ion-label>
-                    {{ 'addon.mod_h5pactivity.previewmode' | translate }}
-                </ion-label>
-            </ion-item>
-        </ion-card>
+        <core-alert-card
+            type="info"
+            [message]="'addon.mod_h5pactivity.previewmode' | translate" />
     }
 
     <!-- TODO: Once MDL-85566 is fixed, display trackingdisabled warning if user cannot submit and tracking is disabled. -->

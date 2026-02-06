@@ -57,41 +57,23 @@
     <core-loading [hideUntil]="discussionLoaded">
         <!-- Discussion replies found to be synchronized -->
         @if (postHasOffline || hasOfflineRatings) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.hasdatatosync' | translate:{$a: discussionStr} }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [message]="'core.hasdatatosync' | translate:{$a: discussionStr}" />
         }
 
         <!-- Cut-off date or due date message -->
         @if (availabilityMessage) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ availabilityMessage }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="availabilityMessage" />
         }
 
         @if (discussion && discussion.locked) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-lock" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_forum.discussionlocked' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" icon="fas-lock"
+                [message]="'addon.mod_forum.discussionlocked' | translate" />
         }
 
         <!-- Q&A message. -->
         @if (showQAMessage) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_forum.qandanotify' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'addon.mod_forum.qandanotify' | translate" />
         }
 
         @if (startingPost) {

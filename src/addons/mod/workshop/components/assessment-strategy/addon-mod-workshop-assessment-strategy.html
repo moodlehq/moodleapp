@@ -7,13 +7,7 @@
         }
 
         @if (notSupported) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-label>
-                        <p>{{ 'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy} }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'addon.mod_workshop.assessmentstrategynotsupported' | translate:{$a: strategy}"/>
         }
 
         @if (assessmentStrategyLoaded && overallFeedkback &&

@@ -183,74 +183,52 @@
     @if (quiz) {
 
         <!-- Error messages. -->
-        @if (preventMessages?.length) {
-            <ion-card class="core-{{preventMessagesColor}}-card addon-mod_quiz-prevent-messages">
+         @if (preventMessages?.length) {
+            <core-alert-card [type]="preventMessagesAlertType" class="addon-mod_quiz-prevent-messages">
                 @for (message of preventMessages; track message) {
-                    <ion-item class="ion-text-wrap">
-                        <ion-label>
-                            <p>{{ message }}</p>
-                        </ion-label>
-                    </ion-item>
+                    <p>{{ message }}</p>
                 }
-            </ion-card>
+            </core-alert-card>
         }
         @if (!hasQuestions) {
-            <ion-card class="core-danger-card addon-mod_quiz-no-questions">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p>{{ 'addon.mod_quiz.noquestions' | translate }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="danger" class="addon-mod_quiz-no-questions"
+                [message]="'addon.mod_quiz.noquestions' | translate" />
         }
         @if (!hasSupportedQuestions && unsupportedQuestions.length) {
-            <ion-card class="core-danger-card addon-mod_quiz-unsupported-questions">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_quiz.errorquestionsnotsupported' | translate }}</p>
-                        <p *ngFor="let type of unsupportedQuestions"
-                            class="addon-mod_quiz-unsupported-question addon-mod_quiz-unsupported-question-{{type}}">
-                            {{ type }}
-                        </p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="danger" class="addon-mod_quiz-unsupported-questions"
+                [title]="'addon.mod_quiz.errorquestionsnotsupported' | translate">
+                @for (type of unsupportedQuestions; track type) {
+                    <p class="addon-mod_quiz-unsupported-question addon-mod_quiz-unsupported-question-{{type}}">
+                        {{ type }}
+                    </p>
+                }
+            </core-alert-card>
         }
         @if (unsupportedRules.length) {
-            <ion-card class="core-danger-card addon-mod_quiz-unsupported-rules">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_quiz.errorrulesnotsupported' | translate }}</p>
-                        <p *ngFor="let name of unsupportedRules"
-                            class="addon-mod_quiz-unsupported-rule addon-mod_quiz-unsupported-rule-{{name}}">
-                            {{ name }}
-                        </p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="danger" class="addon-mod_quiz-unsupported-rules"
+                [title]="'addon.mod_quiz.errorrulesnotsupported' | translate">
+                @for (name of unsupportedRules; track name) {
+                    <p class="addon-mod_quiz-unsupported-rule addon-mod_quiz-unsupported-rule-{{name}}">
+                        {{ name }}
+                    </p>
+                }
+            </core-alert-card>
         }
         @if (behaviourSupported === false) {
-            <ion-card class="core-danger-card addon-mod_quiz-unsupported-behaviours">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_quiz.errorbehaviournotsupported' | translate }}</p>
-                        <p class="addon-mod_quiz-unsupported-behaviour">{{ quiz.preferredbehaviour }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="danger" class="addon-mod_quiz-unsupported-behaviours"
+                [title]="'addon.mod_quiz.errorbehaviournotsupported' | translate"
+                [message]="quiz.preferredbehaviour" />
         }
 
         <!-- Other warnings. -->
         @if (hasSupportedQuestions && unsupportedQuestions.length) {
-            <ion-card class="core-warning-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <p class="item-heading">{{ 'addon.mod_quiz.canattemptbutnotsubmit' | translate }}</p>
-                        <p>{{ 'addon.mod_quiz.warningquestionsnotsupported' | translate }}</p>
-                        <p *ngFor="let type of unsupportedQuestions">{{ type }}</p>
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [title]="'addon.mod_quiz.canattemptbutnotsubmit' | translate"
+                [message]="'addon.mod_quiz.warningquestionsnotsupported' | translate">
+                @for (type of unsupportedQuestions; track type) {
+                    <p>{{ type }}</p>
+                }
+            </core-alert-card>
         }
 
     }

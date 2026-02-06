@@ -15,14 +15,9 @@
 <ion-content class="limited-width">
     <div>
         @if (searchBanner) {
-            <ion-card class="core-danger-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        <core-format-text [text]="searchBanner" />
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="danger">
+                <core-format-text [text]="searchBanner" />
+            </core-alert-card>
         }
 
         <core-search-box (searchTextChange)="search($event)" [autoFocus]="true" [searchArea]="searchAreaId" />

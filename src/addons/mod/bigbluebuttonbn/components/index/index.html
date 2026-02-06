@@ -99,12 +99,8 @@
         }
 
         @if (!meetingInfo.canjoin) {
-            <ion-card class="core-warning-card">
-                <ion-item class="ion-text-wrap">
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ meetingInfo.statusmessage }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [message]="meetingInfo.statusmessage" />
         }
 
         @if (meetingInfo.showpresentations && meetingInfo.presentations.length) {

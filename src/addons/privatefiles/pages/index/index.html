@@ -43,14 +43,8 @@
 
             <!-- Display info about space used and space left. -->
             @if (userQuota && filesInfo && filesInfo.filecount > 0) {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon slot="start" aria-label="hidden" name="fas-cloud" />
-                        <ion-label>
-                            {{ 'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} } }}
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info" icon="fas-cloud"
+                    [message]="'core.quotausage' | translate:{$a: {used: spaceUsed, total: userQuotaReadable} }"/>
             }
 
             <!-- List of files. -->

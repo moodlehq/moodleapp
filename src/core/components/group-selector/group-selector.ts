@@ -22,6 +22,7 @@ import { CoreGroupInfo } from '@services/groups';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreFormatTextDirective } from '@directives/format-text';
+import { CoreAlertCardComponent } from '@components/alert-card/alert-card';
 
 /**
  * Component to display a group selector.
@@ -35,6 +36,7 @@ import { CoreFormatTextDirective } from '@directives/format-text';
         CoreBaseModule,
         CoreFaIconDirective,
         CoreFormatTextDirective,
+        CoreAlertCardComponent,
     ],
 })
 export class CoreGroupSelectorComponent {

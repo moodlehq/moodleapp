@@ -21,12 +21,7 @@
     </ion-refresher>
     <core-loading [hideUntil]="preferencesLoaded" placeholderType="column" placeholderHeight="48px">
         @if (warningMessage()) {
-            <ion-card class="core-warning-card ion-margin-top">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ warningMessage() }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning" [message]="warningMessage()"/>
         } @else {
             <ion-card>
                 @if (preferences) {

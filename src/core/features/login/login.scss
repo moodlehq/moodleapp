@@ -21,8 +21,11 @@
         text-decoration-color: var(--color);
     }
 
-    .core-login-reconnect-warning {
-        margin: 0px 0px 32px 0px;
+    core-alert-card.core-login-reconnect-warning {
+        --alert-card-margin-top: 0px;
+        --alert-card-margin-bottom: 32px;
+        --alert-card-margin-left: 0px;
+        --alert-card-margin-right: 0px;
     }
 
     .core-login-info-box {
