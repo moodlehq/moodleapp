@@ -34,7 +34,7 @@ export const enum ContextLevel {
     BLOCK = 'block',
 }
 
-/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * Possible statuses for downloaded modules/files.
  */
@@ -62,7 +62,7 @@ export const DownloadStatus = {
     ...NotDownloadedStatus,
 } as const;
 export type DownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
-/* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
+/* eslint-enable @typescript-eslint/naming-convention */
 
 // Constants for cache update frequency.
 export const CoreCacheUpdateFrequency = {
@@ -71,7 +71,6 @@ export const CoreCacheUpdateFrequency = {
     SOMETIMES: 2, // eslint-disable-line @typescript-eslint/naming-convention
     RARELY: 3, // eslint-disable-line @typescript-eslint/naming-convention
 } as const;
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type CoreCacheUpdateFrequency = typeof CoreCacheUpdateFrequency[keyof typeof CoreCacheUpdateFrequency];
 
 export const MINIMUM_MOODLE_VERSION = '3.5';
@@ -175,6 +174,15 @@ export enum CoreLinkOpenMethod {
     BROWSER = 'browser',
     EMBEDDED = 'embedded',
 };
+
+// Attributes that can be added to LMS content to modify the app behavior.
+export const DATA_APP_OPEN_IN = 'data-app-open-in';
+export const DATASET_APP_OPEN_IN = 'appOpenIn';
+
+/** @deprecated since 5.2. Use DATA_APP_OPEN_IN instead. */
+export const DATA_APP_OPEN_IN_LEGACY = 'data-open-in';
+/** @deprecated since 5.2. Use DATASET_APP_OPEN_IN instead. */
+export const DATASET_APP_OPEN_IN_LEGACY = 'openIn';
 
 /**
  * Static class to contain all the core constants.

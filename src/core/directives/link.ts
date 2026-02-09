@@ -19,7 +19,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CoreOpener } from '@static/opener';
-import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
+import { DATA_APP_OPEN_IN, DATA_APP_OPEN_IN_LEGACY, CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
@@ -44,7 +44,7 @@ export class CoreLinkDirective implements OnInit {
     @Input({ transform: toBoolean }) capture = false; // If the link needs to be captured by the app.
     /**
      * True to force open in embedded browser, false to force open in system browser, undefined to determine it based on
-     * forceOpenLinksIn setting and data-open-in attribute.
+     * forceOpenLinksIn setting and data-app-open-in attribute.
      */
     @Input({ transform: toBoolean }) inApp?: boolean;
     @Input({ transform: toBoolean }) autoLogin = true; // Whether to try to use auto-login.
@@ -100,7 +100,8 @@ export class CoreLinkDirective implements OnInit {
         event.preventDefault();
         event.stopPropagation();
 
-        const openIn = this.element.getAttribute('data-open-in');
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const openIn = this.element.getAttribute(DATA_APP_OPEN_IN) || this.element.getAttribute(DATA_APP_OPEN_IN_LEGACY);
 
         if (this.capture) {
             const treated = await CoreContentLinksHelper.handleLink(CoreUrl.decodeURI(href), undefined, true, true);
@@ -117,7 +118,7 @@ export class CoreLinkDirective implements OnInit {
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param href HREF to be opened.
-     * @param openIn Open In App value coming from data-open-in attribute.
+     * @param openIn Open in value coming from data attribute.
      * @returns Promise resolved when done.
      */
     protected async navigate(href: string, openIn?: string | null): Promise<void> {
@@ -181,11 +182,11 @@ export class CoreLinkDirective implements OnInit {
      * Open an external link in the app or in browser.
      *
      * @param href HREF to be opened.
-     * @param openIn Open In App value coming from data-open-in attribute.
+     * @param openIn Open in value coming from data attribute.
      * @returns Promise resolved when done.
      */
     protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
-        // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
+        // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > HTML data attribute.
         const openInApp = this.inApp ??
             (CoreConstants.CONFIG.forceOpenLinksIn !== CoreLinkOpenMethod.BROWSER &&
                 (CoreConstants.CONFIG.forceOpenLinksIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.APP));
