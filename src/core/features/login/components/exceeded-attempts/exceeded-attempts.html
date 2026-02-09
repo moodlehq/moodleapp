@@ -2,7 +2,7 @@
     <p>
         <ng-content />
     </p>
-    @if (canContactSupport) {
+    @if (canContactSupport()) {
         <div buttons>
             <ion-button fill="outline" color="medium" (click)="contactSupport()">
                 {{ 'core.contactsupport' | translate }}
