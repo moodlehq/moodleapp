@@ -372,8 +372,13 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             // eslint-disable-next-line @typescript-eslint/no-deprecated
             (this.element.getAttribute(DATA_APP_OPEN_IN) || this.element.getAttribute(DATA_APP_OPEN_IN_LEGACY));
 
-        if (openIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.BROWSER) {
-            // The file is meant to be opened in browser or InAppBrowser, don't use the downloaded URL because it won't work.
+        if (
+            openIn === CoreLinkOpenMethod.INAPPBROWSER ||
+            openIn === CoreLinkOpenMethod.BROWSER ||
+            openIn === CoreLinkOpenMethod.EMBEDDED ||
+            openIn === CoreLinkOpenMethod.APP // For backwards compatibility, consider APP as INAPPBROWSER. @deprecated since 5.2.
+        ) {
+            // In browser, IAB or iframes most downloaded files won't work, use the original URL.
             if (!site.isSitePluginFileUrl(url)) {
                 return url;
             }

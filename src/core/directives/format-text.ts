@@ -149,7 +149,13 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
      */
     readonly captureLinks = input(true, { transform: toBoolean });
     /**
+     * If set, force the open method for links.
+     */
+    readonly openLinksIn = input<Exclude<CoreLinkOpenMethod, CoreLinkOpenMethod.APP> | undefined>(undefined);
+    /**
      * Whether links should be opened in InAppBrowser.
+     *
+     * @deprecated since 5.2. Use openLinksIn instead.
      */
     readonly openLinksInApp = input<boolean, undefined>(undefined, { transform: toBoolean });
     /**
@@ -646,7 +652,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             // Angular doesn't let adding directives dynamically. Create the CoreLinkDirective manually.
             const linkDir = new CoreLinkDirective(new ElementRef(anchor));
             linkDir.capture = this.captureLinks() ?? true;
-            linkDir.inApp = this.openLinksInApp();
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            linkDir.openIn = this.openLinksIn() ?? (this.openLinksInApp() ? CoreLinkOpenMethod.INAPPBROWSER : undefined);
             linkDir.showBrowserWarning = this.showBrowserWarningInLinks();
             linkDir.ngOnInit();
 
@@ -840,7 +847,6 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 url = CoreUrl.toAbsoluteURL(site.getURL(), url);
                 const confirmMessage = element.dataset.appUrlConfirm;
                 const openIn = element.dataset[DATASET_APP_OPEN_IN] || element.dataset[DATASET_APP_OPEN_IN_LEGACY];
-                const openInApp = openIn === CoreLinkOpenMethod.APP;
                 const refreshOnResume = element.dataset.appUrlResumeAction === 'refresh';
 
                 if (confirmMessage) {
@@ -851,8 +857,11 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                     }
                 }
 
-                if (openInApp) {
-                    site.openInAppWithAutoLogin(url);
+                if (openIn === CoreLinkOpenMethod.EMBEDDED) {
+                    await CoreViewer.openIframeViewer((element.textContent || element.innerText || '').trim(), url);
+                } else if (openIn === CoreLinkOpenMethod.INAPPBROWSER || openIn === CoreLinkOpenMethod.APP) {
+                    // For backwards compatibility, consider APP as INAPPBROWSER. @deprecated since 5.2.
+                    await site.openInAppWithAutoLogin(url);
 
                     if (refreshOnResume && this.refreshContext) {
                         // Refresh the context when the IAB is closed.
@@ -861,7 +870,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                         });
                     }
                 } else {
-                    site.openInBrowserWithAutoLogin(url, undefined, {
+                    await site.openInBrowserWithAutoLogin(url, undefined, {
                         showBrowserWarning: !confirmMessage,
                     });
 

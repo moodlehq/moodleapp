@@ -21,6 +21,7 @@ import { CoreLoginSiteFinderSettings, CoreLoginSiteSelectorListMethod } from '@f
 import { CoreDatabaseConfiguration } from '@classes/database/database-table';
 import { ToastDuration } from '@services/overlays/toasts';
 import { CoreWSOverride } from '@classes/sites/unauthenticated-site';
+import { CoreLinkOpenMethod } from '@/core/constants';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 // It's important to keep EnvironmentConfig as an interface so it can be extended using "declare module".
@@ -59,7 +60,7 @@ export interface EnvironmentConfig {
     appstores: Record<string, string>;
     displayqroncredentialscreen?: boolean;
     displayqronsitescreen?: boolean;
-    forceOpenLinksIn?: 'app' | 'browser';
+    forceOpenLinksIn?: Exclude<CoreLinkOpenMethod, CoreLinkOpenMethod.APP>;
     iOSDefaultOpenFileAction?: OpenFileAction;
     customMainMenuItems?: CoreCustomMenuLocalizedCustomItem[];
     customUserMenuItems?: CoreCustomMenuLocalizedCustomItem[];

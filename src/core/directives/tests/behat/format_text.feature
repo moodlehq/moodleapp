@@ -50,3 +50,30 @@ Feature: Test functionality added by the format-text directive
     When I close the browser tab opened by the app
     And I press "$WWWROOT/user/view.php" in the app
     Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+  Scenario: Can open links embedded using the data attribute
+    Given the following "activities" exist:
+      | activity   | course | name          | intro                                                                                                                                                               |
+      | label      | C1     | Label title   | <p><a href="http://moodle.org/">Open in browser</a></p>                                 |
+      | label      | C1     | Label 2 title | <p><a href="http://moodle.org/" data-app-open-in="embedded">Open embedded new</a></p>   |
+      | label      | C1     | Label 3 title | <p><a href="http://moodle.org/" data-open-in="embedded">Open embedded legacy</a></p>    |
+      | label      | C1     | Label 3 title | <p><a href="#wwwroot#/my/courses.php" data-app-open-in="embedded">Captured link</a></p> |
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Open in browser" in the app
+    Then I should find "You are about to leave the app" in the app
+
+    When I press "Cancel" in the app
+    And I press "Open embedded new" in the app
+    Then I should not find "You are about to leave the app" in the app
+    And the header should be "Open embedded new" in the app
+    Then "iframe[src='http://moodle.org/']" "css_element" should exist
+
+    When I go back in the app
+    And I press "Open embedded legacy" in the app
+    Then I should not find "You are about to leave the app" in the app
+    And the header should be "Open embedded legacy" in the app
+    Then "iframe[src='http://moodle.org/']" "css_element" should exist
+
+    When I go back in the app
+    And I press "Captured link" in the app
+    Then I should find "My courses" in the app
