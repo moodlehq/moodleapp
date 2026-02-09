@@ -178,11 +178,17 @@ export enum CoreLinkOpenMethod {
 // Attributes that can be added to LMS content to modify the app behavior.
 export const DATA_APP_OPEN_IN = 'data-app-open-in';
 export const DATASET_APP_OPEN_IN = 'appOpenIn';
+export const DATA_APP_AUTO_PLAY = 'data-app-autoplay';
+export const DATASET_APP_AUTO_PLAY = 'appAutoplay';
 
 /** @deprecated since 5.2. Use DATA_APP_OPEN_IN instead. */
 export const DATA_APP_OPEN_IN_LEGACY = 'data-open-in';
 /** @deprecated since 5.2. Use DATASET_APP_OPEN_IN instead. */
 export const DATASET_APP_OPEN_IN_LEGACY = 'openIn';
+/** @deprecated since 5.2. Use DATA_APP_AUTO_PLAY instead. */
+export const DATA_APP_AUTO_PLAY_LEGACY = 'data-mobileapp-autoplay';
+/** @deprecated since 5.2. Use DATASET_APP_AUTO_PLAY instead. */
+export const DATASET_APP_AUTO_PLAY_LEGACY = 'mobileappAutoplay';
 
 /**
  * Static class to contain all the core constants.
