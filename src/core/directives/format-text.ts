@@ -53,7 +53,20 @@ import { MediaElementController } from '@classes/element-controllers/MediaElemen
 import { FrameElement, FrameElementController } from '@classes/element-controllers/FrameElementController';
 import { CoreUrl } from '@static/url';
 import { CoreIcons } from '@static/icons';
-import { ContextLevel, CoreLinkOpenMethod, DATASET_APP_OPEN_IN, DATASET_APP_OPEN_IN_LEGACY } from '../constants';
+import {
+    ContextLevel,
+    CoreLinkOpenMethod,
+    DATA_APP_ALT_MSG,
+    DATA_APP_ALT_URL,
+    DATA_APP_URL,
+    DATASET_APP_ALT_MSG,
+    DATASET_APP_ALT_URL,
+    DATASET_APP_OPEN_IN,
+    DATASET_APP_OPEN_IN_LEGACY,
+    DATASET_APP_URL,
+    DATASET_APP_URL_CONFIRM,
+    DATASET_APP_URL_RESUME_ACTION,
+} from '../constants';
 import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 import { CoreViewer } from '@features/viewer/services/viewer';
@@ -644,7 +657,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         // Walk through the content to find the links and add our directive to it.
         // Important: We need to look for links first because in 'img' we add new links without core-link.
         anchors.forEach((anchor) => {
-            if (anchor.dataset.appUrl) {
+            if (anchor.dataset[DATASET_APP_URL]) {
                 // Link already treated in treatAppUrlElements, ignore it.
                 return;
             }
@@ -790,25 +803,25 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
      */
     protected treatAlternativeContentElements(div: HTMLElement): void {
         const appAltElements = Array.from(div.querySelectorAll<HTMLElement>(
-            '*[data-app-alt-url],*[data-app-alt-msg]',
+            `*[${DATA_APP_ALT_URL}],*[${DATA_APP_ALT_MSG}]`,
         ));
 
         appAltElements.forEach((element) => {
-            const url = element.dataset.appAltUrl;
-            const message = element.dataset.appAltMsg;
+            const url = element.dataset[DATASET_APP_ALT_URL];
+            const message = element.dataset[DATASET_APP_ALT_MSG];
             if (!message && !url) {
                 return;
             }
 
             // Remove the original attributes and also app-url to avoid possible conflicts.
-            element.removeAttribute('data-app-alt-url');
-            element.removeAttribute('data-app-alt-msg');
-            element.removeAttribute('data-app-url');
+            element.removeAttribute(DATA_APP_ALT_URL);
+            element.removeAttribute(DATA_APP_ALT_MSG);
+            element.removeAttribute(DATA_APP_URL);
 
             let newContent = message ? `<p>${message}</p>` : '';
             if (url) {
-                // Create a link using the appUrl format to reuse all the logic of appUrl data attributes.
-                let dataAttributes = `data-app-url="${url}"`;
+                // Create a link using the APP_URL format to reuse all the logic of APP_URL data attributes.
+                let dataAttributes = `${DATA_APP_URL}="${url}"`;
                 for (const attr in element.dataset) {
                     dataAttributes += ` data-${CoreText.camelCaseToKebabCase(attr)}="${element.dataset[attr]}"`;
                 }
@@ -826,10 +839,10 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
      * @param div Div containing the elements.
      */
     protected treatAppUrlElements(div: HTMLElement): void {
-        const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>('*[data-app-url]'));
+        const appUrlElements = Array.from(div.querySelectorAll<HTMLElement>(`*[${DATA_APP_URL}]`));
 
         appUrlElements.forEach((element) => {
-            let url = element.dataset.appUrl;
+            let url = element.dataset[DATASET_APP_URL];
             if (!url) {
                 return;
             }
@@ -845,9 +858,9 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
                 // Try to convert the URL to absolute if needed.
                 url = CoreUrl.toAbsoluteURL(site.getURL(), url);
-                const confirmMessage = element.dataset.appUrlConfirm;
+                const confirmMessage = element.dataset[DATASET_APP_URL_CONFIRM];
                 const openIn = element.dataset[DATASET_APP_OPEN_IN] || element.dataset[DATASET_APP_OPEN_IN_LEGACY];
-                const refreshOnResume = element.dataset.appUrlResumeAction === 'refresh';
+                const refreshOnResume = element.dataset[DATASET_APP_URL_RESUME_ACTION] === 'refresh';
 
                 if (confirmMessage) {
                     try {
