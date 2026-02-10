@@ -54,28 +54,14 @@
         <div>
             @if (pageIsOffline || hasOffline) {
                 <!-- Wiki has something offline. -->
-                <ion-card class="core-warning-card">
-                    <ion-item class="ion-text-wrap">
-                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                        <ion-label>
-                            @if (pageIsOffline) {
-                                <span>{{ 'core.hasdatatosync' | translate:{$a: pageStr} }}</span>
-                            } @else {
-                                <span>{{ 'core.hasdatatosync' | translate:{$a: moduleName} }}</span>
-                            }
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="warning" [message]="pageIsOffline
+                    ? ('core.hasdatatosync' | translate:{$a: pageStr})
+                    : ('core.hasdatatosync' | translate:{$a: moduleName})" />
             }
 
             @if (pageWarning) {
                 <!-- Page warning. -->
-                <ion-card class="core-warning-card">
-                    <ion-item>
-                        <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                        <ion-label>{{ pageWarning }}</ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="warning" [message]="pageWarning" />
             }
         </div>
     }

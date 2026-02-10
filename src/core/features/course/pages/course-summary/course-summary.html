@@ -171,12 +171,7 @@
                         {{ 'core.courses.enrolme' | translate }}
                     </ion-button>
                 } @else {
-                    <ion-card class="core-info-card ion-text-wrap">
-                        <ion-item>
-                            <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                            <ion-label>{{ 'core.courses.notenrollable' | translate }}</ion-label>
-                        </ion-item>
-                    </ion-card>
+                    <core-alert-card type="info" [message]="'core.courses.notenrollable' | translate" />
                 }
 
             }

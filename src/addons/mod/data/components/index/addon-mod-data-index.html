@@ -41,44 +41,26 @@
     @if (access) {
         @if (!access.timeavailable) {
             @if (timeAvailableFrom) {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>{{ 'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable} }}</ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info"
+                    [message]="'addon.mod_data.notopenyet' | translate:{$a: timeAvailableFromReadable}" />
             }
 
             @if (timeAvailableTo) {
-                <ion-card class="core-info-card">
-                    <ion-item>
-                        <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                        <ion-label>{{ 'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable} }}</ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="info"
+                    [message]="'addon.mod_data.expired' | translate:{$a: timeAvailableToReadable}" />
             }
         }
 
         @if (access.entrieslefttoview) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        {{ 'addon.mod_data.entrieslefttoaddtoview' | translate:{$a: {entrieslefttoview: access.entrieslefttoview} } }}
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'addon.mod_data.entrieslefttoaddtoview' | translate:
+                    {$a: {entrieslefttoview: access.entrieslefttoview} }" />
         }
 
         @if (access.entrieslefttoadd) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        {{ 'addon.mod_data.entrieslefttoadd' | translate:{$a: {entriesleft: access.entrieslefttoadd} } }}
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'addon.mod_data.entrieslefttoadd' | translate:
+                    {$a: {entriesleft: access.entrieslefttoadd} }" />
         }
     }
 
@@ -92,13 +74,11 @@
                     </ion-label>
                 </ion-item>
             } @else {
-                <ion-card class="core-success-card">
-                    <ion-item (click)="searchReset($event)" button [detail]="false">
-                        <ion-label>
-                            <p [innerHTML]="'addon.mod_data.foundrecords' | translate:{$a: foundRecordsTranslationData}"></p>
-                        </ion-label>
-                    </ion-item>
-                </ion-card>
+                <core-alert-card type="success">
+                    <p (ariaButtonClick)="searchReset($event)" [innerHTML]="'addon.mod_data.foundrecords' |
+                        translate:{$a: foundRecordsTranslationData}" style="min-height: auto;">
+                    </p>
+                </core-alert-card>
             }
 
         }

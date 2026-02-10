@@ -51,14 +51,8 @@
         </core-combobox>
 
         @if (hasOffline) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>
-                        {{ 'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase } }}
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [message]="'core.thereisdatatosync' | translate:{$a: 'addon.notes.notes' | translate | lowercase }"/>
         }
 
         @if (notes && notes.length === 0) {

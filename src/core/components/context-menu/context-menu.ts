@@ -64,10 +64,10 @@ export class CoreContextMenuComponent implements OnDestroy {
             // All items were moved to the "parent" menu. Add the item in there.
             this.parentContextMenu.addItem(item);
 
-            if (this.itemsMovedToParent.indexOf(item) === -1) {
+            if (!this.itemsMovedToParent.includes(item)) {
                 this.itemsMovedToParent.push(item);
             }
-        } else if (this.items().indexOf(item) == -1) {
+        } else if (!this.items().includes(item)) {
             this.items.update(items => items.concat(item).sort((a, b) => (a.priority || 0) <= (b.priority || 0) ? 1 : -1));
         }
     }
@@ -168,7 +168,7 @@ export class CoreContextMenuComponent implements OnDestroy {
 
             this.expanded = false;
 
-            itemClicked?.onClosed?.emit();
+            itemClicked?.onClosedEmitter.next();
         }
     }
 

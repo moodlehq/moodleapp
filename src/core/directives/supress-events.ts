@@ -14,8 +14,10 @@
 
 // Based on http://roblouie.com/article/198/using-gestures-in-the-ionic-2-beta/
 
-import { Directive, ElementRef, OnInit, Output, EventEmitter, inject, input } from '@angular/core';
+import { Directive, ElementRef, OnInit, inject, input, OnDestroy } from '@angular/core';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
 import { CoreLogger } from '@static/logger';
+import { Subject } from 'rxjs';
 
 /**
  * Directive to suppress all events on an element. This is useful to prevent keyboard closing when clicking this element.
@@ -39,21 +41,22 @@ import { CoreLogger } from '@static/logger';
 @Directive({
     selector: '[core-suppress-events]',
 })
-export class CoreSupressEventsDirective implements OnInit {
+export class CoreSuppressEventsDirective implements OnInit, OnDestroy {
 
     readonly suppressEvents = input<string | string[]>(undefined, { alias: 'core-suppress-events' });
-    // Not migrable yet, observed is not supported in Angular 20.
-    // https://github.com/angular/angular/issues/54837
-    @Output() onClick = new EventEmitter();
+
+    // Use a subject and outputFromObservable because direct output syntax doesn't have the 'observed' property.
+    readonly onClickEmitter = new Subject<Event>();
+    readonly onClick = outputFromObservable(this.onClickEmitter);
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     /**
-     * Initialize event listeners.
+     * @inheritdoc
      */
     ngOnInit(): void {
-        if (!this.onClick.observed) {
-            CoreLogger.getInstance('CoreSupressEventsDirective')
+        if (!this.onClickEmitter.observed) {
+            CoreLogger.getInstance('CoreSuppressEventsDirective')
                 .error('No onClick output was defined causing this directive to fail', this.element);
 
             return;
@@ -62,11 +65,11 @@ export class CoreSupressEventsDirective implements OnInit {
         let events: string[];
 
         const suppressEvents = this.suppressEvents();
-        if (suppressEvents == 'all' || suppressEvents === undefined || suppressEvents === null) {
+        if (suppressEvents === 'all' || suppressEvents === undefined || suppressEvents === null) {
             // Suppress all events.
             events = ['click', 'mousedown', 'touchdown', 'touchmove', 'touchstart'];
 
-        } else if (typeof suppressEvents == 'string') {
+        } else if (typeof suppressEvents === 'string') {
             // It's a string, just suppress this event.
             events = [suppressEvents];
 
@@ -84,12 +87,12 @@ export class CoreSupressEventsDirective implements OnInit {
 
         // Now listen to "click" events.
         this.element.addEventListener('mouseup', (event) => { // Triggered in Android & iOS.
-            this.onClick.emit(event);
+            this.onClickEmitter.next(event);
         });
 
         this.element.addEventListener('touchend', (event) => { // Triggered desktop & browser.
             this.stopBubble(event);
-            this.onClick.emit(event);
+            this.onClickEmitter.next(event);
         });
     }
 
@@ -101,6 +104,13 @@ export class CoreSupressEventsDirective implements OnInit {
     protected stopBubble(event: Event): void {
         event.preventDefault();
         event.stopPropagation();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.onClickEmitter.complete();
     }
 
 }

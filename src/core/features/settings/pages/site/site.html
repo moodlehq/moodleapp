@@ -46,14 +46,14 @@
                         </ion-button>
                     </core-button-with-spinner>
                 </ion-item>
-                @if (!isOnline() || (dataSaver && limitedConnection())) {
+                @let online = isOnline();
+                @if (!online || (dataSaver && limitedConnection())) {
                     <ion-item class="core-warning-item ion-text-wrap">
                         <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
                         <ion-label>
-                            @if (isOnline() && dataSaver && limitedConnection()) {
+                            @if (online && dataSaver && limitedConnection()) {
                                 {{ 'core.settings.connectwifitosync' | translate }}
-                            }
-                            @if (!isOnline()) {
+                            } @else if (!online) {
                                 {{ 'core.settings.connecttosync' | translate }}
                             }
                         </ion-label>

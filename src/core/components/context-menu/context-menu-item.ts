@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Output, OnInit, OnDestroy, EventEmitter, effect, input, model, computed, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, input, model, computed, inject, output } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreUtils } from '@static/utils';
+import { Subject } from 'rxjs';
+import { outputFromObservable } from '@angular/core/rxjs-interop';
 
 /**
  * This directive adds a item to the Context Menu popover.
@@ -56,15 +58,18 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
     readonly showBrowserWarning = input(true, { transform: toBoolean }); // Show a warning before opening links in browser.
     readonly toggle = model(false); // Whether the toggle is on or off.
 
-    // New output syntax doesn't have the 'observed' property, keep EventEmitter for now.
-    // See https://github.com/angular/angular/issues/54837
-    @Output() action = new EventEmitter<() => void>(); // Will emit an event when the item clicked.
-    @Output() onClosed = new EventEmitter<() => void>(); // Will emit an event when the popover is closed because item was clicked.
-    @Output() toggleChange = new EventEmitter<boolean>(); // Will emit an event when toggle changes to enable 2-way data binding.
+    // Use a subject and outputFromObservable because direct output syntax doesn't have the 'observed' property.
+    readonly actionEmitter = new Subject<() => void>();
+    readonly action = outputFromObservable(this.actionEmitter);
+
+    // Use a subject and outputFromObservable because direct output syntax doesn't have the 'observed' property.
+    readonly onClosedEmitter = new Subject<void>();
+    readonly onClosed = outputFromObservable(this.onClosedEmitter);
+    readonly toggleChange = output<boolean>(); // Will emit an event when toggle changes to enable 2-way data binding.
 
     uniqueId = CoreUtils.getUniqueId('CoreContextMenuItem');
     // Effective href to use when the item is clicked. Use this instead of href directly.
-    readonly effectiveHref = computed(() => this.action.observed ? undefined : this.href());
+    readonly effectiveHref = computed(() => this.actionEmitter.observed ? undefined : this.href());
 
     protected previousHiddenValue: boolean | undefined; // Previous value of hidden, used to detect if it's the first change.
     protected destroyed = false;
@@ -102,11 +107,14 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Component destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         this.destroyed = true;
         this.ctxtMenu.removeItem(this);
+
+        this.onClosedEmitter.complete();
+        this.actionEmitter.complete();
     }
 
 }

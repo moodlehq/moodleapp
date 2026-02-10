@@ -39,6 +39,8 @@ export class CoreContextMenuPopoverComponent {
 
     /**
      * Close the popover.
+     *
+     * @param item Item that triggered the close. It will be passed to onClosed output of the item, if set.
      */
     closeMenu(item?: CoreContextMenuItemComponent): void {
         PopoverController.dismiss(item);
@@ -58,7 +60,7 @@ export class CoreContextMenuPopoverComponent {
             item.toggle.set(!item.toggle);
         }
 
-        if (item.action.observed) {
+        if (item.actionEmitter.observed) {
             event.preventDefault();
             event.stopPropagation();
 
@@ -70,8 +72,8 @@ export class CoreContextMenuPopoverComponent {
                 this.closeMenu(item);
             }
 
-            item.action.emit(() => this.closeMenu(item));
-        } else if (item.closeOnClick() && (item.effectiveHref() || (!!item.onClosed && item.onClosed.observed))) {
+            item.actionEmitter.next(() => this.closeMenu(item));
+        } else if (item.closeOnClick() && (item.effectiveHref() || (!!item.onClosed && item.onClosedEmitter.observed))) {
             this.closeMenu(item);
         }
 

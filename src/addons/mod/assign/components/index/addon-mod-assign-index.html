@@ -143,12 +143,8 @@
 
         <!-- Ungrouped users. -->
         @if (assign.teamsubmission && summary && summary.warnofungroupedusers) {
-            <ion-card class="core-info-card">
-                <ion-item>
-                    <ion-icon name="fas-circle-question" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.mod_assign.'+summary.warnofungroupedusers | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info"
+                [message]="'addon.mod_assign.'+summary.warnofungroupedusers | translate" />
         }
 
         @if (!showLoading) {

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -20,32 +20,24 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-login-exceeded-attempts',
     templateUrl: 'exceeded-attempts.html',
-    styleUrl: './exceeded-attempts.scss',
     imports: [
         CoreSharedModule,
     ],
 })
-export class CoreLoginExceededAttemptsComponent implements OnInit {
+export class CoreLoginExceededAttemptsComponent {
 
-    @Input({ required: true }) supportConfig!: CoreUserSupportConfig;
-    @Input() supportSubject?: string;
+    readonly supportConfig = input.required<CoreUserSupportConfig>();
+    readonly supportSubject = input<string>();
 
-    canContactSupport = false;
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.canContactSupport = this.supportConfig.canContactSupport();
-    }
+    readonly canContactSupport = computed(() => this.supportConfig().canContactSupport());
 
     /**
      * Contact site support.
      */
     async contactSupport(): Promise<void> {
         await CoreUserSupport.contact({
-            supportConfig: this.supportConfig,
-            subject: this.supportSubject,
+            supportConfig: this.supportConfig(),
+            subject: this.supportSubject(),
         });
     }
 

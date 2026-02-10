@@ -125,12 +125,8 @@
                 </ion-item>
             </ion-card>
         } @else if (!tracked()) {
-            <ion-card class="core-warning-card">
-                <ion-item>
-                    <ion-icon name="fas-triangle-exclamation" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'addon.coursecompletion.nottracked' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="warning"
+                [message]="'addon.coursecompletion.nottracked' | translate" />
         }
     </core-loading>
 </ion-content>

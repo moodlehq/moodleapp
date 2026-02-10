@@ -4,12 +4,7 @@
         <core-loading [hideUntil]="question.loaded" />
 
         @if (!question.readOnly) {
-            <ion-card class="core-info-card" [hidden]="!question.loaded">
-                <ion-item>
-                    <ion-icon name="fas-circle-info" slot="start" aria-hidden="true" />
-                    <ion-label>{{ 'core.question.howtodraganddrop' | translate }}</ion-label>
-                </ion-item>
-            </ion-card>
+            <core-alert-card type="info" [message]="'core.question.howtodraganddrop' | translate" [hidden]="!question.loaded"/>
         }
 
         <div class="fake-ion-item ion-text-wrap" [hidden]="!question.loaded">

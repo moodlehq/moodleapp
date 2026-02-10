@@ -22,7 +22,7 @@ import { CoreFaIconDirective } from './fa-icon';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreLinkDirective } from './link';
 import { CoreLongPressDirective } from './long-press';
-import { CoreSupressEventsDirective } from './supress-events';
+import { CoreSuppressEventsDirective } from './supress-events';
 import { CoreUserLinkDirective } from './user-link';
 import { CoreAriaButtonClickDirective } from './aria-button';
 import { CoreOnResizeDirective } from './on-resize';
@@ -46,7 +46,7 @@ import { CoreReadingModeDirective } from './reading-mode';
         CoreFormatTextDirective,
         CoreLinkDirective,
         CoreLongPressDirective,
-        CoreSupressEventsDirective,
+        CoreSuppressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
@@ -69,7 +69,7 @@ import { CoreReadingModeDirective } from './reading-mode';
         CoreFormatTextDirective,
         CoreLinkDirective,
         CoreLongPressDirective,
-        CoreSupressEventsDirective,
+        CoreSuppressEventsDirective,
         CoreUserLinkDirective,
         CoreAriaButtonClickDirective,
         CoreOnResizeDirective,
