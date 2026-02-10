@@ -26,7 +26,7 @@ import { CoreAutoFocusDirective } from '@directives/auto-focus';
 import { CoreAutoRowsDirective } from '@directives/auto-rows';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreOnResizeDirective } from '@directives/on-resize';
-import { CoreSupressEventsDirective } from '@directives/supress-events';
+import { CoreSuppressEventsDirective } from '@directives/supress-events';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
@@ -49,7 +49,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreAutoFocusDirective,
         CoreOnResizeDirective,
         CoreUpdateNonReactiveAttributesDirective,
-        CoreSupressEventsDirective,
+        CoreSuppressEventsDirective,
         CoreFaIconDirective,
     ],
 })

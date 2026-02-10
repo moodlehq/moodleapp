@@ -35,7 +35,7 @@ import { CoreBaseModule } from '@/core/base.module';
 import { CoreAriaButtonClickDirective } from '@directives/aria-button';
 import { CoreAutoFocusDirective } from '@directives/auto-focus';
 import { CoreFaIconDirective } from '@directives/fa-icon';
-import { CoreSupressEventsDirective } from '@directives/supress-events';
+import { CoreSuppressEventsDirective } from '@directives/supress-events';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 
 /**
@@ -54,7 +54,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreAutoFocusDirective,
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
-        CoreSupressEventsDirective,
+        CoreSuppressEventsDirective,
     ],
 })
 export class CoreLocalFileComponent implements OnInit {
@@ -108,6 +108,8 @@ export class CoreLocalFileComponent implements OnInit {
 
     /**
      * Load the basic data for the file.
+     *
+     * @param file File entry.
      */
     protected loadFileBasicData(file: FileEntry): void {
         this.fileName = file.name;
