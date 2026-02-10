@@ -1175,6 +1175,8 @@ class behat_app extends behat_app_helper {
 
         $this->evaluate_script('window.close()');
         $this->getSession()->switchToWindow($names[0]);
+
+        $this->runtime_js("browserTabClosed()");
     }
 
     /**

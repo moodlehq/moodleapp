@@ -6,8 +6,8 @@ Feature: Test functionality added by the format-text directive
       | username | firstname  | lastname  | email                |
       | student1 | Student1   | student1  | student1@example.com |
     And the following "courses" exist:
-      | fullname | shortname |
-      | Course 1 | C1        |
+      | fullname | shortname | enablecompletion |
+      | Course 1 | C1        | 1                |
     And the following "course enrolments" exist:
       | user     | course | role    |
       | student1 | C1     | student |
@@ -68,13 +68,15 @@ Feature: Test functionality added by the format-text directive
     And I press "Open embedded" in the app
     Then "iframe[src='http://moodle.org/']" "css_element" should exist
 
-  Scenario: Can open links embedded using the data attribute
+  Scenario: Changes how regular links are opened based on data-app-open-in attribute
     Given the following "activities" exist:
-      | activity   | course | name          | intro                                                                                                                                                               |
-      | label      | C1     | Label title   | <p><a href="http://moodle.org/">Open in browser</a></p>                                 |
-      | label      | C1     | Label 2 title | <p><a href="http://moodle.org/" data-app-open-in="embedded">Open embedded new</a></p>   |
-      | label      | C1     | Label 3 title | <p><a href="http://moodle.org/" data-open-in="embedded">Open embedded legacy</a></p>    |
-      | label      | C1     | Label 3 title | <p><a href="#wwwroot#/my/courses.php" data-app-open-in="embedded">Captured link</a></p> |
+      | activity   | course | name          | intro                                                                                                |
+      | label      | C1     | Label title   | <p><a href="http://moodle.org/">Open in browser</a></p>                                              |
+      | label      | C1     | Label 2 title | <p><a href="http://moodle.org/" data-app-open-in="embedded">Open embedded new</a></p>                |
+      | label      | C1     | Label 3 title | <p><a href="http://moodle.org/" data-open-in="embedded">Open embedded legacy</a></p>                 |
+      | label      | C1     | Label 4 title | <p><a href="#wwwroot#admin/search.php" data-app-open-in="inappbrowser">Open inappbrowser new</a></p> |
+      | label      | C1     | Label 5 title | <p><a href="#wwwroot#admin/search.php" data-app-open-in="app">Open inappbrowser legacy</a></p>       |
+      | label      | C1     | Label 6 title | <p><a href="#wwwroot#/my/courses.php" data-app-open-in="embedded">Captured link</a></p>              |
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Open in browser" in the app
     Then I should find "You are about to leave the app" in the app
@@ -83,17 +85,76 @@ Feature: Test functionality added by the format-text directive
     And I press "Open embedded new" in the app
     Then I should not find "You are about to leave the app" in the app
     And the header should be "Open embedded new" in the app
-    Then "iframe[src='http://moodle.org/']" "css_element" should exist
+    And "iframe[src='http://moodle.org/']" "css_element" should exist
 
     When I go back in the app
     And I press "Open embedded legacy" in the app
     Then I should not find "You are about to leave the app" in the app
     And the header should be "Open embedded legacy" in the app
-    Then "iframe[src='http://moodle.org/']" "css_element" should exist
+    And "iframe[src='http://moodle.org/']" "css_element" should exist
 
+    # In Behat there's no difference between system browser and embedded browser, just check that the browser confirmation isn't shown.
     When I go back in the app
+    And I press "Open inappbrowser new" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    And I press "Open inappbrowser legacy" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
     And I press "Captured link" in the app
     Then I should find "My courses" in the app
+
+  Scenario: Allows using a different URL in app using data-app-url.
+    Given the following "activities" exist:
+      | activity   | course | name          | completion | intro                                                                                                                                                                    |
+      | label      | C1     | Label title   | 1          | <p><a href="http://moodle.org/" data-app-url="#wwwroot#/my/courses.php">Default case</a></p>                                                                             |
+      | label      | C1     | Label 2 title | 0          | <p><a href="http://moodle.org/" data-app-url="#wwwroot#/my/courses.php" data-app-open-in="inappbrowser">Open inappbrowser</a></p>                                        |
+      | label      | C1     | Label 3 title | 0          | <p><a href="http://moodle.org/" data-app-url="http://moodle.com/" data-app-open-in="embedded">Open embedded</a></p>                                                      |
+      | label      | C1     | Label 4 title | 0          | <p><a href="http://moodle.org/" data-app-url="#wwwroot#/my/courses.php" data-app-url-confirm="Custom confirm." data-app-open-in="inappbrowser">Open with confirm</a></p> |
+      | label      | C1     | Label 5 title | 0          | <p><a href="http://moodle.org/" data-app-url="#wwwroot#/my/courses.php" data-app-url-resume-action="refresh" data-app-open-in="inappbrowser">Open with refresh</a></p>   |
+    Given I entered the course "Course 1" as "student1" in the app
+    Then I should not find "$WWWROOT/my/courses.php" in the app
+
+    When I press "Default case" in the app
+    Then I should find "You are about to leave the app" in the app
+    And I should find "$WWWROOT/my/courses.php" in the app
+
+    # In Behat there's no difference between system browser and embedded browser, just check that the browser confirmation isn't shown.
+    When I press "Cancel" in the app
+    And I press "Open inappbrowser" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    And I press "Open embedded" in the app
+    Then the header should be "Open embedded" in the app
+    And "iframe[src='http://moodle.com/']" "css_element" should exist
+
+    When I go back in the app
+    And I press "Open with confirm" in the app
+    Then I should find "Custom confirm." in the app
+
+    When I press "OK" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    # Change completion in browser and check that in the app is not reflected because there is no refresh on resume.
+    When I switch to the browser tab opened by the app
+    And I am on the "Course 1" course page logged in as student1
+    And I press "Mark as done"
+    Then I should see "Done"
+
+    When I close the browser tab opened by the app
+    Then I should find "Mark as done" in the app
+    And I should not find "Done" in the app
+
+    # Now open a link with refresh on resume and check that completion is updated when coming back to the app.
+    When I press "Open with refresh" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    Then I should find "Done" in the app
+    And I should not find "Mark as done" in the app
 
   Scenario: Hides or shows content based on custom CSS classes
     Given the following "activities" exist:
