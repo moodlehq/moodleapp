@@ -16,15 +16,24 @@ Feature: Test functionality added by the format-text directive
   @lms_from4.3
   Scenario: Displays alternative content in the app
     Given the following "activities" exist:
-      | activity   | course | name          | intro                                                                                                                                                                   |
-      | label      | C1     | Label title   | <div data-app-alt-url="#wwwroot#/my/courses.php">Content for browser</div>                                                                                              |
-      | label      | C1     | Label 2 title | <div data-app-alt-url="#wwwroot#/?redirect=0" data-app-alt-msg="Open this link" data-app-open-in="app" data-app-url-confirm="Custom confirm.">Content for browser</div> |
-      | label      | C1     | Label 3 title | <div data-app-alt-url="#wwwroot#/user/view.php" data-app-open-in="app">Content for browser</div>                                                                        |
+      | activity   | course | name          | intro                                                                                                                                                                                                                             |
+      | label      | C1     | Label title   | <div data-app-alt-url="#wwwroot#/my/courses.php">Content for browser</div>                                                                                                                                                        |
+      | label      | C1     | Label 2 title | <div data-app-alt-url="#wwwroot#/?redirect=0" data-app-alt-msg="Open this link" data-app-open-in="inappbrowser" data-app-url-confirm="Custom confirm.">Content for browser</div>                                                  |
+      | label      | C1     | Label 3 title | <div data-app-alt-url="#wwwroot#/user/view.php" data-app-open-in="inappbrowser" data-app-alt-url-label="Click me link">Content for browser</div>                                                                                  |
+      | label      | C1     | Label 4 title | <div data-app-alt-url="#wwwroot#/user/profile.php" data-app-alt-url-type="button" data-app-alt-msg="Message for button" data-app-alt-url-label="Click me button" data-app-url-confirm="Button confirm.">Content for browser</div> |
+      | label      | C1     | Label 5 title | <div data-app-alt-url="#wwwroot#/user/edit.php" data-app-alt-url-type="button" data-app-open-in="inappbrowser">Content for browser</div>                                                                                          |
+      | label      | C1     | Label 6 title | <div data-app-alt-url="http://moodle.org/" data-app-alt-url-label="Open embedded" data-app-open-in="embedded">Content for browser</div>                                                                                           |
     Given I entered the course "Course 1" as "student1" in the app
     Then I should find "Open this link" in the app
     And I should find "$WWWROOT/my/courses.php" in the app
     And I should find "$WWWROOT/?redirect=0" in the app
+    And I should find "Click me link" in the app
+    And I should find "Click me button" in the app
+    And I should find "$WWWROOT/user/edit.php" in the app
+    And I should find "Open embedded" in the app
     But I should not find "Content for browser" in the app
+    And I should not find "$WWWROOT/user/view.php" in the app
+    And I should not find "$WWWROOT/user/profile.php" in the app
 
     When I press "$WWWROOT/my/courses.php" in the app
     Then I should not find "Custom confirm" in the app
@@ -41,8 +50,23 @@ Feature: Test functionality added by the format-text directive
 
     # In Behat there's no difference between system browser and embedded browser, just check that the browser confirmation isn't shown.
     When I close the browser tab opened by the app
-    And I press "$WWWROOT/user/view.php" in the app
+    And I press "Click me link" in the app
     Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    And I press "Click me button" "ion-button" in the app
+    Then I should find "Button confirm" in the app
+
+    When I press "OK" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    And I press "$WWWROOT/user/edit.php" "ion-button" in the app
+    Then the app should have opened a browser tab with url "$WWWROOTPATTERN"
+
+    When I close the browser tab opened by the app
+    And I press "Open embedded" in the app
+    Then "iframe[src='http://moodle.org/']" "css_element" should exist
 
   Scenario: Can open links embedded using the data attribute
     Given the following "activities" exist:

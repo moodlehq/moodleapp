@@ -38,6 +38,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreDom } from '@static/dom';
+import { DATA_OPEN_EXTERNAL } from '../constants';
 
 /**
  * Static class with helper functions for iframes, embed and similar.
@@ -591,7 +592,8 @@ export class CoreIframe {
         const frame = typeof urlOrFrame !== 'string' && urlOrFrame;
 
         const extension = url && CoreMimetype.guessExtensionFromUrl(url);
-        const launchExternal = extension === 'pdf' || (frame && frame.getAttribute('data-open-external') === 'true');
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const launchExternal = extension === 'pdf' || (frame && frame.getAttribute(DATA_OPEN_EXTERNAL) === 'true');
 
         let label = '';
         if (launchExternal) {

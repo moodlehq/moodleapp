@@ -59,8 +59,11 @@ import {
     DATA_APP_ALT_MSG,
     DATA_APP_ALT_URL,
     DATA_APP_URL,
+    DataAppAltUrlType,
     DATASET_APP_ALT_MSG,
     DATASET_APP_ALT_URL,
+    DATASET_APP_ALT_URL_LABEL,
+    DATASET_APP_ALT_URL_TYPE,
     DATASET_APP_OPEN_IN,
     DATASET_APP_OPEN_IN_LEGACY,
     DATASET_APP_URL,
@@ -820,13 +823,18 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
             let newContent = message ? `<p>${message}</p>` : '';
             if (url) {
-                // Create a link using the APP_URL format to reuse all the logic of APP_URL data attributes.
+                // Create a link or button using the APP_URL format to reuse all the logic of APP_URL data attributes.
+                const label = element.dataset[DATASET_APP_ALT_URL_LABEL] || url;
                 let dataAttributes = `${DATA_APP_URL}="${url}"`;
                 for (const attr in element.dataset) {
                     dataAttributes += ` data-${CoreText.camelCaseToKebabCase(attr)}="${element.dataset[attr]}"`;
                 }
 
-                newContent += `<p><a href="${url}" ${dataAttributes}>${url}</a></p>`;
+                if (element.dataset[DATASET_APP_ALT_URL_TYPE] === DataAppAltUrlType.BUTTON) {
+                    newContent += `<ion-button expand="block" class="ion-text-wrap" ${dataAttributes}>${label}</ion-button>`;
+                } else {
+                    newContent += `<p><a href="${url}" ${dataAttributes}>${label}</a></p>`;
+                }
             }
 
             element.innerHTML = newContent;

@@ -190,6 +190,10 @@ export const DATA_APP_ALT_URL = 'data-app-alt-url';
 export const DATASET_APP_ALT_URL = 'appAltUrl';
 export const DATA_APP_ALT_MSG = 'data-app-alt-msg';
 export const DATASET_APP_ALT_MSG = 'appAltMsg';
+export const DATA_APP_ALT_URL_TYPE = 'data-app-alt-url-type';
+export const DATASET_APP_ALT_URL_TYPE = 'appAltUrlType';
+export const DATA_APP_ALT_URL_LABEL = 'data-app-alt-url-label';
+export const DATASET_APP_ALT_URL_LABEL = 'appAltUrlLabel';
 
 /** @deprecated since 5.2. Use DATA_APP_OPEN_IN instead. */
 export const DATA_APP_OPEN_IN_LEGACY = 'data-open-in';
@@ -199,6 +203,13 @@ export const DATASET_APP_OPEN_IN_LEGACY = 'openIn';
 export const DATA_APP_AUTO_PLAY_LEGACY = 'data-mobileapp-autoplay';
 /** @deprecated since 5.2. Use DATASET_APP_AUTO_PLAY instead. */
 export const DATASET_APP_AUTO_PLAY_LEGACY = 'mobileappAutoplay';
+/** @deprecated since 5.2. Use DATA_APP_ALT_URL instead. */
+export const DATA_OPEN_EXTERNAL = 'data-open-external';
+
+export const enum DataAppAltUrlType {
+    BUTTON = 'button',
+    LINK = 'link',
+};
 
 /**
  * Static class to contain all the core constants.
