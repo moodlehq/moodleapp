@@ -26,25 +26,6 @@ ion-card {
         font: var(--mdl-typography-heading4-font);
     }
 
-    &.core-card-with-buttons .item ion-label {
-        margin-bottom: 0;
-    }
-
-    .core-card-buttons {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        margin: 0px 8px 8px 8px;
-
-        ion-button.button {
-            --color: var(--text-color);
-
-            &.button-outline {
-                --background: transparent;
-            }
-        }
-    }
-
     // Coloured cards.
     @each $color-name, $unused in $colors {
         &.core-#{$color-name}-card {
