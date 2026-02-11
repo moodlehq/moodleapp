@@ -74,8 +74,8 @@ Feature: Test functionality added by the format-text directive
       | label      | C1     | Label title   | <p><a href="http://moodle.org/">Open in browser</a></p>                                              |
       | label      | C1     | Label 2 title | <p><a href="http://moodle.org/" data-app-open-in="embedded">Open embedded new</a></p>                |
       | label      | C1     | Label 3 title | <p><a href="http://moodle.org/" data-open-in="embedded">Open embedded legacy</a></p>                 |
-      | label      | C1     | Label 4 title | <p><a href="#wwwroot#admin/search.php" data-app-open-in="inappbrowser">Open inappbrowser new</a></p> |
-      | label      | C1     | Label 5 title | <p><a href="#wwwroot#admin/search.php" data-app-open-in="app">Open inappbrowser legacy</a></p>       |
+      | label      | C1     | Label 4 title | <p><a href="#wwwroot#/admin/search.php" data-app-open-in="inappbrowser">Open inappbrowser new</a></p> |
+      | label      | C1     | Label 5 title | <p><a href="#wwwroot#/admin/search.php" data-app-open-in="app">Open inappbrowser legacy</a></p>       |
       | label      | C1     | Label 6 title | <p><a href="#wwwroot#/my/courses.php" data-app-open-in="embedded">Captured link</a></p>              |
     Given I entered the course "Course 1" as "student1" in the app
     When I press "Open in browser" in the app

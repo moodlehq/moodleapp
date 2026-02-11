@@ -555,7 +555,7 @@ class behat_app extends behat_app_helper {
     }
 
     /**
-     * Receives push notifications.
+     * Clicks a push notification.
      *
      * @When /^I click a push notification in the app for:$/
      * @param TableNode $data Table data
@@ -572,6 +572,23 @@ class behat_app extends behat_app_helper {
             $data->component = 'mod_forum';
         }
 
+        $customdata = [];
+
+        if (isset($discussion->id, $module->id, $discussion->forum)) {
+            $customdata['discussionid'] = $discussion->id;
+            $customdata['cmid'] = $module->id;
+            $customdata['instance'] = $discussion->forum;
+        }
+
+        if (isset($data->appurl)) {
+            $customdata['appurl'] = $data->appurl;
+            $customdata['appurlopenin'] = $data->appurlopenin ?? null;
+        }
+
+        if (isset($data->extendedtext)) {
+            $customdata['extendedtext'] = $data->extendedtext;
+        }
+
         $notification = json_encode([
             'site' => md5($CFG->behat_wwwroot . $data->username),
             'subject' => $data->subject ?? null,
@@ -583,11 +600,9 @@ class behat_app extends behat_app_helper {
             'courseid' => $discussion->course ?? null,
             'moodlecomponent' => $data->component ?? null,
             'name' => $data->name ?? null,
-            'contexturl' => '',
+            'contexturl' => $data->contexturl ?? '',
             'notif' => 1,
-            'customdata' => isset($discussion->id, $module->id, $discussion->forum)
-                ? ['discussionid' => $discussion->id, 'cmid' => $module->id, 'instance' => $discussion->forum]
-                : null,
+            'customdata' => empty($customdata) ? null : $customdata,
             'additionalData' => isset($data->subject) || isset($data->userfrom)
                 ? ['foreground' => true, 'notId' => 23, 'notif' => 1] : null,
         ]);
