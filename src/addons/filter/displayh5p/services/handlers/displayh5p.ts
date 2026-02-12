@@ -22,6 +22,7 @@ import { CoreUrl } from '@static/url';
 import { CoreH5PHelper } from '@features/h5p/classes/helper';
 import { CoreText } from '@static/text';
 import { CoreUtils } from '@static/utils';
+import { DATASET_APP_AUTO_PLAY, DATASET_APP_AUTO_PLAY_LEGACY } from '@/core/constants';
 
 /**
  * Handler to support the Display H5P filter.
@@ -101,7 +102,9 @@ export class AddonFilterDisplayH5PHandlerService extends CoreFilterDefaultHandle
             h5pInstance.componentId = componentId;
 
             // Check if auto-play was enabled when inserting the iframe using the TinyMCE editor.
-            h5pInstance.autoPlay = CoreUtils.isTrueOrOne(placeholder.parentElement.dataset.mobileappAutoplay);
+            const autoPlayValue = placeholder.parentElement.dataset[DATASET_APP_AUTO_PLAY] ??
+                placeholder.parentElement.dataset[DATASET_APP_AUTO_PLAY_LEGACY];
+            h5pInstance.autoPlay = CoreUtils.isTrueOrOne(autoPlayValue);
 
             // Move the component to its right position.
             placeholder.parentElement.replaceChild(h5pInstance.getElement(), placeholder);

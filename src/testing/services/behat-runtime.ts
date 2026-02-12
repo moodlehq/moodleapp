@@ -36,6 +36,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLang } from '@services/lang';
 import { CoreBrowser } from '@static/browser';
 import { CoreText } from '@static/text';
+import { CoreOpener } from '@static/opener';
 
 /**
  * Behat runtime servive with public API.
@@ -969,6 +970,14 @@ export class TestingBehatRuntimeService {
      */
     async waitToastDismiss(): Promise<void> {
         await CorePromiseUtils.ignoreErrors(ToastController.dismiss());
+    }
+
+    /**
+     * Browser tab was closed.
+     */
+    browserTabClosed(): void {
+        // Call the function to close the IAB (if any) to force triggering the exit event.
+        CoreOpener.closeInAppBrowser();
     }
 
 }

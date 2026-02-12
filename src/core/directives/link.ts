@@ -19,7 +19,7 @@ import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CoreOpener } from '@static/opener';
-import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
+import { DATA_APP_OPEN_IN, DATA_APP_OPEN_IN_LEGACY, CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { DomSanitizer } from '@singletons';
@@ -28,6 +28,8 @@ import { CoreDom } from '@static/dom';
 import { toBoolean } from '../transforms/boolean';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreSite } from '@classes/sites/site';
 
 /**
  * Directive to open a link in external browser or in the app.
@@ -43,8 +45,14 @@ export class CoreLinkDirective implements OnInit {
     @Input() href?: string | SafeUrl; // Link URL.
     @Input({ transform: toBoolean }) capture = false; // If the link needs to be captured by the app.
     /**
+     * If set, force the open method. If not set, it will be determined based on forceOpenLinksIn config and data attribute.
+     */
+    @Input() openIn?: Exclude<CoreLinkOpenMethod, CoreLinkOpenMethod.APP>;
+    /**
      * True to force open in embedded browser, false to force open in system browser, undefined to determine it based on
-     * forceOpenLinksIn setting and data-open-in attribute.
+     * forceOpenLinksIn setting and data-app-open-in attribute.
+     *
+     * @deprecated since 5.2. Use openIn instead.
      */
     @Input({ transform: toBoolean }) inApp?: boolean;
     @Input({ transform: toBoolean }) autoLogin = true; // Whether to try to use auto-login.
@@ -100,7 +108,8 @@ export class CoreLinkDirective implements OnInit {
         event.preventDefault();
         event.stopPropagation();
 
-        const openIn = this.element.getAttribute('data-open-in');
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const openIn = this.element.getAttribute(DATA_APP_OPEN_IN) || this.element.getAttribute(DATA_APP_OPEN_IN_LEGACY);
 
         if (this.capture) {
             const treated = await CoreContentLinksHelper.handleLink(CoreUrl.decodeURI(href), undefined, true, true);
@@ -117,7 +126,7 @@ export class CoreLinkDirective implements OnInit {
      * Convenience function to correctly navigate, open file or url in the browser.
      *
      * @param href HREF to be opened.
-     * @param openIn Open In App value coming from data-open-in attribute.
+     * @param openIn Open in value coming from data attribute.
      * @returns Promise resolved when done.
      */
     protected async navigate(href: string, openIn?: string | null): Promise<void> {
@@ -181,23 +190,39 @@ export class CoreLinkDirective implements OnInit {
      * Open an external link in the app or in browser.
      *
      * @param href HREF to be opened.
-     * @param openIn Open In App value coming from data-open-in attribute.
+     * @param dataOpenIn Open in value coming from data attribute.
      * @returns Promise resolved when done.
      */
-    protected async openExternalLink(href: string, openIn?: string | null): Promise<void> {
-        // Priority order is: core-link inApp attribute > forceOpenLinksIn setting > data-open-in HTML attribute.
-        const openInApp = this.inApp ??
-            (CoreConstants.CONFIG.forceOpenLinksIn !== CoreLinkOpenMethod.BROWSER &&
-                (CoreConstants.CONFIG.forceOpenLinksIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.APP));
+    protected async openExternalLink(href: string, dataOpenIn?: string | null): Promise<void> {
 
-        // Check if we need to auto-login.
-        if (!CoreSites.isLoggedIn()) {
-            // Not logged in, cannot auto-login.
-            if (openInApp) {
-                CoreOpener.openInApp(href);
+        const openLink = async (site?: CoreSite): Promise<void> => {
+            // Priority order is: openIn input > forceOpenLinksIn setting > HTML data attribute.
+            const openIn = this.openIn ??
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                (this.inApp ? CoreLinkOpenMethod.INAPPBROWSER : undefined) ??
+                CoreConstants.CONFIG.forceOpenLinksIn ??
+                dataOpenIn;
+
+            if (openIn === CoreLinkOpenMethod.EMBEDDED) {
+                await CoreViewer.openIframeViewer((this.element.textContent || this.element.innerText || '').trim(), href);
+            } else if (openIn === CoreLinkOpenMethod.INAPPBROWSER || openIn === CoreLinkOpenMethod.APP) {
+                // For backwards compatibility, consider APP as INAPPBROWSER. @deprecated since 5.2.
+                if (this.autoLogin && site) {
+                    await site.openInAppWithAutoLogin(href);
+                } else {
+                    CoreOpener.openInApp(href);
+                }
             } else {
-                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                if (this.autoLogin && site) {
+                    await site.openInBrowserWithAutoLogin(href, undefined, { showBrowserWarning: this.showBrowserWarning });
+                } else {
+                    CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
+                }
             }
+        };
+
+        if (!CoreSites.isLoggedIn()) {
+            await openLink();
 
             return;
         }
@@ -227,19 +252,7 @@ export class CoreLinkDirective implements OnInit {
             }
         }
 
-        if (this.autoLogin) {
-            if (openInApp) {
-                await currentSite.openInAppWithAutoLogin(href);
-            } else {
-                await currentSite.openInBrowserWithAutoLogin(href, undefined, { showBrowserWarning: this.showBrowserWarning });
-            }
-        } else {
-            if (openInApp) {
-                CoreOpener.openInApp(href);
-            } else {
-                CoreOpener.openInBrowser(href, { showBrowserWarning: this.showBrowserWarning });
-            }
-        }
+        await openLink(currentSite);
     }
 
 }

@@ -32,7 +32,7 @@ import { CoreLogger } from '@static/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@static/events';
-import { CoreLinkOpenMethod, DownloadStatus } from '../constants';
+import { DATA_APP_OPEN_IN, DATA_APP_OPEN_IN_LEGACY, CoreLinkOpenMethod, DownloadStatus } from '../constants';
 import { CoreNetwork } from '@services/network';
 import { Translate } from '@singletons';
 import type { AsyncDirective } from '@coretypes/async-directive';
@@ -135,7 +135,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         newSource.setAttribute('src', url);
 
         if (type) {
-            if (CorePlatform.isAndroid() && type == 'video/quicktime') {
+            if (CorePlatform.isAndroid() && type === 'video/quicktime') {
                 // Fix for VideoJS/Chrome bug https://github.com/videojs/video.js/issues/423 .
                 newSource.setAttribute('type', 'video/mp4');
             } else {
@@ -157,7 +157,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         // Always handle inline styles (if any).
         this.handleInlineStyles(this.siteId);
 
-        if (tagName === 'A' || tagName == 'IMAGE') {
+        if (tagName === 'A' || tagName === 'IMAGE') {
             targetAttr = 'href';
             url = this.url ?? this.href ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
@@ -204,7 +204,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
     protected async handleExternalContent(targetAttr: string, url: string): Promise<void> {
 
         const tagName = this.element.tagName;
-        if (tagName == 'VIDEO' && targetAttr != 'poster') {
+        if (tagName === 'VIDEO' && targetAttr !== 'poster') {
             this.handleVideoSubtitles(<HTMLVideoElement> this.element);
         }
 
@@ -368,10 +368,17 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         }
 
         const tagName = this.element.tagName;
-        const openIn = tagName === 'A' && this.element.getAttribute('data-open-in');
+        const openIn = tagName === 'A' &&
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            (this.element.getAttribute(DATA_APP_OPEN_IN) || this.element.getAttribute(DATA_APP_OPEN_IN_LEGACY));
 
-        if (openIn === CoreLinkOpenMethod.APP || openIn === CoreLinkOpenMethod.BROWSER) {
-            // The file is meant to be opened in browser or InAppBrowser, don't use the downloaded URL because it won't work.
+        if (
+            openIn === CoreLinkOpenMethod.INAPPBROWSER ||
+            openIn === CoreLinkOpenMethod.BROWSER ||
+            openIn === CoreLinkOpenMethod.EMBEDDED ||
+            openIn === CoreLinkOpenMethod.APP // For backwards compatibility, consider APP as INAPPBROWSER. @deprecated since 5.2.
+        ) {
+            // In browser, IAB or iframes most downloaded files won't work, use the original URL.
             if (!site.isSitePluginFileUrl(url)) {
                 return url;
             }
@@ -385,7 +392,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         let finalUrl: string;
 
         // Download images, tracks and posters if size is unknown.
-        const downloadUnknown = tagName == 'IMG' || tagName == 'TRACK' || targetAttr == 'poster';
+        const downloadUnknown = tagName === 'IMG' || tagName === 'TRACK' || targetAttr === 'poster';
 
         if (targetAttr === 'src' && tagName !== 'SOURCE' && tagName !== 'TRACK' && tagName !== 'VIDEO' && tagName !== 'AUDIO') {
             finalUrl = await CoreFilepool.getSrcByUrl(
@@ -504,10 +511,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         // Set events to download big files (not downloaded automatically).
         if (targetAttr !== 'poster' && (tagName === 'VIDEO' || tagName === 'AUDIO' || tagName === 'A' || tagName === 'SOURCE')) {
-            const eventName = tagName == 'A' ? 'click' : 'play';
+            const eventName = tagName === 'A' ? 'click' : 'play';
             let clickableEl: Element | null = this.element;
 
-            if (tagName == 'SOURCE') {
+            if (tagName === 'SOURCE') {
                 clickableEl = this.element.closest('video,audio');
             }
 

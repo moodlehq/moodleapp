@@ -326,45 +326,43 @@ export class CoreOpener {
 
         CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', options);
 
-        if (CorePlatform.isMobile()) {
-            const loadStartUrls: string[] = [];
+        const loadStartUrls: string[] = [];
 
-            const loadStartSubscription = CoreOpener.iabInstance.on('loadstart').subscribe((event) => {
-                NgZone.run(() => {
-                    // Store the last loaded URLs (max 10).
-                    loadStartUrls.push(event.url);
-                    if (loadStartUrls.length > 10) {
-                        loadStartUrls.shift();
-                    }
+        const loadStartSubscription = CoreOpener.iabInstance.on('loadstart').subscribe((event) => {
+            NgZone.run(() => {
+                // Store the last loaded URLs (max 10).
+                loadStartUrls.push(event.url);
+                if (loadStartUrls.length > 10) {
+                    loadStartUrls.shift();
+                }
 
-                    CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
-                });
+                CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
             });
+        });
 
-            const loadStopSubscription = CoreOpener.iabInstance.on('loadstop').subscribe((event) => {
-                NgZone.run(() => {
-                    CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
-                });
+        const loadStopSubscription = CoreOpener.iabInstance.on('loadstop').subscribe((event) => {
+            NgZone.run(() => {
+                CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
             });
+        });
 
-            const messageSubscription = CoreOpener.iabInstance.on('message').subscribe((event) => {
-                NgZone.run(() => {
-                    CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
-                });
+        const messageSubscription = CoreOpener.iabInstance.on('message').subscribe((event) => {
+            NgZone.run(() => {
+                CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
             });
+        });
 
-            const exitSubscription = CoreOpener.iabInstance.on('exit').subscribe((event) => {
-                NgZone.run(() => {
-                    loadStartSubscription.unsubscribe();
-                    loadStopSubscription.unsubscribe();
-                    messageSubscription.unsubscribe();
-                    exitSubscription.unsubscribe();
+        const exitSubscription = CoreOpener.iabInstance.on('exit').subscribe((event) => {
+            NgZone.run(() => {
+                loadStartSubscription.unsubscribe();
+                loadStopSubscription.unsubscribe();
+                messageSubscription.unsubscribe();
+                exitSubscription.unsubscribe();
 
-                    CoreOpener.iabInstance = undefined;
-                    CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
-                });
+                CoreOpener.iabInstance = undefined;
+                CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
             });
-        }
+        });
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.OPEN_LINK,

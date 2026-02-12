@@ -34,7 +34,7 @@ export const enum ContextLevel {
     BLOCK = 'block',
 }
 
-/* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
+/* eslint-disable @typescript-eslint/naming-convention */
 /**
  * Possible statuses for downloaded modules/files.
  */
@@ -62,7 +62,7 @@ export const DownloadStatus = {
     ...NotDownloadedStatus,
 } as const;
 export type DownloadStatus = typeof DownloadStatus[keyof typeof DownloadStatus];
-/* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-redeclare */
+/* eslint-enable @typescript-eslint/naming-convention */
 
 // Constants for cache update frequency.
 export const CoreCacheUpdateFrequency = {
@@ -71,7 +71,6 @@ export const CoreCacheUpdateFrequency = {
     SOMETIMES: 2, // eslint-disable-line @typescript-eslint/naming-convention
     RARELY: 3, // eslint-disable-line @typescript-eslint/naming-convention
 } as const;
-// eslint-disable-next-line @typescript-eslint/no-redeclare
 export type CoreCacheUpdateFrequency = typeof CoreCacheUpdateFrequency[keyof typeof CoreCacheUpdateFrequency];
 
 export const MINIMUM_MOODLE_VERSION = '3.5';
@@ -174,6 +173,42 @@ export enum CoreLinkOpenMethod {
     INAPPBROWSER = 'inappbrowser',
     BROWSER = 'browser',
     EMBEDDED = 'embedded',
+};
+
+// Data attributes that can be added to LMS content to modify the app behavior.
+export const DATA_APP_OPEN_IN = 'data-app-open-in';
+export const DATASET_APP_OPEN_IN = 'appOpenIn';
+export const DATA_APP_AUTO_PLAY = 'data-app-autoplay';
+export const DATASET_APP_AUTO_PLAY = 'appAutoplay';
+export const DATA_APP_URL = 'data-app-url';
+export const DATASET_APP_URL = 'appUrl';
+export const DATA_APP_URL_CONFIRM = 'data-app-url-confirm';
+export const DATASET_APP_URL_CONFIRM = 'appUrlConfirm';
+export const DATA_APP_URL_RESUME_ACTION = 'data-app-url-resume-action';
+export const DATASET_APP_URL_RESUME_ACTION = 'appUrlResumeAction';
+export const DATA_APP_ALT_URL = 'data-app-alt-url';
+export const DATASET_APP_ALT_URL = 'appAltUrl';
+export const DATA_APP_ALT_MSG = 'data-app-alt-msg';
+export const DATASET_APP_ALT_MSG = 'appAltMsg';
+export const DATA_APP_ALT_URL_TYPE = 'data-app-alt-url-type';
+export const DATASET_APP_ALT_URL_TYPE = 'appAltUrlType';
+export const DATA_APP_ALT_URL_LABEL = 'data-app-alt-url-label';
+export const DATASET_APP_ALT_URL_LABEL = 'appAltUrlLabel';
+
+/** @deprecated since 5.2. Use DATA_APP_OPEN_IN instead. */
+export const DATA_APP_OPEN_IN_LEGACY = 'data-open-in';
+/** @deprecated since 5.2. Use DATASET_APP_OPEN_IN instead. */
+export const DATASET_APP_OPEN_IN_LEGACY = 'openIn';
+/** @deprecated since 5.2. Use DATA_APP_AUTO_PLAY instead. */
+export const DATA_APP_AUTO_PLAY_LEGACY = 'data-mobileapp-autoplay';
+/** @deprecated since 5.2. Use DATASET_APP_AUTO_PLAY instead. */
+export const DATASET_APP_AUTO_PLAY_LEGACY = 'mobileappAutoplay';
+/** @deprecated since 5.2. Use DATA_APP_ALT_URL instead. */
+export const DATA_OPEN_EXTERNAL = 'data-open-external';
+
+export const enum DataAppAltUrlType {
+    BUTTON = 'button',
+    LINK = 'link',
 };
 
 /**
