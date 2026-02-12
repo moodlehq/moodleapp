@@ -51,7 +51,10 @@
             }
 
             @for (item of customItems; track item) {
-                <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url" />
+                <core-dynamic-component [component]="customMenuOverrideComponent" [data]="item">
+                    <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url"
+                        [extraData]="item.extraData" />
+                </core-dynamic-component>
             }
 
             @for (handler of accountHandlers; track handler.name; let first = $first) {

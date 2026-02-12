@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 
 import { CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreLang, CoreLangFormat, CoreLangLanguage } from '@services/lang';
@@ -207,6 +207,16 @@ export class CoreCustomMenuService {
             }));
     }
 
+    /**
+     * Get the class of the component to render for custom menu items. If not defined, the default component will be used.
+     * This method can be overridden in subclasses to provide a custom component to render the custom menu items.
+     *
+     * @returns The class of the component to render for custom menu items, or `undefined` to use the default component.
+     */
+    async getCustomItemComponent(): Promise<Type<unknown> | undefined> {
+        return undefined;
+    }
+
 }
 
 export const CoreCustomMenu = makeSingleton(CoreCustomMenuService);
@@ -234,6 +244,11 @@ export type CoreCustomMenuItem = {
      * Name of the icon to display for the item.
      */
     icon: string;
+
+    /**
+     * Extra data to add additional features.
+     */
+    extraData?: Record<string, unknown>;
 };
 
 /**

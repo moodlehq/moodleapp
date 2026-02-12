@@ -54,9 +54,12 @@
         }
 
         @for (item of customItems; track item) {
-            <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url" />
+            <core-dynamic-component [component]="customMenuOverrideComponent" [data]="item">
+                <core-custom-menu-item [type]="item.type" [label]="item.label" [icon]="item.icon" [url]="item.url"
+                    [extraData]="item.extraData" />
+            </core-dynamic-component>
         }
-        
+
         @if (showScanQR) {
             <ion-item button (click)="scanQR()" [detail]="true">
                 <ion-icon name="fas-qrcode" slot="start" aria-hidden="true" />

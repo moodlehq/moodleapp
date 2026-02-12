@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, viewChildren } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChildren, Type } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -60,6 +60,8 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
     handlersLoaded = false;
     showScanQR: boolean;
     customItems?: CoreCustomMenuItem[];
+    customMenuOverrideComponent?: Type<unknown>;
+
     hasComponentHandlers = false;
 
     protected allHandlers?: CoreMainMenuHandlerToDisplay[];
@@ -86,7 +88,9 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        this.customMenuOverrideComponent = await CoreCustomMenu.getCustomItemComponent();
+
         // Load the handlers.
         this.subscription = CoreMainMenuDelegate.getHandlersObservable().subscribe((handlers) => {
             this.allHandlers = handlers;
