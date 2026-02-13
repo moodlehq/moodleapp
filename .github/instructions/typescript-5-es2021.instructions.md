@@ -10,7 +10,7 @@ applyTo: '**/*.ts'
 - Respect the existing architecture and coding standards.
 - Prefer readable, explicit solutions over clever shortcuts.
 - Extend current abstractions before inventing new ones.
-- Prioritize maintainability and clarity, short methods and classes, clean code.
+- Prioritise maintainability and clarity, short methods and classes, clean code.
 
 ## General Guardrails
 
@@ -44,15 +44,16 @@ applyTo: '**/*.ts'
 
 - Avoid `any` (implicit or explicit); prefer `unknown` plus narrowing.
 - Use discriminated unions for real-time events and state machines.
-- Centralize shared contracts instead of duplicating shapes.
+- Centralise shared contracts instead of duplicating shapes.
 - Express intent with TypeScript utility types (e.g., `Readonly`, `Partial`, `Record`).
+- Prefer `type` over `interface` for defining shapes; use `interface` only when a class must implement it.
 
 ## Async, Events & Error Handling
 
 - Use `async/await`; wrap awaits in try/catch with structured errors.
 - Guard edge cases early to avoid deep nesting.
 - Send errors through the project's logging/telemetry utilities.
-- Capture errors with structured logging via the project's `CoreLogger` service; surface user-facing errors through alerts, toasts, modals only when user action is required.
+- Capture errors with structured logging via the project's `CoreLogger`; surface user-facing errors through alerts, toasts, modals only when user action is required.
 - Debounce high-frequency user inputs (e.g., search, text input, scroll) to reduce thrash; avoid debouncing discrete actions (e.g., toggles, selections, clicks).
 - Dispose resources deterministically to prevent leaks.
 
@@ -68,26 +69,26 @@ applyTo: '**/*.ts'
 
 - Instantiate clients outside hot paths and inject them for testability.
 - Never hardcode secrets; load them from secure sources.
-- Normalize external responses and map errors to domain shapes.
+- Normalise external responses and map errors to domain shapes.
 
 ## Security Practices
 
-- Validate and sanitize external input with schema validators or type guards.
+- Validate and sanitise external input with schema validators or type guards.
 - Avoid dynamic code execution and untrusted template rendering except on plugins.
 - Encode untrusted content before rendering HTML; use framework escaping or trusted types.
-- Use parameterized queries or prepared statements to block injection.
+- Use parameterised queries or prepared statements to block injection.
 - Favor immutable flows and defensive copies for sensitive data.
 - Use vetted crypto libraries only.
 - Patch dependencies promptly and monitor advisories.
 
 ## Configuration
 
-- Access configuration through `CoreConstants.CONFIG` service or environment-specific exports.
+- Access configuration through the `CoreConstants.CONFIG` configuration object or environment-specific exports.
 - Document new configuration keys and update related tests.
 
 ## UI & UX Components
 
-- Sanitize user or external content before rendering.
+- Sanitise user or external content before rendering.
 - Keep UI layers thin; push heavy logic to services or state managers.
 - Use messaging or events to decouple UI from business logic.
 

@@ -126,7 +126,8 @@ Watch for changes: `gulp watch`
 ### Module Structure
 - Core modules: `src/core/features/{feature}/`
 - Addon modules: `src/addons/{type}/{name}/`
-- Each feature has `{name}.module.ts` (eager) and `{name}-lazy.module.ts` (lazy-loaded routes)
+- Each feature has `{name}.module.ts` (eager) and `{name}-lazy.module.ts` (lazy-loaded routes) when needed
+- Avoid creating separate `-lazy.module.ts` files; instead use `loadComponent` with dynamic imports for lazy loading
 - Services in `services/`, components in `components/`, pages in `pages/`
 
 ### Handler Pattern
@@ -162,4 +163,4 @@ Define tables with columns, indexes in site schemas. Version increments trigger 
 
 
 ## Code reviews
-- When performing a code review check language in British English.
+- When performing a code review, check that the language is in British English.

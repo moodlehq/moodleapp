@@ -12,7 +12,7 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 - TypeScript for type safety
 - Angular CLI for project setup and scaffolding
 - Follow Angular Style Guide (https://angular.dev/style-guide)
-- Use Ionic framework for mobile-optimized UI components (version defined in package.json)
+- Use Ionic framework for mobile-optimised UI components (version defined in package.json)
 - Use Cordova for native device features
 - Check .browserslistrc for supported browsers and platforms
 
@@ -20,13 +20,13 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 
 ### Architecture
 - Use standalone components unless modules are explicitly required
-- Organize code by standalone feature modules or domains for scalability
-- Implement lazy loading for feature modules to optimize performance
+- Organise code by standalone feature modules or domains for scalability
+- Implement lazy loading for feature modules to optimise performance
 - Use Angular's built-in dependency injection system effectively
 - Structure components with a clear separation of concerns (smart vs. presentational components)
 
 ### TypeScript
-- Using recommended rules in `tsconfig.json` for type safety
+- Using recommended rules in `eslint.config.mjs` for type safety
 - Define clear interfaces and types for components, services, and models
 - Use type guards and union types for robust type checking
 - Use typed forms (e.g., `FormGroup`, `FormControl`) for reactive forms
@@ -61,13 +61,13 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 - Implement caching strategies
 
 ### Security
-- Sanitize user inputs using Angular's built-in sanitization
-- Implement route guards for authentication and authorization
+- Sanitise user inputs using Angular's built-in sanitisation
+- Implement route guards for authentication and authorisation
 - Validate form inputs with Angular's reactive forms and custom validators
 - Follow Angular's security best practices (e.g., avoid direct DOM manipulation)
 
 ### Performance
-- Enable production builds with `npm run build:prod` for optimization
+- Enable production builds with `npm run build:prod` for optimisation
 - Use lazy loading for routes to reduce initial bundle size
 - Use trackBy in `@for` loops to improve rendering performance
 
@@ -95,7 +95,7 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 - Use Angular CLI commands for generating boilerplate code
 - Document components and services with clear JSDoc comments
 - Ensure accessibility compliance (WCAG 2.1) where applicable
-- Use ngx-translate for internationalization
+- Use ngx-translate for internationalisation
 - Keep code DRY by creating reusable utilities and shared modules
 - Use signals consistently for state management to ensure reactive updates
 
