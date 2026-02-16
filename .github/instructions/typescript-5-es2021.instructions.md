@@ -15,7 +15,7 @@ applyTo: '**/*.ts'
 ## General Guardrails
 
 - Target TypeScript 5.x / ES2021 and prefer native features over polyfills.
-- Use pure ES modules; never emit `require`, `module.exports`, or CommonJS helpers.
+- Use pure ES modules; always emit only ES module syntax, not `require`, `module.exports`, or CommonJS helpers.
 - Rely on the project's build, lint, and test scripts unless asked otherwise.
 - Note design trade-offs when intent is not obvious.
 
@@ -25,7 +25,7 @@ applyTo: '**/*.ts'
 - Use kebab-case filenames (e.g., `user-session.ts`, `data-service.ts`) unless told otherwise.
 - Keep tests, types, and helpers near their implementation when it aids discovery.
 - Reuse or extend shared utilities when it reduces duplication and keeps responsibilities focused.
-- Create new utilities when they serve a distinct purpose; avoid bloated "Utils" classes that mix unrelated concerns.
+- Create new utilities when they serve a distinct purpose; keep "Utils" classes focused on related concerns only.
 
 ## Naming & Style
 
@@ -46,7 +46,7 @@ applyTo: '**/*.ts'
 - Use discriminated unions for real-time events and state machines.
 - Centralise shared contracts instead of duplicating shapes.
 - Express intent with TypeScript utility types (e.g., `Readonly`, `Partial`, `Record`).
-- Prefer `type` over `interface` for defining shapes; use `interface` only when a class must implement it.
+- Prefer `type` over `interface` for defining shapes; use `interface` when a class must implement it.
 
 ## Async, Events & Error Handling
 
@@ -68,13 +68,13 @@ applyTo: '**/*.ts'
 ## External Integrations
 
 - Instantiate clients outside hot paths and inject them for testability.
-- Never hardcode secrets; load them from secure sources.
+- Always load secrets from secure sources instead of hardcoding them.
 - Normalise external responses and map errors to domain shapes.
 
 ## Security Practices
 
 - Validate and sanitise external input with schema validators or type guards.
-- Avoid dynamic code execution and untrusted template rendering except on plugins.
+- Permit dynamic code execution and untrusted template rendering only on plugins.
 - Encode untrusted content before rendering HTML; use framework escaping or trusted types.
 - Use parameterised queries or prepared statements to block injection.
 - Favor immutable flows and defensive copies for sensitive data.
@@ -96,7 +96,7 @@ applyTo: '**/*.ts'
 
 - Add or update unit tests with the project's framework and naming style.
 - Expand integration or end-to-end suites when behavior crosses modules or platform APIs.
-- Avoid brittle timing assertions; prefer fake timers or injected clocks.
+- Use fake timers or injected clocks instead of brittle timing assertions.
 
 ## Performance & Reliability
 

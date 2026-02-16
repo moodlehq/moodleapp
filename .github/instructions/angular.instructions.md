@@ -48,7 +48,7 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 ### State Management
 - Use Angular Signals for reactive state management in components and services
 - Leverage `signal()`, `computed()`, and `effect()` for reactive state updates
-- We won't use any experimental features of Angular Signals such as `resource()`
+- Use only stable features of Angular Signals and exclude experimental features such as `resource()`
 - Use writable signals for mutable state and computed signals for derived state
 - Handle loading and error states with signals and proper UI feedback
 - Use Angular's `AsyncPipe` to handle observables in templates when combining signals with RxJS
@@ -64,7 +64,7 @@ Instructions for generating high-quality Angular applications with TypeScript, u
 - Sanitise user inputs using Angular's built-in sanitisation
 - Implement route guards for authentication and authorisation
 - Validate form inputs with Angular's reactive forms and custom validators
-- Follow Angular's security best practices (e.g., avoid direct DOM manipulation)
+- Follow Angular's security best practices by using Angular APIs instead of direct DOM manipulation
 
 ### Performance
 - Enable production builds with `npm run build:prod` for optimisation

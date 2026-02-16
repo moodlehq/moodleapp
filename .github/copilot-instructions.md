@@ -12,7 +12,7 @@ Services are NOT Angular-managed singletons. Use the `makeSingleton` pattern:
 export class MyService { }
 export const My = makeSingleton(MyService);
 ```
-Import from `@singletons` for platform APIs, never directly from `@angular/core` or Ionic.
+Import from `@singletons` for platform APIs, only import directly from `@angular/core` or Ionic when necessary.
 
 ### Delegate Pattern for Extensibility
 The codebase uses delegates extensively to allow addons to register handlers:
@@ -154,10 +154,10 @@ Define tables with columns, indexes in site schemas. Version increments trigger 
 
 ## Common Pitfalls
 
-1. **Don't** inject Angular services directly - use singletons via `@singletons`
-2. **Don't** use `@NgModule({ declarations: [] })` for new modules - use standalone components
-3. **Don't** forget to register handlers in `provideAppInitializer`
-4. **Don't** import from barrel files that aren't configured in `tsconfig.json` paths
+1. Always use singletons via `@singletons` instead of injecting Angular services directly
+2. Use standalone components for new modules instead of `@NgModule({ declarations: [] })`
+3. Always register handlers in `provideAppInitializer`
+4. Import only from barrel files that are configured in `tsconfig.json` paths
 5. **Do** run `gulp` before testing to ensure lang files are built
 6. **Do** use `CoreSitesReadingStrategy` when fetching data to control cache vs network behavior
 
