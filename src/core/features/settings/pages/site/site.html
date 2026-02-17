@@ -16,19 +16,39 @@
         </ion-refresher>
         <core-loading [hideUntil]="handlers.loaded" placeholderType="column" placeholderHeight="48px">
             <ion-list>
-                <ion-item *ngFor="let handler of handlerItems" lines="none" [class]="['core-settings-handler', handler.class]"
-                    [attr.aria-label]="handler.title | translate" (click)="!handler.toggle && handlers.select(handler)"
-                    [button]="!handler.toggle" [detail]="!handler.toggle" [attr.aria-current]="handlers.getItemAriaCurrent(handler)">
-                    @if (handler.icon) {
-                        <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                @for (handler of handlerItems; track handler.name) {
+                    @if ('toggle' in handler) {
+                        <ion-item lines="none" [class]="['core-settings-handler', handler.class]"
+                            [attr.aria-label]="handler.title | translate" >
+                            @if (handler.icon) {
+                                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                            }
+                            <ion-toggle [(ngModel)]="handler.toggleChecked" (ionChange)="handler.toggle($event.detail.checked)">
+                                <p class="item-heading">{{ handler.title | translate}}</p>
+                            </ion-toggle>
+                        </ion-item>
+                    } @else {
+                        <ion-item lines="none" [class]="['core-settings-handler', handler.class]"
+                            [attr.aria-label]="handler.title | translate" (click)="handlerAction(handler)"
+                            [button]="true" [detail]="'page' in handler"
+                            [attr.aria-current]="'page' in handler && handlers.getItemAriaCurrent(handler)">
+                            @if (handler.icon) {
+                                <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
+                            }
+                            <ion-label>
+                                <p class="item-heading">{{ handler.title | translate}}</p>
+                            </ion-label>
+                            @if (handler.badge) {
+                                <ion-badge [class]="handler.badge.class" slot="end">
+                                    @if (handler.badge.icon) {
+                                        <ion-icon [name]="handler.badge.icon" [class]="handler.badge.iconClass" aria-hidden="true" />
+                                    }
+                                    {{ handler.badge.textKey | translate }}
+                                </ion-badge>
+                            }
+                        </ion-item>
                     }
-                    <ion-label>
-                        <p class="item-heading">{{ handler.title | translate}}</p>
-                    </ion-label>
-                    @if (handler.toggle) {
-                        <ion-toggle [(ngModel)]="handler.toggleChecked" (ionChange)="handler.toggle($event.detail.checked)" slot="end" />
-                    }
-                </ion-item>
+                }
             </ion-list>
 
             <ion-card>

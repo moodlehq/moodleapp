@@ -145,6 +145,19 @@ export default class CoreSitePreferencesPage implements AfterViewInit, OnDestroy
     }
 
     /**
+     * Handle click on a handler. Only for non toggle handlers.
+     *
+     * @param handler Handler clicked.
+     */
+    handlerAction(handler: CoreSettingsHandlerToDisplay): void {
+        if ('action' in handler && handler.action) {
+            handler.action();
+        } else if ('page' in handler && handler.page) {
+            this.handlers.select(handler);
+        }
+    }
+
+    /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
