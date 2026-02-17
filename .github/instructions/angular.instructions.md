@@ -1,6 +1,6 @@
 ---
 description: 'Angular and Ionic 8 coding standards for Moodle Mobile App'
-applyTo: '**/*.{ts,html,scss} && !**/*.test.ts'
+applyTo: '**/*.ts, **/*.html, **/*.scss'
 ---
 
 # Angular & Ionic 8 Development Instructions
