@@ -57,7 +57,34 @@ type CoreSettingsToggleHandlerData = CoreSettingsHandlerBaseData & {
     toggle(checked: boolean): void;
 };
 
-type CoreSettingsPageHandlerData = CoreSettingsHandlerBaseData & {
+type CoreSettingsBadgeHandlerData = {
+    /**
+     * Data to display a badge in the handler. If not set, no badge will be displayed.
+     */
+    badge?: {
+        /**
+         * Icon to display in the badge.
+         */
+        icon?: string;
+
+        /**
+         * Class to add to the badge icon.
+         */
+        iconClass?: string;
+
+        /**
+         * Class to add to the badge.
+         */
+        class?: string;
+
+        /**
+         * Key of the string to use as badge text.
+         */
+        textKey: string;
+    };
+};
+
+type CoreSettingsPageHandlerData = CoreSettingsHandlerBaseData & CoreSettingsBadgeHandlerData & {
     /**
      * Name of the page to load for the handler.
      */
@@ -67,12 +94,21 @@ type CoreSettingsPageHandlerData = CoreSettingsHandlerBaseData & {
      * Params list of the page to load for the handler.
      */
     params?: Params;
+
+};
+
+type CoreSettingsActionHandlerData = CoreSettingsHandlerBaseData & CoreSettingsBadgeHandlerData & {
+
+    /**
+     * Method to emit events to the handler.
+     */
+    action(): void;
 };
 
 /**
  * Data needed to render a setting handler. It's returned by the handler.
  */
-export type CoreSettingsHandlerData = CoreSettingsPageHandlerData | CoreSettingsToggleHandlerData;
+export type CoreSettingsHandlerData = CoreSettingsPageHandlerData | CoreSettingsActionHandlerData | CoreSettingsToggleHandlerData;
 
 /**
  * Data returned by the delegate for each handler.

@@ -38,12 +38,22 @@ ion-modal {
     }
 
     &.modal-sheet {
+
         .ion-page {
             --ion-safe-area-top: 0px;
             padding-bottom: var(--ion-safe-area-bottom);
         }
+        &::part(content) {
+            --border-radius: 8px 8px 0px 0px;
+        }
         &::part(handle) {
             background: var(--core-header-buttons-color);
+        }
+
+        &.no-header {
+            &::part(handle) {
+                background: var(--text-color);
+            }
         }
     }
 

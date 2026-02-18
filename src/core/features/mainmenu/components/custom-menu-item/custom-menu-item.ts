@@ -50,6 +50,11 @@ export class CoreCustomMenuItemComponent {
     readonly icon = input.required<string>();
 
     /**
+     * Extra data to add additional features.
+     */
+    readonly extraData = input<Record<string, unknown>>();
+
+    /**
      * Open an embedded custom item.
      */
     openItem(): void {

@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnDestroy, OnInit, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type, viewChildren } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
@@ -63,6 +63,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     displaySiteUrl = false;
     handlers: HandlerData[] = [];
     customItems?: CoreCustomMenuItem[];
+    customMenuOverrideComponent?: Type<unknown>;
     accountHandlers: HandlerData[] = [];
     handlersLoaded = false;
     user?: CoreUserProfile;
@@ -87,6 +88,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         this.displayContactSupport = new CoreUserAuthenticatedSupportConfig(currentSite).canContactSupport();
         this.removeAccountOnLogout = !!CoreConstants.CONFIG.removeaccountonlogout;
         this.displaySiteUrl = currentSite.shouldDisplayInformativeLinks();
+
+        this.customMenuOverrideComponent = await CoreCustomMenu.getCustomItemComponent();
 
         await this.loadCustomMenuItems();
 
@@ -320,6 +323,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
 
     /**
      * Close modal.
+     *
+     * @param event Event.
      */
     async close(event: Event): Promise<void> {
         event.preventDefault();

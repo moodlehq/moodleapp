@@ -161,10 +161,6 @@ jobs:
                   echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
                   sudo locale-gen en_AU.UTF-8
 
-                  # Install nvm v0.39.7 as a temporary workaround for issue:
-                  # https://github.com/moodlehq/moodle-plugin-ci/issues/309
-                  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-
             - name: Install Behat Snapshots plugin
               run: moodle-plugin-ci add-plugin moodlemobile/moodle-local_behatsnapshots
 
