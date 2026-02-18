@@ -220,7 +220,7 @@ export class CoreCoursesProvider {
     async isDownloadCourseDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return this.isDownloadCoursesDisabledInSite(site);
+        return this.isDownloadCourseDisabledInSite(site);
     }
 
     /**
