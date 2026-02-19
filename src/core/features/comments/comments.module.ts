@@ -20,6 +20,7 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreComments } from './services/comments';
 import { COMMENTS_OFFLINE_SITE_SCHEMA } from './services/database/comments';
 import { CoreCommentsSyncCronHandler } from './services/handlers/sync-cron';
+import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
  * Get comments services.
@@ -42,6 +43,7 @@ const routes: Routes = [
     {
         path: 'comments/:contextLevel/:instanceId/:componentName/:itemId',
         loadComponent: () => import('@features/comments/pages/viewer/viewer'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.CONTEXT },
     },
 ];
 

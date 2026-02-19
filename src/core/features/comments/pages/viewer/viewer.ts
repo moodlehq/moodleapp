@@ -40,7 +40,7 @@ import { CoreNetwork } from '@services/network';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CORE_COMMENTS_AUTO_SYNCED } from '@features/comments/constants';
+import { CORE_COMMENTS_AUTO_SYNCED, CORE_COMMENTS_COUNT_CHANGED_EVENT } from '@features/comments/constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreWait } from '@static/wait';
 import { CoreDom } from '@static/dom';
@@ -357,7 +357,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                 // Add the comment to the top.
                 this.comments = this.comments.concat([addedComment]);
 
-                CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                CoreEvents.trigger(CORE_COMMENTS_COUNT_CHANGED_EVENT, {
                     contextLevel: this.contextLevel,
                     instanceId: this.instanceId,
                     component: this.componentName,
@@ -428,12 +428,12 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
             this.showDelete = false;
 
             if (deletedOnline && 'id' in comment) {
-                const index = this.comments.findIndex((commentinList) => commentinList.id == comment.id);
+                const index = this.comments.findIndex((commentinList) => commentinList.id === comment.id);
 
                 if (index >= 0) {
                     this.comments.splice(index, 1);
 
-                    CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+                    CoreEvents.trigger(CORE_COMMENTS_COUNT_CHANGED_EVENT, {
                         contextLevel: this.contextLevel,
                         instanceId: this.instanceId,
                         component: this.componentName,
@@ -522,7 +522,14 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         comment: CoreCommentsDataToDisplay,
         prevComment?: CoreCommentsDataToDisplay,
     ): boolean {
-        return comment.userid != this.currentUserId && (!prevComment || prevComment.userid != comment.userid || !!comment.showDate);
+        return (
+            comment.userid !== this.currentUserId &&
+            (
+                !prevComment ||
+                prevComment.userid !== comment.userid ||
+                !!comment.showDate
+            )
+        );
     }
 
     /**
@@ -536,7 +543,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
         comment: CoreCommentsDataToDisplay,
         nextComment?: CoreCommentsDataToDisplay,
     ): boolean {
-        return !nextComment || nextComment.userid != comment.userid || !!nextComment.showDate;
+        return !nextComment || nextComment.userid !== comment.userid || !!nextComment.showDate;
     }
 
     /**
@@ -581,7 +588,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
                 return;
             }
 
-            if (this.newComment == '') {
+            if (this.newComment === '') {
                 this.newComment = this.offlineComment.content;
             }
 
@@ -603,7 +610,7 @@ export default class CoreCommentsViewerPage implements OnInit, OnDestroy, AfterV
 
             if (hasDeletedComments) {
                 deletedComments.forEach((deletedComment) => {
-                    const comment = this.comments.find((comment) => comment.id == deletedComment.commentid);
+                    const comment = this.comments.find((comment) => comment.id === deletedComment.commentid);
 
                     if (comment) {
                         comment.deleted = !!deletedComment.deleted;

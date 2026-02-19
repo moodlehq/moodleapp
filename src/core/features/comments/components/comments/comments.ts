@@ -13,10 +13,8 @@
 // limitations under the License.
 
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, OnInit } from '@angular/core';
-import {
-    CoreComments,
-    CoreCommentsProvider,
-} from '../../services/comments';
+import { CoreComments } from '../../services/comments';
+import { CORE_COMMENTS_COUNT_CHANGED_EVENT, CORE_COMMENTS_REFRESH_EVENT } from '@features/comments/constants';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
@@ -73,7 +71,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
 
         // Refresh comments if event received.
         this.refreshCommentsObserver = CoreEvents.on(
-            CoreCommentsProvider.REFRESH_COMMENTS_EVENT,
+            CORE_COMMENTS_REFRESH_EVENT,
             (data) => {
                 // Verify these comments need to be updated.
                 if (this.undefinedOrEqual(data, 'contextLevel') && this.undefinedOrEqual(data, 'instanceId') &&
@@ -88,7 +86,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
 
         // Refresh comments count if event received.
         this.commentsCountObserver = CoreEvents.on(
-            CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT,
+            CORE_COMMENTS_COUNT_CHANGED_EVENT,
             (data) => {
                 // Verify these comments need to be updated.
                 if (!this.commentsCount.endsWith('+') && this.undefinedOrEqual(data, 'contextLevel') &&
@@ -174,6 +172,8 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
 
     /**
      * Opens the comments page.
+     *
+     * @param e Event that triggered the action (optional).
      */
     openComments(e?: Event): void {
         e?.preventDefault();
@@ -212,7 +212,7 @@ export class CoreCommentsCommentsComponent implements OnInit, OnChanges, OnDestr
      * @returns Whether it's undefined or equal.
      */
     protected undefinedOrEqual(data: Record<string, unknown>, name: string): boolean {
-        return data[name] === undefined || data[name] == this[name];
+        return data[name] === undefined || data[name] === this[name];
     }
 
 }
