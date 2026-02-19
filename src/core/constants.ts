@@ -194,6 +194,8 @@ export const DATA_APP_ALT_URL_TYPE = 'data-app-alt-url-type';
 export const DATASET_APP_ALT_URL_TYPE = 'appAltUrlType';
 export const DATA_APP_ALT_URL_LABEL = 'data-app-alt-url-label';
 export const DATASET_APP_ALT_URL_LABEL = 'appAltUrlLabel';
+export const DATA_APP_SITE_REFERER = 'data-app-site-referer';
+export const DATASET_APP_SITE_REFERER = 'appSiteReferer';
 
 /** @deprecated since 5.2. Use DATA_APP_OPEN_IN instead. */
 export const DATA_APP_OPEN_IN_LEGACY = 'data-open-in';

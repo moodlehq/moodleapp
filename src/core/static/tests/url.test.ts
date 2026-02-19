@@ -355,4 +355,21 @@ describe('CoreUrl', () => {
         expect(CoreUrl.getPluginFileArgs('http://mysite.com/pluginfile.php/6/')).toEqual(undefined);
     });
 
+    it('converts to referer script URL', () => {
+        const siteUrl = 'https://mysite.com';
+        expect(CoreUrl.toRefererScriptUrl('https://myvideoplayer.com/videoid', siteUrl)).toEqual(
+            `${siteUrl}/admin/tool/mobile/referer.php?url=https%3A%2F%2Fmyvideoplayer.com%2Fvideoid`,
+        );
+        expect(CoreUrl.toRefererScriptUrl('https://foo.bar', siteUrl)).toEqual(
+            `${siteUrl}/admin/tool/mobile/referer.php?url=https%3A%2F%2Ffoo.bar`,
+        );
+    });
+
+    it('checks if a URL is a referer script URL', () => {
+        const siteUrl = 'https://mysite.com';
+        expect(CoreUrl.isRefererScriptUrl(`${siteUrl}/admin/tool/mobile/referer.php`, siteUrl)).toBe(true);
+        expect(CoreUrl.isRefererScriptUrl(`${siteUrl}/admin/tool/mobile/refererr.php`, siteUrl)).toBe(false);
+        expect(CoreUrl.isRefererScriptUrl(`${siteUrl}/myplugin/admin/tool/mobile/referer.php`, siteUrl)).toBe(false);
+    });
+
 });

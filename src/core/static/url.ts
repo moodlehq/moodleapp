@@ -1085,6 +1085,38 @@ export class CoreUrl {
         return url;
     }
 
+    /**
+     * Check whether a URL needs (or could need) a referer to work.
+     *
+     * @param url URL to check.
+     * @returns Whether the URL needs a referer.
+     */
+    static urlNeedsReferer(url: string): boolean {
+        return CoreUrl.isYoutubeURL(url) || CoreUrl.isVimeoVideoUrl(url);
+    }
+
+    /**
+     * Get the URL to use to view a URL adding a site referer.
+     *
+     * @param url URL to treat.
+     * @param siteUrl The URL of the site to use for the referer.
+     * @returns URL to use to add a referer.
+     */
+    static toRefererScriptUrl(url: string, siteUrl: string): string {
+        return CorePath.concatenatePaths(siteUrl, 'admin/tool/mobile/referer.php') + '?url=' + encodeURIComponent(url);
+    }
+
+    /**
+     * Check if a URL is a referer script URL.
+     *
+     * @param url URL to check.
+     * @param siteUrl The URL of the site to use for the referer.
+     * @returns Whether the URL is a referer script URL.
+     */
+    static isRefererScriptUrl(url: string, siteUrl: string): boolean {
+        return url.startsWith(CorePath.concatenatePaths(siteUrl, 'admin/tool/mobile/referer.php'));
+    }
+
 }
 
 export type CoreUrlParams = { [key: string]: string };

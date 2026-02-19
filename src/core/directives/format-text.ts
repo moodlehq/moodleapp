@@ -66,6 +66,7 @@ import {
     DATASET_APP_ALT_URL_TYPE,
     DATASET_APP_OPEN_IN,
     DATASET_APP_OPEN_IN_LEGACY,
+    DATASET_APP_SITE_REFERER,
     DATASET_APP_URL,
     DATASET_APP_URL_CONFIRM,
     DATASET_APP_URL_RESUME_ACTION,
@@ -1049,7 +1050,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             CoreIframe.treatFrame(iframe, false);
 
             return;
-        } else if (site) {
+        } else if (site && (iframe.dataset[DATASET_APP_SITE_REFERER] === 'true' || CoreUrl.urlNeedsReferer(src))) {
             src = site.fixRefererForUrl(src);
         }
 
