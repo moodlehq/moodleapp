@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
-import { CoreComments, CoreCommentsProvider } from './comments';
+import { CoreComments } from './comments';
 import { CoreEvents } from '@static/events';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCommentsOffline } from './comments-offline';
@@ -25,7 +25,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';
 import { CoreSyncResult } from '@services/sync';
 import { ContextLevel } from '@/core/constants';
-import { CORE_COMMENTS_AUTO_SYNCED } from '../constants';
+import { CORE_COMMENTS_AUTO_SYNCED, CORE_COMMENTS_COUNT_CHANGED_EVENT } from '../constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
@@ -265,7 +265,7 @@ export class CoreCommentsSyncProvider extends CoreSyncBaseProvider<CoreCommentsS
 
             result.updated = true;
 
-            CoreEvents.trigger(CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT, {
+            CoreEvents.trigger(CORE_COMMENTS_COUNT_CHANGED_EVENT, {
                 contextLevel: contextLevel,
                 instanceId: instanceId,
                 component,

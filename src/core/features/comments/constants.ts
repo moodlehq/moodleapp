@@ -13,3 +13,6 @@
 // limitations under the License.
 
 export const CORE_COMMENTS_AUTO_SYNCED = 'core_comments_autom_synced';
+
+export const CORE_COMMENTS_REFRESH_EVENT = 'core_comments_refresh_comments';
+export const CORE_COMMENTS_COUNT_CHANGED_EVENT = 'core_comments_count_changed';
