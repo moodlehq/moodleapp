@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { Component, OnDestroy, OnInit, Type } from '@angular/core';
 import { Params } from '@angular/router';
-import { CoreCommentsProvider } from '@features/comments/services/comments';
+import { CORE_COMMENTS_REFRESH_EVENT } from '@features/comments/constants';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';
@@ -146,7 +146,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Refresh entries on change.
         this.entryChangedObserver = CoreEvents.on(ADDON_MOD_DATA_ENTRY_CHANGED, (eventData) => {
-            if (this.database?.id == eventData.dataId) {
+            if (this.database?.id === eventData.dataId) {
                 this.showLoading = true;
 
                 return this.loadContent(true);
@@ -155,14 +155,14 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Listen for offline ratings saved and synced.
         this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
-            if (data.component == 'mod_data' && data.ratingArea == 'entry' && data.contextLevel == ContextLevel.MODULE
-                    && data.instanceId == this.database?.coursemodule) {
+            if (data.component === 'mod_data' && data.ratingArea === 'entry' && data.contextLevel === ContextLevel.MODULE
+                    && data.instanceId === this.database?.coursemodule) {
                 this.hasOfflineRatings = true;
             }
         });
         this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
-            if (data.component == 'mod_data' && data.ratingArea == 'entry' && data.contextLevel == ContextLevel.MODULE
-                    && data.instanceId == this.database?.coursemodule) {
+            if (data.component === 'mod_data' && data.ratingArea === 'entry' && data.contextLevel === ContextLevel.MODULE
+                    && data.instanceId === this.database?.coursemodule) {
                 this.hasOfflineRatings = false;
             }
         });
@@ -186,7 +186,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
             promises.push(AddonModData.invalidateFieldsData(this.database.id));
 
             if (this.hasComments) {
-                CoreEvents.trigger(CoreCommentsProvider.REFRESH_COMMENTS_EVENT, {
+                CoreEvents.trigger(CORE_COMMENTS_REFRESH_EVENT, {
                     contextLevel: ContextLevel.MODULE,
                     instanceId: this.database.coursemodule,
                 }, CoreSites.getCurrentSiteId());
@@ -203,7 +203,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
      * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModDataAutoSyncData): boolean {
-        if (this.database && syncEventData.dataId == this.database.id && syncEventData.entryId === undefined) {
+        if (this.database && syncEventData.dataId === this.database.id && syncEventData.entryId === undefined) {
             this.showLoading = true;
             // Refresh the data.
             this.content?.scrollToTop();
@@ -276,7 +276,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         this.fields = CoreArray.toObject(fields, 'id');
         this.fieldsArray = CoreObject.toArray(this.fields);
-        if (this.fieldsArray.length == 0) {
+        if (this.fieldsArray.length === 0) {
             canSearch = false;
             canAdd = false;
         }
@@ -520,7 +520,7 @@ export class AddonModDataIndexComponent extends CoreCourseModuleMainActivityComp
 
         // Try to find page number and offset of the entry.
         if (!this.search.searching) {
-            const pageXOffset = this.entries.findIndex((entry) => entry.id == entryId);
+            const pageXOffset = this.entries.findIndex((entry) => entry.id === entryId);
             if (pageXOffset >= 0) {
                 params.offset = this.search.page * ADDON_MOD_DATA_ENTRIES_PER_PAGE + pageXOffset;
                 params.sortBy = this.search.sortBy;

@@ -26,6 +26,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreTextFormat } from '@static/text';
+import { CORE_COMMENTS_COUNT_CHANGED_EVENT, CORE_COMMENTS_REFRESH_EVENT } from '../constants';
 
 declare module '@static/events' {
 
@@ -35,8 +36,8 @@ declare module '@static/events' {
      * @see https://www.typescriptlang.org/docs/handbook/declaration-merging.html#module-augmentation
      */
     export interface CoreEventsData {
-        [CoreCommentsProvider.REFRESH_COMMENTS_EVENT]: CoreCommentsRefreshCommentsEventData;
-        [CoreCommentsProvider.COMMENTS_COUNT_CHANGED_EVENT]: CoreCommentsCountChangedEventData;
+        [CORE_COMMENTS_REFRESH_EVENT]: CoreCommentsRefreshCommentsEventData;
+        [CORE_COMMENTS_COUNT_CHANGED_EVENT]: CoreCommentsCountChangedEventData;
     }
 
 }
@@ -49,8 +50,14 @@ export class CoreCommentsProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmComments:';
 
-    static readonly REFRESH_COMMENTS_EVENT = 'core_comments_refresh_comments';
-    static readonly COMMENTS_COUNT_CHANGED_EVENT = 'core_comments_count_changed';
+    /**
+     * @deprecated since 5.2. Use CORE_COMMENTS_REFRESH_EVENT instead.
+     */
+    static readonly REFRESH_COMMENTS_EVENT = CORE_COMMENTS_REFRESH_EVENT;
+    /**
+     * @deprecated since 5.2. Use CORE_COMMENTS_COUNT_CHANGED_EVENT instead.
+     */
+    static readonly COMMENTS_COUNT_CHANGED_EVENT = CORE_COMMENTS_COUNT_CHANGED_EVENT;
 
     static pageSize = 1; // At least it will be one.
     static pageSizeOK = false; // If true, the pageSize is definitive. If not, it's a temporal value to reduce WS calls.
