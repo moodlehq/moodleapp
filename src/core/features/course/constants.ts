@@ -95,4 +95,5 @@ export const enum CoreCourseDownloadStatusIcon {
 export enum CoreCourseForceLanguageSource {
     COURSE = 'course',
     MODULE = 'module',
+    CONTEXT = 'context',
 };

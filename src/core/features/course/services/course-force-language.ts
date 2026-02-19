@@ -28,6 +28,7 @@ import { CoreLang } from '@services/lang';
 import { CoreCourse } from './course';
 import { CoreCourseModuleDelegate } from './module-delegate';
 import { CoreCourseForceLanguageSource } from '../constants';
+import { ContextLevel } from '@/core/constants';
 
 /**
  * Service that provides some features regarding course and module forced languages.
@@ -85,11 +86,37 @@ export class CoreCourseForceLanguageService {
      */
     protected async getForcedLanguageFromRoute(source: CoreCourseForceLanguageSource): Promise<string | undefined> {
         const course = CoreNavigator.getRouteParam<CoreCourseSearchedData>('course');
-        const courseId = course?.id ?? CoreNavigator.getRouteNumberParam('courseId');
-
+        let courseId = course?.id ?? CoreNavigator.getRouteNumberParam('courseId');
         let cmId: number | undefined;
+
+        if (source === CoreCourseForceLanguageSource.CONTEXT) {
+            // Check if the context has a forced language.
+            const contextLevel = CoreNavigator.getRouteParam<ContextLevel>('contextLevel');
+            const instanceId = CoreNavigator.getRouteNumberParam('instanceId');
+
+            if (contextLevel === ContextLevel.COURSE) {
+                courseId = instanceId;
+            } else if (contextLevel === ContextLevel.MODULE) {
+                cmId = instanceId;
+            }
+        }
+
         if (source === CoreCourseForceLanguageSource.MODULE) {
             cmId = CoreNavigator.getRouteNumberParam('cmId');
+        }
+
+        if (cmId && !courseId) {
+            // Get the missing courseId from the module.
+            if (this.lastNavigationCheck.cmId === cmId && this.lastNavigationCheck.courseId) {
+                courseId = this.lastNavigationCheck.courseId;
+            } else {
+                try {
+                    const module = await CoreCourse.getModule(cmId, courseId, undefined, true);
+                    courseId = module.course;
+                } catch {
+                    // Ignore errors.
+                }
+            }
         }
 
         return this.getForcedLanguageFromCourseOrModule(course, courseId, cmId);
