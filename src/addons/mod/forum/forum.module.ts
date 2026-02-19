@@ -93,6 +93,7 @@ const mainMenuRoutes: Routes = [
     {
         path: ADDON_MOD_FORUM_SEARCH_PAGE_NAME,
         loadComponent: () => import('./pages/search/search'),
+        data: { checkForcedLanguage: CoreCourseForceLanguageSource.COURSE },
     },
     {
         path: `${ADDON_MOD_FORUM_PAGE_NAME}/discussion/:discussionId`,
