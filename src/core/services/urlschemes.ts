@@ -75,7 +75,7 @@ export class CoreCustomURLSchemesProvider {
 
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!currentSite || currentSite.getToken() != data.token || currentSite.isLoggedOut()) {
+        if (!currentSite || currentSite.getToken() !== data.token || currentSite.isLoggedOut()) {
             // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
 
             if (!data.siteUrl.match(/^https?:\/\//)) {
@@ -165,7 +165,7 @@ export class CoreCustomURLSchemesProvider {
                 throw Translate.instant('core.errorurlschemeinvalidsite');
             }
 
-            if (data.redirect && data.redirect.match(/^https?:\/\//) && data.redirect.indexOf(data.siteUrl) == -1) {
+            if (data.redirect && data.redirect.match(/^https?:\/\//) && !data.redirect.includes(data.siteUrl)) {
                 // Redirect URL must belong to the same site. Reject.
                 throw Translate.instant('core.contentlinks.errorredirectothersite');
             }
@@ -173,7 +173,7 @@ export class CoreCustomURLSchemesProvider {
             // First of all, create the site if needed.
             const siteId = await this.createSiteIfNeeded(data);
 
-            if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() == siteId)) {
+            if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
                 // Site created and authenticated, open the page to go.
                 CoreNavigator.navigateToSiteHome({
                     params: <CoreRedirectPayload> {
@@ -195,14 +195,18 @@ export class CoreCustomURLSchemesProvider {
 
             if (!siteId) {
                 // No site created, check if the site is stored (to know which one to use).
-                siteIds = await CoreSites.getSiteIdsFromUrl(data.siteUrl, true, data.username);
+                siteIds = await CoreSites.getSiteIdsFromUrl(data.siteUrl, {
+                    prioritize: true,
+                    username: data.username,
+                    userId: data.userId,
+                });
             }
 
             if (siteIds.length > 1) {
                 // More than one site to treat the URL, let the user choose.
                 CoreContentLinksHelper.goToChooseSite(data.redirect || data.siteUrl);
 
-            } else if (siteIds.length == 1) {
+            } else if (siteIds.length === 1) {
                 // Only one site, handle the link.
                 const site = await CoreSites.getSite(siteIds[0]);
 
@@ -278,13 +282,13 @@ export class CoreCustomURLSchemesProvider {
         const params = CoreUrl.extractUrlParams(url);
 
         // Remove the params to get the site URL.
-        if (url.indexOf('?') != -1) {
+        if (url.includes('?')) {
             url = url.substring(0, url.indexOf('?'));
         }
 
         if (!url.match(/https?:\/\//)) {
             // Url doesn't have a protocol. Check if the site is stored in the app to be able to determine the protocol.
-            const siteIds = await CoreSites.getSiteIdsFromUrl(url, true, username);
+            const siteIds = await CoreSites.getSiteIdsFromUrl(url, { prioritize: true, username });
 
             if (siteIds.length) {
                 // There is at least 1 site with this URL. Use it to know the full URL.
@@ -457,7 +461,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://`) != -1;
+        return url.includes(`${CoreConstants.CONFIG.customurlscheme}://`);
     }
 
     /**
@@ -471,7 +475,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://link=`) != -1;
+        return url.includes(`${CoreConstants.CONFIG.customurlscheme}://link=`);
     }
 
     /**
@@ -485,7 +489,7 @@ export class CoreCustomURLSchemesProvider {
             return false;
         }
 
-        return url.indexOf(`${CoreConstants.CONFIG.customurlscheme}://token=`) != -1;
+        return url.includes(`${CoreConstants.CONFIG.customurlscheme}://token=`);
     }
 
     /**
@@ -598,6 +602,11 @@ export type CoreCustomURLSchemesParams = CoreLoginSSOData & {
      * Username.
      */
     username?: string;
+
+    /**
+     * User Id.
+     */
+    userId?: number;
 
     /**
      * URL to open once authenticated.

@@ -102,9 +102,11 @@ export class CoreContentLinksHelperProvider {
         await CoreModals.openModal({
             component: CoreContentLinksChooseSiteModalComponent,
             componentProps: {
-                url: url,
+                url,
             },
-            cssClass: 'core-modal-fullscreen',
+            initialBreakpoint: 1,
+            breakpoints: [0, 1],
+            cssClass: 'no-header core-modal-auto-height',
         });
     }
 

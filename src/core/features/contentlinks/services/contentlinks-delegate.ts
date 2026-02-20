@@ -163,7 +163,7 @@ export class CoreContentLinksDelegateService {
         }
 
         // Get the list of sites the URL belongs to.
-        const siteIds = await CoreSites.getSiteIdsFromUrl(url, true, username);
+        const siteIds = await CoreSites.getSiteIdsFromUrl(url, { prioritize: true, username });
         if (!siteIds.length) {
             // No sites, no actions.
             return [];

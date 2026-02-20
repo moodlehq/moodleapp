@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, computed, input, signal } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { ModalController, Translate } from '@singletons';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
@@ -22,6 +22,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { NO_SITE_ID } from '@features/login/constants';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -35,11 +36,31 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
-    @Input({ required: true }) url!: string;
+    readonly url = input.required<string>();
 
-    sites: CoreSiteBasicInfo[] = [];
-    loaded = false;
-    displaySiteUrl = false;
+    readonly sites = signal<CoreSiteBasicInfo[]>([]);
+    readonly loaded = signal(false);
+    readonly siteUrl = computed(() => {
+        if (!this.sites().length) {
+            return false;
+        }
+        const displayUrl = CoreSitesFactory.makeUnauthenticatedSite(this.sites()[0].siteUrl).shouldDisplayInformativeLinks();
+
+        // All sites have the same URL, use the first one.
+        return displayUrl
+            ? this.sites()[0].siteUrl.replace(/^https?:\/\//, '').toLowerCase()
+            : false;
+    });
+
+    readonly siteName = computed(() => {
+        if (!this.sites().length) {
+            return false;
+        }
+
+        // All sites have the same name, use the first one.
+        return this.sites()[0].siteName;
+    });
+
     protected action?: CoreContentLinksAction;
     protected isRootURL = false;
 
@@ -47,15 +68,12 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (!this.url) {
-            return this.closeModal();
-        }
-
+        const url = this.url();
         let siteIds: string[] | undefined = [];
 
         try {
             // Check if it's the root URL.
-            const data = await CoreSites.isStoredRootURL(this.url);
+            const data = await CoreSites.isStoredRootURL(url);
             if (data.site) {
                 // It's the root URL.
                 this.isRootURL = true;
@@ -63,7 +81,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
                 siteIds = data.siteIds;
             } else if (data.siteIds.length) {
                 // Not root URL, but the URL belongs to at least 1 site. Check if there is any action to treat the link.
-                this.action = await CoreContentLinksHelper.getFirstValidActionFor(this.url);
+                this.action = await CoreContentLinksHelper.getFirstValidActionFor(url);
                 if (!this.action) {
                     throw new CoreError(Translate.instant('core.contentlinks.errornoactions'));
                 }
@@ -75,16 +93,14 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
             }
 
             // Get the sites that can perform the action.
-            this.sites = await CoreSites.getSites(siteIds);
-
-            // All sites have the same URL, use the first one.
-            this.displaySiteUrl = CoreSitesFactory.makeUnauthenticatedSite(this.sites[0].siteUrl).shouldDisplayInformativeLinks();
+            const sites = await CoreSites.getSites(siteIds);
+            this.sites.set(sites);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('core.contentlinks.errornosites') });
             this.closeModal();
         }
 
-        this.loaded = true;
+        this.loaded.set(true);
     }
 
     /**
@@ -100,6 +116,45 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
         } else if (this.action) {
             this.action.action(siteId);
         }
+    }
+
+    /**
+     * Handler for adding a new site.
+     */
+    async addNewSite(): Promise<void> {
+        if (!this.sites().length) {
+            return;
+        }
+
+        const siteUrl = this.sites()[0].siteUrl;
+
+        const pageParams = {
+            siteUrl,
+            urlToOpen: this.url(),
+        };
+
+        if (CoreSites.isLoggedIn()) {
+            // Ask the user before changing site.
+            try {
+                await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
+            } catch {
+                return; // User canceled.
+            }
+
+            this.closeModal();
+
+            await CoreSites.logout({
+                siteId: NO_SITE_ID,
+                redirectPath: '/login/credentials',
+                redirectOptions: { params: pageParams },
+            });
+
+            return;
+        }
+
+        this.closeModal();
+
+        await CoreNavigator.navigateToLoginCredentials(pageParams);
     }
 
     /**

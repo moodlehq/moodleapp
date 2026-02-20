@@ -261,6 +261,12 @@ class CoreSitesDB {
      *
      * @param tableName Site table name.
      * @param options Options to configure table initialization.
+     * @param options.siteId Site ID.
+     * @param options.config Table configuration.
+     * @param options.database Database instance to create the table in.
+     * @param options.primaryKeyColumns Columns to use as primary key.
+     * @param options.rowIdColumn Column to use as row ID. If null, the table won't have a row ID column.
+     * @param options.onDestroy Callback to be called when the table is destroyed.
      * @returns Site table.
      */
     async getSiteTable<
@@ -1939,20 +1945,36 @@ export class CoreSitesProvider {
     }
 
     /**
+     * @deprecated since 5.2. Use getSiteIdsFromUrl with options instead.
+     */
+    async getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]>;
+    /**
      * Get the site IDs a URL belongs to.
      * Someone can have more than one account in the same site, that's why this function returns an array of IDs.
      *
      * @param url URL to check.
-     * @param prioritize True if it should prioritize current site. If the URL belongs to current site then it won't
-     *                   check any other site, it will only return current site.
-     * @param username If set, it will return only the sites where the current user has this username.
+     * @param options Options to filter the sites.
      * @returns Promise resolved with the site IDs (array).
      */
-    async getSiteIdsFromUrl(url: string, prioritize?: boolean, username?: string): Promise<string[]> {
+    async getSiteIdsFromUrl(url: string, options: GetSiteFromUrlOptions): Promise<string[]>;
+    async getSiteIdsFromUrl(
+        url: string,
+        prioritizeOrOptions: boolean | GetSiteFromUrlOptions = {},
+        username?: string,
+    ): Promise<string[]> {
+        const prioritize = typeof prioritizeOrOptions === 'boolean' ? prioritizeOrOptions : prioritizeOrOptions.prioritize;
+        const userId = typeof prioritizeOrOptions === 'boolean' ? undefined : prioritizeOrOptions.userId;
+        username = typeof prioritizeOrOptions === 'boolean' ? username : prioritizeOrOptions.username;
+
         // If prioritize is true, check current site first.
-        if (prioritize && this.currentSite && this.currentSite.containsUrl(url)) {
-            if (!username || this.currentSite?.getInfo()?.username === username) {
+        if (prioritize && this.currentSite?.containsUrl(url)) {
+            if (!username && !userId) {
                 return [this.currentSite.getId()];
+            } else {
+                const info = this.currentSite?.getInfo();
+                if (info?.username === username || info?.userid === userId) {
+                    return [this.currentSite.getId()];
+                }
             }
         }
 
@@ -1982,8 +2004,14 @@ export class CoreSitesProvider {
                 await this.addSiteFromSiteListEntry(site);
 
                 if (this.sites[site.id].containsUrl(url)) {
-                    if (!username || this.sites[site.id].getInfo()?.username === username) {
+                    if (!username && !userId) {
                         ids.push(site.id);
+                    } else {
+                        const info = this.sites[site.id].getInfo();
+
+                        if (info?.username === username || info?.userid === userId) {
+                            ids.push(site.id);
+                        }
                     }
                 }
             }));
@@ -2096,7 +2124,7 @@ export class CoreSitesProvider {
      */
     async isStoredRootURL(url: string, username?: string): Promise<{ site?: CoreSite; siteIds: string[] }> {
         // Check if the site is stored.
-        const siteIds = await this.getSiteIdsFromUrl(url, true, username);
+        const siteIds = await this.getSiteIdsFromUrl(url, { prioritize: true, username });
 
         const result: { site?: CoreSite; siteIds: string[] } = {
             siteIds,
@@ -2365,6 +2393,7 @@ export class CoreSitesProvider {
      *                    after 'checkAll'.
      * @param checkAll True if it should check all the sites, false if it should check only 1 and treat them all
      *                 depending on this result.
+     * @param args Params to pass to the isEnabledFn function.
      * @returns Promise resolved with the list of enabled sites.
      */
     async filterEnabledSites<P extends unknown[]>(
@@ -2643,4 +2672,14 @@ type InternalLogoutOptions = {
 export type CoreSitesAfterLoginNavigationProcess = {
     priority: number;
     callback: () => Promise<void>;
+};
+
+/**
+ * Options to get a site from a URL.
+ */
+type GetSiteFromUrlOptions = {
+    username?: string; // If set, it will return the site only if the current user has this username.
+    userId?: number; // If set, it will return the site only if the current user has this ID.
+    prioritize?: boolean; // If true, it will prioritize current site.
+        // If the URL belongs to current site then it won't check any other site, it will only return current site.
 };
