@@ -681,8 +681,8 @@ export class CoreSite extends CoreAuthenticatedSite {
             return url;
         }
 
-        if (CoreUrl.isTokenPluginFileUrl(url)) {
-            // Tokenpluginfile URLs authenticate the user using the access key, no need to use auto-login.
+        if (CoreUrl.isTokenPluginFileUrl(url) || CoreUrl.isRefererScriptUrl(url, this.siteUrl)) {
+            // URL doesn't need login or it already has a different login system.
             return url;
         }
 
@@ -901,14 +901,18 @@ export class CoreSite extends CoreAuthenticatedSite {
     }
 
     /**
-     * Given a URL, if it requires a referer, fix it to use a redirect script that will add the referer.
+     * Given a URL, fix it to use a redirect script that will add the referer if possible.
      *
      * @param url URL to fix.
      * @returns Fixed URL or original URL if no need to fix it.
      */
     fixRefererForUrl(url: string): string {
-        // @todo: This function will be implemented in MOBILE-4924 once this functionality is supported in Moodle LMS.
-        return url;
+        if (!this.isVersionGreaterEqualThan('5.2')) {
+            // The referer script was added in Moodle 5.2. If the site is older, referer cannot be fixed.
+            return url;
+        }
+
+        return CoreUrl.toRefererScriptUrl(url, this.siteUrl);
     }
 
 }

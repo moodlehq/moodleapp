@@ -76,6 +76,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     @Input({ transform: toBoolean }) showFullscreenOnToolbar = false;
     @Input({ transform: toBoolean }) autoFullscreenOnRotate = false;
     @Input({ transform: toBoolean }) allowAutoLogin = true;
+    @Input({ transform: toBoolean }) addSiteReferer = false;
     @Output() loaded = new EventEmitter<HTMLIFrameElement>();
 
     loading?: boolean;
@@ -271,7 +272,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.addParamsToUrl(autoLoginUrl, { lang }, {
                     checkAutoLoginUrl: autoLoginUrl !== url,
                 });
-            } else {
+            } else if (this.addSiteReferer || CoreUrl.urlNeedsReferer(url)) {
                 url = currentSite?.fixRefererForUrl(url) || url;
             }
 
