@@ -133,7 +133,7 @@
         </ion-button>
     </form>
 
-    <form id="step3native" class="mobilestepform" style="display: none" (ngSubmit)="goLocation($event)">
+    <form id="step3native" class="mobilestepform" style="display: none" (ngSubmit)="goLocation()">
         <span class="course-teacher-label-and-name">
             <span class="course_info_block">
                 <span id="course-teacher-label"> {{ 'core.course' | translate }}:</span>
@@ -152,16 +152,16 @@
     </form>
 
       <form id="step4native" class="mobilestepform" style="display: none" (ngSubmit)="confirmCourse($event)">
-        <span class="course-location-label-and-name">
-            <span class="course_info_block">
-                <span id="course-location-label"> {{ 'core.course' | translate }}:</span>
-                <span id="course-label-name-native"></span>
-            </span>
-            <span class="course_info_block">
-                <span id="course-location-label">{{ 'core.course.location' | translate }}:</span>
-                <span id="course-location-name-native"></span>
-            </span>
-        </span>
+
+         <h4 id="isdaTitle3" class="isdaTitle"><span>{{ 'core.course.location' | translate }}!</span>
+            <div [innerHTML]="'core.course.insert_location_code' | translate"></div>
+        </h4>
+
+         <ion-item>
+            <ion-input type="text" name="courselocation" placeholder="Es. Roma, Napoli..." formControlName="courselocation" autocapitalize="none"
+                       autocorrect="off" autocomplete="username" enterkeyhint="next" required="true">
+            </ion-input>
+        </ion-item>
 
         <ion-button expand="block" type="submit" class="ion-margin core-login-login-button">
             {{ 'core.h5p.confirmlabel' | translate }}

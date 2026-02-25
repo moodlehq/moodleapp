@@ -412,7 +412,8 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     }
 
-    async goLocation(e?: Event): Promise<void> {
+    async goLocation(): Promise<void> {
+        console.log('entro go location');
         const step3 = document.querySelector<HTMLElement>('#step3native');
         if(step3 != null)
         {step3.style.display = 'none';}
@@ -448,7 +449,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         const courseCode = this.couponForm.value.coursecode;
 
-        const url = 'https://art001exe.exentriq.com/93489/enrolBLSD?teacherId=' + teacherId + '&teacherName=' + teacherName + '&courseId=' + window['courseId'] + '&studentId=' + studentId + '&couponId=' + couponId + '&courseCode=' + courseCode + '&rand=' + new Date().getTime();
+        const url = 'https://art001exe.exentriq.com/93489/enrolBLSD?teacherId=' + teacherId + '&teacherName=' + teacherName + '&courseId=' + window['courseId'] + '&studentId=' + studentId + '&couponId=' + couponId + '&courseCode=' + courseCode + '&teacherEmail=' + teacherEmail+ '&courseName=' + courseName +'&location=' + location + '&rand=' + new Date().getTime();
 
         const modal = await CoreDomUtils.showModalLoading();
 
