@@ -433,8 +433,9 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         {step4.style.display = 'none';}
 
 
-        const courseName = document.querySelector<HTMLInputElement>('#course-label-name-native');
-        const location = this.locationForm.value.location;
+       const courseNameElem = document.querySelector<HTMLElement>('#course-label-name-native');
+        const courseName = courseNameElem ? courseNameElem.innerText.trim() : '';
+        const location = this.locationForm.value.courselocation;
 
         const teacherId = window['dataTeacher'].id;
         const teacherName = encodeURIComponent(window['dataTeacher'].name);
@@ -449,7 +450,17 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         const courseCode = this.couponForm.value.coursecode;
 
-        const url = 'https://art001exe.exentriq.com/93489/enrolBLSD?teacherId=' + teacherId + '&teacherName=' + teacherName + '&courseId=' + window['courseId'] + '&studentId=' + studentId + '&couponId=' + couponId + '&courseCode=' + courseCode + '&teacherEmail=' + teacherEmail+ '&courseName=' + courseName +'&location=' + location + '&rand=' + new Date().getTime();
+        const url = 'https://art001exe.exentriq.com/93489/enrolBLSD?' +
+        'teacherId=' + teacherId +
+        '&teacherName=' + teacherName +
+        '&courseId=' + window['courseId'] +
+        '&studentId=' + studentId +
+        '&couponId=' + couponId +
+        '&courseCode=' + courseCode +
+        '&teacherEmail=' + teacherEmail +
+        '&courseName=' + encodeURIComponent(courseName) +
+        '&location=' + encodeURIComponent(location) +
+        '&rand=' + new Date().getTime();
 
         const modal = await CoreDomUtils.showModalLoading();
 
