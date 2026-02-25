@@ -679,7 +679,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                 }
             }
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error sending tracking data.' });
+            this.logger.error('Error posting statements for activity: ', error);
         }
     }
 
@@ -739,7 +739,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
             this.hasOffline = !sent;
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error sending tracking data.' });
+            this.logger.error('Error posting state for activity: ', error);
         }
     }
 
