@@ -76,11 +76,14 @@ export class CoreLoginSiteBadgesComponent {
             }
         }
 
-        const url = 'https://art001exe.exentriq.com/93489/getBLSDCert?rand=' + new Date().getTime();
+        const url = 'https://art001exe.exentriq.com/93489/getCert?rand=' + new Date().getTime();
         const payload = {
-            name: firstname,
-            surname: lastname,
-            birthDate:parseddate,
+            name: 'Mario',
+            // name: firstname,
+            surname: 'PERRICONE',
+            // surname: lastname,
+            birthDate: 19740423,
+            // birthDate:parseddate,
         };
 
         fetch(url, {
