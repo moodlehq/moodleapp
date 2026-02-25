@@ -2144,6 +2144,7 @@
     "core.course.insert_course_code": "Inserisci il codice per aprire un nuovo corso",
     "core.course.valid_course_code": "CODICE VALIDO",
     "core.course.insert_instructor_code": "Ora inserisci il codice <b>istruttore</b>",
+    "core.course.insert_location_code": "Ora inserisci la <b>location</b>",
     "core.course.select": "Seleziona",
     "core.course.instructor": "Istruttore",
     "core.course.location": "Location",

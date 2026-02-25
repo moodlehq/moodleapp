@@ -2320,6 +2320,7 @@
     "core.course.insert_course_code": "Geben Sie den Code ein, um einen neuen Kurs zu öffnen",
     "core.course.valid_course_code": "GÜLTIGER CODE",
     "core.course.insert_instructor_code": "Geben Sie nun Ihren <b>Lehrer</b>-Code ein",
+    "core.course.insert_location_code": "Ihr Standort",
     "core.course.select": "Auswählen",
     "core.course.instructor": "Lehrer",
     "core.course.location": "Ort",

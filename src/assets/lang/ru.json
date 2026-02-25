@@ -2136,6 +2136,7 @@
     "core.course.insert_course_code": "Введите код, чтобы открыть новый курс",
     "core.course.valid_course_code": "ДЕЙСТВИТЕЛЬНЫЙ КОД",
     "core.course.insert_instructor_code": "Теперь введите свой <b>код учителя</b>",
+    "core.course.insert_location_code": "Последним шагом введите <b>местоположение</b>",
     "core.course.select": "Выбирать",
     "core.course.instructor": "код учителя",
     "core.course.location": "расположение",

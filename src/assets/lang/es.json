@@ -2304,6 +2304,7 @@
     "core.course.insert_course_code": "Introduce el código para abrir un nuevo curso",
     "core.course.valid_course_code": "CÓDIGO VÁLIDO",
     "core.course.insert_instructor_code": "Ahora inserta tu código de <b>instructor</b>",
+    "core.course.insert_location_code": "Ahora inserta <b>ubicación</b>",
     "core.course.select": "Seleccione",
     "core.course.instructor": "Instructor",
     "core.course.location": "Ubicación",

@@ -2318,6 +2318,7 @@
     "core.course.insert_course_code": "أدخل الكود لفتح دورة جديدة",
     "core.course.valid_course_code": "صالحة",
     "core.course.insert_instructor_code": "المعلم الخاص بك",
+    "core.course.insert_location_code": "الموقع الخاص بك",
     "core.course.select": "لإختيار",
     "core.course.instructor": "معلم",
     "core.course.location": "موقع",

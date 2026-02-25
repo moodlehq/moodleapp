@@ -2547,6 +2547,7 @@
     "core.course.insert_course_code": "Enter the code to open a new course",
     "core.course.valid_course_code": "VALID CODE",
     "core.course.insert_instructor_code": "Now insert your&nbsp;<b>instructor</b> code",
+    "core.course.insert_location_code": "Finally, insert the <b>location</b>",
     "core.course.select": "Select",
     "core.course.instructor": "Instructor",
     "core.course.location": "Location",

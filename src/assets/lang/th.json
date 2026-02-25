@@ -794,6 +794,7 @@
     "core.course.valid_course_code": "รหัสที่ถูกต้อง",
     "core.course.insert_course_code": "กรอกรหัสเพื่อเปิดคอร์สใหม่",
     "core.course.insert_instructor_code": "ตอนนี้ใส่รหัส<b>ครู</b> ของคุณ",
+    "core.course.insert_location_code": "สุดท้าย ใส่<b>สถานที่</b>",
     "core.course.select": "เลือก",
     "core.course.instructor": "ครู",
     "core.course.location": "ที่ตั้ง",
