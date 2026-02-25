@@ -63,6 +63,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     };
 
     couponForm!: FormGroup;
+    locationForm!: FormGroup;
     instructorForm!: FormGroup;
     hasContent = false;
     hasBlocks = false;
@@ -104,6 +105,10 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         this.couponForm = this.fb.group({
             coursecode: ['', Validators.required],
+        });
+
+        this.locationForm = this.fb.group({
+            location: ['', Validators.required],
         });
 
         this.instructorForm = this.fb.group({
@@ -407,17 +412,32 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     }
 
+    async goLocation(e?: Event): Promise<void> {
+        const step3 = document.querySelector<HTMLElement>('#step3native');
+        if(step3 != null)
+        {step3.style.display = 'none';}
+
+        const step4 = document.querySelector<HTMLElement>('#step4native');
+        if(step4 != null)
+        {step4.style.display = 'block';}
+    }
+
     /**
      * Validate instructor.
      */
     async confirmCourse(e?: Event): Promise<void> {
 
-        const step3 = document.querySelector<HTMLElement>('#step3native');
-        if(step3 != null)
-        {step3.style.display = 'none';}
+        const step4 = document.querySelector<HTMLElement>('#step4native');
+        if(step4 != null)
+        {step4.style.display = 'none';}
+
+
+        const courseName = document.querySelector<HTMLInputElement>('#course-label-name-native');
+        const location = this.locationForm.value.location;
 
         const teacherId = window['dataTeacher'].id;
         const teacherName = encodeURIComponent(window['dataTeacher'].name);
+        const teacherEmail = encodeURIComponent(window['dataTeacher'].email);
 
         let studentId = '';
         const verify_code_nr = document.querySelector<HTMLElement>('.verify_code_nr');
@@ -459,6 +479,9 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                         window['couponId'] = null;
                         this.couponForm.value.coursecode = '';
                         this.couponForm.get('coursecode')?.setValue('');
+
+                        this.locationForm.value.location = '';
+                        this.locationForm.get('location')?.setValue('');
 
                         this.instructorForm.value.courseinstructor = '';
                         this.instructorForm.get('courseinstructor')?.setValue('');
@@ -503,6 +526,9 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         this.couponForm.value.coursecode = '';
         this.couponForm.get('coursecode')?.setValue('');
+
+         this.locationForm.value.location = '';
+        this.locationForm.get('location')?.setValue('');
 
         this.instructorForm.value.courseinstructor = '';
         this.instructorForm.get('courseinstructor')?.setValue('');

@@ -133,7 +133,7 @@
         </ion-button>
     </form>
 
-    <form id="step3native" class="mobilestepform" style="display: none" (ngSubmit)="confirmCourse($event)">
+    <form id="step3native" class="mobilestepform" style="display: none" (ngSubmit)="goLocation($event)">
         <span class="course-teacher-label-and-name">
             <span class="course_info_block">
                 <span id="course-teacher-label"> {{ 'core.course' | translate }}:</span>
@@ -142,6 +142,24 @@
             <span class="course_info_block">
                 <span id="course-teacher-label">{{ 'core.course.instructor' | translate }}:</span>
                 <span id="course-teacher-name-native"></span>
+            </span>
+        </span>
+
+        <ion-button expand="block" type="submit" class="ion-margin core-login-login-button">
+            {{ 'core.h5p.confirmlabel' | translate }}
+        </ion-button>
+        <span class="change-code" (click)="changeCode()" style="">{{ 'core.course.try_another_code' | translate }}</span>
+    </form>
+
+      <form id="step4native" class="mobilestepform" style="display: none" (ngSubmit)="confirmCourse($event)">
+        <span class="course-location-label-and-name">
+            <span class="course_info_block">
+                <span id="course-location-label"> {{ 'core.course' | translate }}:</span>
+                <span id="course-label-name-native"></span>
+            </span>
+            <span class="course_info_block">
+                <span id="course-location-label">{{ 'core.course.location' | translate }}:</span>
+                <span id="course-location-name-native"></span>
             </span>
         </span>
 

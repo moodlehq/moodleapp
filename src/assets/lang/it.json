@@ -2146,6 +2146,7 @@
     "core.course.insert_instructor_code": "Ora inserisci il codice <b>istruttore</b>",
     "core.course.select": "Seleziona",
     "core.course.instructor": "Istruttore",
+    "core.course.location": "Location",
     "core.course.try_another_code": "Prova un altro codice",
     "core.course.not_valid": "Codice errato",
     "core.course.course_server_error": "Abbiamo riscontrato un problema durante l'iscrizione, si prega di riprovare",

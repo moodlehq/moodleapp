@@ -796,6 +796,7 @@
     "core.course.insert_instructor_code": "ตอนนี้ใส่รหัส<b>ครู</b> ของคุณ",
     "core.course.select": "เลือก",
     "core.course.instructor": "ครู",
+    "core.course.location": "ที่ตั้ง",
     "core.course.try_another_code": "ใช้รหัสอื่น",
     "core.course.not_valid": "ขออภัย ใส่รหัสผิด",
     "core.course.course_server_error": "ขออภัย เราพบปัญหาระหว่างการลงทะเบียน โปรดลองอีกครั้ง",

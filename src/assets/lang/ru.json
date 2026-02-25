@@ -2138,6 +2138,7 @@
     "core.course.insert_instructor_code": "Теперь введите свой <b>код учителя</b>",
     "core.course.select": "Выбирать",
     "core.course.instructor": "код учителя",
+    "core.course.location": "расположение",
     "core.course.try_another_code": "Использовать другой код",
     "core.course.not_valid": "Извините, неправильный код",
     "core.course.course_server_error": "Извините, возникла проблема при регистрации, попробуйте еще раз",

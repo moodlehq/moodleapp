@@ -2320,6 +2320,7 @@
     "core.course.insert_instructor_code": "المعلم الخاص بك",
     "core.course.select": "لإختيار",
     "core.course.instructor": "معلم",
+    "core.course.location": "موقع",
     "core.course.try_another_code": "تخدم رمزًا مختلفًا",
     "core.course.not_valid": "آسف ، رمز خاطئ",
     "core.course.course_server_error": "عذرا ، واجهتنا مشكلة أثناء التسجيل ، يرجى المحاولة مرة أخرى",

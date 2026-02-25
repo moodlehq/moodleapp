@@ -2321,6 +2321,7 @@
     "core.course.insert_instructor_code": "Insérez maintenant votre code <b>instructeur</b>",
     "core.course.select": "Sélectionner",
     "core.course.instructor": "Instructeur",
+    "core.course.location": "Emplacement",
     "core.course.try_another_code": "Utiliser un autre code",
     "core.course.not_valid": "Désolé, mauvais code",
     "core.course.course_server_error": "Désolé, nous avons rencontré un problème lors de l'inscription, veuillez réessayer",

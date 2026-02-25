@@ -2549,6 +2549,7 @@
     "core.course.insert_instructor_code": "Now insert your&nbsp;<b>instructor</b> code",
     "core.course.select": "Select",
     "core.course.instructor": "Instructor",
+    "core.course.location": "Location",
     "core.course.try_another_code": "Try another code",
     "core.course.not_valid": "Sorry, wrong code",
     "core.course.course_server_error": "Sorry, we encountered a problem during enrolment, please try again",
