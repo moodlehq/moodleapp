@@ -108,7 +108,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         });
 
         this.locationForm = this.fb.group({
-            location: ['', Validators.required],
+            courselocation: ['', Validators.required],
         });
 
         this.instructorForm = this.fb.group({
@@ -435,7 +435,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
        const courseNameElem = document.querySelector<HTMLElement>('#course-label-name-native');
         const courseName = courseNameElem ? courseNameElem.innerText.trim() : '';
-        const location = this.locationForm.value.courselocation;
+      const location = this.locationForm.get('courselocation')?.value?.trim() ?? '';
 
         const teacherId = window['dataTeacher'].id;
         const teacherName = encodeURIComponent(window['dataTeacher'].name);
@@ -459,7 +459,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         '&courseCode=' + courseCode +
         '&teacherEmail=' + teacherEmail +
         '&courseName=' + encodeURIComponent(courseName) +
-        '&location=' + encodeURIComponent(location) +
+        '&location=' + location +
         '&rand=' + new Date().getTime();
 
         const modal = await CoreDomUtils.showModalLoading();
@@ -492,8 +492,8 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
                         this.couponForm.value.coursecode = '';
                         this.couponForm.get('coursecode')?.setValue('');
 
-                        this.locationForm.value.location = '';
-                        this.locationForm.get('location')?.setValue('');
+                        this.locationForm.value.courselocation = '';
+                        this.locationForm.get('courselocation')?.setValue('');
 
                         this.instructorForm.value.courseinstructor = '';
                         this.instructorForm.get('courseinstructor')?.setValue('');
@@ -539,8 +539,8 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         this.couponForm.value.coursecode = '';
         this.couponForm.get('coursecode')?.setValue('');
 
-         this.locationForm.value.location = '';
-        this.locationForm.get('location')?.setValue('');
+         this.locationForm.value.courselocation = '';
+        this.locationForm.get('courselocation')?.setValue('');
 
         this.instructorForm.value.courseinstructor = '';
         this.instructorForm.get('courseinstructor')?.setValue('');
