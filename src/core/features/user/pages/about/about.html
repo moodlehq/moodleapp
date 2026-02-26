@@ -147,14 +147,18 @@
                             <ion-item class="ion-text-wrap core-user-profile-interests">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.interests' | translate}}</p>
-                                    <ion-badge *ngFor="let interest of interests" role="link" (click)="openInterest(interest)">
-                                        {{ interest }}
-                                    </ion-badge>
+                                    @for (interest of interests; track interest) {
+                                        <ion-badge role="link" (click)="openInterest(interest)">
+                                            {{ interest }}
+                                        </ion-badge>
+                                    }
                                 </ion-label>
                             </ion-item>
                         }
-                        <core-user-profile-field *ngFor="let field of user.customfields" [field]="field" contextLevel="course"
-                            [contextInstanceId]="courseId" [courseId]="courseId" />
+                        @for (field of user.customfields; track field.shortname) {
+                            <core-user-profile-field [field]="field" contextLevel="course"
+                                [contextInstanceId]="courseId" [courseId]="courseId" />
+                        }
                     </ion-item-group>
                 }
             </ion-list>

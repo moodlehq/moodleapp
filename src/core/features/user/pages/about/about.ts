@@ -96,12 +96,12 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
     async ngOnInit(): Promise<void> {
         this.userId = CoreNavigator.getRouteNumberParam('userId') || 0;
         this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
-        this.canShowDepartment = this.userId != this.site.getUserId();
+        this.canShowDepartment = this.userId !== this.site.getUserId();
 
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =
             !this.courseId &&
-            this.userId == this.site.getUserId() &&
+            this.userId === this.site.getUserId() &&
             this.site.canUploadFiles() &&
             !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
@@ -112,8 +112,6 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
     /**
      * Fetches the user data.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchUser(): Promise<void> {
         try {
@@ -123,7 +121,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
                 user.interests.split(',').map(interest => interest.trim()) :
                 undefined;
 
-            this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);
+            this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country);
             this.hasDetails = !!(user.interests || (user.customfields && user.customfields.length > 0));
 
             this.user = user;
@@ -139,15 +137,13 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
     /**
      * Check if current user image has changed.
-     *
-     * @returns Promise resolved when done.
      */
     protected async checkUserImageUpdated(): Promise<void> {
         if (!this.site || !this.site.getInfo() || !this.user) {
             return;
         }
 
-        if (this.userId != this.site.getUserId() || !this.isUserAvatarDirty()) {
+        if (this.userId !== this.site.getUserId() || !this.isUserAvatarDirty()) {
             // Not current user or hasn't changed.
             return;
         }

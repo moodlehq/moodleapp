@@ -345,8 +345,8 @@ export class CoreUserProvider {
         let users: CoreUserDescriptionExporter[] | CoreUserCourseProfile[] | undefined;
 
         // Determine WS and data to use.
-        if (courseId && courseId != site.getSiteHomeId()) {
-            this.logger.debug(`Get participant with ID '${userId}' in course '${courseId}`);
+        if (courseId && courseId !== site.getSiteHomeId()) {
+            this.logger.debug(`Get participant with ID '${userId}' in course '${courseId}'`);
 
             const params: CoreUserGetCourseUserProfilesWSParams = {
                 userlist: [
@@ -500,6 +500,7 @@ export class CoreUserProvider {
      *
      * @param userId User ID.
      * @param courseId Course ID.
+     * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when done.
      */
     async logView(userId: number, courseId?: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
@@ -520,6 +521,7 @@ export class CoreUserProvider {
      * Log Participants list view in Moodle.
      *
      * @param courseId Course ID.
+     * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved when done.
      */
     async logParticipantsView(courseId: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {

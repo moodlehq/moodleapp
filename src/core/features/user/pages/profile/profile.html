@@ -58,11 +58,6 @@
                     <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
                     <ion-label>
                         <h1>{{ user.fullname }}</h1>
-                        @if (user.address) {
-                            <p>
-                                <ion-icon name="fas-location-dot" [attr.aria-hidden]="true" /> {{ user.address }}
-                            </p>
-                        }
                         @if (rolesFormatted) {
                             <p>
                                 <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
