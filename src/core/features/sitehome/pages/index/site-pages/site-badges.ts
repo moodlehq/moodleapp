@@ -104,7 +104,7 @@ export class CoreLoginSiteBadgesComponent {
                     if(br2 != null){
                         let html = '';
                         for(let i=0; i < data.length; i++){
-                            html += '<div class=\'single_badge\' style=\'margin-top: 10px;padding-top: 10px;border-top: 1px solid #ccc;\'><div class=\'badge_img\'><img src=\'' + data[i].Image + '\'></div><div class=\'badge_desc\' style=\'display:none\'>' + data[i].Certification + '</div></div>';
+                            html += '<div class=\'single_badge\' style=\'margin-top: 10px;padding-top: 10px;border-top: 1px solid #ccc;\'><div class=\'badge_img\'><img crossorigin src=\'' + data[i].Image + '\'></div><div class=\'badge_desc\' style=\'display:none\'>' + data[i].Certification + '</div></div>';
                         }
                         br2.innerHTML = html;
                     }
