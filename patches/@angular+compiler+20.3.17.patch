@@ -1,5 +1,5 @@
 diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-index 44d6d0d..086194c 100755
+index ad8cba1..8de7333 100755
 --- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
 +++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
 @@ -7174,13 +7174,41 @@ var R3NgModuleMetadataKind;
