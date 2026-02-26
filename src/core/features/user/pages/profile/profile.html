@@ -1,18 +1,20 @@
+@let userInfo = user();
+
 <ion-header collapsible>
     <ion-toolbar>
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>{{ user?.fullname }}</h1>
+            <h1>{{ userInfo?.fullname }}</h1>
         </ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content [core-swipe-navigation]="users" class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
+<ion-content [core-swipe-navigation]="users()" class="limited-width">
+    <ion-refresher slot="fixed" [disabled]="!userLoaded()" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded" placeholderType="free">
+    <core-loading [hideUntil]="userLoaded()" placeholderType="free">
         <ion-list loading-placeholder class="ion-padding list-item-limited-width">
             <ion-item>
                 <ion-avatar slot="start" style="width: 80px; height: 80px;">
@@ -52,25 +54,24 @@
                 </ion-item>
             }
         </ion-list>
-        @if (user && !isDeleted && isEnrolled) {
+        @if (userInfo && !isDeleted() && isEnrolled()) {
             <ion-list>
                 <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
-                    <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                    <core-user-avatar [user]="userInfo" [userId]="userInfo.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
                     <ion-label>
-                        <h1>{{ user.fullname }}</h1>
-                        @if (rolesFormatted) {
+                        <h1>{{ userInfo.fullname }}</h1>
+                        @if (rolesFormatted()) {
                             <p>
                                 <strong>{{ 'core.user.roles' | translate}}</strong>{{'core.labelsep' | translate}}
-                                {{ rolesFormatted }}
+                                {{ rolesFormatted() }}
                             </p>
                         }
-                        @if (user.lastaccess !== undefined) {
+                        @if (userInfo.lastaccess !== undefined) {
                             <p>
                                 <strong>{{ 'core.lastaccess' | translate }}: </strong>
-                                @if (user.lastaccess) {
-                                    <span>{{ user.lastaccess | coreTimeAgo }}</span>
-                                }
-                                @if (!user.lastaccess) {
+                                @if (userInfo.lastaccess) {
+                                    <span>{{ userInfo.lastaccess | coreTimeAgo }}</span>
+                                } @else {
                                     {{ 'core.never' | translate }}
                                 }
                             </p>
@@ -78,12 +79,13 @@
                     </ion-label>
                 </ion-item>
 
-                @if ((buttonHandlers && buttonHandlers.length) || isLoadingHandlers) {
+                @let bHandlers = buttonHandlers();
+                @if (bHandlers.length || isLoadingHandlers()) {
                     <div class="core-user-communication-handlers">
-                        @if (buttonHandlers && buttonHandlers.length) {
+                        @if (bHandlers.length) {
                             <ion-item>
                                 <ion-label>
-                                    @for (handler of buttonHandlers; track handler.name) {
+                                    @for (handler of bHandlers; track handler.name) {
                                         <ion-button expand="block" size="default"
                                             [class]="['core-user-profile-handler', handler.class]"
                                             (click)="handlerClicked($event, handler)"
@@ -96,8 +98,7 @@
                                     }
                                 </ion-label>
                             </ion-item>
-                        }
-                        @if (isLoadingHandlers) {
+                        } @else {
                             <div class="ion-text-center core-loading-handlers">
                                 <ion-spinner [attr.aria-label]="'core.loading' | translate" />
                             </div>
@@ -105,7 +106,7 @@
                     </div>
                 }
 
-                @if (isLoadingHandlers) {
+                @if (isLoadingHandlers()) {
                     <ion-item class="ion-text-center core-loading-handlers">
                         <ion-label>
                             <ion-spinner [attr.aria-label]="'core.loading' | translate" />
@@ -113,7 +114,7 @@
                     </ion-item>
                 }
 
-                @for (handler of listItemHandlers; track handler.name) {
+                @for (handler of listItemHandlers(); track handler.name) {
                     @if ('component' in handler) {
                         <core-dynamic-component [component]="handler.component" [data]="handler.componentData" />
                     } @else {
@@ -144,16 +145,16 @@
                 }
             </ion-list>
         }
-        @if (!user && !isDeleted && isEnrolled) {
+
+        @if (!userInfo && !isDeleted() && isEnrolled()) {
             <core-empty-box icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate" />
         }
-        @if (isDeleted) {
+
+        @if (isDeleted()) {
             <core-empty-box icon="far-user" [message]="'core.userdeleted' | translate" />
-        }
-        @if (isSuspended) {
+        } @else if (isSuspended()) {
             <core-empty-box icon="far-user" [message]="'core.usersuspended' | translate" />
-        }
-        @if (!isEnrolled) {
+        } @else if (!isEnrolled()) {
             <core-empty-box icon="far-user" [message]="'core.notenrolledprofile' | translate" />
         }
     </core-loading>
