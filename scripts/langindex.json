@@ -2649,6 +2649,7 @@
   "core.upgraderunning": "error",
   "core.user": "moodle",
   "core.user.address": "moodle",
+  "core.user.cannotviewprofile": "error",
   "core.user.city": "moodle",
   "core.user.completeprofile": "local_moodlemobileapp",
   "core.user.completeprofilehelp": "local_moodlemobileapp",
