@@ -150,7 +150,13 @@
         </ion-button>
     </form>
 
-    <form id="step4native" class="mobilestepform" style="display: none" (ngSubmit)="confirmCourse($event)">
+    <form
+        id="step4native"
+        class="mobilestepform"
+        style="display: none"
+        [formGroup]="locationForm"
+        (ngSubmit)="confirmCourse($event)"
+    >
 
         <h4 id="isdaTitle3" class="isdaTitle"><span>{{ 'core.course.location' | translate }}!</span>
         <div [innerHTML]="'core.course.insert_location_code' | translate"></div>

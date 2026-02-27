@@ -427,20 +427,12 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
      * Validate instructor.
      */
     async confirmCourse(e?: Event): Promise<void> {
-
         const step4 = document.querySelector<HTMLElement>('#step4native');
         if(step4 != null)
         {step4.style.display = 'none';}
 
-
-       const courseNameElem = document.querySelector<HTMLElement>('#course-label-name-native');
+        const courseNameElem = document.querySelector<HTMLElement>('#course-label-name-native');
         const courseName = courseNameElem ? courseNameElem.innerText.trim() : '';
-         if (this.locationForm.invalid) {
-        this.locationForm.markAllAsTouched();
-        CoreDomUtils.showErrorModal('Inserisci la località del corso');
-        return;
-        }
-
         const location = this.locationForm.get('courselocation')?.value?.trim() ?? '';
 
         const teacherId = window['dataTeacher'].id;
@@ -465,7 +457,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         '&courseCode=' + courseCode +
         '&teacherEmail=' + teacherEmail +
         '&courseName=' + encodeURIComponent(courseName) +
-        '&location=' + location +
+        '&locationName=' + location +
         '&rand=' + new Date().getTime();
 
         const modal = await CoreDomUtils.showModalLoading();
