@@ -1,5 +1,6 @@
 {
     "address": "Address",
+    "cannotviewprofile": "You cannot view the profile of this user",
     "city": "City/town",
     "completeprofile": "Complete profile",
     "completeprofilehelp": "If you have problems completing your profile, try again later or contact your school or learning provider.",
