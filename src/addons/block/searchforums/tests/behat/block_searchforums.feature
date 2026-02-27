@@ -4,6 +4,8 @@ Feature: View the search forums block and check
 
   Background:
     Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email | idnumber |
       | teacher1 | Teacher | 1 | teacher1@example.com | T1 |

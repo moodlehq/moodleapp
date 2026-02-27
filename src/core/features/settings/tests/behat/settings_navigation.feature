@@ -2,7 +2,10 @@
 Feature: It navigates properly within settings.
 
   Background:
-    Given the following "users" exist:
+    # TODO MOBILE-4999: Remove the enablemyhome config when the app properly supports having Site home disabled.
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
+    And the following "users" exist:
       | username |
       | student1 |
 
