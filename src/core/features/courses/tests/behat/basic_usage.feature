@@ -5,6 +5,8 @@ Feature: Test basic usage of courses in app
   I need basic courses functionality to work
 
   Background:
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
     Given the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | teacher | teacher1@example.com |

@@ -6,6 +6,8 @@ Feature: Users can auto-enrol themself in courses where self enrolment is allowe
 
   Background:
     Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
+      | enablemyhome | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | 1 | teacher1@example.com |
