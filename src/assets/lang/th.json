@@ -801,5 +801,5 @@
     "core.course.try_another_code": "ใช้รหัสอื่น",
     "core.course.not_valid": "ขออภัย ใส่รหัสผิด",
     "core.course.course_server_error": "ขออภัย เราพบปัญหาระหว่างการลงทะเบียน โปรดลองอีกครั้ง",
-    "core.course.certifications": "ใบรับรอง"
+    "core.course.certifications": "ใบรับรองก่อนหน้านี้"
 }

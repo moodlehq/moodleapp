@@ -2554,5 +2554,5 @@
     "core.course.try_another_code": "Try another code",
     "core.course.not_valid": "Sorry, wrong code",
     "core.course.course_server_error": "Sorry, we encountered a problem during enrolment, please try again",
-    "core.course.certifications": "Certifications"
+    "core.course.certifications": "Old Certifications"
 }
