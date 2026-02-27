@@ -435,7 +435,13 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
        const courseNameElem = document.querySelector<HTMLElement>('#course-label-name-native');
         const courseName = courseNameElem ? courseNameElem.innerText.trim() : '';
-      const location = this.locationForm.get('courselocation')?.value?.trim() ?? '';
+         if (this.locationForm.invalid) {
+        this.locationForm.markAllAsTouched();
+        CoreDomUtils.showErrorModal('Inserisci la località del corso');
+        return;
+        }
+
+        const location = this.locationForm.get('courselocation')?.value?.trim() ?? '';
 
         const teacherId = window['dataTeacher'].id;
         const teacherName = encodeURIComponent(window['dataTeacher'].name);
