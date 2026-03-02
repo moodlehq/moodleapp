@@ -359,20 +359,17 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const bestGrade = this.bestGrade.grade;
         const formattedGradebookGrade = AddonModQuiz.formatGrade(this.gradebookData.grade, quiz.decimalpoints);
         const formattedBestGrade = AddonModQuiz.formatGrade(bestGrade, quiz.decimalpoints);
-        let gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
         this.gradeOverridden = formattedGradebookGrade !== formattedBestGrade;
         this.gradebookFeedback = this.gradebookData.feedback;
 
         if (bestGrade && bestGrade > this.gradebookData.grade && this.gradebookData.grade === quiz.grade) {
-            // The best grade is higher than the max grade for the quiz.
-            // We'll do like Moodle web and show the best grade instead of the gradebook grade.
+            // The best grade is higher than the max grade for the quiz. So it's not been overriden.
             this.gradeOverridden = false;
-            gradeToShow = formattedBestGrade;
         }
 
         this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
-            grade: gradeToShow,
+            grade: formattedGradebookGrade,
             max: quiz.gradeFormatted,
         } });
 
