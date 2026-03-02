@@ -67,7 +67,7 @@
             </ion-card-header>
 
             <!-- Quiz result info. -->
-            @if (quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
+            @if (quiz && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
 
                 @if (overallStats && gradeResult) {
                     <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">

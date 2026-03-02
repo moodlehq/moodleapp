@@ -83,7 +83,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     unsupportedRules: string[] = []; // List of unsupported access rules of the quiz.
     unsupportedQuestions: string[] = []; // List of unsupported question types of the quiz.
     behaviourSupported = false; // Whether the quiz behaviour is supported.
-    showResults = false; // Whether to show the result of the quiz (grade, etc.).
     gradeOverridden = false; // Whether grade has been overridden.
     gradebookFeedback?: string; // The feedback in the gradebook.
     gradeResult?: string; // Message with the grade.
@@ -342,9 +341,17 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param quiz Quiz.
      */
     protected async getResultInfo(quiz: AddonModQuizQuizData): Promise<void> {
-        if (!this.attempts.length || !quiz.showAttemptsGrades || !this.bestGrade?.hasgrade ||
-            this.gradebookData?.grade === undefined) {
-            this.showResults = false;
+        if (!this.attempts.length || !quiz.showAttemptsGrades) {
+            this.gradeResult = undefined;
+
+            return;
+        }
+
+        if (!this.bestGrade?.hasgrade || this.gradebookData?.grade === undefined) {
+            this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
+                grade: Translate.instant('addon.mod_quiz.notyetgraded'),
+                max: quiz.gradeFormatted,
+            } });
 
             return;
         }
@@ -354,7 +361,6 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const formattedBestGrade = AddonModQuiz.formatGrade(bestGrade, quiz.decimalpoints);
         let gradeToShow = formattedGradebookGrade; // By default we show the grade in the gradebook.
 
-        this.showResults = true;
         this.gradeOverridden = formattedGradebookGrade != formattedBestGrade;
         this.gradebookFeedback = this.gradebookData.feedback;
 
