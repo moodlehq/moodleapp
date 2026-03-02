@@ -91,7 +91,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     preventMessages: string[] = []; // List of messages explaining why the quiz cannot be attempted.
     preventMessagesAlertType = 'danger'; // Alert type for the prevent messages.
     showStatusSpinner = true; // Whether to show a spinner due to quiz status.
-    gradeMethodReadable?: string; // Grade method in a readable format.
+    gradeMethodTranslatable?: string; // Translation key for the grade method, to be used with the translate pipe.
     showReviewColumn = false; // Whether to show the review column.
     attempts: QuizAttempt[] = []; // List of attempts the user has made.
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
@@ -188,7 +188,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // First get the quiz instance.
         const quiz = await AddonModQuiz.getQuiz(this.courseId, this.module.id);
 
-        this.gradeMethodReadable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
+        this.gradeMethodTranslatable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
         this.now = Date.now();
         this.dataRetrieved.emit(quiz);
         this.description = quiz.intro || this.description;

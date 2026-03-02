@@ -20,7 +20,7 @@
         [courseId]="courseId" [hasDataToSync]="!!buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Access rules description messages. -->
-    @if (gradeMethodReadable || accessRules.length || syncTime) {
+    @if (gradeMethodTranslatable || accessRules.length || syncTime) {
         <ion-card>
             <ion-list>
                 @for (rule of accessRules; track rule) {
@@ -30,11 +30,11 @@
                         </ion-label>
                     </ion-item>
                 }
-                @if (gradeMethodReadable) {
+                @if (gradeMethodTranslatable) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
-                            <p>{{ gradeMethodReadable }}</p>
+                            <p>{{ gradeMethodTranslatable | translate }}</p>
                         </ion-label>
                     </ion-item>
                 }
@@ -75,7 +75,7 @@
                     <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">
                         <ion-label>
                             @if (moreAttempts) {
-                                <p class="item-heading">{{ gradeMethodReadable }}</p>
+                                <p class="item-heading">{{ gradeMethodTranslatable | translate }}</p>
                                 <p>{{ gradeResult }}</p>
                             } @else {
                                 {{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}
