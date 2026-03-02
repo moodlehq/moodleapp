@@ -534,6 +534,10 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
         if(step3 != null)
         {step3.style.display = 'none';}
 
+        const step4 = document.querySelector<HTMLElement>('#step4native');
+        if(step4 != null)
+        {step4.style.display = 'none';}
+
         this.couponForm.value.coursecode = '';
         this.couponForm.get('coursecode')?.setValue('');
 
