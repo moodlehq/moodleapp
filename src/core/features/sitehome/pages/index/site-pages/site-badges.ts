@@ -78,12 +78,9 @@ export class CoreLoginSiteBadgesComponent {
 
         const url = 'https://art001exe.exentriq.com/93489/getCert?rand=' + new Date().getTime();
         const payload = {
-            name: 'Mario',
-            // name: firstname,
-            surname: 'PERRICONE',
-            // surname: lastname,
-            birthDate: 19740423,
-            // birthDate:parseddate,
+            name: firstname,
+            surname: lastname,
+            birthDate:parseddate,
         };
 
         fetch(url, {
