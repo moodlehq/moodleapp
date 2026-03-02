@@ -23,11 +23,13 @@
     @if (gradeMethodReadable || accessRules.length || syncTime) {
         <ion-card>
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngFor="let rule of accessRules">
-                    <ion-label>
-                        <p class="item-heading">{{ rule }}</p>
-                    </ion-label>
-                </ion-item>
+                @for (rule of accessRules; track rule) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ rule }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
                 @if (gradeMethodReadable) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
@@ -72,14 +74,12 @@
                 @if (overallStats && gradeResult) {
                     <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">
                         <ion-label>
-                            <div class="addon-mod_quiz-grade-result-grade">
-                                @if (moreAttempts) {
-                                    <span>{{ gradeMethodReadable }}</span>
-                                    <span>{{ gradeResult }}</span>
-                                } @else {
-                                    <span>{{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}</span>
-                                }
-                            </div>
+                            @if (moreAttempts) {
+                                <p class="item-heading">{{ gradeMethodReadable }}</p>
+                                <p>{{ gradeResult }}</p>
+                            } @else {
+                                {{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}
+                            }
 
                             @if (gradeOverridden) {
                                 <p class="addon-mod_quiz-grade-overridden-notice">
