@@ -5,7 +5,9 @@ Feature: Test course list shown on app start tab
   I need to see the correct list of courses
 
   Background:
-    Given the following "courses" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
       | Course 2 | C2        |

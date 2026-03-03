@@ -1,8 +1,10 @@
 @app_parallel_run_courses @addon_block_recentlyaccesseditems @app @block @block_recentlyaccesseditems @javascript
-Feature: Basic tests of recent activity block
+Feature: Basic tests of recent accessed items block
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "users" exist:
       | username | firstname | lastname | email                |
       | student1 | Student   | 1        | student1@example.com |
     And the following "courses" exist:
