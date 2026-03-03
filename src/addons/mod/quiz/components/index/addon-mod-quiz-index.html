@@ -20,19 +20,21 @@
         [courseId]="courseId" [hasDataToSync]="!!buttonText && hasOffline" (completionChanged)="onCompletionChange()" />
 
     <!-- Access rules description messages. -->
-    @if (gradeMethodReadable || accessRules.length || syncTime) {
+    @if (gradeMethodTranslatable || accessRules.length || syncTime) {
         <ion-card>
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngFor="let rule of accessRules">
-                    <ion-label>
-                        <p class="item-heading">{{ rule }}</p>
-                    </ion-label>
-                </ion-item>
-                @if (gradeMethodReadable) {
+                @for (rule of accessRules; track rule) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ rule }}</p>
+                        </ion-label>
+                    </ion-item>
+                }
+                @if (gradeMethodTranslatable) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
                             <p class="item-heading">{{ 'addon.mod_quiz.grademethod' | translate }}</p>
-                            <p>{{ gradeMethodReadable }}</p>
+                            <p>{{ gradeMethodTranslatable | translate }}</p>
                         </ion-label>
                     </ion-item>
                 }
@@ -67,19 +69,17 @@
             </ion-card-header>
 
             <!-- Quiz result info. -->
-            @if (quiz && showResults && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
+            @if (quiz && (gradeResult || gradeOverridden || gradebookFeedback || (quiz.showFeedback && overallFeedback))) {
 
                 @if (overallStats && gradeResult) {
                     <ion-item class="ion-text-wrap addon-mod_quiz-grade-result">
                         <ion-label>
-                            <div class="addon-mod_quiz-grade-result-grade">
-                                @if (moreAttempts) {
-                                    <span>{{ gradeMethodReadable }}</span>
-                                    <span>{{ gradeResult }}</span>
-                                } @else {
-                                    <span>{{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}</span>
-                                }
-                            </div>
+                            @if (moreAttempts) {
+                                <p class="item-heading">{{ gradeMethodTranslatable | translate }}</p>
+                                <p>{{ gradeResult }}</p>
+                            } @else {
+                                {{ 'addon.mod_quiz.yourfinalgradeis' | translate:{ $a: gradeResult } }}
+                            }
 
                             @if (gradeOverridden) {
                                 <p class="addon-mod_quiz-grade-overridden-notice">

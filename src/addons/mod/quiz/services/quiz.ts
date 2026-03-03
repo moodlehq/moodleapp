@@ -911,10 +911,10 @@ export class AddonModQuizProvider {
     }
 
     /**
-     * Get a readable Quiz grade method.
+     * Get a translatable Quiz grade method.
      *
      * @param method Grading method.
-     * @returns Readable grading method.
+     * @returns Translatable grading method.
      */
     getQuizGradeMethod(method?: number | string): string {
         if (method === undefined) {
@@ -927,13 +927,13 @@ export class AddonModQuizProvider {
 
         switch (method) {
             case AddonModQuizGradeMethods.HIGHEST_GRADE:
-                return Translate.instant('addon.mod_quiz.gradehighest');
+                return 'addon.mod_quiz.gradehighest';
             case AddonModQuizGradeMethods.AVERAGE_GRADE:
-                return Translate.instant('addon.mod_quiz.gradeaverage');
+                return 'addon.mod_quiz.gradeaverage';
             case AddonModQuizGradeMethods.FIRST_ATTEMPT:
-                return Translate.instant('addon.mod_quiz.attemptfirst');
+                return 'addon.mod_quiz.attemptfirst';
             case AddonModQuizGradeMethods.LAST_ATTEMPT:
-                return Translate.instant('addon.mod_quiz.attemptlast');
+                return 'addon.mod_quiz.attemptlast';
             default:
                 return '';
         }
