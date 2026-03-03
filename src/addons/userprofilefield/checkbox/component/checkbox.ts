@@ -34,9 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonUserProfileFieldCheckboxComponent extends CoreUserProfileFieldBaseComponent<boolean> {
 
     /**
-     * Create the Form control.
-     *
-     * @returns Form control.
+     * @inheritdoc
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl<boolean> {
         const formData = {

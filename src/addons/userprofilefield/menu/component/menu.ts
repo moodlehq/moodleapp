@@ -34,9 +34,7 @@ export class AddonUserProfileFieldMenuComponent extends CoreUserProfileFieldBase
     options?: string[];
 
     /**
-     * Init the data when the field is meant to be displayed for editing.
-     *
-     * @param field Field to render.
+     * @inheritdoc
      */
     protected initForEdit(field: AuthEmailSignupProfileField): void {
         super.initForEdit(field);

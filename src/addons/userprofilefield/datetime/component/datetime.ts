@@ -41,9 +41,7 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
     displayValue?: string;
 
     /**
-     * Init the data when the field is meant to be displayed without editing.
-     *
-     * @param field Field to render.
+     * @inheritdoc
      */
     protected initForNonEdit(field: CoreUserProfileField): void {
         if (field.displayvalue) {
@@ -56,9 +54,7 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
     }
 
     /**
-     * Init the data when the field is meant to be displayed for editing.
-     *
-     * @param field Field to render.
+     * @inheritdoc
      */
     protected initForEdit(field: AuthEmailSignupProfileField): void {
         super.initForEdit(field);
@@ -84,9 +80,7 @@ export class AddonUserProfileFieldDatetimeComponent extends CoreUserProfileField
     }
 
     /**
-     * Create the Form control.
-     *
-     * @returns Form control.
+     * @inheritdoc
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl<string | undefined> {
         const formData = {
