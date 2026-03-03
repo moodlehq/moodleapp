@@ -45,7 +45,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     ],
     host: {
         '[class.has-errors]': '(control && control.dirty && !control.valid) || !!errorText',
-        '[role]': '"alert"',
+        '[attr.role]': '"alert"',
     },
 })
 export class CoreInputErrorsComponent implements OnInit, OnChanges {
