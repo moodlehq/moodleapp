@@ -9,15 +9,17 @@
     </ion-toolbar>
 </ion-header>
 <ion-content class="limited-width">
-    <ion-refresher slot="fixed" [disabled]="!userLoaded" (ionRefresh)="refreshUser($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!userLoaded()" (ionRefresh)="refreshUser($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-    <core-loading [hideUntil]="userLoaded" placeholderType="column" placeholderHeight="48px">
-        @if (user) {
+    <core-loading [hideUntil]="userLoaded()" placeholderType="column" placeholderHeight="48px">
+        @let userInfo = user();
+        @if (userInfo) {
             <ion-list>
-                <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="user.description ? 'none' : 'full'">
+                <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="userInfo.description ? 'none' : 'full'">
                     <ion-label>
-                        <core-user-avatar [user]="user" [userId]="user.id" [linkProfile]="false" [checkOnline]="!canChangeProfilePicture">
+                        <core-user-avatar [user]="userInfo" [userId]="userInfo.id" [linkProfile]="false"
+                            [checkOnline]="!canChangeProfilePicture">
                             @if (canChangeProfilePicture) {
                                 <ion-button class="edit-avatar" (click)="changeProfilePicture()"
                                     [ariaLabel]="'core.user.newpicture' | translate" fill="clear">
@@ -25,129 +27,126 @@
                                 </ion-button>
                             }
                         </core-user-avatar>
-                        <h2>{{ user.fullname }}</h2>
+                        <h2>{{ userInfo.fullname }}</h2>
                     </ion-label>
                 </ion-item>
 
-                @if (user.description) {
+                @if (userInfo.description) {
                     <ion-item class="ion-text-wrap" lines="full">
                         <ion-label>
                             <p>
-                                <core-format-text [text]="user.description" contextLevel="user" [contextInstanceId]="user.id"
+                                <core-format-text [text]="userInfo.description" contextLevel="user" [contextInstanceId]="userInfo.id"
                                     [courseId]="courseId" />
                             </p>
                         </ion-label>
                     </ion-item>
                 }
 
-                @if (hasContact) {
+                @if (hasContact()) {
                     <ion-item-group>
                         <ion-item-divider>
                             <ion-label>
                                 <h3>{{ 'core.user.contact' | translate}}</h3>
                             </ion-label>
                         </ion-item-divider>
-                        @if (user.email) {
+                        @if (userInfo.email) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.email' | translate }}</p>
-                                    <p><a class="core-anchor" href="mailto:{{user.email}}" core-link [autoLogin]="false"
+                                    <p><a class="core-anchor" href="mailto:{{userInfo.email}}" core-link [autoLogin]="false"
                                             [showBrowserWarning]="false">
-                                            {{ user.email }}
+                                            {{ userInfo.email }}
                                         </a></p>
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (user.country) {
+                        @if (userInfo.country) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.country' | translate}}</p>
-                                    <p>{{ user.country }}</p>
+                                    <p>{{ userInfo.country }}</p>
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (user.city) {
+                        @if (userInfo.city) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.city' | translate}}</p>
-                                    <p>{{ user.city }}</p>
+                                    <p>{{ userInfo.city }}</p>
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (displayTimezone && user.timezone) {
+                        @if (timezoneToDisplay()) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.timezone' | translate}}</p>
-                                    <p>{{ user.timezone }}</p>
+                                    <p>{{ timezoneToDisplay() }}</p>
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (user.phone1) {
+                        @if (userInfo.phone1) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
-                                    <p><a class="core-anchor" href="tel:{{user.phone1}}" core-link [autoLogin]="false"
+                                    <p><a class="core-anchor" href="tel:{{userInfo.phone1}}" core-link [autoLogin]="false"
                                             [showBrowserWarning]="false">
-                                            {{ user.phone1 }}
+                                            {{ userInfo.phone1 }}
                                         </a></p>
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (user.phone2) {
+                        @if (userInfo.phone2) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
-                                    <p><a class="core-anchor" href="tel:{{user.phone2}}" core-link [autoLogin]="false"
+                                    <p><a class="core-anchor" href="tel:{{userInfo.phone2}}" core-link [autoLogin]="false"
                                             [showBrowserWarning]="false">
-                                            {{ user.phone2 }}
+                                            {{ userInfo.phone2 }}
                                         </a></p>
                                 </ion-label>
                             </ion-item>
                         }
 
-
-                        @if (canShowDepartment) {
-
-                            @if (user.institution) {
+                        @if (!isCurrentUser) {
+                            @if (userInfo.institution) {
                                 <ion-item class="ion-text-wrap">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
-                                        <p>{{ user.institution }}</p>
+                                        <p>{{ userInfo.institution }}</p>
                                     </ion-label>
                                 </ion-item>
                             }
-                            @if (user.department) {
+                            @if (userInfo.department) {
                                 <ion-item class="ion-text-wrap">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.department' | translate }}</p>
-                                        <p>{{ user.department }}</p>
+                                        <p>{{ userInfo.department }}</p>
                                     </ion-label>
                                 </ion-item>
                             }
-                            @if (user.idnumber) {
+                            @if (userInfo.idnumber) {
                                 <ion-item class="ion-text-wrap">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
-                                        <p>{{ user.idnumber }}</p>
+                                        <p>{{ userInfo.idnumber }}</p>
                                     </ion-label>
                                 </ion-item>
                             }
-
                         }
                     </ion-item-group>
                 }
-                @if (hasDetails) {
+                @if (hasDetails()) {
                     <ion-item-group>
                         <ion-item-divider>
                             <ion-label>
                                 <h3>{{ 'core.userdetails' | translate}}</h3>
                             </ion-label>
                         </ion-item-divider>
-                        @if (interests) {
+                        @if (interests()) {
                             <ion-item class="ion-text-wrap core-user-profile-interests">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.interests' | translate}}</p>
-                                    @for (interest of interests; track interest) {
+                                    @for (interest of interests(); track interest) {
                                         <ion-badge role="link" (click)="openInterest(interest)">
                                             {{ interest }}
                                         </ion-badge>
@@ -155,17 +154,15 @@
                                 </ion-label>
                             </ion-item>
                         }
-                        @for (field of user.customfields; track field.shortname) {
-                            <core-user-profile-field [field]="field" contextLevel="course"
-                                [contextInstanceId]="courseId" [courseId]="courseId" />
-                        }
+                        <core-user-profile-field *ngFor="let field of userInfo.customfields" [field]="field" contextLevel="course"
+                            [contextInstanceId]="courseId" [courseId]="courseId" />
                     </ion-item-group>
                 }
             </ion-list>
         }
 
-        @if (!user || (!hasContact && !hasDetails && !user.description)) {
-            <core-empty-box icon="fas-user" [message]=" 'core.user.detailsnotavailable' | translate" />
+        @if (!userInfo || (!hasContact() && !hasDetails() && !userInfo.description)) {
+            <core-empty-box icon="fas-user" [message]="'core.user.detailsnotavailable' | translate" />
         }
     </core-loading>
 </ion-content>
