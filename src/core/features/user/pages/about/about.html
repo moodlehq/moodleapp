@@ -50,7 +50,7 @@
                             </ion-label>
                         </ion-item-divider>
                         @if (userInfo.email) {
-                            <ion-item class="ion-text-wrap">
+                            <ion-item class="ion-text-wrap core-user-email">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.email' | translate }}</p>
                                     <p><a class="core-anchor" href="mailto:{{userInfo.email}}" core-link [autoLogin]="false"
@@ -60,24 +60,32 @@
                                 </ion-label>
                             </ion-item>
                         }
-                        @if (userInfo.country) {
-                            <ion-item class="ion-text-wrap">
+                        @if (userAddress()) {
+                            <ion-item class="ion-text-wrap core-user-address">
                                 <ion-label>
-                                    <p class="item-heading">{{ 'core.user.country' | translate}}</p>
-                                    <p>{{ userInfo.country }}</p>
+                                    <p class="item-heading">{{ 'core.user.address' | translate}}</p>
+                                    <p>{{ userAddress() }}</p>
                                 </ion-label>
                             </ion-item>
                         }
                         @if (userInfo.city) {
-                            <ion-item class="ion-text-wrap">
+                            <ion-item class="ion-text-wrap core-user-city">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.city' | translate}}</p>
                                     <p>{{ userInfo.city }}</p>
                                 </ion-label>
                             </ion-item>
                         }
+                        @if (userInfo.country) {
+                            <ion-item class="ion-text-wrap core-user-country">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'core.user.country' | translate}}</p>
+                                    <p>{{ userInfo.country }}</p>
+                                </ion-label>
+                            </ion-item>
+                        }
                         @if (timezoneToDisplay()) {
-                            <ion-item class="ion-text-wrap">
+                            <ion-item class="ion-text-wrap core-user-timezone">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.timezone' | translate}}</p>
                                     <p>{{ timezoneToDisplay() }}</p>
@@ -85,7 +93,7 @@
                             </ion-item>
                         }
                         @if (userInfo.phone1) {
-                            <ion-item class="ion-text-wrap">
+                            <ion-item class="ion-text-wrap core-user-phone1">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.phone1' | translate}}</p>
                                     <p><a class="core-anchor" href="tel:{{userInfo.phone1}}" core-link [autoLogin]="false"
@@ -96,7 +104,7 @@
                             </ion-item>
                         }
                         @if (userInfo.phone2) {
-                            <ion-item class="ion-text-wrap">
+                            <ion-item class="ion-text-wrap core-user-phone2">
                                 <ion-label>
                                     <p class="item-heading">{{ 'core.user.phone2' | translate}}</p>
                                     <p><a class="core-anchor" href="tel:{{userInfo.phone2}}" core-link [autoLogin]="false"
@@ -109,7 +117,7 @@
 
                         @if (!isCurrentUser) {
                             @if (userInfo.institution) {
-                                <ion-item class="ion-text-wrap">
+                                <ion-item class="ion-text-wrap core-user-institution">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.institution' | translate }}</p>
                                         <p>{{ userInfo.institution }}</p>
@@ -117,7 +125,7 @@
                                 </ion-item>
                             }
                             @if (userInfo.department) {
-                                <ion-item class="ion-text-wrap">
+                                <ion-item class="ion-text-wrap core-user-department">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.department' | translate }}</p>
                                         <p>{{ userInfo.department }}</p>
@@ -125,7 +133,7 @@
                                 </ion-item>
                             }
                             @if (userInfo.idnumber) {
-                                <ion-item class="ion-text-wrap">
+                                <ion-item class="ion-text-wrap core-user-idnumber">
                                     <ion-label>
                                         <p class="item-heading">{{ 'core.user.idnumber' | translate }}</p>
                                         <p>{{ userInfo.idnumber }}</p>

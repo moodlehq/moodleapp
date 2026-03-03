@@ -67,7 +67,17 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
         return !!(user.email || user.phone1 || user.phone2 || user.city || user.country ||
             (!this.isCurrentUser && (user.institution || user.department || user.idnumber))
-            || timezone);
+            || timezone || this.userAddress());
+    });
+
+    readonly userAddress = computed(() => {
+        if (!this.isCurrentUser) {
+            return;
+        }
+
+        const user = this.user();
+
+        return user?.address;
     });
 
     readonly hasDetails = computed(() => {
