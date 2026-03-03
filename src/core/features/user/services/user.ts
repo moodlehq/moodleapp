@@ -36,6 +36,7 @@ import {
     CORE_USER_PICTURE_FEATURE_NAME,
 } from '../constants';
 import { CoreUserPreferences } from './user-preferences';
+import { CoreWSError } from '@classes/errors/wserror';
 
 declare module '@static/events' {
 
@@ -263,6 +264,10 @@ export class CoreUserProvider {
         try {
             return await this.getUserFromWS(userId, courseId, siteId);
         } catch (error) {
+            if (CoreWSError.isWebServiceError(error)) {
+                throw error;
+            }
+
             try {
                 return await this.getUserFromLocalDb(userId, siteId);
             } catch {
@@ -370,8 +375,7 @@ export class CoreUserProvider {
         }
 
         if (users.length === 0) {
-            // Shouldn't happen.
-            throw new CoreError('Cannot retrieve user info.');
+            throw new CoreWSError({ errorcode: 'cannotviewprofile', message: Translate.instant('core.user.cannotviewprofile') });
         }
 
         const user = users[0];
@@ -500,6 +504,7 @@ export class CoreUserProvider {
      *
      * @param userId User ID.
      * @param courseId Course ID.
+     * @param siteId
      * @returns Promise resolved when done.
      */
     async logView(userId: number, courseId?: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
@@ -520,6 +525,7 @@ export class CoreUserProvider {
      * Log Participants list view in Moodle.
      *
      * @param courseId Course ID.
+     * @param siteId
      * @returns Promise resolved when done.
      */
     async logParticipantsView(courseId: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
