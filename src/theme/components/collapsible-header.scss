@@ -89,20 +89,20 @@ body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-h
     }
 
     &.collapsible-header-page-is-active.collapsible-header-page-is-within-content  {
+        &:not(.collapsible-header-page-is-collapsed)  {
+            ion-content {
+                --offset-top: var(--collapsible-header-collapsed-height) !important;
 
-        ion-content {
-            --offset-top: var(--collapsible-header-collapsed-height) !important;
+                > ion-refresher {
+                    z-index: 1;
+                }
+            }
 
-            > ion-refresher {
-                z-index: 1;
+            .collapsible-header-expanded {
+                transform: none;
+                height: auto;
             }
         }
-
-        .collapsible-header-expanded {
-            transform: none;
-            height: auto;
-        }
-
     }
 
     &.collapsible-header-page-is-active.collapsible-header-page-is-frozen {

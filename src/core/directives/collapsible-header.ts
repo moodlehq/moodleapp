@@ -104,6 +104,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
 
+    protected readonly forceDisabled = computed(() =>
+        this.splitViewMode() === CoreSplitViewMode.MENU_AND_CONTENT ||
+        this.splitViewMode() === CoreSplitViewMode.CONTENT_ONLY);
+
     protected readonly splitViewMode = computed(() => {
         const content = this.content();
         if (!content) {
@@ -131,6 +135,17 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     constructor() {
         CoreDirectivesRegistry.register(this.collapsedHeader, this);
+
+        effect(() => {
+            const forceDisable = this.forceDisabled();
+            untracked(() => {
+                if (forceDisable) {
+                    this.setEnabled(false);
+                } else {
+                    this.setEnabled(this.enabled);
+                }
+            });
+        });
 
         effect(() => {
             this.calculateContentWidth();
@@ -550,6 +565,10 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     async setEnabled(enable: boolean): Promise<void> {
         if (!this.page) {
             return;
+        }
+
+        if (this.forceDisabled()) {
+            enable = false;
         }
 
         const content = this.content();
