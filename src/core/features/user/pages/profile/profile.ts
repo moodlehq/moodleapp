@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit, inject, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, viewChildren } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
@@ -56,17 +56,26 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     readonly dynamicComponents = viewChildren<CoreDynamicComponent<ReloadableComponent>>(CoreDynamicComponent);
 
-    userLoaded = false;
-    isLoadingHandlers = false;
-    user?: CoreUserProfile;
-    isDeleted = false;
-    isSuspended = false;
-    isEnrolled = true;
-    rolesFormatted?: string;
-    listItemHandlers: ListHandlerData[] = [];
-    buttonHandlers: ButtonHandlerData[] = [];
+    readonly userLoaded = signal(false);
+    readonly isLoadingHandlers = signal(false);
+    readonly user = signal<CoreUserProfile | undefined>(undefined);
 
-    users?: CoreUserSwipeItemsManager;
+    readonly isDeleted = signal(false);
+    readonly isSuspended = signal(false);
+    readonly isEnrolled = signal(true);
+    readonly rolesFormatted = computed(() => {
+        const user = this.user();
+        if (!user) {
+            return '';
+        }
+
+        return 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
+    });
+
+    readonly listItemHandlers = signal<ListHandlerData[]>([]);
+    readonly buttonHandlers = signal<ButtonHandlerData[]>([]);
+
+    readonly users = signal<CoreUserSwipeItemsManager | undefined>(undefined);
 
     protected courseId?: number;
     protected userId!: number;
@@ -78,21 +87,22 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
     constructor() {
         this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
-            if (!this.user || !data.user) {
+            if (!data.user || data.userId !== this.userId) {
                 return;
             }
 
-            this.user.email = data.user.email;
+            this.user.set(data.user);
         }, CoreSites.getCurrentSiteId());
 
         this.logView = CoreTime.once(async (user) => {
             try {
-                await CoreUser.logView(this.userId, this.courseId, user.fullname);
+                await CoreUser.logView(this.userId, this.courseId);
             } catch (error) {
-                this.isDeleted = error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted';
-                this.isSuspended = error?.errorcode === 'wsaccessusersuspended';
-                this.isEnrolled = error?.errorcode !== 'notenrolledprofile';
+                this.isDeleted.set(error?.errorcode === 'userdeleted' || error?.errorcode === 'wsaccessuserdeleted');
+                this.isSuspended.set(error?.errorcode === 'wsaccessusersuspended');
+                this.isEnrolled.set(error?.errorcode !== 'notenrolledprofile');
             }
+
             let extraParams = '';
             if (this.userId !== CoreSites.getCurrentSiteUserId()) {
                 const isCourseProfile = this.courseId && this.courseId !== CoreSites.getCurrentSiteHomeId();
@@ -135,15 +145,16 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
                 CoreUserParticipantsSource,
                 [this.courseId, search],
             );
-            this.users = new CoreUserSwipeItemsManager(source);
+            const users = new CoreUserSwipeItemsManager(source);
+            this.users.set(users);
 
-            this.users.start();
+            users.start();
         }
 
         try {
             await this.fetchUser();
         } finally {
-            this.userLoaded = true;
+            this.userLoaded.set(true);
         }
     }
 
@@ -154,34 +165,33 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
         try {
             const user = await CoreUser.getProfile(this.userId, this.courseId);
 
-            this.rolesFormatted = 'roles' in user ? CoreUserHelper.formatRoleList(user.roles) : '';
-
-            this.user = user;
+            this.user.set(user);
 
             // If there's already a subscription, unsubscribe because we'll get a new one.
             this.subscription?.unsubscribe();
 
             const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
             const defaultComponentData = {
-                user: this.user,
+                user: this.user(),
                 context,
                 courseId: this.courseId,
             };
 
             this.subscription = CoreUserDelegate.getProfileHandlersFor(user, context, this.courseId).subscribe((handlers) => {
-                this.listItemHandlers = [];
-                this.buttonHandlers = [];
+                const listItemHandlers: ListHandlerData[] = [];
+                const buttonHandlers: ButtonHandlerData[] = [];
+
                 handlers.forEach((handler) => {
                     switch (handler.type) {
                         case CoreUserProfileHandlerType.BUTTON:
-                            this.buttonHandlers.push({ name: handler.name, ...handler.data } as ButtonHandlerData);
+                            buttonHandlers.push({ name: handler.name, ...handler.data } as ButtonHandlerData);
                             break;
                         case CoreUserProfileHandlerType.LIST_ACCOUNT_ITEM:
                             // Discard this for now.
                             break;
                         case CoreUserProfileHandlerType.LIST_ITEM:
                         default:
-                            this.listItemHandlers.push({
+                            listItemHandlers.push({
                                 name: handler.name,
                                 ...handler.data,
                                 componentData: 'componentData' in handler.data ? {
@@ -193,7 +203,10 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
                     }
                 });
 
-                this.isLoadingHandlers = !CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId);
+                this.listItemHandlers.set(listItemHandlers);
+                this.buttonHandlers.set(buttonHandlers);
+
+                this.isLoadingHandlers.set(!CoreUserDelegate.areHandlersLoaded(user.id, context, this.courseId));
             });
 
             this.logView(user);
@@ -207,7 +220,6 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
      * Refresh the user.
      *
      * @param event Event.
-     * @returns Promise resolved when done.
      */
     async refreshUser(event?: HTMLIonRefresherElement): Promise<void> {
         await CorePromiseUtils.ignoreErrors(Promise.all([
@@ -226,11 +238,11 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
         event?.complete();
 
-        if (this.user) {
+        if (this.user()) {
             CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
-                user: this.user,
+                user: this.user(),
             }, this.site?.getId());
         }
     }
@@ -242,19 +254,20 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
      * @param handler Handler that was clicked.
      */
     handlerClicked(event: Event, handler: CoreUserProfileButtonHandlerData | CoreUserProfileListActionHandlerData): void {
-        if (!this.user) {
+        const user = this.user();
+        if (!user) {
             return;
         }
 
         const context = this.courseId ? CoreUserDelegateContext.COURSE : CoreUserDelegateContext.SITE;
-        handler.action(event, this.user, context, this.courseId);
+        handler.action(event, user, context, this.courseId);
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.users?.destroy();
+        this.users()?.destroy();
         this.subscription?.unsubscribe();
         this.obsProfileRefreshed.off();
     }

@@ -91,6 +91,7 @@ export abstract class CoreUserProfileFieldBaseComponent<T = string> implements O
     /**
      * Create the Form control.
      *
+     * @param field Field to create the control for.
      * @returns Form control.
      */
     protected createFormControl(field: AuthEmailSignupProfileField): FormControl<T> {

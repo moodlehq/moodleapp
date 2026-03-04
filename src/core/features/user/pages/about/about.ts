@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, computed, OnDestroy, OnInit, signal } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -56,24 +56,83 @@ import { CoreFileUtils } from '@static/file-utils';
 })
 export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
-    courseId!: number;
-    userLoaded = false;
-    hasContact = false;
-    hasDetails = false;
-    user?: CoreUserProfile;
-    title?: string;
-    canChangeProfilePicture = false;
-    interests?: string[];
-    displayTimezone = false;
-    canShowDepartment = false;
+    courseId = 0;
+    readonly userLoaded = signal(false);
+    readonly hasContact = computed(() => {
+        const user = this.user();
+        const timezone = this.timezoneToDisplay();
+        if (!user) {
+            return false;
+        }
 
-    protected userId!: number;
+        return !!(user.email || user.phone1 || user.phone2 || user.city || user.country ||
+            (!this.isCurrentUser && (user.institution || user.department || user.idnumber))
+            || timezone || this.userAddress());
+    });
+
+    readonly userAddress = computed(() => {
+        if (!this.isCurrentUser) {
+            return;
+        }
+
+        const user = this.user();
+
+        return user?.address;
+    });
+
+    readonly hasDetails = computed(() => {
+        const user = this.user();
+        const interests = this.interests();
+
+        return !!(interests || (user?.customfields && user.customfields.length > 0));
+    });
+
+    readonly user = signal<CoreUserProfile | undefined>(undefined);
+
+    canChangeProfilePicture = false;
+
+    readonly interests = computed(() => {
+        const user = this.user();
+        if (!user || !user.interests) {
+            return;
+        }
+
+        return user.interests.split(',').map(interest => interest.trim());
+    });
+
+    readonly timezoneToDisplay = computed(() => {
+        const user = this.user();
+        if (!user) {
+            return;
+        }
+
+        const serverTimezone = CoreSites.getRequiredCurrentSite().getStoredConfig('timezone');
+        if (!serverTimezone) {
+            return;
+        }
+
+        let timezone = user.timezone;
+        if (timezone === CORE_USER_PROFILE_SERVER_TIMEZONE) {
+            timezone = serverTimezone;
+        }
+
+        if (timezone) {
+            timezone = CoreTime.translateLegacyTimezone(timezone);
+        }
+
+        return timezone;
+    });
+
+    isCurrentUser = false;
+
+    protected userId = 0;
     protected site!: CoreSite;
     protected obsProfileRefreshed?: CoreEventObserver;
 
     constructor() {
         try {
             this.site = CoreSites.getRequiredCurrentSite();
+            this.userId = CoreNavigator.getRequiredRouteNumberParam('userId');
         } catch (error) {
             CoreAlerts.showError(error);
             CoreNavigator.back();
@@ -81,55 +140,40 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             return;
         }
 
+        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
+        this.isCurrentUser = this.userId === this.site.getUserId();
+
         this.obsProfileRefreshed = CoreEvents.on(CORE_USER_PROFILE_REFRESHED, (data) => {
-            if (!this.user || !data.user) {
+            if (!data.user || data.userId !== this.userId) {
                 return;
             }
-
-            this.user.email = data.user.email;
-        }, CoreSites.getCurrentSiteId());
+            this.user.set(data.user);
+        }, this.site.getId());
     }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.userId = CoreNavigator.getRouteNumberParam('userId') || 0;
-        this.courseId = CoreNavigator.getRouteNumberParam('courseId') || 0;
-        this.canShowDepartment = this.userId != this.site.getUserId();
-
         // Allow to change the profile image only in the app profile page.
         this.canChangeProfilePicture =
             !this.courseId &&
-            this.userId == this.site.getUserId() &&
+            this.isCurrentUser &&
             this.site.canUploadFiles() &&
             !CoreUser.isUpdatePictureDisabledInSite(this.site);
 
         this.fetchUser().finally(() => {
-            this.userLoaded = true;
+            this.userLoaded.set(true);
         });
     }
 
     /**
      * Fetches the user data.
-     *
-     * @returns Promise resolved when done.
      */
     async fetchUser(): Promise<void> {
         try {
             const user = await CoreUser.getProfile(this.userId, this.courseId);
-
-            this.interests = user.interests ?
-                user.interests.split(',').map(interest => interest.trim()) :
-                undefined;
-
-            this.hasContact = !!(user.email || user.phone1 || user.phone2 || user.city || user.country || user.address);
-            this.hasDetails = !!(user.interests || (user.customfields && user.customfields.length > 0));
-
-            this.user = user;
-            this.title = user.fullname;
-
-            this.fillTimezone();
+            this.user.set(user);
 
             await this.checkUserImageUpdated();
         } catch (error) {
@@ -139,15 +183,13 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
     /**
      * Check if current user image has changed.
-     *
-     * @returns Promise resolved when done.
      */
     protected async checkUserImageUpdated(): Promise<void> {
-        if (!this.site || !this.site.getInfo() || !this.user) {
+        if (!this.site || !this.site.getInfo() || !this.user()) {
             return;
         }
 
-        if (this.userId != this.site.getUserId() || !this.isUserAvatarDirty()) {
+        if (!this.isCurrentUser || !this.isUserAvatarDirty()) {
             // Not current user or hasn't changed.
             return;
         }
@@ -160,7 +202,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             // Cannot update site info. Assume the profile image is the right one.
             CoreEvents.trigger(CORE_USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
-                picture: this.user.profileimageurl,
+                picture: this.user()?.profileimageurl,
             }, this.site.getId());
         }
 
@@ -171,7 +213,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
             // Now they're the same, send event to use the right avatar in the rest of the app.
             CoreEvents.trigger(CORE_USER_PROFILE_PICTURE_UPDATED, {
                 userId: this.userId,
-                picture: this.user.profileimageurl,
+                picture: this.user()?.profileimageurl,
             }, this.site.getId());
         }
     }
@@ -242,11 +284,11 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
         event?.complete();
 
-        if (this.user) {
+        if (this.user()) {
             CoreEvents.trigger(CORE_USER_PROFILE_REFRESHED, {
                 courseId: this.courseId,
                 userId: this.userId,
-                user: this.user,
+                user: this.user(),
             }, this.site.getId());
         }
     }
@@ -257,11 +299,11 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
      * @returns Whether the user avatar differs from site info cache.
      */
     protected isUserAvatarDirty(): boolean {
-        if (!this.user || !this.site) {
+        if (!this.user() || !this.site) {
             return false;
         }
 
-        const courseAvatarUrl = this.normalizeAvatarUrl(this.user.profileimageurl);
+        const courseAvatarUrl = this.normalizeAvatarUrl(this.user()?.profileimageurl);
         const siteAvatarUrl = this.normalizeAvatarUrl(this.site.getInfo()?.userpictureurl);
 
         return courseAvatarUrl !== siteAvatarUrl;
@@ -286,30 +328,6 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
         }
 
         return avatarUrl;
-    }
-
-    /**
-     * Fill user timezone depending on the server and fix the legacy timezones.
-     */
-    protected fillTimezone(): void {
-        if (!this.user) {
-            return;
-        }
-
-        const serverTimezone = CoreSites.getRequiredCurrentSite().getStoredConfig('timezone');
-        this.displayTimezone = !!serverTimezone;
-
-        if (!this.displayTimezone) {
-            return;
-        }
-
-        if (this.user.timezone === CORE_USER_PROFILE_SERVER_TIMEZONE) {
-            this.user.timezone = serverTimezone;
-        }
-
-        if (this.user.timezone) {
-            this.user.timezone = CoreTime.translateLegacyTimezone(this.user.timezone);
-        }
     }
 
     /**
