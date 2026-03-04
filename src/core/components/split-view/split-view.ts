@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, Input, OnDestroy, inject, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject, viewChild, input, signal } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
-import { IonContent, IonRouterOutlet } from '@ionic/angular';
+import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { CoreBaseModule } from '@/core/base.module';
@@ -42,15 +42,23 @@ const disabledScrollClass = 'disable-scroll-y';
 })
 export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
 
-    readonly menuContent = viewChild.required(IonContent);
-    readonly contentOutlet = viewChild.required(IonRouterOutlet);
-    @Input() placeholderText = 'core.emptysplit';
-    @Input() mode?: CoreSplitViewMode;
-    isNested = false;
-    disabledScrollOuterContents: HTMLIonContentElement[] = [];
+    readonly placeholderText = input('core.emptysplit');
 
-    private outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
-    private subscriptions?: Subscription[];
+    /**
+     * @deprecated since 5.2. Not used anymore.
+     */
+    readonly mode = input<CoreSplitViewMode>();
+
+    readonly currentMode = signal(CoreSplitViewMode.MENU_AND_CONTENT);
+
+    readonly hasParentSplitView = signal(false);
+
+    protected readonly contentOutlet = viewChild.required(IonRouterOutlet);
+
+    protected disabledScrollOuterContents: HTMLIonContentElement[] = [];
+
+    protected outletRouteSubject = new BehaviorSubject<ActivatedRouteSnapshot | null>(null);
+    protected subscriptions?: Subscription[];
     protected element: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
@@ -73,11 +81,16 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
         return this.element;
     }
 
+    // @TODO: Should be replaced by the direct signal.
+    get isNested(): boolean {
+        return this.hasParentSplitView();
+    }
+
     /**
      * @inheritdoc
      */
     ngAfterViewInit(): void {
-        this.isNested = !!this.element.parentElement?.closest('core-split-view');
+        this.hasParentSplitView.set(!!this.element.parentElement?.closest('core-split-view'));
 
         this.disableScrollOnParent();
 
@@ -115,13 +128,15 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
      * Update host classes.
      */
     private updateClasses(): void {
-        const classes: string[] = [this.getCurrentMode()];
+        this.updateCurrentMode();
+
+        const classes: string[] = [this.currentMode()];
 
         if (this.contentOutlet().isActivated) {
             classes.push('outlet-activated');
         }
 
-        if (this.isNested) {
+        if (this.hasParentSplitView()) {
             classes.push('nested');
         }
 
@@ -129,27 +144,25 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * Get the current mode. Depending on the layout, outlet status, and whether this split view
+     * Update the current mode. Depending on the layout, outlet status, and whether this split view
      * is nested or not, this method will indicate which parts of the split view should be visible.
-     *
-     * @returns Split view mode.
      */
-    private getCurrentMode(): CoreSplitViewMode {
-        if (this.mode) {
-            return this.mode;
-        }
+    private updateCurrentMode(): void {
+        if (this.hasParentSplitView()) {
+            this.currentMode.set(CoreSplitViewMode.MENU_ONLY);
 
-        if (this.isNested) {
-            return CoreSplitViewMode.MENU_ONLY;
+            return;
         }
 
         if (CoreScreen.isMobile) {
-            return this.contentOutlet().isActivated
+            this.currentMode.set(this.contentOutlet().isActivated
                 ? CoreSplitViewMode.CONTENT_ONLY
-                : CoreSplitViewMode.MENU_ONLY;
+                : CoreSplitViewMode.MENU_ONLY);
+
+            return;
         }
 
-        return CoreSplitViewMode.MENU_AND_CONTENT;
+        this.currentMode.set(CoreSplitViewMode.MENU_AND_CONTENT);
     }
 
     /**
@@ -160,7 +173,7 @@ export class CoreSplitViewComponent implements AfterViewInit, OnDestroy {
     protected disableScrollOnParent(): void {
         const outerContent = this.element.parentElement?.closest('ion-content');
         if (outerContent) {
-            if (outerContent?.getAttribute('scroll-y') != 'false' && !outerContent?.classList.contains(disabledScrollClass)) {
+            if (outerContent?.getAttribute('scroll-y') !== 'false' && !outerContent?.classList.contains(disabledScrollClass)) {
                 outerContent.classList.add(disabledScrollClass);
                 this.disabledScrollOuterContents.push(outerContent);
             }
