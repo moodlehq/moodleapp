@@ -15,10 +15,7 @@
 import {
     Directive,
     ElementRef,
-    OnChanges,
     OnDestroy,
-    OnInit,
-    SimpleChange,
     computed,
     effect,
     inject,
@@ -88,11 +85,9 @@ export const COLLAPSIBLE_HEADER_UPDATED = 'collapsible_header_updated';
 @Directive({
     selector: 'ion-header[collapsible]',
 })
-export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDestroy, AsyncDirective {
+export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective {
 
     readonly collapsible = input(true, { transform: toBoolean });
-
-    protected readonly canCollapse = signal(true);
 
     protected page?: HTMLElement;
     protected collapsedHeader: HTMLIonHeaderElement = inject(ElementRef).nativeElement;
@@ -106,7 +101,8 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     protected readonly forceDisabled = computed(() =>
         this.splitViewMode() === CoreSplitViewMode.MENU_AND_CONTENT ||
-        this.splitViewMode() === CoreSplitViewMode.CONTENT_ONLY);
+        this.splitViewMode() === CoreSplitViewMode.CONTENT_ONLY ||
+        !!CoreDom.closest(this.collapsedHeader, 'core-tabs-outlet'));
 
     protected readonly splitViewMode = computed(() => {
         const content = this.content();
@@ -125,7 +121,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected floatingTitle?: HTMLHeadingElement;
     protected scrollingHeight?: number;
     protected subscriptions: Subscription[] = [];
-    protected enabled = true;
     protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
@@ -133,43 +128,33 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected visiblePromise?: CoreCancellablePromise<void>;
     protected onReadyPromise = new CorePromisedValue<void>();
 
+    get enabled(): boolean {
+        return !!this.expandedHeader && this.collapsible() && !this.forceDisabled();
+    }
+
     constructor() {
         CoreDirectivesRegistry.register(this.collapsedHeader, this);
 
         effect(() => {
-            const forceDisable = this.forceDisabled();
+            this.forceDisabled();
+            this.collapsible();
+
             untracked(() => {
-                if (forceDisable) {
-                    this.setEnabled(false);
-                } else {
-                    this.setEnabled(this.enabled);
-                }
+                this.init();
+                this.setEnabled();
             });
         });
 
         effect(() => {
-            this.calculateContentWidth();
+            this.calculateContentWidth(this.content(), this.splitViewMode());
         });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        if (CoreDom.closest(this.collapsedHeader, 'core-tabs-outlet')) {
-            this.canCollapse.set(false);
-        } else {
-            this.canCollapse.set(this.collapsible());
-        }
-
-        this.init();
     }
 
     /**
      * Init function.
      */
     async init(): Promise<void> {
-        if (!this.canCollapse() || this.expandedHeader) {
+        if (!this.collapsible() || this.forceDisabled() || this.expandedHeader) {
             this.onReadyPromise.resolve();
 
             return;
@@ -189,21 +174,6 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         await this.initializeContent();
 
         this.onReadyPromise.resolve();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
-        if (changes.collapsible && !changes.collapsible.firstChange) {
-            this.enabled = this.canCollapse();
-
-            await this.init();
-
-            setTimeout(() => {
-                this.setEnabled(this.enabled);
-            }, 200);
-        }
     }
 
     /**
@@ -276,7 +246,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     protected listenEvents(): void {
         this.resizeListener = CoreDom.onWindowResize(() => {
             this.initializeFloatingTitle();
-            this.calculateContentWidth();
+            this.calculateContentWidth(this.content(), this.splitViewMode());
         }, 50);
 
         this.subscriptions.push(CoreSettingsHelper.onDarkModeChange().subscribe(() => {
@@ -354,8 +324,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
         this.expandedHeader = this.page?.querySelector('ion-item[collapsible]') ?? undefined;
 
         if (!this.expandedHeader) {
-            this.enabled = false;
-            this.setEnabled(this.enabled);
+            this.setEnabled(false);
 
             throw new Error('[collapsible-header] Couldn\'t initialize expanded header');
         }
@@ -403,10 +372,11 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
     /**
      * Calculates the width of the content and stores it in a CSS variable.
+     *
+     * @param content Content element.
+     * @param splitViewMode Current split view mode.
      */
-    protected async calculateContentWidth(): Promise<void> {
-        const content = this.content();
-        const splitViewMode = this.splitViewMode();
+    protected async calculateContentWidth(content?: HTMLIonContentElement, splitViewMode?: CoreSplitViewMode): Promise<void> {
         if (content && splitViewMode === CoreSplitViewMode.MENU_AND_CONTENT) {
             this.page?.style.setProperty('--collapsible-header-content-width', `${content.offsetWidth}px`);
         } else {
@@ -560,16 +530,14 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
     /**
      * Set collapsed/expanded based on properties.
      *
-     * @param enable True to enable, false otherwise
+     * @param enable True to enable, false to disabled and undefined to use the current state.
      */
-    async setEnabled(enable: boolean): Promise<void> {
+    async setEnabled(enable?: boolean): Promise<void> {
         if (!this.page) {
             return;
         }
 
-        if (this.forceDisabled()) {
-            enable = false;
-        }
+        enable = enable ?? this.enabled;
 
         const content = this.content();
         if (enable && content) {
@@ -618,7 +586,7 @@ export class CoreCollapsibleHeaderDirective implements OnInit, OnChanges, OnDest
 
         this.isWithinContent = content.contains(expandedHeader);
         page.classList.toggle('collapsible-header-page-is-within-content', this.isWithinContent);
-        this.setEnabled(this.enabled);
+        this.setEnabled();
 
         Object
             .entries(expandedFontStyles)
