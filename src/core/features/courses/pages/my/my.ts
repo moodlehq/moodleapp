@@ -141,7 +141,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
      */
     protected async loadContent(firstLoad = false): Promise<void> {
         const loadWatcher = this.loadsManager.startPageLoad(this, !!firstLoad);
-        const available = await CoreCoursesDashboard.isAvailable();
+        const available = await CoreCoursesDashboard.isWSAvailable();
         const disabled = CoreCourses.isMyCoursesDisabledInSite();
 
         if (available && !disabled) {

@@ -7,6 +7,7 @@ For more information about upgrading, read the official documentation: https://m
 
  - The core-files component now treats the `files` input array as immutable to simplify the change detection strategy and improve performance. To trigger an update, you must provide a new array reference (e.g. using `concat()` or the spread operator) rather than mutating the existing one with `push()` or `splice()`.
  - CoreCourses.getCoursesByField and CoreCourses.getCourseByField now accepts CoreSitesCommonWSOptions, direct usage of siteId has been deprecated.
+ - CoreCoursesDashboard.isAvailable now checks blocks and settings on site, if you want to check only if the WS is present, use isWSAvailable instead.
 
 5.1.0
 =====
