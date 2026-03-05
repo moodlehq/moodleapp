@@ -35,10 +35,10 @@ import {
     CORE_COURSES_STATE_HIDDEN,
     CORE_COURSES_DOWNLOAD_FEATURE_NAME,
     CORE_COURSE_DOWNLOAD_FEATURE_NAME,
-    CORE_COURSES_MENU_FEATURE_NAME,
     CORE_COURSES_SEARCH_FEATURE_NAME,
 } from '../constants';
 import { CoreTextFormat } from '@static/text';
+import { CoreCoursesMy } from './my';
 
 declare module '@static/events' {
 
@@ -264,11 +264,10 @@ export class CoreCoursesProvider {
      *
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @deprecated since 5.2. Use CoreCoursesMy.isDisabled instead.
      */
     async isMyCoursesDisabled(siteId?: string): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-
-        return this.isMyCoursesDisabledInSite(site);
+        return CoreCoursesMy.isDisabled(siteId);
     }
 
     /**
@@ -276,11 +275,10 @@ export class CoreCoursesProvider {
      *
      * @param site Site. If not defined, use current site.
      * @returns Whether it's disabled.
+     * @deprecated since 5.2. Use CoreCoursesMy.isDisabledInSite instead.
      */
     isMyCoursesDisabledInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !site || site.isFeatureDisabled(CORE_COURSES_MENU_FEATURE_NAME);
+        return CoreCoursesMy.isDisabledInSite(site);
     }
 
     /**
