@@ -111,7 +111,7 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
      * @returns Promise resolved when done.
      */
     protected async loadContent(): Promise<void> {
-        const available = await CoreCoursesDashboard.isAvailable();
+        const available = await CoreCoursesDashboard.isWSAvailable();
         const disabled = await CoreCoursesDashboard.isDisabled();
 
         if (available && !disabled) {
