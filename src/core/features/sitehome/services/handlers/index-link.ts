@@ -75,9 +75,8 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
             return false;
         }
 
-        return CoreSiteHome.isAvailable(siteId).then(() => true).catch(() => false);
+        return CoreSiteHome.isAvailable(siteId);
     }
 
 }
-
 export const CoreSiteHomeIndexLinkHandler = makeSingleton(CoreSiteHomeIndexLinkHandlerService);

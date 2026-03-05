@@ -87,17 +87,24 @@ export class CoreSiteHomeProvider {
         try {
             const site = await CoreSites.getSite(siteId);
 
-            // First check if it's disabled.
             if (this.isDisabledInSite(site)) {
                 return false;
             }
+
+            // Since 5.2.
+            const enabled = await site.getBooleanConfig('enablemyhome', false, true);
+            if (!enabled) {
+                return false;
+            }
+
+            siteId = siteId || site.getId();
 
             // Use a WS call to check if there's content in the site home.
             const siteHomeId = site.getSiteHomeId();
             const preSets: CoreSiteWSPreSets = { emergencyCache: false };
 
             try {
-                const sections = await CoreCourse.getSections(siteHomeId, false, true, preSets, site.id);
+                const sections = await CoreCourse.getSections(siteHomeId, false, true, preSets, siteId);
 
                 if (!sections || !sections.length) {
                     throw Error('No sections found');
