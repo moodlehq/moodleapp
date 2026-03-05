@@ -37,6 +37,7 @@ import { CoreMainMenuUserButtonComponent } from '../../../mainmenu/components/us
 import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/side-blocks-button/side-blocks-button';
 import { CoreCoursesMyPageName } from '@features/courses/constants';
 import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '@addons/block/myoverview/constants';
+import { CoreCoursesMy } from '@features/courses/services/my';
 
 /**
  * Page that shows a my courses.
@@ -142,7 +143,7 @@ export default class CoreCoursesMyPage implements OnInit, OnDestroy, AsyncDirect
     protected async loadContent(firstLoad = false): Promise<void> {
         const loadWatcher = this.loadsManager.startPageLoad(this, !!firstLoad);
         const available = await CoreCoursesDashboard.isWSAvailable();
-        const disabled = CoreCourses.isMyCoursesDisabledInSite();
+        const disabled = CoreCoursesMy.isDisabledInSite();
 
         if (available && !disabled) {
             try {

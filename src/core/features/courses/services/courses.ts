@@ -264,10 +264,12 @@ export class CoreCoursesProvider {
      *
      * @param siteId Site Id. If not defined, use current site.
      * @returns Promise resolved with true if disabled, rejected or resolved with false otherwise.
+     * @deprecated since 5.2. Use CoreCoursesMy.isDisabled instead.
      */
     async isMyCoursesDisabled(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return this.isMyCoursesDisabledInSite(site);
     }
 
@@ -276,6 +278,7 @@ export class CoreCoursesProvider {
      *
      * @param site Site. If not defined, use current site.
      * @returns Whether it's disabled.
+     * @deprecated since 5.2. Use CoreCoursesMy.isDisabledInSite instead.
      */
     isMyCoursesDisabledInSite(site?: CoreSite): boolean {
         site = site || CoreSites.getCurrentSite();

@@ -17,6 +17,8 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { makeSingleton } from '@singletons';
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
+import { CoreCoursesMy } from '../my';
+
 /**
  * Handler to treat links to my courses page.
  */
@@ -25,6 +27,13 @@ export class CoreCoursesMyCoursesLinkHandlerService extends CoreContentLinksHand
 
     name = 'CoreCoursesMyCoursesLinkHandler';
     pattern = /\/my\/courses\.php/;
+
+    /**
+     * @inheritdoc
+     */
+    async isEnabled(siteId: string): Promise<boolean> {
+        return CoreCoursesMy.isAvailable(siteId);
+    }
 
     /**
      * @inheritdoc
