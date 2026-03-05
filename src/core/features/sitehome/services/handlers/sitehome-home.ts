@@ -33,14 +33,7 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
      * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
-        return this.isEnabledForSite();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    async isEnabledForSite(siteId?: string): Promise<boolean> {
-        return CoreSiteHome.isAvailable(siteId);
+        return CoreSiteHome.isAvailable();
     }
 
     /**

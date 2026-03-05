@@ -963,6 +963,7 @@ export type CoreSiteConfig = Record<string, string> & {
     searchbanner?: string; // Search banner text.
     searchbannerenable?: string; // Whether search banner is enabled.
     enabledashboard?: string; // Whether dashboard is enabled.
+    enablemyhome?: string; // @since 5.2. Whether my home is enabled.
 };
 
 /**
