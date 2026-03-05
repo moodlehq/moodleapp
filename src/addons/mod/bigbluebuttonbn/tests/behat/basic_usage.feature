@@ -28,18 +28,18 @@ Feature: Test basic usage of BBB activity in app
     And I entered the course "Course 1" as "student1" in the app
     And I press "BBB 1" in the app
     Then I should find "The session has not started yet." in the app
-    And I should find "Saturday, 1 January 2050, 12:00 AM" within "Open" "ion-item" in the app
+    And I should find "1 January 2050, 12:00 AM" near "Opens:" in the app
 
     When I go back in the app
     And I press "BBB 2" in the app
     Then I should find "The session has ended." in the app
-    And I should find "Saturday, 1 January 2000, 12:00 AM" within "Close" "ion-item" in the app
+    And I should find "1 January 2000, 12:00 AM" near "Closed:" in the app
 
     When I go back in the app
     And I press "BBB 3" in the app
     Then I should find "This room is ready. You can join the session now." in the app
-    And I should find "Saturday, 1 January 2000, 12:00 AM" within "Open" "ion-item" in the app
-    And I should find "Saturday, 1 January 2050, 12:00 AM" within "Close" "ion-item" in the app
+    And I should find "1 January 2000, 12:00 AM" near "Opened:" in the app
+    And I should find "1 January 2050, 12:00 AM" near "Closes:" in the app
 
   Scenario: Join meeting (student)
     Given the following "activities" exist:

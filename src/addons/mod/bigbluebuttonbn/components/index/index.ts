@@ -20,6 +20,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreTime } from '@static/time';
+import type { CoreCourseModuleDate } from '@features/course/services/course';
 import { CoreArray } from '@static/array';
 import { Translate } from '@singletons';
 import {
@@ -121,6 +122,35 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
                 if (count === this.meetingInfo.userlimit) {
                     this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+                }
+            }
+
+            // If the module doesn't include activity dates, populate them from meetingInfo.
+            // As of LMS v5.1.0, these dates are normally provided by the module.
+            if (this.module && (!this.module.dates || !this.module.dates.length)) {
+                const dates: CoreCourseModuleDate[] = [];
+                const now = CoreTime.timestamp();
+
+                if (this.meetingInfo.openingtime) {
+                    const openLabelId = this.meetingInfo.openingtime > now ? 'activitydate:opens' : 'activitydate:opened';
+                    dates.push({
+                        dataid: 'timeopen',
+                        label: Translate.instant(`core.course.${openLabelId}`),
+                        timestamp: this.meetingInfo.openingtime,
+                    });
+                }
+
+                if (this.meetingInfo.closingtime) {
+                    const closeLabelId = this.meetingInfo.closingtime > now ? 'activitydate:closes' : 'activitydate:closed';
+                    dates.push({
+                        dataid: 'timeclose',
+                        label: Translate.instant(`core.course.${closeLabelId}`),
+                        timestamp: this.meetingInfo.closingtime,
+                    });
+                }
+
+                if (dates.length) {
+                    this.module.dates = dates;
                 }
             }
         } catch (error) {
