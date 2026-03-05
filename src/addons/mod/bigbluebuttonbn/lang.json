@@ -1,8 +1,6 @@
 {
     "end_session_confirm": "Are you sure you want to end the session?",
     "end_session_confirm_title": "Really end session?",
-    "mod_form_field_closingtime": "Close",
-    "mod_form_field_openingtime": "Open",
     "userlimitreached": "The number of users allowed in a session has been reached.",
     "view_conference_action_end": "End session",
     "view_conference_action_join": "Join session",
