@@ -22,7 +22,16 @@ import { makeSingleton } from '@singletons';
 /**
  * Interface that all home handlers must implement.
  */
-export type CoreMainMenuHomeHandler = CoreDelegateDisplayHandler<CoreMainMenuHomeHandlerToDisplay>;
+export type CoreMainMenuHomeHandler = CoreDelegateDisplayHandler<CoreMainMenuHomeHandlerToDisplay> & {
+
+    /**
+     * Check if the handler is enabled on a certain site.
+     *
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Whether or not the handler is enabled on a site level.
+     */
+    isEnabledForSite?(siteId?: string): Promise<boolean>;
+};
 
 /**
  * Data needed to render a main menu handler. It's returned by the handler.

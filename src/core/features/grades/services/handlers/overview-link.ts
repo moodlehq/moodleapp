@@ -30,9 +30,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     pattern = /\/grade\/report\/overview\/index.php/;
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @returns List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
@@ -43,11 +41,7 @@ export class CoreGradesOverviewLinkHandlerService extends CoreContentLinksHandle
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     * If not defined, defaults to true.
-     *
-     * @param siteId The site ID.
-     * @returns Whether the handler is enabled for the URL and site.
+     * @inheritdoc
      */
     async isEnabled(siteId: string): Promise<boolean> {
         return CoreGrades.isCourseGradesEnabled(siteId);
