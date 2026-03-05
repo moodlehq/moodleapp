@@ -3,22 +3,53 @@ name: moodleapp-open-pull-request
 description: "Create a pull request to open source Moodle Mobile App repository with your changes"
 ---
 
-# Moodle Mobile App Open Pull Request
+# Open a pull request on Moodle App repository
 
-This skill guides you through creating a pull request to contribute your changes to the open source Moodle Mobile App repository.
+This skill documents how the agent should create or rewrite a pull request for the Moodle Mobile App repository.
+
+Key points:
+- Prefer using Atlassian MCP (Jira) and GitHub MCP integrations when available.
+- If integrations are not configured or accessible, fall back to safe behavior using branch and commit metadata.
 
 ## Prerequisites
 
-- Have access to the Atlassian MCP server.
-- Have access to the GitHub MCP server.
-- Have a local branch with your changes ready to be pushed to the repository.
+- Mandatory: Atlassian MCP credentials configured for the agent (to fetch issue title/description).
+- Optional: GitHub MCP credentials configured for PR creation/update.
+- A local branch containing your changes. The branch name SHOULD include an issue key when applicable (e.g. `MOBILE-1234`).
 
 ## When to Use This Skill
 
-- You have made changes to the Moodle Mobile App codebase and want to contribute them back to the community.
+- You have local changes and want the agent to open or rewrite a PR for `moodlehq/moodleapp`.
 
-## Steps to Create a Pull Request
+## Behavior and Steps
 
-1. Obtain the issue title and description from the Atlassian MCP server using the current branch name. This information will help you write a clear and concise description for your pull request, explaining the purpose of your changes and any related issues or bugs that were fixed.
-2. Write a detailed description for your pull request, including the changes made in the codebase (use the main branch of the Moodle Mobile App repository (https://github.com/moodlehq/moodleapp) as a reference), such as new features, bug fixes, or improvements. This will help reviewers understand the context of your changes and provide feedback accordingly. Use the issue title and description from the Atlassian MCP server to ensure your pull request is well-documented and informative. Also include the issue URL on JIRA.
-3. Using GitHub MCP server, create a pull request from your branch to the main branch of the Moodle Mobile App repository (https://github.com/moodlehq/moodleapp). Include the issue title and description in the pull request to provide context for reviewers.
+1. Detect the current branch name and look for an issue key pattern (e.g. `MOBILE-1234`).
+2. Fetch the issue summary and description from MCP using the issue key and use them to build the PR title and body.
+3. Ensure the local branch is pushed to the fork (push to `origin` if it points to the user's fork). If the remote branch does not exist, push it and set upstream.
+4. Create or update a GitHub PR against the upstream repository (`moodlehq/moodleapp`) using the fork branch as the head and the repository's default branch (usually `main`) as base.
+5. If MCP/Jira is not available, build the PR title/body using:
+   - PR title: `ISSUE-KEY: Short summary` (if issue key present) or `BRANCH_NAME: Short summary` otherwise.
+   - PR body: `Link to issue:`, `Description:` (issue desc or latest commit message), and `Notes:` (reviewers suggestions).
+   - If the branch contains more than one commit, collect all commits that are present on the branch but not yet in the upstream base (e.g. `upstream/main`) to provide a proper title and description.
+6. Optionally set the PR to draft, add reviewers and labels if available and requested by the user.
+
+## Templates
+
+- Title: `ISSUE-KEY: <one-line summary>` or `BRANCH_NAME: <one-line summary>`.
+- Body example:
+
+  Link to issue: `https://moodle.atlassian.net/browse/ISSUE-KEY`
+
+  <Full issue description from MCP OR latest commit message(s)>
+
+  Notes:
+  - Add reviewers: @team-member
+
+## Security & Permissions
+
+- The agent will only attempt MCP or GitHub operations if credentials/integration are configured. If not, it will use the fallback behavior described above.
+
+## Example Flows
+
+- With MCP: branch `MOBILE-5007` → fetch Jira `MOBILE-5007` → use its title/description in PR.
+- Without MCP: branch `MOBILE-5007` → use branch and commit messages to populate PR.
