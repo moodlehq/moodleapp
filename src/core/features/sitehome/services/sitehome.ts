@@ -57,7 +57,7 @@ export class CoreSiteHomeProvider {
         const { AddonModForum } = await import('@addons/mod/forum/services/forum');
 
         const forums = await AddonModForum.getCourseForums(siteHomeId);
-        const forum = forums.find((forum) => forum.type == 'news');
+        const forum = forums.find((forum) => forum.type === 'news');
 
         if (forum) {
             return forum;
@@ -172,20 +172,20 @@ export class CoreSiteHomeProvider {
 
             let add = false;
             switch (itemNumber) {
-                case FrontPageItemNames['NEWS_ITEMS']:
+                case FrontPageItemNames.NEWS_ITEMS:
                     // Get number of news items to show.
                     add = !!CoreSites.getCurrentSite()?.getStoredConfig('newsitems');
                     break;
-                case FrontPageItemNames['COMBO_LIST']:
-                    itemNumber = FrontPageItemNames['LIST_OF_CATEGORIES'];
+                case FrontPageItemNames.COMBO_LIST:
+                    itemNumber = FrontPageItemNames.LIST_OF_CATEGORIES;
                     add = true;
                     break;
-                case FrontPageItemNames['LIST_OF_CATEGORIES']:
-                case FrontPageItemNames['LIST_OF_COURSE']:
-                case FrontPageItemNames['ENROLLED_COURSES']:
+                case FrontPageItemNames.LIST_OF_CATEGORIES:
+                case FrontPageItemNames.LIST_OF_COURSE:
+                case FrontPageItemNames.ENROLLED_COURSES:
                     add = true;
                     break;
-                case FrontPageItemNames['COURSE_SEARCH_BOX']:
+                case FrontPageItemNames.COURSE_SEARCH_BOX:
                     add = !CoreCourses.isSearchCoursesDisabledInSite();
                     break;
                 default:

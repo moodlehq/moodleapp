@@ -43,7 +43,7 @@ export class AddonModGlossaryEntryLinkHandlerService extends CoreContentLinksHan
                 const modal = await CoreLoadings.show();
 
                 try {
-                    const entryId = params.mode == 'entry' ? Number(params.hook) : Number(params.eid);
+                    const entryId = params.mode === 'entry' ? Number(params.hook) : Number(params.eid);
 
                     const response = await AddonModGlossary.getEntry(
                         entryId,

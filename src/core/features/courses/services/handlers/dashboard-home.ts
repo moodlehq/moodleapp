@@ -44,10 +44,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
     }
 
     /**
-     * Check if the handler is enabled on a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     async isEnabledForSite(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
@@ -80,9 +77,7 @@ export class CoreDashboardHomeHandlerService implements CoreMainMenuHomeHandler 
     }
 
     /**
-     * Returns the data needed to render the handler.
-     *
-     * @returns Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         return {

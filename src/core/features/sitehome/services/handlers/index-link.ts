@@ -70,7 +70,7 @@ export class CoreSiteHomeIndexLinkHandlerService extends CoreContentLinksHandler
         }
 
         const site = await CoreSites.getSite(siteId);
-        if (courseId != site.getSiteHomeId()) {
+        if (courseId !== site.getSiteHomeId()) {
             // The course is not site home.
             return false;
         }
