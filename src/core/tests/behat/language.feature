@@ -2,7 +2,9 @@
 Feature: Test language changes
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "users" exist:
       | username |
       | student1 |
 

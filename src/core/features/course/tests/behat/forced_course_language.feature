@@ -6,7 +6,9 @@ Feature: Forced course language is applied in the app
   I want the app to apply the forced course language when set
 
   Background:
-    Given the following "courses" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "courses" exist:
       | fullname         | shortname | lang |
       | English Course   | ENGC      | en   |
       | Spanish Course   | ESPC      | es   |

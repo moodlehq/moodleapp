@@ -230,7 +230,9 @@ Feature: Activities overview common functionality
     Then I should not find "Resource type" in the app
 
   Scenario: Links to overview are handled by the app and open the overview page
-    Given the following "courses" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "courses" exist:
       | fullname | shortname |
       | Course 2 | C2        |
     And the following "course enrolments" exist:

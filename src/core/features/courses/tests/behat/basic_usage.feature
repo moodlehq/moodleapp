@@ -6,8 +6,9 @@ Feature: Test basic usage of courses in app
 
   Background:
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
-    Given the following "users" exist:
+      | enablemyhome    | 1 |
+      | enablemycourses | 1 |
+    And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | teacher | teacher1@example.com |
       | student1 | Student | student | student1@example.com |
