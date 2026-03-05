@@ -24,22 +24,7 @@
 
     @if (meetingInfo && showRoom) {
 
-        @if (meetingInfo.openingtime) {
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_openingtime' | translate }}</p>
-                </ion-label>
-                <p slot="end">{{ meetingInfo.openingtime * 1000 | coreFormatDate }}</p>
-            </ion-item>
-        }
-        @if (meetingInfo.closingtime) {
-            <ion-item class="ion-text-wrap">
-                <ion-label>
-                    <p class="item-heading">{{ 'addon.mod_bigbluebuttonbn.mod_form_field_closingtime' | translate }}</p>
-                </ion-label>
-                <p slot="end">{{ meetingInfo.closingtime * 1000 | coreFormatDate }}</p>
-            </ion-item>
-        }
+            <!-- Opening and closing times shown in header; removed here to avoid duplication. -->
 
         @if (meetingInfo.canjoin && !meetingInfo.statusrunning) {
             <ion-item class="ion-text-wrap">
