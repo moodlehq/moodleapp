@@ -32,6 +32,9 @@ export class CoreLoginSignUpService {
      * @param userInfo User information.
      * @param site Unauthenticated site.
      * @param signupOptions Optional options like custom profile fields, redirect URL. and recaptcha response.
+     * @param signupOptions.recaptchaResponse Recaptcha response, if recaptcha is enabled.
+     * @param signupOptions.customProfileFields Custom profile fields to send to the server, if required.
+     * @param signupOptions.redirect Redirect URL to send to the server, if required.
      * @returns Promise resolved with the WS result.
      */
     async emailSignup(

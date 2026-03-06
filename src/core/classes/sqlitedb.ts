@@ -319,7 +319,7 @@ export class SQLiteDB {
      */
     async countRecordsSql(sql: string, params?: SQLiteDBRecordValue[]): Promise<number> {
         const count = await this.getFieldSql(sql, params);
-        if (typeof count != 'number' || count < 0) {
+        if (typeof count !== 'number' || count < 0) {
             return 0;
         }
 

@@ -75,6 +75,9 @@ class CoreFilepoolQueue {
 
     /**
      * Initialize the queue.
+     *
+     * @param processFnc Function to process an item in the queue.
+     *  It receives the item as a parameter and must return a promise resolved when the processing is done.
      */
     constructor(protected processFnc: (item: CoreFilepoolQueueEntry) => Promise<void>) {
         // Nothing to do.
@@ -1476,7 +1479,7 @@ export class CoreFilepoolProvider {
      * @returns The normalised component ID. -1 when undefined was passed.
      */
     protected fixComponentId(componentId?: string | number): string | number {
-        if (typeof componentId == 'number') {
+        if (typeof componentId === 'number') {
             return componentId;
         }
 

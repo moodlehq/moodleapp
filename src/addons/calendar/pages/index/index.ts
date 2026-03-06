@@ -137,7 +137,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(ADDON_CALENDAR_MANUAL_SYNCED, (data) => {
-            if (data && data.source != 'index') {
+            if (data && data.source !== 'index') {
                 this.loaded = false;
                 this.refreshData(false, false, true);
             }
@@ -309,6 +309,8 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
     /**
      * Refresh the data of the component if loaded (either calendar or upcoming events).
+     *
+     * @param afterChange Whether the refresh is done after an event has changed or has been synced.
      */
     protected async refreshComponentData(afterChange = false): Promise<void> {
         if (this.showCalendar) {
@@ -331,6 +333,9 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
      * View a certain day.
      *
      * @param data Data with the year, month and day.
+     * @param data.day Day of the month.
+     * @param data.month Month of the year.
+     * @param data.year Year.
      */
     gotoDay(data: { day: number; month: number; year: number }): void {
         const params: Params = {

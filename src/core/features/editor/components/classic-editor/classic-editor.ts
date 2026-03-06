@@ -331,7 +331,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         }
 
         if (parameters) {
-            this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
+            this.toolbarStyles[parameters] = this.toolbarStyles[parameters] === 'true' ? 'false' : 'true';
         }
 
         // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -405,7 +405,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'touchend' && event.type != 'mouseup' && event.type != 'keyup') {
+        if (event.type !== 'touchend' && event.type !== 'mouseup' && event.type !== 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();
@@ -424,13 +424,15 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         const selection = window.getSelection()?.toString();
 
         // When RTE is focused with a whole paragraph in desktop the stopBubble will not fire click.
-        if (CorePlatform.isMobile() || !this.rteEnabled || document.activeElement != this.editorElement || selection === '') {
+        if (CorePlatform.isMobile() || !this.rteEnabled || document.activeElement !== this.editorElement || selection === '') {
             this.stopBubble(event);
         }
     }
 
     /**
      * Method that shows the next toolbar buttons.
+     *
+     * @param event Event.
      */
     async toolbarNext(event: Event): Promise<void> {
         if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
@@ -449,6 +451,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
     /**
      * Method that shows the previous toolbar buttons.
+     *
+     * @param event Event.
      */
     async toolbarPrev(event: Event): Promise<void> {
         if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {

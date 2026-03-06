@@ -135,6 +135,7 @@ export class CoreCoursesHelperProvider {
      *
      * @param courses List of courses.
      * @param loadCategoryNames Whether load category names or not.
+     * @param options WebService options.
      * @returns Promise resolved when done.
      */
     loadCoursesExtraInfoObservable(
@@ -350,6 +351,7 @@ export class CoreCoursesHelperProvider {
      * Given a course object, fetch and set its completed status if not present already.
      *
      * @param course Course.
+     * @param options WebService options.
      * @returns Observable.
      */
     protected loadCourseCompletedStatus(

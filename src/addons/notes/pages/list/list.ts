@@ -81,7 +81,7 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
         // Refresh data if notes are synchronized automatically.
         this.syncObserver = CoreEvents.on(ADDON_NOTES_AUTO_SYNCED, (data) => {
-            if (data.courseId == this.courseId) {
+            if (data.courseId === this.courseId) {
                 // Show the sync warnings.
                 this.showSyncWarnings(data.warnings);
 
@@ -144,8 +144,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
             CoreAlerts.showError(error);
         } finally {
             let canDelete = this.notes && this.notes.length > 0;
-            if (canDelete && this.type == 'personal') {
-                canDelete = !!this.notes.find((note) => note.usermodified == this.currentUserId);
+            if (canDelete && this.type === 'personal') {
+                canDelete = !!this.notes.find((note) => note.usermodified === this.currentUserId);
             }
             this.canDeleteNotes = canDelete;
 
@@ -346,6 +346,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
     /**
      * Log view.
+     *
+     * @param note Note to log.
      */
     protected async logViewDelete(note: AddonNotesNoteFormatted): Promise<void> {
         if (!note.id) {

@@ -203,6 +203,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * Set publish info message.
      *
      * @param choice Choice data.
+     * @param hasAnswered Whether the user has answered the choice or not.
      */
     protected setPublishInfo(choice: AddonModChoiceChoice, hasAnswered: boolean): void {
         const choiceOpen = !AddonModChoice.choiceHasBeenOpened(choice, this.now) &&

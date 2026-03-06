@@ -144,6 +144,8 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
 
     /**
      * Function called when the data of the site plugin content is loaded.
+     *
+     * @param data Data loaded. It contains the content and whether it was loaded successfully.
      */
     contentLoaded(data: CoreSitePluginsPluginContentLoadedData): void {
         this.addDefaultModuleInfo = !data.content.includes('<core-course-module-info');

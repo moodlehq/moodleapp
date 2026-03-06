@@ -205,6 +205,7 @@ export class CoreAttachmentsComponent implements OnInit {
      *
      * @param index Index of the file.
      * @param data The data received.
+     * @param data.file The file entry.
      */
     renamed(index: number, data: { file: FileEntry }): void {
         this.files[index] = data.file;

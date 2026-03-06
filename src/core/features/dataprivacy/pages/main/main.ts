@@ -139,6 +139,8 @@ export default class CoreDataPrivacyMainPage implements OnInit {
 
     /**
      * Open the new request modal.
+     *
+     * @param createType Type of request to create.
      */
     async newRequest(createType?: CoreDataPrivacyDataRequestType): Promise<void> {
         const { CoreDataPrivacyNewRequestComponent } =

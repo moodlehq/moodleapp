@@ -29,6 +29,8 @@ export class AddonQtypeDdMarkerGraphicsApi {
      * Add a shape.
      *
      * @param shapeAttribs Attributes for the shape: type and color.
+     * @param shapeAttribs.type Shape type (rect, circle, etc.).
+     * @param shapeAttribs.color Shape color.
      * @param styles Object with the styles for the shape (name -> value).
      * @returns The new shape.
      */

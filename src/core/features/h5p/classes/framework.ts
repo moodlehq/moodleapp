@@ -396,6 +396,7 @@ export class CoreH5PFramework {
      * Get the latest library version.
      *
      * @param machineName The library's machine name.
+     * @param siteId The site ID. If not defined, current site.
      * @returns Promise resolved with the latest library version data.
      */
     async getLatestLibraryVersion(machineName: string, siteId?: string): Promise<CoreH5PLibraryParsedDBRecord> {
@@ -721,6 +722,7 @@ export class CoreH5PFramework {
      *
      * @param id Content ID.
      * @param type The dependency type.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Content dependencies, indexed by machine name.
      */
     async loadContentDependencies(

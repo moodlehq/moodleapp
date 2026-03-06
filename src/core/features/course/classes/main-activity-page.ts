@@ -57,6 +57,7 @@ export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseMod
      * Update some data based on the activity instance.
      *
      * @param activity Activity instance.
+     * @param activity.name Activity name.
      */
     updateData(activity: { name: string }): void {
         this.title = activity.name || this.title;

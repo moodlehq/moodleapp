@@ -247,7 +247,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * @param ignoreCurrent If true, allow loading current page.
      */
     async changePage(pageId: number, ignoreCurrent?: boolean): Promise<void> {
-        if (!ignoreCurrent && !this.eolData && this.currentPage == pageId) {
+        if (!ignoreCurrent && !this.eolData && this.currentPage === pageId) {
             // Page already loaded, stop.
             return;
         }
@@ -555,7 +555,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * @param pageId The page to load.
      */
     protected async loadPage(pageId: number): Promise<void> {
-        if (pageId == AddonModLessonJumpTo.EOL) {
+        if (pageId === AddonModLessonJumpTo.EOL) {
             // End of lesson reached.
             await this.finishRetake();
 
@@ -630,6 +630,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * Log page loaded.
      *
      * @param pageId Page ID.
+     * @param title Page title.
      */
     protected logPageLoaded(pageId: number, title: string): void {
         if (!this.lesson) {

@@ -73,6 +73,8 @@ export class AddonBlockTimelineSection {
      * @param events Events.
      * @param overdue Whether to filter overdue events or not.
      * @param dateRange Date range to filter events.
+     * @param dateRange.from Start date of the range.
+     * @param dateRange.to End date of the range.
      * @returns Day events list.
      */
     private async reduceEvents(
@@ -114,7 +116,11 @@ export class AddonBlockTimelineSection {
      * @param event Event.
      * @param overdue Whether to filter overdue events or not.
      * @param filterDates Filter dates.
-     * @returns Whetehr to include the event or not.
+     * @param filterDates.now Current time.
+     * @param filterDates.midnight Midnight time of the current day.
+     * @param filterDates.start Start time of the section.
+     * @param filterDates.end End time of the section.
+     * @returns Whether to include the event or not.
      */
     private filterEvent(
         event: AddonCalendarEvent,

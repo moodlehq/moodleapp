@@ -154,6 +154,8 @@ export class AddonModForumDiscussionsSource extends CoreRoutedItemsManagerSource
 
     /**
      * Load group info.
+     *
+     * @param forumId Forum ID.
      */
     async loadGroupInfo(forumId: number): Promise<void> {
         [this.groupInfo, this.allPartsPermissions] = await Promise.all([

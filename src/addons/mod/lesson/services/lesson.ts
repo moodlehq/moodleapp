@@ -137,7 +137,7 @@ export class AddonModLessonProvider {
         let message = '';
 
         if (addMessage) {
-            const params = typeof value != 'boolean' ? { $a: value } : undefined;
+            const params = typeof value !== 'boolean' ? { $a: value } : undefined;
             message = Translate.instant(`addon.mod_lesson.${name}`, params);
         }
 
@@ -156,7 +156,7 @@ export class AddonModLessonProvider {
      */
     answerPageIsContent(page: AddonModLessonUserAttemptAnswerPageWSData): boolean {
         // The page doesn't have any reliable field to use for checking this. Check qtype first (translated string).
-        if (page.qtype == Translate.instant('addon.mod_lesson.branchtable')) {
+        if (page.qtype === Translate.instant('addon.mod_lesson.branchtable')) {
             return true;
         }
 
@@ -490,7 +490,7 @@ export class AddonModLessonProvider {
                 const answer = answers[id];
 
                 result.studentanswer += `<br />${answer.answer} = ${value}`;
-                if (answer.response && answer.response.trim() == value.trim()) {
+                if (answer.response && answer.response.trim() === value.trim()) {
                     hits++;
                 }
             }
@@ -498,7 +498,7 @@ export class AddonModLessonProvider {
 
         result.userresponse = userResponse.join(',');
 
-        if (hits == Object.keys(answers).length) {
+        if (hits === Object.keys(answers).length) {
             result.correctanswer = true;
             result.response = correct!.answer || '';
             result.answerid = correct!.id;
@@ -567,7 +567,7 @@ export class AddonModLessonProvider {
                 for (const i in studentAnswers) {
                     const answerId = studentAnswers[i];
 
-                    if (answerId == answer.id) {
+                    if (answerId === answer.id) {
                         studentAswersArray.push(answer.answer!);
                         responses.push(answer.response || '');
                         break;
@@ -582,7 +582,7 @@ export class AddonModLessonProvider {
 
                 // Iterate over all the student answers to check if he selected the current possible answer.
                 studentAnswers.forEach((answerId) => {
-                    if (answerId == answer.id) {
+                    if (answerId === answer.id) {
                         if (correctAnswer) {
                             nHits++;
                         } else {
@@ -612,7 +612,7 @@ export class AddonModLessonProvider {
                 }
             });
 
-            if (studentAnswers.length == nCorrect && nHits == nCorrect) {
+            if (studentAnswers.length === nCorrect && nHits === nCorrect) {
                 result.correctanswer = true;
                 result.response = responses.join(AddonModLessonProvider.MULTIANSWER_DELIMITER);
                 result.newpageid = correctPageId || 0;
@@ -636,7 +636,7 @@ export class AddonModLessonProvider {
             // Search the answer.
             for (const i in pageData.answers) {
                 const answer = pageData.answers[i];
-                if (answer.id == data.answerid) {
+                if (answer.id === data.answerid) {
                     result.correctanswer = this.isAnswerCorrect(lesson, pageData.page!.id, answer, pageIndex);
                     result.newpageid = answer.jumpto || 0;
                     result.response = answer.response || '';
@@ -726,7 +726,7 @@ export class AddonModLessonProvider {
         result: AddonModLessonCheckAnswerResult,
     ): void {
 
-        let studentAnswer = typeof data.answer == 'string' ? data.answer.trim() : false;
+        let studentAnswer = typeof data.answer === 'string' ? data.answer.trim() : false;
         if (!studentAnswer) {
             result.noanswer = true;
 
@@ -742,7 +742,7 @@ export class AddonModLessonProvider {
             let ignoreCase = '';
 
             if (useRegExp) {
-                if (expectedAnswer.slice(-2) == '/i') {
+                if (expectedAnswer.slice(-2) === '/i') {
                     expectedAnswer = expectedAnswer.substring(0, expectedAnswer.length - 2);
                     ignoreCase = 'i';
                 }
@@ -862,7 +862,7 @@ export class AddonModLessonProvider {
         // Get the answer.
         for (const i in pageData.answers) {
             const answer = pageData.answers[i];
-            if (answer.id == data.answerid) {
+            if (answer.id === data.answerid) {
                 // Answer found.
                 result.correctanswer = this.isAnswerCorrect(lesson, pageData.page!.id, answer, pageIndex);
                 result.newpageid = answer.jumpto || 0;
@@ -886,12 +886,12 @@ export class AddonModLessonProvider {
         result: AddonModLessonCheckAnswerResult,
     ): void {
         // We could check here to see if we have a wrong answer jump to use.
-        if (result.answerid == 0) {
+        if (result.answerid === 0) {
             // Use the all other answers jump details if it is set up.
             const lastAnswer = pageData.answers[pageData.answers.length - 1] || {};
 
             // Double check that this is the OTHER_ANSWERS answer.
-            if (typeof lastAnswer.answer == 'string' &&
+            if (typeof lastAnswer.answer === 'string' &&
                     lastAnswer.answer.indexOf(ADDON_MOD_LESSON_OTHER_ANSWERS) !== -1) {
                 result.newpageid = lastAnswer.jumpto || 0;
                 result.response = lastAnswer.response || '';
@@ -970,7 +970,7 @@ export class AddonModLessonProvider {
             outoftime: !!options.outOfTime,
             review: !!options.review,
         };
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -980,7 +980,7 @@ export class AddonModLessonProvider {
         const map: Record<string, AddonModLessonEOLPageDataEntry> = {};
 
         response.data.forEach((entry) => {
-            if (entry.value && typeof entry.value == 'string' && entry.value !== '1') {
+            if (entry.value && typeof entry.value === 'string' && entry.value !== '1') {
                 // It's a JSON encoded object. Try to decode it.
                 entry.value = CoreText.parseJSON(entry.value);
             }
@@ -1470,7 +1470,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -1639,7 +1639,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -1710,7 +1710,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -2024,7 +2024,7 @@ export class AddonModLessonProvider {
                 return false;
             }
 
-            if (options.pageId && attempt.pageid != options.pageId) {
+            if (options.pageId && attempt.pageid !== options.pageId) {
                 return false;
             }
 
@@ -2330,15 +2330,15 @@ export class AddonModLessonProvider {
         for (let i = 0; i < info.preventaccessreasons.length; i++) {
             const entry = info.preventaccessreasons[i];
 
-            if (entry.reason == 'lessonopen' || entry.reason == 'lessonclosed') {
+            if (entry.reason === 'lessonopen' || entry.reason === 'lessonclosed') {
                 // Time restrictions are the most prioritary, return it.
                 return entry;
-            } else if (entry.reason == 'passwordprotectedlesson') {
+            } else if (entry.reason === 'passwordprotectedlesson') {
                 if (!ignorePassword) {
                     // Treat password before all other reasons.
                     reason = entry;
                 }
-            } else if (entry.reason == 'noretake' && isReview) {
+            } else if (entry.reason === 'noretake' && isReview) {
                 // Ignore noretake error when reviewing.
             } else if (!reason) {
                 // Rest of cases, just return any of them.
@@ -2363,21 +2363,21 @@ export class AddonModLessonProvider {
         if (!jumpTo) {
             // Same page
             return false;
-        } else if (jumpTo == AddonModLessonJumpTo.NEXTPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.NEXTPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.RANDOMPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.RANDOMPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.CLUSTERJUMP) {
+        } else if (jumpTo === AddonModLessonJumpTo.CLUSTERJUMP) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.EOL) {
+        } else if (jumpTo === AddonModLessonJumpTo.EOL) {
             return true;
         }
 
         let aPageId = pageIndex[pageId].nextpageid;
         while (aPageId) {
-            if (jumpTo == aPageId) {
+            if (jumpTo === aPageId) {
                 return true;
             }
 
@@ -2659,7 +2659,7 @@ export class AddonModLessonProvider {
         for (let i = 0; i < info.preventaccessreasons.length; i++) {
             const entry = info.preventaccessreasons[i];
 
-            if (entry.reason == 'passwordprotectedlesson') {
+            if (entry.reason === 'passwordprotectedlesson') {
                 return true;
             }
         }
@@ -2700,10 +2700,10 @@ export class AddonModLessonProvider {
             lessonid: id,
             review: !!review,
         };
-        if (typeof password == 'string') {
+        if (typeof password === 'string') {
             params.password = password;
         }
-        if (typeof pageId == 'number') {
+        if (typeof pageId === 'number') {
             params.pageid = pageId;
         }
 
@@ -2724,7 +2724,7 @@ export class AddonModLessonProvider {
      * @returns True if left during timed, false otherwise.
      */
     leftDuringTimed(info?: AddonModLessonGetAccessInformationWSResponse): boolean {
-        return !!(info?.lastpageseen && info.lastpageseen != AddonModLessonJumpTo.EOL && info.leftduringtimedsession);
+        return !!(info?.lastpageseen && info.lastpageseen !== AddonModLessonJumpTo.EOL && info.leftduringtimedsession);
     }
 
     /**
@@ -2744,8 +2744,8 @@ export class AddonModLessonProvider {
             for (const jumpto in jumps[pageId]) {
                 const jumptoNum = Number(jumpto);
 
-                if (jumptoNum == AddonModLessonJumpTo.CLUSTERJUMP ||
-                        jumptoNum == AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
+                if (jumptoNum === AddonModLessonJumpTo.CLUSTERJUMP ||
+                        jumptoNum === AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
                     return true;
                 }
             }
@@ -2915,7 +2915,7 @@ export class AddonModLessonProvider {
             lessonid: id,
         };
 
-        if (typeof password == 'string') {
+        if (typeof password === 'string') {
             params.password = password;
         }
 
@@ -3069,7 +3069,7 @@ export class AddonModLessonProvider {
             review: !!options.review,
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -3237,7 +3237,7 @@ export class AddonModLessonProvider {
                 nAttempts = result.online.length + result.offline.length;
             }
 
-            const messageId = nAttempts == 1 ? 'firstwrong' : 'secondpluswrong';
+            const messageId = nAttempts === 1 ? 'firstwrong' : 'secondpluswrong';
 
             result.feedback = '<div class="box feedback">' + Translate.instant('addon.mod_lesson.' + messageId) + '</div>';
         } else {

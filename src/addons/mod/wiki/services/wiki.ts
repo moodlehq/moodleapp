@@ -87,6 +87,7 @@ export class AddonModWikiProvider {
      * @param pageId Page ID.
      * @param content content to be saved.
      * @param section section to get.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the page ID.
      */
     async editPage(pageId: number, content: string, section?: string, siteId?: string): Promise<number> {
@@ -558,7 +559,7 @@ export class AddonModWikiProvider {
             const subwikis = await this.getSubwikis(wikiId, options);
 
             // Search the subwiki.
-            const subwiki = subwikis.find((subwiki) => subwiki.id == subwikiId);
+            const subwiki = subwikis.find((subwiki) => subwiki.id === subwikiId);
 
             if (!subwiki) {
                 return false;
@@ -572,7 +573,7 @@ export class AddonModWikiProvider {
             });
 
             // Check if there's any page with the same title.
-            const page = pages.find((page) => page.title == title);
+            const page = pages.find((page) => page.title === title);
 
             return !!page;
         } catch {
@@ -796,7 +797,7 @@ export class AddonModWikiProvider {
             // Get the subwikis to check if any of them matches the one passed as param.
             const subwikis = await this.getSubwikis(wikiId, options);
 
-            const subwiki = subwikis.find((subwiki) => subwiki.id == subwikiId);
+            const subwiki = subwikis.find((subwiki) => subwiki.id === subwikiId);
 
             return !!subwiki;
         } catch {

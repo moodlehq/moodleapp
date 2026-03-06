@@ -238,7 +238,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
             ({
                 item: item,
                 title: item.title,
-                current: item.id == scoId,
+                current: item.id === scoId,
                 enabled: !!(item.prereq && item.launch),
             }));
     }
@@ -260,7 +260,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
         this.attempt = data.num;
         this.offline = data.offline;
 
-        if (this.attempt != attemptsData.lastAttempt.num) {
+        if (this.attempt !== attemptsData.lastAttempt.num) {
             this.attemptToContinue = this.attempt;
         }
 
@@ -448,7 +448,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
         // Load the SCO source.
         this.src = await AddonModScorm.getScoSrc(this.scorm, sco);
 
-        if (sco.scormtype == 'asset') {
+        if (sco.scormtype === 'asset') {
             // Mark the asset as completed.
             this.markCompleted(sco);
         }
@@ -484,7 +484,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 cmId: this.cmId,
             });
 
-            if (data[sco.id] && data[sco.id].userdata['cmi.core.lesson_status'] == 'completed') {
+            if (data[sco.id] && data[sco.id].userdata['cmi.core.lesson_status'] === 'completed') {
                 // Already marked as completed.
                 return;
             }
@@ -576,6 +576,8 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     /**
      * Log event.
+     *
+     * @param scoId SCO ID.
      */
     protected async logEvent(scoId: number): Promise<void> {
         await CorePromiseUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));

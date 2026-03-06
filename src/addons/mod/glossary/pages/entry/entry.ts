@@ -273,6 +273,8 @@ export default class AddonModGlossaryEntryPage implements OnInit, OnDestroy {
 
     /**
      * Load online entry data.
+     *
+     * @param entryId Entry ID.
      */
     protected async loadOnlineEntry(entryId: number): Promise<void> {
         try {

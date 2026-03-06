@@ -170,7 +170,7 @@ export class CorePolicyService {
      */
     goToAcceptSitePolicies(siteId?: string): void {
         siteId = siteId || CoreSites.getCurrentSiteId();
-        if (!siteId || siteId != CoreSites.getCurrentSiteId()) {
+        if (!siteId || siteId !== CoreSites.getCurrentSiteId()) {
             // Only current site allowed.
             return;
         }
@@ -189,6 +189,8 @@ export class CorePolicyService {
      * Invalidate acceptances WS call.
      *
      * @param options Options.
+     * @param options.userId User ID. If not defined, the site's user.
+     * @param options.siteId Site ID. If not defined, current site.
      * @returns Promise resolved when data is invalidated.
      */
     async invalidateAcceptances(options: { userId?: number; siteId?: string } = {}): Promise<void> {

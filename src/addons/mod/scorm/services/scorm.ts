@@ -206,13 +206,13 @@ export class AddonModScormProvider {
             };
         }
 
-        if (mode == AddonModScormMode.BROWSE) {
+        if (mode === AddonModScormMode.BROWSE) {
             if (scorm.hidebrowse) {
                 // Prevent Browse mode if hidebrowse is set.
                 mode = AddonModScormMode.NORMAL;
             } else {
                 // We don't need to check attempts as browse mode is set.
-                if (attempt == 0) {
+                if (attempt === 0) {
                     attempt = 1;
                     newAttempt = true;
                 }
@@ -235,7 +235,7 @@ export class AddonModScormProvider {
         }
 
         // Validate user request to start a new attempt.
-        if (attempt == 0) {
+        if (attempt === 0) {
             newAttempt = true;
         } else if (incomplete) {
             // The option to start a new attempt should never have been presented. Force false.
@@ -323,7 +323,7 @@ export class AddonModScormProvider {
                         setElement = setElement.trim();
 
                         if (trackData[setElement] !== undefined &&
-                                (trackData[setElement].status == 'completed' || trackData[setElement].status == 'passed')) {
+                                (trackData[setElement].status === 'completed' || trackData[setElement].status === 'passed')) {
                             count++;
                         }
                     });
@@ -333,7 +333,7 @@ export class AddonModScormProvider {
                     } else {
                         element = 'false';
                     }
-                } else if (element == '~') {
+                } else if (element === '~') {
                     // Not maps ~.
                     element = '!';
                 } else if (reOther.test(element)) {
@@ -349,7 +349,7 @@ export class AddonModScormProvider {
                             value = STATUSES[value];
                         }
 
-                        if (otherMatches[2] == '<>') {
+                        if (otherMatches[2] === '<>') {
                             oper = '!=';
                         } else {
                             oper = '==';
@@ -362,7 +362,7 @@ export class AddonModScormProvider {
                 } else {
                     // Everything else must be an element defined like S45 ...
                     if (trackData[element] !== undefined &&
-                            (trackData[element].status == 'completed' || trackData[element].status == 'passed')) {
+                            (trackData[element].status === 'completed' || trackData[element].status === 'passed')) {
                         element = 'true';
                     } else {
                         element = 'false';
@@ -386,7 +386,7 @@ export class AddonModScormProvider {
      * @returns Grade to display.
      */
     formatGrade(scorm: AddonModScormScorm, grade: number): string {
-        if (grade === undefined || grade == -1) {
+        if (grade === undefined || grade === -1) {
             return Translate.instant('core.none');
         }
 
@@ -599,12 +599,12 @@ export class AddonModScormProvider {
             const sco = data[scoId];
             const userData = sco.userdata;
 
-            if (userData.status == 'completed' || userData.status == 'passed') {
+            if (userData.status === 'completed' || userData.status === 'passed') {
                 attemptScore.scos++;
             }
 
             if (userData.score_raw || (scorm.scormtype !== undefined &&
-                        scorm.scormtype == 'sco' && userData.score_raw !== undefined)) {
+                        scorm.scormtype === 'sco' && userData.score_raw !== undefined)) {
 
                 const scoreRaw = parseFloat(<string> userData.score_raw);
                 attemptScore.values++;
@@ -661,7 +661,7 @@ export class AddonModScormProvider {
 
         scos.forEach((sco) => {
             // Is an organization entry?
-            if (sco.organization == '' && sco.parent == '/' && sco.scormtype == '') {
+            if (sco.organization === '' && sco.parent === '/' && sco.scormtype === '') {
                 organizations.push({
                     identifier: sco.identifier,
                     title: sco.title,
@@ -697,7 +697,7 @@ export class AddonModScormProvider {
             map[sco.identifier] = index;
 
             if (sco.parent !== '/') {
-                if (sco.parent == options.organization) {
+                if (sco.parent === options.organization) {
                     // It's a root SCO, add it to the root array.
                     rootScos.push(sco);
                 } else {
@@ -860,7 +860,7 @@ export class AddonModScormProvider {
 
         if (options.organization) {
             // Filter SCOs by organization.
-            return response.scoes.filter((sco) => sco.organization == options.organization);
+            return response.scoes.filter((sco) => sco.organization === options.organization);
         }
 
         return response.scoes;
@@ -941,12 +941,12 @@ export class AddonModScormProvider {
 
         // Build the launch URL. Moodle web checks SCORM version, we don't need to, it's always SCORM 1.2.
         let launchUrl = sco.launch;
-        const parametersEntry = sco.extradata?.find((entry) => entry.element == 'parameters');
+        const parametersEntry = sco.extradata?.find((entry) => entry.element === 'parameters');
         let parameters = <string | undefined> parametersEntry?.value;
 
         if (parameters) {
             const connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
-            if (parameters.charAt(0) == '?') {
+            if (parameters.charAt(0) === '?') {
                 parameters = parameters.substring(1);
             }
 
@@ -1054,7 +1054,7 @@ export class AddonModScormProvider {
                     incomplete = this.isStatusIncomplete(status);
                 }
 
-                if (incomplete && sco.exitvalue == 'suspend') {
+                if (incomplete && sco.exitvalue === 'suspend') {
                     imageName = 'suspend';
                     suspendedStr = ` - ${Translate.instant('addon.mod_scorm.suspended')}`;
                 }
@@ -1071,7 +1071,7 @@ export class AddonModScormProvider {
             }
         }
 
-        if (imageName == '') {
+        if (imageName === '') {
             imageName = 'notattempted';
             descName = 'notattempted';
             suspendedStr = '';
@@ -1180,7 +1180,7 @@ export class AddonModScormProvider {
      * @returns Grading method.
      */
     getScormGradeMethod(scorm: AddonModScormScorm): string {
-        if (scorm.maxattempt == 1) {
+        if (scorm.maxattempt === 1) {
             switch (scorm.grademethod) {
                 case AddonModScormGradingMethod.GRADEHIGHEST:
                     return Translate.instant('addon.mod_scorm.gradehighest');
@@ -1338,7 +1338,7 @@ export class AddonModScormProvider {
 
         if (link.match(/^https?:\/\//i) && !CoreUrl.isLocalFileUrl(link)) {
             return true;
-        } else if (link.substring(0, 4) == 'www.') {
+        } else if (link.substring(0, 4) === 'www.') {
             return true;
         }
 
@@ -1382,7 +1382,7 @@ export class AddonModScormProvider {
      * @returns Whether the SCORM is valid.
      */
     isScormValidVersion(scorm: AddonModScormScorm): boolean {
-        return scorm.version == 'SCORM_1.2';
+        return scorm.version === 'SCORM_1.2';
     }
 
     /**
@@ -1392,7 +1392,7 @@ export class AddonModScormProvider {
      * @returns Whether it's incomplete.
      */
     isStatusIncomplete(status?: string): boolean {
-        return !status || status == 'notattempted' || status == 'incomplete' || status == 'browsed';
+        return !status || status === 'notattempted' || status === 'incomplete' || status === 'browsed';
     }
 
     /**
@@ -1465,6 +1465,7 @@ export class AddonModScormProvider {
      * @param scorm SCORM.
      * @param offline Whether the attempt is offline.
      * @param userData User data for this attempt and SCO. If not defined, it will be retrieved from DB. Recommended.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when data is saved.
      */
     async saveTracks(
@@ -1647,7 +1648,7 @@ export class AddonModScormProvider {
                     (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
 
             // Package needs to be downloaded if it's not outdated (not downloaded) or if the hash has changed.
-            return !isOutdated || data.extra != scorm.sha1hash;
+            return !isOutdated || data.extra !== scorm.sha1hash;
 
         } else if (isOutdated) {
             // The package is outdated, but maybe the file hasn't changed.
@@ -1658,7 +1659,7 @@ export class AddonModScormProvider {
                 return true;
             }
 
-            return scorm.sha1hash != extra;
+            return scorm.sha1hash !== extra;
         } else {
             // Package is not outdated and not downloaded, download the main file.
             return true;
@@ -1672,6 +1673,8 @@ export class AddonModScormProvider {
      * @param attempt Attempt number.
      * @param tracks Tracking data saved.
      * @param options Other options.
+     * @param options.cmId Course module ID.
+     * @param options.siteId Site ID. If not defined, current site.
      * @returns Promise resolved when updated.
      */
     protected async updateUserDataAfterSave(

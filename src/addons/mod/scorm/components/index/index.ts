@@ -267,6 +267,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Load SCORM package size if needed.
      *
+     * @param scorm Scorm.
      * @returns Promise resolved when done.
      */
     protected async loadPackageSize(scorm: AddonModScormScorm): Promise<void> {
@@ -281,6 +282,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Fetch the structure of the SCORM (TOC).
      *
+     * @param scorm Scorm.
      * @returns Promise resolved when done.
      */
     protected async fetchStructure(scorm: AddonModScormScorm): Promise<void> {
@@ -317,6 +319,8 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
     /**
      * Get the grades of each attempt and the grade of the SCORM.
      *
+     * @param scorm Scorm.
+     * @param attempts Data about online and offline attempts.
      * @returns Promise resolved when done.
      */
     protected async getReportedGrades(scorm: AddonModScormScorm, attempts: AddonModScormAttemptCountResult): Promise<void> {
@@ -432,7 +436,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * @returns True if refresh is needed, false otherwise.
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModScormAutoSyncEventData): boolean {
-        if (syncEventData.updated && this.scorm && syncEventData.scormId == this.scorm.id) {
+        if (syncEventData.updated && this.scorm && syncEventData.scormId === this.scorm.id) {
             // Check completion status.
             this.checkCompletion();
 
@@ -557,6 +561,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Open a SCORM package.
      *
      * @param scoId SCO ID.
+     * @param preview Whether to open the SCORM in preview mode or not.
      */
     protected openScorm(scoId?: number, preview = false): void {
         const autoPlayData = this.autoPlayData;

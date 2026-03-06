@@ -73,7 +73,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
         this.assessmentId = this.assessment.id;
         this.canViewAssessment = !!this.assessment.grade;
-        this.canSelfAssess = canAssess && userId == this.currentUserId;
+        this.canSelfAssess = canAssess && userId === this.currentUserId;
 
         if (userId) {
             promises.push(CoreUser.getProfile(userId, this.courseId, true).then((profile) => {
@@ -84,7 +84,7 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
         }
 
         let assessOffline: Promise<void>;
-        if (userId == this.currentUserId) {
+        if (userId === this.currentUserId) {
             assessOffline = AddonModWorkshopOffline.getAssessment(this.workshop.id, this.assessmentId) .then((offlineAssess) => {
                 this.offline = true;
                 this.assessment.weight = <number>offlineAssess.inputdata.weight;
@@ -115,6 +115,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
     /**
      * Navigate to the assessment.
+     *
+     * @param event Event.
      */
     async gotoAssessment(event: Event): Promise<void> {
         if (!this.canSelfAssess && this.canViewAssessment) {
@@ -154,6 +156,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
     /**
      * Navigate to my own assessment.
+     *
+     * @param event Event.
      */
     gotoOwnAssessment(event: Event): void {
         if (!this.canSelfAssess) {

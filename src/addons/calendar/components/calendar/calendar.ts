@@ -303,7 +303,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
             }
 
             return month.weeks?.some((week) => week.days.some((day) => {
-                const event = day.eventsFormated?.find((event) => event.id == eventId);
+                const event = day.eventsFormated?.find((event) => event.id === eventId);
 
                 if (event) {
                     event.deleted = false;
@@ -569,7 +569,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
                 day.eventsFormated = day.eventsFormated.concat(onlineEventsFormatted);
 
                 if (preloadedMonth.isCurrentMonth) {
-                    day.istoday = day.mday == currentDay;
+                    day.istoday = day.mday === currentDay;
                     day.ispast = preloadedMonth.isPastMonth || day.mday < currentDay;
 
                     if (day.istoday) {
@@ -628,6 +628,8 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      * Returns if the event is in the past or not.
      *
      * @param event Event object.
+     * @param event.timestart Event start time (timestamp).
+     * @param event.timeduration Event duration (seconds).
      * @param currentTime Current time.
      * @returns True if it's in the past.
      */

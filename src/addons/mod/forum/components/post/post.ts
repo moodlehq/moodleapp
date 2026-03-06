@@ -316,7 +316,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             // The post being replied has changed but the data will be kept.
             this.formData.replyingTo = this.post.id;
 
-            if (this.formData.subject == this.originalData.subject) {
+            if (this.formData.subject === this.originalData.subject) {
                 // Update subject only if it hadn't been modified
                 this.formData.subject = this.defaultReplySubject;
                 this.originalData.subject = this.defaultReplySubject;
@@ -636,6 +636,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Function called when advanced accordion is toggled.
+     *
+     * @param event Event.
      */
     onAdvancedChanged(event: AccordionGroupCustomEvent<string>): void {
         this.advanced = event.detail.value === 'advanced';

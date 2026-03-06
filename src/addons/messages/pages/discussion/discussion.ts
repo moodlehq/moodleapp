@@ -134,8 +134,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = CoreEvents.on(ADDON_MESSAGES_AUTO_SYNCED, (data) => {
-            if ((data.userId && data.userId == this.userId) ||
-                    (data.conversationId && data.conversationId == this.conversationId)) {
+            if ((data.userId && data.userId === this.userId) ||
+                    (data.conversationId && data.conversationId === this.conversationId)) {
                 // Fetch messages.
                 this.fetchMessages();
 
@@ -150,7 +150,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         this.memberInfoObserver = CoreEvents.on(
             ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
-                if (data.userId && (this.members[data.userId] || this.otherMember && data.userId == this.otherMember.id)) {
+                if (data.userId && (this.members[data.userId] || this.otherMember && data.userId === this.otherMember.id)) {
                     this.fetchData();
                 }
             },
@@ -201,7 +201,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         if (this.keepMessageMap[message.hash] === undefined) {
             // Message not added to the list. Add it now.
             this.messages.push(message);
-            added = message.useridfrom != this.currentUserId;
+            added = message.useridfrom !== this.currentUserId;
         }
         // Message needs to be kept in the list.
         this.keepMessageMap[message.hash] = keep;
@@ -224,7 +224,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         delete this.keepMessageMap[hash];
 
-        const position = this.messages.findIndex((message) => message.hash == hash);
+        const position = this.messages.findIndex((message) => message.hash === hash);
         if (position >= 0) {
             this.messages.splice(position, 1);
         }
@@ -417,7 +417,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * @param addMessages Number of messages still to be read.
      */
     protected setNewMessagesBadge(addMessages: number): void {
-        if (this.newMessages == 0 && addMessages > 0) {
+        if (this.newMessages === 0 && addMessages > 0) {
             this.scrollFunction();
         }
 
@@ -428,7 +428,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * The scroll was moved. Update new messages count.
      */
     scrollFunction(): void {
-        if (this.newMessages == 0) {
+        if (this.newMessages === 0) {
             return;
         }
 
@@ -442,7 +442,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         const scrollElRect = this.scrollElement?.getBoundingClientRect();
         const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
 
-        if (scrollBottomPos == 0) {
+        if (scrollBottomPos === 0) {
             return;
         }
 
@@ -497,7 +497,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                     });
 
                     this.loadMessages(messages);
-                } else if (error.errorcode != 'errorconversationdoesnotexist') {
+                } else if (error.errorcode !== 'errorconversationdoesnotexist') {
                     // Display the error.
                     throw error;
                 }
@@ -595,6 +595,9 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Mark messages as read.
+     *
+     * @param forceMark Whether to force mark messages as read or not. If true, messages will be marked as read even
+     *  if there are no unread messages according to the conversation data.
      */
     protected async markMessagesAsRead(forceMark: boolean): Promise<void> {
         let readChanged = false;
@@ -653,8 +656,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             }, this.siteId);
 
             // Update navBar links and buttons.
-            const newCanDelete = (last && 'id' in last && last.id && this.messages.length == 1) || this.messages.length > 1;
-            if (this.canDelete != newCanDelete) {
+            const newCanDelete = (last && 'id' in last && last.id && this.messages.length === 1) || this.messages.length > 1;
+            if (this.canDelete !== newCanDelete) {
                 this.checkCanDelete();
             }
         }
@@ -664,7 +667,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * Set the place where the unread label position has to be.
      */
     protected setUnreadLabelPosition(): void {
-        if (this.unreadMessageFrom != 0) {
+        if (this.unreadMessageFrom !== 0) {
             return;
         }
 
@@ -675,9 +678,9 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
             for (let i = this.messages.length - 1; i >= 0; i--) {
                 const message = this.messages[i];
-                if (!message.pending && message.useridfrom != this.currentUserId && 'id' in message) {
+                if (!message.pending && message.useridfrom !== this.currentUserId && 'id' in message) {
                     found++;
-                    if (found == this.conversation.unreadcount) {
+                    if (found === this.conversation.unreadcount) {
                         this.unreadMessageFrom = Number(message.id);
                         break;
                     }
@@ -686,7 +689,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Do not update the message unread from label on next refresh.
-        if (this.unreadMessageFrom == 0) {
+        if (this.unreadMessageFrom === 0) {
             // Using negative to indicate the label is not placed but should not be placed.
             this.unreadMessageFrom = -1;
         }
@@ -861,12 +864,17 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Keep scroll position after loading previous messages.
+     *
+     * @param oldScrollHeight Scroll height before loading previous messages.
+     * @param oldScrollBottom Distance from the bottom of the scroll before loading previous messages.
+     * @param infiniteHeight Height of the infinite loading element.
+     * @param retries Number of retries done to check if the scroll height has changed. After 10 retries, it will stop.
      */
     protected keepScroll(oldScrollHeight: number, oldScrollBottom: number, infiniteHeight: number, retries = 0): void {
         setTimeout(() => {
             const newScrollHeight = (this.scrollElement?.scrollHeight || 0);
 
-            if (newScrollHeight == oldScrollHeight) {
+            if (newScrollHeight === oldScrollHeight) {
                 // Height hasn't changed yet. Retry if max retries haven't been reached.
                 if (retries <= 10) {
                     this.keepScroll(oldScrollHeight, oldScrollBottom, infiniteHeight, retries + 1);
@@ -1050,8 +1058,8 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         prevMessage?: AddonMessagesConversationMessageFormatted,
     ): boolean {
 
-        return this.isGroup && message.useridfrom != this.currentUserId && this.members[(message.useridfrom || 0)] &&
-            (!prevMessage || prevMessage.useridfrom != message.useridfrom || !!message.showDate);
+        return this.isGroup && message.useridfrom !== this.currentUserId && this.members[(message.useridfrom || 0)] &&
+            (!prevMessage || prevMessage.useridfrom !== message.useridfrom || !!message.showDate);
     }
 
     /**
@@ -1065,7 +1073,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         message: AddonMessagesConversationMessageFormatted,
         nextMessage?: AddonMessagesConversationMessageFormatted,
     ): boolean {
-        return !nextMessage || nextMessage.useridfrom != message.useridfrom || !!nextMessage.showDate;
+        return !nextMessage || nextMessage.useridfrom !== message.useridfrom || !!nextMessage.showDate;
     }
 
     /**

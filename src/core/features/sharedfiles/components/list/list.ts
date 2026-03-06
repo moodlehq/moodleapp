@@ -106,6 +106,7 @@ export class CoreSharedFilesListComponent implements OnInit, OnDestroy {
      *
      * @param index Position of the file.
      * @param data Data containing the new FileEntry.
+     * @param data.file Renamed file.
      */
     fileRenamed(index: number, data: { file: FileEntry }): void {
         this.files[index] = data.file;

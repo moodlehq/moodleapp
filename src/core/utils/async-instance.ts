@@ -190,6 +190,7 @@ export type LazyMethodsGuard<TMethods extends Array<string | number | symbol>, T
  * underlying instance hasn't been set, methods will be resolved once it is.
  *
  * @param lazyConstructor Constructor to use the first time the instance is needed.
+ * @param eagerInstance Instance to use for eager methods. If not provided, all methods will be considered lazy.
  * @returns Asynchronous instance.
  */
 export function asyncInstance<TLazyInstance extends TEagerInstance, TEagerInstance extends AsyncObject = Partial<TLazyInstance>>(

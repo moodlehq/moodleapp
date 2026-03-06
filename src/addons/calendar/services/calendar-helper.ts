@@ -61,7 +61,7 @@ export class AddonCalendarHelperProvider {
      * @returns Event icon.
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
-        if (this.eventTypeIcons.length == 0) {
+        if (this.eventTypeIcons.length === 0) {
             CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];
@@ -258,9 +258,9 @@ export class AddonCalendarHelperProvider {
         const courseId = event.courseid || event.groupcourseid;
         this.formatEventContext(eventFormatted, courseId, categoryId);
 
-        if (eventFormatted.duration == 1) {
+        if (eventFormatted.duration === 1) {
             eventFormatted.timeduration = (event.timedurationuntil || 0) - event.timestart;
-        } else if (eventFormatted.duration == 2) {
+        } else if (eventFormatted.duration === 2) {
             eventFormatted.timeduration = (event.timedurationminutes || 0) * CoreTimeConstants.SECONDS_MINUTE;
         } else {
             eventFormatted.timeduration = 0;
@@ -417,7 +417,7 @@ export class AddonCalendarHelperProvider {
         const startWeekDay = parseInt(startWeekDayStr, 10);
 
         const today = dayjs();
-        const isCurrentMonth = today.year() == year && today.month() == month - 1;
+        const isCurrentMonth = today.year() === year && today.month() === month - 1;
         const weeks: AddonCalendarWeek[] = [];
 
         let date = dayjs({ year, month: month - 1, date: 1 });
@@ -425,7 +425,7 @@ export class AddonCalendarHelperProvider {
             date = dayjs({ year, month: month - 1, date: mday });
 
             // Add new week and calculate prepadding.
-            if (!weeks.length || date.day() == startWeekDay) {
+            if (!weeks.length || date.day() === startWeekDay) {
                 const prepaddingLength = (date.day() - startWeekDay + 7) % 7;
                 const prepadding: number[] = [];
                 for (let i = 0; i < prepaddingLength; i++) {
@@ -435,7 +435,7 @@ export class AddonCalendarHelperProvider {
             }
 
             // Calculate postpadding of last week.
-            if (mday == date.daysInMonth()) {
+            if (mday === date.daysInMonth()) {
                 const postpaddingLength = (startWeekDay - date.day() + 6) % 7;
                 const postpadding: number[] = [];
                 for (let i = 0; i < postpaddingLength; i++) {
@@ -449,8 +449,8 @@ export class AddonCalendarHelperProvider {
                 events: [],
                 hasevents: false,
                 mday: date.date(),
-                isweekend: date.day() == 0 || date.day() == 6,
-                istoday: isCurrentMonth && today.date() == date.date(),
+                isweekend: date.day() === 0 || date.day() === 6,
+                istoday: isCurrentMonth && today.date() === date.date(),
                 calendareventtypes: [],
                 // Added to match the type. And possibly unused.
                 popovertitle: '',
@@ -487,27 +487,27 @@ export class AddonCalendarHelperProvider {
         }
 
         // Check the fields that don't depend on any other.
-        if (data.name != original.name || data.timestart != original.timestart || data.eventtype != original.eventtype ||
-                data.description != original.description || data.location != original.location ||
-                data.duration != original.duration || data.repeat != original.repeat) {
+        if (data.name !== original.name || data.timestart !== original.timestart || data.eventtype !== original.eventtype ||
+                data.description !== original.description || data.location !== original.location ||
+                data.duration !== original.duration || data.repeat !== original.repeat) {
             return true;
         }
 
         // Check data that depends on eventtype.
-        if ((data.eventtype == AddonCalendarEventType.CATEGORY && data.categoryid != original.categoryid) ||
-                (data.eventtype == AddonCalendarEventType.COURSE && data.courseid != original.courseid) ||
-                (data.eventtype == AddonCalendarEventType.GROUP && data.groupcourseid != original.groupcourseid &&
-                    data.groupid != original.groupid)) {
+        if ((data.eventtype === AddonCalendarEventType.CATEGORY && data.categoryid !== original.categoryid) ||
+                (data.eventtype === AddonCalendarEventType.COURSE && data.courseid !== original.courseid) ||
+                (data.eventtype === AddonCalendarEventType.GROUP && data.groupcourseid !== original.groupcourseid &&
+                    data.groupid !== original.groupid)) {
             return true;
         }
 
         // Check data that depends on duration.
-        if ((data.duration == 1 && data.timedurationuntil != original.timedurationuntil) ||
-                (data.duration == 2 && data.timedurationminutes != original.timedurationminutes)) {
+        if ((data.duration === 1 && data.timedurationuntil !== original.timedurationuntil) ||
+                (data.duration === 2 && data.timedurationminutes !== original.timedurationminutes)) {
             return true;
         }
 
-        if (data.repeat && data.repeats != original.repeats) {
+        if (data.repeat && data.repeats !== original.repeats) {
             return true;
         }
 
@@ -738,6 +738,9 @@ export class AddonCalendarHelperProvider {
      * for their repeated events if needed.
      *
      * @param event Event that has been touched.
+     * @param event.id Event ID.
+     * @param event.repeatid Repeat ID.
+     * @param event.timestart Event start time (timestamp).
      * @param repeated Number of times the event is repeated.
      * @param siteId Site ID. If not defined, current site.
      * @returns Resolved when done.
@@ -756,7 +759,7 @@ export class AddonCalendarHelperProvider {
                 id: event.id,
                 repeatid: event.repeatid,
                 timestart: event.timestart,
-                repeated: repeated,
+                repeated,
             }],
             siteId,
         );
@@ -770,7 +773,7 @@ export class AddonCalendarHelperProvider {
      */
     sortEvents(events: (AddonCalendarEventToDisplay)[]): (AddonCalendarEventToDisplay)[] {
         return events.sort((a, b) => {
-            if (a.timestart == b.timestart) {
+            if (a.timestart === b.timestart) {
                 return a.timeduration - b.timeduration;
             }
 
