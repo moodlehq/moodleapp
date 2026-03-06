@@ -213,6 +213,12 @@ const appConfig = {
                 startLines: 1,
             },
         ],
+        'jsdoc/escape-inline-tags': [
+            'warn',
+            {
+                allowedInlineTags: ['see', 'ionic'],
+            },
+        ],
         'no-bitwise': 'error',
         'no-console': 'error',
         'no-duplicate-imports': 'error',
