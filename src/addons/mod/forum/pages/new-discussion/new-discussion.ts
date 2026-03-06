@@ -187,7 +187,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
 
         // Refresh data if this discussion is synchronized automatically.
         this.syncObserver = CoreEvents.on(ADDON_MOD_FORUM_AUTO_SYNCED, data => {
-            if (data.forumId == this.forumId && data.userId == CoreSites.getCurrentSiteUserId()) {
+            if (data.forumId === this.forumId && data.userId === CoreSites.getCurrentSiteUserId()) {
                 CoreAlerts.show({
                     header: Translate.instant('core.notice'),
                     message: Translate.instant('core.contenteditingsynced'),
@@ -291,7 +291,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
                         .then(async (discussion) => {
                             this.hasOffline = true;
                             discussion.options = discussion.options || {};
-                            if (discussion.groupid == ADDON_MOD_FORUM_ALL_GROUPS) {
+                            if (discussion.groupid === ADDON_MOD_FORUM_ALL_GROUPS) {
                                 this.newDiscussion.groupId = this.groups[0].id;
                                 this.newDiscussion.postToAllGroups = true;
                             } else {
@@ -320,7 +320,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
                                 !this.newDiscussion.subscribe ||
                                 this.newDiscussion.pin ||
                                 this.newDiscussion.files.length ||
-                                this.groups.length > 0 && this.newDiscussion.groupId != this.groups[0].id ||
+                                this.groups.length > 0 && this.newDiscussion.groupId !== this.groups[0].id ||
                                 this.newDiscussion.postToAllGroups
                             ) {
                                 this.advanced = true;
@@ -390,7 +390,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
 
                     // The call failed, let's return true so the group is shown.
                     // If the user can't post to it an error will be shown when he tries to add the discussion.
-                    .catch(() =>({ status: true }))
+                    .catch(() => ({ status: true }))
 
                     .then((response) => {
                         if (response.status) {
@@ -417,7 +417,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     protected filterGroups(forumGroups: CoreGroup[], userGroups: CoreGroup[]): CoreGroup[] {
         const userGroupsIds = userGroups.map(group => group.id);
 
-        return forumGroups.filter(forumGroup => userGroupsIds.indexOf(forumGroup.id) > -1);
+        return forumGroups.filter(forumGroup => userGroupsIds.includes(forumGroup.id));
     }
 
     /**

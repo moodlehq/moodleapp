@@ -106,10 +106,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
         // Get all the conversations to be synced.
         messages.forEach((message) => {
             if ('conversationid' in message) {
-                if (conversationIds.indexOf(message.conversationid) == -1) {
+                if (!conversationIds.includes(message.conversationid)) {
                     conversationIds.push(message.conversationid);
                 }
-            } else if (userIds.indexOf(message.touserid) == -1) {
+            } else if (!userIds.includes(message.touserid)) {
                 userIds.push(message.touserid);
             }
         });
@@ -224,10 +224,10 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
             const text = ('text' in message ? message.text : message.smallmessage) || '';
             const textFieldName = conversationId ? 'text' : 'smallmessage';
-            const wrappedText = message[textFieldName][0] != '<' ? `<p>${text}</p>` : text;
+            const wrappedText = message[textFieldName][0] !== '<' ? `<p>${text}</p>` : text;
 
             try {
-                if (onlineMessages.indexOf(wrappedText) != -1) {
+                if (onlineMessages.includes(wrappedText)) {
                     // Message already sent, ignore it to prevent duplicates.
                 } else if (conversationId) {
                     await AddonMessages.sendMessageToConversationOnline(conversationId, text, siteId);
@@ -246,7 +246,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
                 }
 
                 // Error returned by WS. Store the error to show a warning but keep sending messages.
-                if (errors.indexOf(error) == -1) {
+                if (!errors.includes(error)) {
                     errors.push(error);
                 }
             }

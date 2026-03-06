@@ -115,7 +115,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        if (courseIds.length  == 1) {
+        if (courseIds.length  === 1) {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
         } else {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
@@ -143,7 +143,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
 
         this.courses = starredCourses.map((recentCourse) => {
-            const course = courses.find((course) => recentCourse.id == course.id);
+            const course = courses.find((course) => recentCourse.id === course.id);
 
             return Object.assign(recentCourse, course);
         });
@@ -173,8 +173,8 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             return this.refreshContent();
         }
 
-        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state == CORE_COURSES_STATE_FAVOURITE) {
-            const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state === CORE_COURSES_STATE_FAVOURITE) {
+            const courseIndex = this.courses.findIndex((course) => course.id === data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.
                 return this.refreshContent();

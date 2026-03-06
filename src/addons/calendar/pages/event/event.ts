@@ -259,7 +259,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             if (this.event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
                 const name = CoreCourseModuleHelper.translateModuleName(this.event.modulename || '');
-                if (name.indexOf('core.mod_') === -1) {
+                if (!name.includes('core.mod_')) {
                     this.event.modulename = name;
                 }
 
@@ -271,7 +271,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             const event = this.event;
 
             const courseId = this.event.courseid;
-            if (courseId != this.siteHomeId) {
+            if (courseId !== this.siteHomeId) {
                 // If the event belongs to a course, get the course name and the URL to view it.
                 if (this.event.course) {
                     this.courseId = this.event.course.id;
@@ -355,7 +355,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
                 CoreAlerts.show({ message: result.warnings[0] });
             }
 
-            if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {
+            if (result.deleted && result.deleted.includes(this.eventId)) {
                 // This event was deleted during the sync.
                 deleted = true;
             } else if (this.eventId < 0 && result.offlineIdMap[this.eventId]) {
@@ -447,7 +447,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
      * @param showErrors Whether to show sync errors to the user.
      * @returns Promise resolved when done.
      */
-    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, showErrors= false): Promise<void> {
+    async doRefresh(refresher?: HTMLIonRefresherElement, done?: () => void, showErrors = false): Promise<void> {
         if (!this.eventLoaded) {
             return;
         }
@@ -624,7 +624,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        if (data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+        if (data.deleted && data.deleted.includes(this.eventId)) {
             CoreToasts.show({
                 message: 'addon.calendar.eventcalendareventdeleted',
                 translateMessage: true,
@@ -633,7 +633,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // Event was deleted, close the view.
             CoreNavigator.back();
-        } else if (data.events && (!isManual || data.source != 'event')) {
+        } else if (data.events && (!isManual || data.source !== 'event')) {
             if (this.eventId < 0) {
                 if (data.offlineIdMap[this.eventId]) {
                     // Event was created, use the online ID.
@@ -643,9 +643,9 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
                     this.refreshEvent();
                 }
             } else {
-                const event = data.events.find((ev) => ev.id == this.eventId);
+                const found = data.events.some((ev) => ev.id === this.eventId);
 
-                if (event) {
+                if (found) {
                     this.eventLoaded = false;
                     this.refreshEvent();
                 }

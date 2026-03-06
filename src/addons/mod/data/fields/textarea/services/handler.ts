@@ -52,7 +52,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
         const fieldName = `f_${field.id}`;
         const files = this.getFieldEditFiles(field, inputData, originalFieldData);
 
-        let text = CoreFileHelper.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]> files);
+        let text = CoreFileHelper.restorePluginfileUrls(inputData[fieldName] || '', <CoreWSFile[]>files);
         // Add some HTML to the text if needed.
         text = CoreText.formatHtmlLines(text);
 
@@ -102,7 +102,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
         }
 
-        const value = inputData.find((value) => value.subfield == '');
+        const value = inputData.find((value) => value.subfield === '');
 
         if (!value || CoreDom.htmlIsBlank(<string>value.value || '')) {
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
@@ -119,7 +119,7 @@ export class AddonModDataFieldTextareaHandlerService extends AddonModDataFieldTe
             // Take the original files since we cannot edit them on the app.
             originalContent.content = CoreFileHelper.replacePluginfileUrls(
                 originalContent.content,
-                <CoreWSFile[]> originalContent.files,
+                <CoreWSFile[]>originalContent.files,
             );
         }
 

@@ -247,8 +247,8 @@ export class AddonModAssignProvider {
         const response = await site.read<AddonModAssignGetUserMappingsWSResponse>('mod_assign_get_user_mappings', params, preSets);
 
         // Search the user.
-        if (response.assignments.length && response.assignments[0].assignmentid == assignId) {
-            const mapping = response.assignments[0].mappings.find((mapping) => mapping.userid == userId);
+        if (response.assignments.length && response.assignments[0].assignmentid === assignId) {
+            const mapping = response.assignments[0].mappings.find((mapping) => mapping.userid === userId);
 
             if (mapping) {
                 return mapping.id;
@@ -293,7 +293,7 @@ export class AddonModAssignProvider {
         const response = await site.read<AddonModAssignGetGradesWSResponse>('mod_assign_get_grades', params, preSets);
 
         // Search the assignment.
-        if (response.assignments.length && response.assignments[0].assignmentid == assignId) {
+        if (response.assignments.length && response.assignments[0].assignmentid === assignId) {
             return response.assignments[0].grades;
         } else if (response.warnings && response.warnings.length) {
             if (response.warnings[0].warningcode == '3') {
@@ -328,8 +328,8 @@ export class AddonModAssignProvider {
             return CoreIonicColorNames.NONE;
         }
 
-        if (status == AddonModAssignGradingStates.GRADED
-                || status == AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
+        if (status === AddonModAssignGradingStates.GRADED
+            || status === AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
             return CoreIonicColorNames.SUCCESS;
         }
 
@@ -348,8 +348,8 @@ export class AddonModAssignProvider {
         }
 
         if (status === AddonModAssignGradingStates.GRADED
-                || status === AddonModAssignGradingStates.NOT_GRADED
-                || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
+            || status === AddonModAssignGradingStates.NOT_GRADED
+            || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
             return `addon.mod_assign.${status}`;
         }
 
@@ -873,7 +873,7 @@ export class AddonModAssignProvider {
         }
 
         if (submission) {
-            if (assign.submissiondrafts && submission.status == AddonModAssignSubmissionStatusValues.SUBMITTED) {
+            if (assign.submissiondrafts && submission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // Drafts are tracked and the student has submitted the assignment.
                 return false;
             }
@@ -956,7 +956,7 @@ export class AddonModAssignProvider {
         submission: AddonModAssignSubmissionFormatted,
         assign: AddonModAssignAssign,
     ): Promise<boolean> {
-        if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
+        if (submission.status !== AddonModAssignSubmissionStatusValues.SUBMITTED) {
             return false;
         }
 
@@ -965,8 +965,8 @@ export class AddonModAssignProvider {
             return true;
         }
 
-        if (submission.gradingstatus != AddonModAssignGradingStates.GRADED &&
-                submission.gradingstatus != AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
+        if (submission.gradingstatus !== AddonModAssignGradingStates.GRADED &&
+            submission.gradingstatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
             // Not graded.
             return true;
         }
@@ -1464,42 +1464,42 @@ export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptions
  * it should be.
  */
 export type AddonModAssignAssign =
-    Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'|'lang'> & {
-    cmid: number; // Course module id.
-    nosubmissions: number; // No submissions.
-    submissiondrafts: number; // Submissions drafts.
-    sendnotifications: number; // Send notifications.
-    sendlatenotifications: number; // Send notifications.
-    sendstudentnotifications: number; // Send student notifications (default).
-    duedate: number; // Assignment due date.
-    allowsubmissionsfromdate: number; // Allow submissions from date.
-    grade: number; // Grade type.
-    timemodified: number; // Last time assignment was modified.
-    completionsubmit: number; // If enabled, set activity as complete following submission.
-    cutoffdate: number; // Date after which submission is not accepted without an extension.
-    gradingduedate?: number; // The expected date for marking the submissions.
-    teamsubmission: number; // If enabled, students submit as a team.
-    requireallteammemberssubmit: number; // If enabled, all team members must submit.
-    teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
-    blindmarking: number; // If enabled, hide identities until reveal identities actioned.
-    hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
-    revealidentities: number; // Show identities for a blind marking assignment.
-    attemptreopenmethod: AddonModAssignAttemptReopenMethodValues; // Method used to control opening new attempts.
-    maxattempts: number; // Maximum number of attempts allowed.
-    markingworkflow: number; // Enable marking workflow.
-    markingallocation: number; // Enable marking allocation.
-    requiresubmissionstatement: number; // Student must accept submission statement.
-    preventsubmissionnotingroup?: number; // Prevent submission not in group.
-    submissionstatement?: string; // Submission statement formatted.
-    submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    configs: AddonModAssignConfig[]; // Configuration settings.
-    introattachments?: CoreWSExternalFile[];
-    activity?: string; // @since 4.0. Description of activity.
-    activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
-    activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
-    timelimit?: number; // @since 4.0. Time limit to complete assigment.
-    submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
-};
+    Omit<CoreCourseModuleStandardElements, 'coursemodule' | 'section' | 'visible' | 'groupmode' | 'groupingid' | 'lang'> & {
+        cmid: number; // Course module id.
+        nosubmissions: number; // No submissions.
+        submissiondrafts: number; // Submissions drafts.
+        sendnotifications: number; // Send notifications.
+        sendlatenotifications: number; // Send notifications.
+        sendstudentnotifications: number; // Send student notifications (default).
+        duedate: number; // Assignment due date.
+        allowsubmissionsfromdate: number; // Allow submissions from date.
+        grade: number; // Grade type.
+        timemodified: number; // Last time assignment was modified.
+        completionsubmit: number; // If enabled, set activity as complete following submission.
+        cutoffdate: number; // Date after which submission is not accepted without an extension.
+        gradingduedate?: number; // The expected date for marking the submissions.
+        teamsubmission: number; // If enabled, students submit as a team.
+        requireallteammemberssubmit: number; // If enabled, all team members must submit.
+        teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
+        blindmarking: number; // If enabled, hide identities until reveal identities actioned.
+        hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
+        revealidentities: number; // Show identities for a blind marking assignment.
+        attemptreopenmethod: AddonModAssignAttemptReopenMethodValues; // Method used to control opening new attempts.
+        maxattempts: number; // Maximum number of attempts allowed.
+        markingworkflow: number; // Enable marking workflow.
+        markingallocation: number; // Enable marking allocation.
+        requiresubmissionstatement: number; // Student must accept submission statement.
+        preventsubmissionnotingroup?: number; // Prevent submission not in group.
+        submissionstatement?: string; // Submission statement formatted.
+        submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        configs: AddonModAssignConfig[]; // Configuration settings.
+        introattachments?: CoreWSExternalFile[];
+        activity?: string; // @since 4.0. Description of activity.
+        activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
+        activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
+        timelimit?: number; // @since 4.0. Time limit to complete assigment.
+        submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
+    };
 
 /**
  * Config setting in an assign.
@@ -1640,33 +1640,34 @@ type AddonModAssignListParticipantsWSResponse = AddonModAssignParticipant[];
  * Participant returned by mod_assign_list_participants.
  */
 export type AddonModAssignParticipant = Omit<CoreUserDescriptionExporter,
-    'auth'|'confirmed'|'lang'|'calendartype'|'theme'|'timezone'|'mailformat'|'profileimageurlsmall'|'profileimageurl'> & {
-    profileimageurlsmall?: string; // User image profile URL - small version.
-    profileimageurl?: string; // User image profile URL - big version.
+    'auth' | 'confirmed' | 'lang' | 'calendartype' | 'theme' | 'timezone' | 'mailformat' | 'profileimageurlsmall' |
+    'profileimageurl'> & {
+        profileimageurlsmall?: string; // User image profile URL - small version.
+        profileimageurl?: string; // User image profile URL - big version.
 
-    recordid?: number; // @since 3.7. Record id.
-    groups?: { // User groups.
-        id: number; // Group id.
-        name: string; // Group name.
-        description: string; // Group description.
-    }[];
-    roles?: { // User roles.
-        roleid: number; // Role id.
-        name: string; // Role name.
-        shortname: string; // Role shortname.
-        sortorder: number; // Role sortorder.
-    }[];
-    enrolledcourses?: { // Courses where the user is enrolled - limited by which courses the user is able to see.
-        id: number; // Id of the course.
-        fullname: string; // Fullname of the course.
-        shortname: string; // Shortname of the course.
-    }[];
-    submitted: boolean; // Have they submitted their assignment.
-    requiregrading: boolean; // Is their submission waiting for grading.
-    grantedextension?: boolean; // Have they been granted an extension.
-    groupid?: number; // For group assignments this is the group id.
-    groupname?: string; // For group assignments this is the group name.
-};
+        recordid?: number; // @since 3.7. Record id.
+        groups?: { // User groups.
+            id: number; // Group id.
+            name: string; // Group name.
+            description: string; // Group description.
+        }[];
+        roles?: { // User roles.
+            roleid: number; // Role id.
+            name: string; // Role name.
+            shortname: string; // Role shortname.
+            sortorder: number; // Role sortorder.
+        }[];
+        enrolledcourses?: { // Courses where the user is enrolled - limited by which courses the user is able to see.
+            id: number; // Id of the course.
+            fullname: string; // Fullname of the course.
+            shortname: string; // Shortname of the course.
+        }[];
+        submitted: boolean; // Have they submitted their assignment.
+        requiregrading: boolean; // Is their submission waiting for grading.
+        grantedextension?: boolean; // Have they been granted an extension.
+        groupid?: number; // For group assignments this is the group id.
+        groupname?: string; // For group assignments this is the group name.
+    };
 
 /**
  * Result of WS mod_assign_get_assignments.

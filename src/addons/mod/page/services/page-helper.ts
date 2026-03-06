@@ -89,7 +89,7 @@ export class AddonModPageHelperProvider {
         const url = '/mod_page/content/index.html';
         const encodedUrl = encodeURIComponent(url);
 
-        return (filename === 'index.html' && (fileurl.indexOf(url) > 0 || fileurl.indexOf(encodedUrl) > 0 ));
+        return (filename === 'index.html' && (fileurl.includes(url) || fileurl.includes(encodedUrl)));
     }
 
 }

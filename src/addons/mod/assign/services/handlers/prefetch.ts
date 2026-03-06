@@ -113,7 +113,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
                         files = files.concat(submissionFiles);
                     } catch (error) {
-                        if (error && error.errorcode == 'nopermission') {
+                        if (error && error.errorcode === 'nopermission') {
                             // The user does not have persmission to view this submission, ignore it.
                             return;
                         }
@@ -350,7 +350,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         // Teacher, prefetch all submissions.
-        if (!groupInfo.groups || groupInfo.groups.length == 0) {
+        if (!groupInfo.groups || groupInfo.groups.length === 0) {
             groupInfo.groups = [{ id: 0, name: '' }];
         }
 
@@ -373,7 +373,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     subPromises.push(AddonModAssign.getAssignmentGrades(assign.id, modOptions));
 
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
-                    if (!submissions || !submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {
+                    if (!submissions || !submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid === userId)) {
                         const submissionOptions = {
                             userId,
                             groupId: group.id,
@@ -506,7 +506,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             await Promise.all(promises);
         } catch (error) {
             // Ignore if the user can't view their own submission.
-            if (resolveOnNoPermission && error.errorcode != 'nopermission') {
+            if (resolveOnNoPermission && error.errorcode !== 'nopermission') {
                 throw error;
             }
         }

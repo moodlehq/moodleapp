@@ -66,7 +66,7 @@ export class CoreFileUtils {
             const file = files[i];
             const name = (CoreFileUtils.isFileEntry(file) ? file.name : file.filename) || '';
 
-            if (names.indexOf(name) > -1) {
+            if (names.includes(name)) {
                 return Translate.instant('core.filenameexist', { $a: name });
             }
 

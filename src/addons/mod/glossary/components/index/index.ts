@@ -180,10 +180,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.observers.push(CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
             if (
                 this.glossary &&
-                data.component == 'mod_glossary' &&
-                data.ratingArea == 'entry' &&
-                data.contextLevel == ContextLevel.MODULE &&
-                data.instanceId == this.glossary.coursemodule
+                data.component === 'mod_glossary' &&
+                data.ratingArea === 'entry' &&
+                data.contextLevel === ContextLevel.MODULE &&
+                data.instanceId === this.glossary.coursemodule
             ) {
                 this.hasOfflineRatings = true;
                 this.hasOffline = true;
@@ -192,10 +192,10 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.observers.push(CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
             if (
                 this.glossary &&
-                data.component == 'mod_glossary' &&
-                data.ratingArea == 'entry' &&
-                data.contextLevel == ContextLevel.MODULE &&
-                data.instanceId == this.glossary.coursemodule
+                data.component === 'mod_glossary' &&
+                data.ratingArea === 'entry' &&
+                data.contextLevel === ContextLevel.MODULE &&
+                data.instanceId === this.glossary.coursemodule
             ) {
                 this.hasOfflineRatings = false;
                 this.hasOffline = this.hasOfflineEntries;
@@ -274,7 +274,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModGlossaryAutoSyncedData): boolean {
         return !!this.glossary && syncEventData.glossaryId == this.glossary.id &&
-                syncEventData.userId == CoreSites.getCurrentSiteUserId();
+            syncEventData.userId == CoreSites.getCurrentSiteUserId();
     }
 
     /**

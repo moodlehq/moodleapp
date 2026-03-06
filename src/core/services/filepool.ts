@@ -173,7 +173,7 @@ class CoreFilepoolQueue {
      * @returns Resolved with tru if the object exists, false otherwise-
      */
     async exist(siteId: string, fileId: string): Promise<boolean> {
-        return await CorePromiseUtils.promiseWorks(this.getEntry( siteId, fileId));
+        return await CorePromiseUtils.promiseWorks(this.getEntry(siteId, fileId));
     }
 
     /**
@@ -184,7 +184,7 @@ class CoreFilepoolQueue {
      * @returns Resolved with file object from DB on success, rejected otherwise.
      */
     async get(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
-        const entry = await this.getEntry( siteId, fileId);
+        const entry = await this.getEntry(siteId, fileId);
 
         return CoreFilepoolQueue.formatEntry(entry);
     }
@@ -603,7 +603,7 @@ export class CoreFilepoolProvider {
             const treatedUrl = url.replace(hash, ''); // Remove the hash from the URL.
 
             // Check that the hash is valid.
-            if (`_${Md5.hashAsciiStr(`url:${treatedUrl}`)}` == hash) {
+            if (`_${Md5.hashAsciiStr(`url:${treatedUrl}`)}` === hash) {
                 // The data found is a hash of the URL, don't need to add it again.
                 return filename;
             }
@@ -746,7 +746,7 @@ export class CoreFilepoolProvider {
             // We need to add the new link if it does not exist yet.
             if (entry.linksUnserialized && entry.linksUnserialized.length) {
                 foundLink = entry.linksUnserialized.some((fileLink) =>
-                    fileLink.component == link.component && fileLink.componentId == link.componentId);
+                    fileLink.component === link.component && fileLink.componentId === link.componentId);
             }
 
             if (!foundLink) {
@@ -1438,14 +1438,14 @@ export class CoreFilepoolProvider {
             const element = elements[i];
             const url = 'href' in element ? element.href : element.src;
 
-            if (url && CoreUrl.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+            if (url && CoreUrl.isDownloadableUrl(url) && !urls.includes(url)) {
                 urls.push(url);
             }
 
             // Treat video poster.
-            if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+            if (element.tagName === 'VIDEO' && element.getAttribute('poster')) {
                 const poster = element.getAttribute('poster');
-                if (poster && CoreUrl.isDownloadableUrl(poster) && urls.indexOf(poster) == -1) {
+                if (poster && CoreUrl.isDownloadableUrl(poster) && !urls.includes(poster)) {
                     urls.push(poster);
                 }
             }
@@ -2374,16 +2374,16 @@ export class CoreFilepoolProvider {
         }
 
         // If there are hashes in the URL, extract them.
-        const index = filename.indexOf('#');
+        const hashIndex = filename.indexOf('#');
         let hashes: string[] | undefined;
 
-        if (index != -1) {
+        if (hashIndex !== -1) {
             hashes = filename.split('#');
 
             // Remove the URL from the array.
             hashes.shift();
 
-            filename = filename.substring(0, index);
+            filename = filename.substring(0, hashIndex);
         }
 
         // Remove the extension from the filename.
@@ -2562,7 +2562,7 @@ export class CoreFilepoolProvider {
      */
     isFileEventDownloadedOrDeleted(data: CoreFilepoolFileEventData): boolean {
         return (data.action === CoreFilepoolFileActions.DOWNLOAD && data.success == true) ||
-                data.action === CoreFilepoolFileActions.DELETED;
+            data.action === CoreFilepoolFileActions.DELETED;
     }
 
     /**
@@ -3336,7 +3336,7 @@ type CoreFilepoolPromisedValue = CorePromisedValue<void> & {
     onProgress?: CoreFilepoolOnProgressCallback; // On Progress function.
 };
 
-type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority'|'revision'> & {
+type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority' | 'revision'> & {
     priority: number; // The priority this file should get in the queue (range 0-999).
     revision: number; // The revision of the file.
     timemodified: number; // The time this file was modified. Can be used to check file state.

@@ -21,7 +21,7 @@ import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '
 /**
  * Service that provides some features regarding learning plans.
  */
-@Injectable( { providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class AddonCompetencyHelperProvider {
 
     /**
@@ -31,7 +31,7 @@ export class AddonCompetencyHelperProvider {
      * @returns User profile Image URL or true if default icon.
      */
     async getProfile(userId?: number): Promise<CoreUserProfile | undefined> {
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+        if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
             return;
         }
 
