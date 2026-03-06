@@ -54,8 +54,8 @@ export class CoreDataPrivacyCreateDataRequestLinkHandlerService extends CoreCont
     /**
      * @inheritdoc
      */
-    async isEnabled(): Promise<boolean> {
-        return await CoreDataPrivacy.isEnabled();
+    async isEnabled(siteId?: string): Promise<boolean> {
+        return await CoreDataPrivacy.isEnabled(siteId);
     }
 
 }

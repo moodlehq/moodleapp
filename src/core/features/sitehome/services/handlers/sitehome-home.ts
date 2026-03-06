@@ -30,28 +30,14 @@ export class CoreSiteHomeHomeHandlerService implements CoreMainMenuHomeHandler {
     priority = 1100;
 
     /**
-     * Check if the handler is enabled on a site level.
-     *
-     * @returns Whether or not the handler is enabled on a site level.
+     * @inheritdoc
      */
     isEnabled(): Promise<boolean> {
-        return this.isEnabledForSite();
+        return CoreSiteHome.isAvailable();
     }
 
     /**
-     * Check if the handler is enabled on a certain site.
-     *
-     * @param siteId Site ID. If not defined, current site.
-     * @returns Whether or not the handler is enabled on a site level.
-     */
-    async isEnabledForSite(siteId?: string): Promise<boolean> {
-        return CoreSiteHome.isAvailable(siteId);
-    }
-
-    /**
-     * Returns the data needed to render the handler.
-     *
-     * @returns Data needed to render the handler.
+     * @inheritdoc
      */
     getDisplayData(): CoreMainMenuHomeHandlerToDisplay {
         const site = CoreSites.getCurrentSite();

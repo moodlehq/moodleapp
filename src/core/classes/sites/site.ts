@@ -557,6 +557,24 @@ export class CoreSite extends CoreAuthenticatedSite {
     }
 
     /**
+     * Get a boolean config of this site.
+     *
+     * @param name Name of the setting to get.
+     * @param ignoreCache True if it should ignore cached data.
+     * @param defaultValue Default value to return if the config is not found or there's an error.
+     * @returns Promise resolved with the config value.
+     */
+    async getBooleanConfig(name: string, ignoreCache?: boolean, defaultValue = false): Promise<boolean> {
+        try {
+            const value = await this.getConfig(name, ignoreCache);
+
+            return value === '1';
+        } catch {
+            return defaultValue;
+        }
+    }
+
+    /**
      * Get the config of this site.
      * It is recommended to use getStoredConfig instead since it's faster and doesn't use network.
      *
@@ -576,7 +594,7 @@ export class CoreSite extends CoreAuthenticatedSite {
             if (name) {
                 // Return the requested setting.
                 for (const x in config.settings) {
-                    if (config.settings[x].name == name) {
+                    if (config.settings[x].name === name) {
                         return String(config.settings[x].value);
                     }
                 }
@@ -944,6 +962,9 @@ export type CoreSiteConfig = Record<string, string> & {
     supportavailability?: string; // String representation of CoreSiteConfigSupportAvailability.
     searchbanner?: string; // Search banner text.
     searchbannerenable?: string; // Whether search banner is enabled.
+    enabledashboard?: string; // Whether dashboard is enabled.
+    enablemyhome?: string; // @since 5.2. Whether my home is enabled.
+    enablemycourses?: string; // @since 5.2. Whether my courses is enabled.
 };
 
 /**

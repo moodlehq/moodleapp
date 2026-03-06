@@ -17,9 +17,9 @@ import { CoreContentLinksHandlerBase } from '@features/contentlinks/classes/base
 import { CoreContentLinksAction } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreNavigator } from '@services/navigator';
 import { makeSingleton } from '@singletons';
-import { CoreDashboardHomeHandler } from './dashboard-home';
 import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 import { CORE_COURSES_DASHBOARD_PAGE_NAME } from '@features/courses/constants';
+import { CoreCoursesDashboard } from '../dashboard';
 
 /**
  * Handler to treat links to dashboard.
@@ -31,9 +31,7 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
     pattern = /\/my\/?$/;
 
     /**
-     * Get the list of actions for a link (url).
-     *
-     * @returns List of (or promise resolved with list of) actions.
+     * @inheritdoc
      */
     getActions(): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
@@ -51,13 +49,10 @@ export class CoreCoursesDashboardLinkHandlerService extends CoreContentLinksHand
     }
 
     /**
-     * Check if the handler is enabled for a certain site (site + user) and a URL.
-     *
-     * @param siteId The site ID.
-     * @returns Whether the handler is enabled for the URL and site.
+     * @inheritdoc
      */
     async isEnabled(siteId: string): Promise<boolean> {
-        return CoreDashboardHomeHandler.isEnabledForSite(siteId);
+        return CoreCoursesDashboard.isAvailable(siteId);
     }
 
 }
