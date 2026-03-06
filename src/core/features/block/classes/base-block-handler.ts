@@ -19,7 +19,7 @@ import { ContextLevel } from '@/core/constants';
 /**
  * Base handler for blocks.
  *
- * This class is needed because parent classes cannot have @Injectable in Angular v6, so the default handler cannot be a
+ * This class is needed because parent classes cannot have `@Injectable` in Angular v6, so the default handler cannot be a
  * parent class.
  */
 export class CoreBlockBaseHandler implements CoreBlockHandler {
