@@ -490,7 +490,7 @@ export class CoreLocalNotificationsProvider {
 
             let triggered = (notification.trigger && notification.trigger.at) || 0;
 
-            if (typeof triggered != 'number') {
+            if (typeof triggered !== 'number') {
                 triggered = triggered.getTime();
             }
 
@@ -545,7 +545,7 @@ export class CoreLocalNotificationsProvider {
     protected parseNotificationData(data: unknown): unknown {
         if (!data) {
             return {};
-        } else if (typeof data == 'string') {
+        } else if (typeof data === 'string') {
             return CoreText.parseJSON(data, {});
         } else {
             return data;

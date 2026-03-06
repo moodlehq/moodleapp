@@ -71,7 +71,6 @@ export class CoreLoginSitesModalComponent implements OnInit {
      *
      * @param event Click event.
      * @param site Site to delete.
-     * @returns Promise resolved when done.
      */
     async deleteSite(event: Event, site: CoreSiteBasicInfo): Promise<void> {
         event.stopPropagation();
@@ -100,7 +99,6 @@ export class CoreLoginSitesModalComponent implements OnInit {
      * Login in a site.
      *
      * @param site The site.
-     * @returns Promise resolved when done.
      */
     async login(site: CoreSiteBasicInfo): Promise<void> {
         await this.close(undefined, true);
@@ -120,6 +118,7 @@ export class CoreLoginSitesModalComponent implements OnInit {
      * Close modal.
      *
      * @param event Click event.
+     * @param closeAll Whether to close all modals or just the current one.
      */
     async close(event?: Event, closeAll = false): Promise<void> {
         event?.preventDefault();

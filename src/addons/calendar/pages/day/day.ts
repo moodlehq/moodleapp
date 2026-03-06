@@ -142,7 +142,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.eventObservers.push(CoreEvents.on(ADDON_CALENDAR_MANUAL_SYNCED, (data) => {
             const selectedDay = this.manager?.getSelectedItem();
-            if (data && (data.source != 'day' || !selectedDay || !data.dayJS || !selectedDay.dayJS.isSame(data.dayJS, 'day'))) {
+            if (data && (data.source !== 'day' || !selectedDay || !data.dayJS || !selectedDay.dayJS.isSame(data.dayJS, 'day'))) {
                 this.manager?.getSource().markAllItemsUnloaded();
                 this.refreshData(false, true);
             }
@@ -762,9 +762,9 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         if (this.offlineEditedEventsIds.length) {
             // Remove the online events that were modified in offline.
-            result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+            result = result.filter((event) => !this.offlineEditedEventsIds.includes(event.id));
 
-            if (result.length != day.onlineEvents?.length) {
+            if (result.length !== day.onlineEvents?.length) {
                 day.hasOffline = true;
             }
         }

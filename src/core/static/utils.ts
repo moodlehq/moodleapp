@@ -60,7 +60,7 @@ export class CoreUtils {
             return newArray;
         } else if (CoreObject.isObject(source)) {
             // Check if the object shouldn't be copied.
-            if (source.toString && CoreUtils.DONT_CLONE.indexOf(source.toString()) !== -1) {
+            if (source.toString && CoreUtils.DONT_CLONE.includes(source.toString())) {
                 // Object shouldn't be copied, return it as it is.
                 return source;
             }

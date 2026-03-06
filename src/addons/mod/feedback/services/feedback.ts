@@ -120,7 +120,7 @@ export class AddonModFeedbackProvider {
                     }
 
                     // We can finish checking if only searching on one value and we found it.
-                    if (values.length == 1) {
+                    if (values.length === 1) {
                         return false;
                     }
                 }
@@ -384,13 +384,13 @@ export class AddonModFeedbackProvider {
             ...options, // Include all options.
         });
 
-        const attempt = responses.attempts.find((attempt) => attemptId == attempt.id);
+        const attempt = responses.attempts.find((attempt) => attemptId === attempt.id);
 
         if (attempt) {
             return attempt;
         }
 
-        const anonAttempt = responses.anonattempts.find((attempt) => attemptId == attempt.id);
+        const anonAttempt = responses.anonattempts.find((attempt) => attemptId === attempt.id);
 
         if (anonAttempt) {
             return anonAttempt;
@@ -818,6 +818,8 @@ export class AddonModFeedbackProvider {
      * @param page Page where we want to jump.
      * @param changePage If page change is forward (1) or backward (-1).
      * @param options Other options.
+     * @param options.cmId Course module ID.
+     * @param options.siteId Site ID. If not defined, current site.
      * @returns Page number where to jump. Or false if completed or first page.
      */
     protected async getPageJumpTo(
@@ -839,7 +841,7 @@ export class AddonModFeedbackProvider {
         }
 
         // Check we can jump futher.
-        if ((changePage == 1 && response.hasnextpage) || (changePage == -1 && response.hasprevpage)) {
+        if ((changePage === 1 && response.hasnextpage) || (changePage === -1 && response.hasprevpage)) {
             return this.getPageJumpTo(feedbackId, page + changePage, changePage, options);
         }
 
@@ -1156,7 +1158,7 @@ export class AddonModFeedbackProvider {
             });
 
             // Check completion.
-            if (changePage == 1 && !pageItems.hasnextpage) {
+            if (changePage === 1 && !pageItems.hasnextpage) {
                 response.completed = true;
 
                 return response;
@@ -1166,7 +1168,7 @@ export class AddonModFeedbackProvider {
 
             if (loadPage === false) {
                 // Completed or first page.
-                if (changePage == -1) {
+                if (changePage === -1) {
                     response.jumpto = 0;
                 } else {
                     response.completed = true;

@@ -103,7 +103,7 @@ export class CoreMessageComponent {
 /**
  * Conversation message with some calculated data.
  *
- * @todo: The properties that are used in the template should be signals, otherwise if they change the template might not
+ * @todo The properties that are used in the template should be signals, otherwise if they change the template might not
  * update in some cases. E.g. showTail, pending, deleted, etc.
  */
 type CoreMessageData = {

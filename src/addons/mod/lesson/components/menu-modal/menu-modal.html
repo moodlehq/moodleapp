@@ -44,7 +44,8 @@
                             <ng-container *ngFor="let page of pageInstance.lessonPages">
                                 @if (page.display && page.displayinmenublock) {
                                     <ion-item class="ion-text-wrap" (click)="loadPage(page.id)"
-                                        [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage === page.id ? 'page' : 'false'"
+                                        [attr.aria-current]="!pageInstance.eolData && pageInstance.currentPage === page.id ?
+                                            'page' : 'false'"
                                         button [detail]="true">
                                         <ion-label>
                                             <core-format-text [text]="page.title" contextLevel="module" [courseId]="pageInstance.courseId"

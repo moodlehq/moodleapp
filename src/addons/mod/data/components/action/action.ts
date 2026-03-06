@@ -76,7 +76,7 @@ export class AddonModDataActionComponent implements OnInit {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (this.action == AddonModDataAction.USERPICTURE) {
+        if (this.action === AddonModDataAction.USERPICTURE) {
             const profile = await CoreUser.getProfile(this.entry.userid, this.database.course);
             this.userPicture = profile.profileimageurl;
         }
@@ -155,6 +155,8 @@ export class AddonModDataActionComponent implements OnInit {
 
     /**
      * Open actions menu popover.
+     *
+     * @param event Event.
      */
     async actionsMenu(event: Event): Promise<void> {
         event.stopPropagation();

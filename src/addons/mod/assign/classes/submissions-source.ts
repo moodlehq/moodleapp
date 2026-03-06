@@ -108,6 +108,8 @@ export class AddonModAssignSubmissionsSource extends CoreRoutedItemsManagerSourc
 
     /**
      * Load assignment.
+     *
+     * @param sync Whether to try to synchronize data.
      */
     async loadAssignment(sync = false): Promise<void> {
         // Get assignment data.

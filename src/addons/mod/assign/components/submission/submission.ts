@@ -156,7 +156,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             events,
             async (data) => {
                 // Check that user is grading and this grade wasn't blocked when sync was performed.
-                if (!this.loaded || !this.canGrade || data.gradesBlocked.indexOf(this.submitId) !== -1) {
+                if (!this.loaded || !this.canGrade || data.gradesBlocked.includes(this.submitId)) {
                     return;
                 }
 
@@ -478,7 +478,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
             this.blindMarking = this.isSubmittedForGrading && !!this.assign.blindmarking && !this.assign.revealidentities;
 
-            if (!this.blindMarking && this.submitId != this.currentUserId) {
+            if (!this.blindMarking && this.submitId !== this.currentUserId) {
                 promises.push(this.loadSubmissionUserProfile());
             }
 
@@ -883,7 +883,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         this.isRemoveAvailable = AddonModAssign.isRemoveSubmissionAvailable();
 
         // Get submission statement if needed.
-        if (this.assign.requiresubmissionstatement && this.assign.submissiondrafts && this.submitId == this.currentUserId) {
+        if (this.assign.requiresubmissionstatement && this.assign.submissiondrafts && this.submitId === this.currentUserId) {
             this.submissionStatement = this.assign.submissionstatement;
             this.acceptStatement = false;
         } else {
@@ -893,7 +893,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         // Show error if submission statement should be shown but it couldn't be retrieved.
         this.showErrorStatementEdit = submissionStatementMissing && !this.assign.submissiondrafts &&
-            this.submitId == this.currentUserId;
+            this.submitId === this.currentUserId;
 
         this.showErrorStatementSubmit = submissionStatementMissing && !!this.assign.submissiondrafts;
 
@@ -1016,21 +1016,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     protected getAdvancedGrade(gradeForDisplay?: string): boolean {
         // Check if the grade uses advanced grading.
-        if (gradeForDisplay) {
-            const position = gradeForDisplay.indexOf('class="advancedgrade"');
-            if (position > -1) {
-                return true;
-            }
-        }
-
-        return false;
+        return !!gradeForDisplay && gradeForDisplay.includes('class="advancedgrade"');
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.syncObserver?.off();
+        this.syncObserver.off();
     }
 
 }

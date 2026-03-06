@@ -86,6 +86,8 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
 
     /**
      * Update value being shown.
+     *
+     * @param value New value.
      */
     protected updateValue(value?: Partial<AddonModDataEntryField>): void {
         this.value = value;
@@ -93,11 +95,11 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
 
     /* Magic mode getters */
     get listMode(): boolean {
-        return this.mode == AddonModDataTemplateMode.LIST;
+        return this.mode === AddonModDataTemplateMode.LIST;
     }
 
     get showMode(): boolean {
-        return this.mode == AddonModDataTemplateMode.SHOW;
+        return this.mode === AddonModDataTemplateMode.SHOW;
     }
 
     get displayMode(): boolean {
@@ -105,11 +107,11 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
     }
 
     get editMode(): boolean {
-        return this.mode == AddonModDataTemplateMode.EDIT;
+        return this.mode === AddonModDataTemplateMode.EDIT;
     }
 
     get searchMode(): boolean {
-        return this.mode == AddonModDataTemplateMode.SEARCH;
+        return this.mode === AddonModDataTemplateMode.SEARCH;
     }
 
     get inputMode(): boolean {

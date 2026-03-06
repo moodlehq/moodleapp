@@ -69,13 +69,15 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
      * Determine tabs layout.
      */
     @Input() layout: 'icon-top' | 'icon-start' | 'icon-end' | 'icon-bottom' | 'icon-hide' | 'label-hide' = 'icon-hide';
-    @Input({ transform: (tabs?: CoreTabsOutletTab[]): CoreTabsOutletTabWithId[] => {
-        if (!tabs) {
-            return [];
-        }
+    @Input({
+        transform: (tabs?: CoreTabsOutletTab[]): CoreTabsOutletTabWithId[] => {
+            if (!tabs) {
+                return [];
+            }
 
-        return tabs.map((tab) => CoreTabsOutletComponent.formatTab(tab));
-    } }) tabs: CoreTabsOutletTabWithId[] = [];
+            return tabs.map((tab) => CoreTabsOutletComponent.formatTab(tab));
+        },
+    }) tabs: CoreTabsOutletTabWithId[] = [];
 
     readonly ionTabs = viewChild.required(IonTabs);
 
@@ -114,11 +116,11 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             }
 
             // Search the tab loaded.
-            const tabIndex = this.tabs.findIndex((tab) => tab.page == stackEvent.enteringView.url);
+            const tabIndex = this.tabs.findIndex((tab) => tab.page === stackEvent.enteringView.url);
             const tab = tabIndex >= 0 ? this.tabs[tabIndex] : undefined;
 
             // Add tabid to the tab content element.
-            if (stackEvent.enteringView.element.id == '') {
+            if (stackEvent.enteringView.element.id === '') {
                 stackEvent.enteringView.element.id = tab?.id || '';
             }
 

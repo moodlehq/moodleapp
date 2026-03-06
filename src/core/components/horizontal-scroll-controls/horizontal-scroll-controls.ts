@@ -86,6 +86,8 @@ export class CoreHorizontalScrollControlsComponent {
 
     /**
      * Update the current scroll position.
+     *
+     * @param scrollLeft Scroll left to use for reference in the calculations.
      */
     updateScrollPosition(scrollLeft?: number): void {
         this.scrollPosition.set(this.getScrollPosition(scrollLeft));

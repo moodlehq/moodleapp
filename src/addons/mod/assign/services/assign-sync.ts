@@ -85,7 +85,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         optionsList.unshift('');
 
-        const index = options.indexOf(selected) || 0;
+        const index = options.indexOf(selected);
         if (index < 0) {
             return 0;
         }
@@ -483,7 +483,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
                     }
                 } else if (gradeInfo && grade.outcomeid && gradeInfo.outcomes) {
                     gradeInfo.outcomes.forEach((outcome, index) => {
-                        if (outcome.scale && grade.itemnumber == index) {
+                        if (outcome.scale && grade.itemnumber === index) {
                             offlineData.outcomes[grade.itemnumber] = this.getSelectedScaleId(
                                 outcome.scale,
                                 grade.grade || '',

@@ -396,7 +396,7 @@ export class AddonModH5PActivityProvider {
 
             const attemptsResults = await AddonModH5PActivity.getAllAttemptsResults(id, cacheOptions);
 
-            const attempt = attemptsResults.attempts.find((attempt) => attempt.id == attemptId);
+            const attempt = attemptsResults.attempts.find((attempt) => attempt.id === attemptId);
 
             if (!attempt) {
                 throw error;
@@ -796,7 +796,7 @@ export class AddonModH5PActivityProvider {
     /**
      * Delete launcher.
      *
-     * @param siteId
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the launcher file is deleted.
      * @since 3.9
      */

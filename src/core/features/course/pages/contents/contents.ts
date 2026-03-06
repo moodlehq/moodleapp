@@ -162,7 +162,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
         this.completionObserver = CoreEvents.on(
             CoreEvents.COMPLETION_MODULE_VIEWED,
             (data) => {
-                if (data && data.courseId == this.course.id) {
+                if (data && data.courseId === this.course.id) {
                     this.showLoadingAndRefresh(true, false);
                 }
             },
@@ -173,7 +173,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
         });
 
         this.syncObserver = CoreEvents.on(CORE_COURSE_AUTO_SYNCED, (data) => {
-            if (!data || data.courseId != this.course.id) {
+            if (!data || data.courseId !== this.course.id) {
                 return;
             }
 
@@ -342,7 +342,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
      * @returns Promise resolved when done.
      */
     async onCompletionChange(completionData: CoreCourseModuleCompletionData): Promise<void> {
-        if (completionData.courseId != this.course?.id) {
+        if (completionData.courseId !== this.course?.id) {
             return;
         }
 
@@ -351,7 +351,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
 
         if (!shouldReload) {
 
-            if (!this.course || !('progress' in this.course) || typeof this.course.progress != 'number') {
+            if (!this.course || !('progress' in this.course) || typeof this.course.progress !== 'number') {
                 return;
             }
 

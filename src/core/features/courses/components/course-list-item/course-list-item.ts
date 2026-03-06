@@ -134,7 +134,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         if (this.isEnrolled) {
             // This field is only available from 3.6 onwards.
-            this.courseOptionMenuEnabled = (this.layout != 'listwithenrol' && this.layout != 'summarycard') &&
+            this.courseOptionMenuEnabled = (this.layout !== 'listwithenrol' && this.layout !== 'summarycard') &&
                 this.course.isfavourite !== undefined;
 
             this.initPrefetchCourse();
@@ -157,7 +157,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
      * Helper function to update course fields.
      */
     protected updateCourseFields(): void {
-        this.progress = 'progress' in this.course && typeof this.course.progress == 'number' ? this.course.progress : -1;
+        this.progress = 'progress' in this.course && typeof this.course.progress === 'number' ? this.course.progress : -1;
         this.completionUserTracked = 'completionusertracked' in this.course && this.course.completionusertracked;
     }
 
@@ -190,7 +190,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         // Listen for status change in course.
         this.courseStatusObserver = CoreEvents.on(COURSE_STATUS_CHANGED_EVENT, (data: CoreEventCourseStatusChanged) => {
-            if (data.courseId == this.course.id || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
+            if (data.courseId === this.course.id || data.courseId === CORE_COURSE_ALL_COURSES_CLEARED) {
                 this.updateCourseStatus(data.status);
             }
         }, CoreSites.getCurrentSiteId());

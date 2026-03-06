@@ -68,6 +68,7 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param allowOffline True to allow uploading in offline.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @returns Promise resolved when done.
      */
     async chooseAndUploadFile(
@@ -88,7 +89,7 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreCanceledError();
         }
 
-        if (result.name == 'File') {
+        if (result.name === 'File') {
             // In some Android 4.4 devices the file name cannot be retrieved. Try to use the one from the URI.
             result.name = this.getChosenFileNameFromPath(result) || result.name;
         }
@@ -126,7 +127,7 @@ export class CoreFileUploaderHelperProvider {
         wifiThreshold?: number,
         limitedThreshold?: number,
     ): Promise<void> {
-        if (size == 0) {
+        if (size === 0) {
             return;
         }
 
@@ -201,7 +202,8 @@ export class CoreFileUploaderHelperProvider {
      * @param path Path of the file.
      * @param shouldDelete True if original file should be deleted (move), false otherwise (copy).
      * @param maxSize Max size of the file. If not defined or -1, no max size.
-     * @param defaultExt Defaut extension to use if the file doesn't have any.
+     * @param defaultExt Default extension to use if the file doesn't have any.
+     * @param options Options to get the file name. If not defined, it will be obtained from the file path.
      * @returns Promise resolved with the copied file.
      */
     protected async copyToTmpFolder(
@@ -215,7 +217,7 @@ export class CoreFileUploaderHelperProvider {
         const fileName = options?.fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
-        if (maxSize !== undefined && maxSize != -1) {
+        if (maxSize !== undefined && maxSize !== -1) {
             const fileEntry = await CoreFile.getExternalFile(path);
 
             const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
@@ -502,7 +504,7 @@ export class CoreFileUploaderHelperProvider {
      * @returns Whether it's because there is no app.
      */
     protected isNoAppError(error: CoreCaptureError): boolean {
-        return error && error.code == 20;
+        return error && error.code === 20;
     }
 
     /**
@@ -514,11 +516,11 @@ export class CoreFileUploaderHelperProvider {
      */
     protected treatImageError(error: number | string | CoreError | CoreCaptureError, defaultMessage: string): CoreError {
         // Cancelled or error.
-        if (!error || typeof error == 'number') {
+        if (!error || typeof error === 'number') {
             return new CoreError(defaultMessage);
         }
 
-        if (typeof error == 'string') {
+        if (typeof error === 'string') {
             if (error.toLowerCase().indexOf('no image selected') > -1) {
                 // User cancelled.
                 return new CoreCanceledError();

@@ -325,10 +325,10 @@ export class CoreFileHelperProvider {
             return true;
         }
 
-        if (file.repositorytype == 'onedrive') {
+        if (file.repositorytype === 'onedrive') {
             // In OneDrive, open in browser the office docs
             return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
-                    mimetype == 'text/plain' || mimetype == 'document/unknown';
+                    mimetype === 'text/plain' || mimetype === 'document/unknown';
         }
 
         return false;
@@ -399,6 +399,8 @@ export class CoreFileHelperProvider {
      * Is the file openable in app.
      *
      * @param file The file to check.
+     * @param file.filename The file's filename field.
+     * @param file.name The file's name field.
      * @returns bool.
      */
     isOpenableInApp(file: { filename?: string; name?: string }): boolean {
@@ -418,6 +420,8 @@ export class CoreFileHelperProvider {
      *
      * @param onlyDownload Whether the user is only downloading the file, not opening it.
      * @param file The file that will be opened.
+     * @param file.filename The file's filename field.
+     * @param file.name The file's name field.
      * @returns Promise resolved if confirmed, rejected otherwise.
      */
     async showConfirmOpenUnsupportedFile(onlyDownload = false, file: { filename?: string; name?: string }): Promise<void> {
@@ -480,7 +484,7 @@ export class CoreFileHelperProvider {
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
         const path = CoreFileUtils.isFileEntry(file) ? file.fullPath : file.filepath;
 
-        if (path === undefined || path.length == 0) {
+        if (path === undefined || path.length === 0) {
             return;
         }
 
@@ -632,7 +636,7 @@ export class CoreFileHelperProvider {
      * @returns Treated text.
      */
     restorePluginfileUrls(text: string, files: CoreWSFile[]): string {
-        if (text && typeof text == 'string') {
+        if (text && typeof text === 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(new RegExp(CoreText.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');

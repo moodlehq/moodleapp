@@ -329,7 +329,7 @@ export class AddonCalendarProvider {
 
             if (dayjs(start).isSame(end, 'day')) {
                 // Event starts and ends the same day.
-                if (event.timeduration == CoreTimeConstants.SECONDS_DAY) {
+                if (event.timeduration === CoreTimeConstants.SECONDS_DAY) {
                     time = Translate.instant('addon.calendar.allday');
                 } else {
                     time = getStartTimeHtml(CoreTime.userDate(start, format)) + ' <strong>&raquo;</strong> ' +
@@ -563,7 +563,7 @@ export class AddonCalendarProvider {
             const response: AddonCalendarGetCalendarEventsWSResponse =
                 await site.read('core_calendar_get_calendar_events', params, preSets);
             // The WebService returns all category events. Check the response to search for the event we want.
-            const event = response.events.find((e) => e.id == id);
+            const event = response.events.find((e) => e.id === id);
 
             return event || this.getEventFromLocalDb(id);
         } catch {
@@ -710,6 +710,8 @@ export class AddonCalendarProvider {
      * Activity events are normalised to be course events.
      *
      * @param event The event to get its type.
+     * @param event.modulename Module name. If set, the event is an activity event and it will be normalised to course event.
+     * @param event.eventtype Event type.
      * @returns Event type.
      */
     getEventType(event: { modulename?: string; eventtype: AddonCalendarEventType | string }): string {
@@ -1141,6 +1143,7 @@ export class AddonCalendarProvider {
      * @param year Year.
      * @param month Month.
      * @param day Day.
+     * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1195,6 +1198,7 @@ export class AddonCalendarProvider {
      *
      * @param year Year.
      * @param month Month.
+     * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

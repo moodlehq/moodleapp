@@ -27,6 +27,7 @@ const isCanLeave = (component: unknown | null): component is CanLeave =>
 /**
  * Guard to check if the user can leave a page.
  *
+ * @param component Component instance to check.
  * @returns True if user has sites, redirect route otherwise.
  */
 export const canLeaveGuard: CanDeactivateFn<unknown> = async (component: unknown) => {

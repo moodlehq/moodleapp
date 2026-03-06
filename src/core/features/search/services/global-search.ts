@@ -95,6 +95,7 @@ export class CoreSearchGlobalSearchService {
     /**
      * Check whether global search is enabled or not.
      *
+     * @param siteId Site ID. If not defined, current site.
      * @returns Whether global search is enabled or not.
      */
     async isEnabled(siteId?: string): Promise<boolean> {

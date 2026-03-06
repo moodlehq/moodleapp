@@ -102,6 +102,7 @@ export class AddonNotificationsHelperProvider {
      * Mark notification as read, trigger event and invalidate data.
      *
      * @param notification Notification object.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when done.
      */
     async markNotificationAsRead(

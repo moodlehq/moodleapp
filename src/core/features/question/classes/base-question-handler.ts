@@ -21,7 +21,7 @@ import { QuestionCompleteGradableResponse } from '../constants';
 /**
  * Base handler for question types.
  *
- * This class is needed because parent classes cannot have @Injectable in Angular v6, so the default handler cannot be a
+ * This class is needed because parent classes cannot have `@Injectable` in Angular v6, so the default handler cannot be a
  * parent class.
  */
 export class CoreQuestionBaseHandler implements CoreQuestionHandler {
@@ -130,6 +130,8 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component name the question is related to.
+     * @param componentId Component ID.
      * @returns Whether they're the same.
      */
     isSameResponse(
@@ -172,7 +174,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @returns Whether sequencecheck is valid.
      */
     validateSequenceCheck(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean {
-        return question.sequencecheck == Number(offlineSequenceCheck);
+        return question.sequencecheck === Number(offlineSequenceCheck);
     }
 
 }

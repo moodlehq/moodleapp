@@ -74,6 +74,8 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
 
     /**
      * Function to handle the image loaded.
+     *
+     * @param success Whether the image was loaded successfully or not.
      */
     imageLoaded(success: boolean): void {
         if (!success && this.hideOnError) {

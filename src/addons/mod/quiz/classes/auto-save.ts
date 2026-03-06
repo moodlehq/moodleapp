@@ -181,6 +181,8 @@ export class AddonModQuizAutoSave {
 
     /**
      * Show an error popover due to an auto save error.
+     *
+     * @param ev Event that triggered the error. If not provided it will try to find the button using the buttonSelector property.
      */
     async showAutoSaveError(ev?: Event): Promise<void> {
         // Don't show popover if it was already shown.

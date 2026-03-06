@@ -41,6 +41,8 @@ export class AddonCompetencyProvider {
      * Check if competencies are enabled in a certain site.
      *
      * @param options Site ID or site object.
+     * @param options.siteId Site ID. If not defined, current site.
+     * @param options.site Site object. If not defined, current site.
      * @returns Whether competencies are enabled.
      */
     async areCompetenciesEnabled(options?: { siteId?: string; site?: CoreSite }): Promise<boolean> {
@@ -81,7 +83,7 @@ export class AddonCompetencyProvider {
                 return false;
             }
 
-            if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+            if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
                 // Current user.
                 return true;
             }
@@ -346,7 +348,7 @@ export class AddonCompetencyProvider {
 
         const courseCompetencies = await this.getCourseCompetenciesPage(courseId, siteId, ignoreCache);
 
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+        if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
             return courseCompetencies;
         }
 
@@ -476,7 +478,7 @@ export class AddonCompetencyProvider {
         const site = await CoreSites.getSite(siteId);
         await site.invalidateWsCacheForKey(this.getCourseCompetenciesCacheKey(courseId));
 
-        if (!userId || userId == CoreSites.getCurrentSiteUserId()) {
+        if (!userId || userId === CoreSites.getCurrentSiteUserId()) {
             return;
         }
 

@@ -265,6 +265,7 @@ export class CoreH5PPlayer {
      * @param component Component to send xAPI events to.
      * @param contextId Context ID where the H5P is. Required for tracking.
      * @param siteId The site ID. If not defined, current site.
+     * @param otherOptions Other options like state and save frequency.
      * @returns Promise resolved with the file URL if exists, rejected otherwise.
      */
     async getContentIndexFileUrl(

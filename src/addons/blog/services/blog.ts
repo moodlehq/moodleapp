@@ -96,6 +96,8 @@ export class AddonBlogProvider {
     /**
      * Create a new entry.
      *
+     * @param params.created Entry creation date.
+     * @param params.forceOffline Whether to force the entry to be stored offline.
      * @param params WS Params.
      * @param siteId Site ID where the entry should be created.
      * @returns Entry id.
@@ -148,13 +150,15 @@ export class AddonBlogProvider {
     /**
      * Update an entry.
      *
+     * @param params.created Entry creation date.
+     * @param params.forceOffline Whether to force the entry to be stored offline.
      * @param params WS Params.
      * @param siteId Site ID of the entry.
      * @since 4.4
      * @returns void
      */
     async updateEntry(
-        { forceOffline, created, ...params }: AddonBlogUpdateEntryParams,
+        { created, forceOffline, ...params }: AddonBlogUpdateEntryParams,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -221,6 +225,7 @@ export class AddonBlogProvider {
     /**
      * Delete entry by id.
      *
+     * @param params.subject Entry subject.
      * @param params WS params.
      * @param siteId Site ID of the entry.
      * @returns Entry deleted successfully or not.
@@ -366,6 +371,8 @@ export class AddonBlogProvider {
 
     /**
      * Format provided entry to AddonBlogPostFormatted.
+     *
+     * @param entry Entry to format.
      */
     async formatEntry(entry: AddonBlogPostFormatted): Promise<void> {
         entry.publishTranslated = this.getPublishTranslated(entry.publishstate);
@@ -564,7 +571,7 @@ export type AddonBlogGetEntriesOptions = CoreSitesWSOptionsWithFilter & {
 export type AddonBlogUndoDelete = { created: number } | { id: number };
 
 export const AddonBlogPublishState = { draft: 'draft', site: 'site', public: 'public' } as const;
-// eslint-disable-next-line @typescript-eslint/no-redeclare
+
 export type AddonBlogPublishState = typeof AddonBlogPublishState[keyof typeof AddonBlogPublishState];
 
 /**

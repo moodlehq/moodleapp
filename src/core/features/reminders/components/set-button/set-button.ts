@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreReminderData, CoreReminders } from '@features/reminders/services/reminders';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, linkedSignal, signal } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
@@ -43,7 +43,7 @@ export class CoreRemindersSetButtonComponent {
     readonly url = input('');
 
     readonly labelClean = computed(() => this.label().replace(':', ''));
-    readonly timebefore = signal(this.initialTimebefore());
+    readonly timebefore = linkedSignal(() => this.initialTimebefore());
     readonly reminderMessage = computed(() => {
         const timebefore = this.timebefore();
         if (timebefore === undefined) {
