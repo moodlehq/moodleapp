@@ -31,6 +31,7 @@ import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreText } from '@static/text';
 import { GestureDetail } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CORE_SETTINGS_DEV_PAGE_NAME } from '@features/settings/constants';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -272,7 +273,7 @@ export default class CoreSettingsDeviceInfoPage {
      * Navigate to dev options.
      */
     gotoDevOptions(): void {
-        CoreNavigator.navigate('dev');
+        CoreNavigator.navigate(CORE_SETTINGS_DEV_PAGE_NAME);
     }
 
 }

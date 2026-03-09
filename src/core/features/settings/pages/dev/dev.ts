@@ -34,6 +34,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CORE_SETTINGS_ERROR_LOG_PAGE_NAME } from '@features/settings/constants';
 
 /**
  * Page that displays the developer options.
@@ -215,7 +216,7 @@ export default class CoreSettingsDevPage implements OnInit {
      * Open error log.
      */
     openErrorLog(): void {
-        CoreNavigator.navigate('error-log');
+        CoreNavigator.navigate(CORE_SETTINGS_ERROR_LOG_PAGE_NAME);
     }
 
     /**
