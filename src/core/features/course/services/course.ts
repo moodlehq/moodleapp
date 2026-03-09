@@ -1696,12 +1696,7 @@ export type CoreCourseGetContentsWSModule = {
     contents?: CoreCourseModuleContentFile[];
     groupmode?: number; // @since 4.3. Group mode value
     downloadcontent?: number; // @since 4.0 The download content value.
-    dates?: { // @since 3.11. Course dates.
-        label: string; // Date label.
-        timestamp: number; // Date timestamp.
-        relativeto?: number; // @since 4.1. Relative date timestamp.
-        dataid?: string; // @since 4.1. Cm data id.
-    }[];
+    dates?: CoreCourseModuleDate[]; // @since 3.11. Course module dates.
     contentsinfo?: { // @since v3.7.6 Contents summary information.
         filescount: number; // Total number of files.
         filessize: number; // Total files size.
@@ -1779,6 +1774,18 @@ export type CoreCourseModuleWSRuleDetails = {
         status: number; // Completion status.
         description: string; // Completion description.
     };
+};
+
+/**
+ * Course module date.
+ *
+ * @since 3.11
+ */
+export type CoreCourseModuleDate = {
+    label: string; // Date label.
+    timestamp: number; // Date timestamp.
+    relativeto?: number; // @since 4.1. Relative date timestamp.
+    dataid?: string; // @since 4.1. Cm data id.
 };
 
 export type CoreCourseModuleContentFile = {
