@@ -68,6 +68,7 @@ export class CoreFileUploaderHelperProvider {
      * @param maxSize Max size of the upload. -1 for no max size.
      * @param upload True if the file should be uploaded, false to return the picked file.
      * @param allowOffline True to allow uploading in offline.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
      * @returns Promise resolved when done.
      */
     async chooseAndUploadFile(
@@ -201,7 +202,8 @@ export class CoreFileUploaderHelperProvider {
      * @param path Path of the file.
      * @param shouldDelete True if original file should be deleted (move), false otherwise (copy).
      * @param maxSize Max size of the file. If not defined or -1, no max size.
-     * @param defaultExt Defaut extension to use if the file doesn't have any.
+     * @param defaultExt Default extension to use if the file doesn't have any.
+     * @param options Options to get the file name. If not defined, it will be obtained from the file path.
      * @returns Promise resolved with the copied file.
      */
     protected async copyToTmpFolder(

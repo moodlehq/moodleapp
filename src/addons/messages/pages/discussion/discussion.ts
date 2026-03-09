@@ -595,6 +595,9 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Mark messages as read.
+     *
+     * @param forceMark Whether to force mark messages as read or not. If true, messages will be marked as read even
+     *  if there are no unread messages according to the conversation data.
      */
     protected async markMessagesAsRead(forceMark: boolean): Promise<void> {
         let readChanged = false;
@@ -861,6 +864,11 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
     /**
      * Keep scroll position after loading previous messages.
+     *
+     * @param oldScrollHeight Scroll height before loading previous messages.
+     * @param oldScrollBottom Distance from the bottom of the scroll before loading previous messages.
+     * @param infiniteHeight Height of the infinite loading element.
+     * @param retries Number of retries done to check if the scroll height has changed. After 10 retries, it will stop.
      */
     protected keepScroll(oldScrollHeight: number, oldScrollBottom: number, infiniteHeight: number, retries = 0): void {
         setTimeout(() => {

@@ -59,6 +59,8 @@ export default class CoreMainMenuHomePage implements OnInit {
 
     /**
      * Init handlers on change (size or handlers).
+     *
+     * @param handlers Handlers to display.
      */
     initHandlers(handlers: CoreMainMenuHomeHandlerToDisplay[]): void {
         // Re-build the list of tabs.

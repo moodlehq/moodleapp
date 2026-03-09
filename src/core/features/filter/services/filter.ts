@@ -195,6 +195,7 @@ export class CoreFilterProvider {
      * @param contextLevel The context level.
      * @param instanceId Instance ID related to the context.
      * @param options Options.
+     * @param options.courseId Course ID related to the context, if any.
      * @returns Context to use.
      */
     getEffectiveContext(
@@ -455,6 +456,8 @@ export class CoreFilterProvider {
      * @param contextLevel Context level.
      * @param instanceId Instance ID.
      * @param options Options
+     * @param options.courseId Course ID related to the context, if any.
+     * @param options.categoryId Category ID related to the context, if any.
      * @returns List of contexts.
      */
     getContextsTreeList(

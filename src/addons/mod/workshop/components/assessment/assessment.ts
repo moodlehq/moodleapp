@@ -115,6 +115,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
     /**
      * Navigate to the assessment.
+     *
+     * @param event Event.
      */
     async gotoAssessment(event: Event): Promise<void> {
         if (!this.canSelfAssess && this.canViewAssessment) {
@@ -154,6 +156,8 @@ export class AddonModWorkshopAssessmentComponent implements OnInit {
 
     /**
      * Navigate to my own assessment.
+     *
+     * @param event Event.
      */
     gotoOwnAssessment(event: Event): void {
         if (!this.canSelfAssess) {

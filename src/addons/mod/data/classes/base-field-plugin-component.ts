@@ -86,6 +86,8 @@ export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, On
 
     /**
      * Update value being shown.
+     *
+     * @param value New value.
      */
     protected updateValue(value?: Partial<AddonModDataEntryField>): void {
         this.value = value;

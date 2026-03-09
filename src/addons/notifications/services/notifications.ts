@@ -339,6 +339,7 @@ export class AddonNotificationsProvider {
     /**
      * Mark all message notification as read.
      *
+     * @param siteId Site ID. If not defined, current site.
      * @returns Resolved when done.
      */
     async markAllNotificationsAsRead(siteId?: string): Promise<boolean> {

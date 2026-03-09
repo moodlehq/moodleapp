@@ -710,6 +710,8 @@ export class AddonCalendarProvider {
      * Activity events are normalised to be course events.
      *
      * @param event The event to get its type.
+     * @param event.modulename Module name. If set, the event is an activity event and it will be normalised to course event.
+     * @param event.eventtype Event type.
      * @returns Event type.
      */
     getEventType(event: { modulename?: string; eventtype: AddonCalendarEventType | string }): string {
@@ -1141,6 +1143,7 @@ export class AddonCalendarProvider {
      * @param year Year.
      * @param month Month.
      * @param day Day.
+     * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateDayEvents(year: number, month: number, day: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
@@ -1195,6 +1198,7 @@ export class AddonCalendarProvider {
      *
      * @param year Year.
      * @param month Month.
+     * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateMonthlyEvents(year: number, month: number, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);

@@ -247,6 +247,7 @@ export class CoreUrlUtilsProvider {
      * Check whether a URL scheme belongs to a local file.
      *
      * @param scheme Scheme to check.
+     * @param domain Domain to check.
      * @returns Whether the scheme belongs to a local file.
      * @deprecated since 4.5. Use CoreUrl.isLocalFileUrlScheme instead.
      */

@@ -75,6 +75,9 @@ class CoreFilepoolQueue {
 
     /**
      * Initialize the queue.
+     *
+     * @param processFnc Function to process an item in the queue.
+     *  It receives the item as a parameter and must return a promise resolved when the processing is done.
      */
     constructor(protected processFnc: (item: CoreFilepoolQueueEntry) => Promise<void>) {
         // Nothing to do.

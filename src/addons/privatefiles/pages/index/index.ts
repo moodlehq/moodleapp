@@ -297,6 +297,8 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
 
     /**
      * Delete private files.
+     *
+     * @param showConfirmation Whether to show a confirmation modal before deleting the files.
      */
     async deleteSelectedFiles(showConfirmation = false): Promise<void> {
         if (this.selectedFiles.length === 0) {

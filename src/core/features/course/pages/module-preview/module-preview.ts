@@ -78,6 +78,7 @@ export default class CoreCourseModulePreviewPage implements OnInit {
     /**
      * Fetch module.
      *
+     * @param refresh Whether to refresh the module data or not.
      * @returns Promise resolved when done.
      */
     protected async fetchModule(refresh = false): Promise<void> {

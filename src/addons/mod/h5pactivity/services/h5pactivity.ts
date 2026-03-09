@@ -796,7 +796,7 @@ export class AddonModH5PActivityProvider {
     /**
      * Delete launcher.
      *
-     * @param siteId
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when the launcher file is deleted.
      * @since 3.9
      */

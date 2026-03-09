@@ -630,6 +630,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * Log page loaded.
      *
      * @param pageId Page ID.
+     * @param title Page title.
      */
     protected logPageLoaded(pageId: number, title: string): void {
         if (!this.lesson) {

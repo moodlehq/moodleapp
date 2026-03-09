@@ -124,6 +124,8 @@ export default class CoreTagSearchPage implements OnInit {
 
     /**
      * Go to tag index page.
+     *
+     * @param tag Tag to open.
      */
     openTag(tag: CoreTagCloudTag): void {
         const url = CoreUrl.decodeURI(tag.viewurl);

@@ -738,6 +738,9 @@ export class AddonCalendarHelperProvider {
      * for their repeated events if needed.
      *
      * @param event Event that has been touched.
+     * @param event.id Event ID.
+     * @param event.repeatid Repeat ID.
+     * @param event.timestart Event start time (timestamp).
      * @param repeated Number of times the event is repeated.
      * @param siteId Site ID. If not defined, current site.
      * @returns Resolved when done.
@@ -756,7 +759,7 @@ export class AddonCalendarHelperProvider {
                 id: event.id,
                 repeatid: event.repeatid,
                 timestart: event.timestart,
-                repeated: repeated,
+                repeated,
             }],
             siteId,
         );

@@ -872,6 +872,7 @@ export class CoreH5PCore {
      *
      * @param id Content ID.
      * @param type The dependency type.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Content dependencies, indexed by machine name.
      */
     loadContentDependencies(

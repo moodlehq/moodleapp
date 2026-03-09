@@ -95,6 +95,8 @@ export class CoreDataPrivacyNewRequestComponent implements OnInit {
 
     /**
      * Sends the request.
+     *
+     * @param event Event.
      */
     async send(event: Event): Promise<void> {
         event.preventDefault();

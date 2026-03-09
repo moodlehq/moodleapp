@@ -431,6 +431,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
     /**
      * Method that shows the next toolbar buttons.
+     *
+     * @param event Event.
      */
     async toolbarNext(event: Event): Promise<void> {
         if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {
@@ -449,6 +451,8 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
     /**
      * Method that shows the previous toolbar buttons.
+     *
+     * @param event Event.
      */
     async toolbarPrev(event: Event): Promise<void> {
         if (event.type === 'keyup' && !this.isValidKeyboardKey(<KeyboardEvent>event)) {

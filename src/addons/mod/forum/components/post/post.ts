@@ -636,6 +636,8 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     /**
      * Function called when advanced accordion is toggled.
+     *
+     * @param event Event.
      */
     onAdvancedChanged(event: AccordionGroupCustomEvent<string>): void {
         this.advanced = event.detail.value === 'advanced';

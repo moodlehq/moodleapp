@@ -40,6 +40,8 @@ export default class CoreSettingsErrorLogPage implements OnInit {
 
     /**
      * Copy Info of all the errors.
+     *
+     * @param error Error to copy. If not defined, copy all the errors.
      */
     async copyError(error?: CoreSettingsErrorLog): Promise<void> {
         if (error) {

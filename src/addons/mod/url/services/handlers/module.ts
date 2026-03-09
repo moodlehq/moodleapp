@@ -237,6 +237,8 @@ export class AddonModUrlModuleHandlerService extends CoreModuleHandlerBase imple
 
     /**
      * Log module viewed.
+     *
+     * @param module Module.
      */
     protected async logView(module: CoreCourseModuleData): Promise<void> {
         try {

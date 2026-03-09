@@ -1197,8 +1197,6 @@ export class CoreFileProvider {
 
     /**
      * Remove app temporary folder.
-     *
-     * @returns Promise resolved when done.
      */
     async clearTmpFolder(): Promise<void> {
         // Ignore errors because the folder might not exist.
@@ -1208,6 +1206,7 @@ export class CoreFileProvider {
     /**
      * Remove deleted sites folders.
      *
+     * @param existingSiteNames List of existing site names. Folders with names not in this list will be deleted.
      * @returns Promise resolved when done.
      */
     async clearDeletedSitesFolder(existingSiteNames: string[]): Promise<void> {
@@ -1242,7 +1241,6 @@ export class CoreFileProvider {
      *
      * @param dirPath Folder path.
      * @param files List of used files.
-     * @returns Promise resolved when done, rejected if failure.
      */
     async removeUnusedFiles(dirPath: string, files: CoreFileEntry[]): Promise<void> {
         // Get the directory contents.

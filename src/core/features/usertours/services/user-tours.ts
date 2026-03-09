@@ -280,6 +280,7 @@ export class CoreUserToursService {
     /**
      * Returns the tour index in the stack.
      *
+     * @param tour User tour.
      * @returns Tour index if found or -1 otherwise.
      */
     protected getTourIndex(tour: CoreUserToursUserTourComponent): number {

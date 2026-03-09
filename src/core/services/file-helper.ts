@@ -399,6 +399,8 @@ export class CoreFileHelperProvider {
      * Is the file openable in app.
      *
      * @param file The file to check.
+     * @param file.filename The file's filename field.
+     * @param file.name The file's name field.
      * @returns bool.
      */
     isOpenableInApp(file: { filename?: string; name?: string }): boolean {
@@ -418,6 +420,8 @@ export class CoreFileHelperProvider {
      *
      * @param onlyDownload Whether the user is only downloading the file, not opening it.
      * @param file The file that will be opened.
+     * @param file.filename The file's filename field.
+     * @param file.name The file's name field.
      * @returns Promise resolved if confirmed, rejected otherwise.
      */
     async showConfirmOpenUnsupportedFile(onlyDownload = false, file: { filename?: string; name?: string }): Promise<void> {

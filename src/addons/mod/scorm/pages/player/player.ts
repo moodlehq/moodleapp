@@ -576,6 +576,8 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
 
     /**
      * Log event.
+     *
+     * @param scoId SCO ID.
      */
     protected async logEvent(scoId: number): Promise<void> {
         await CorePromiseUtils.ignoreErrors(AddonModScorm.logLaunchSco(this.scorm.id, scoId));

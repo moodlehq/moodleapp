@@ -818,6 +818,8 @@ export class AddonModFeedbackProvider {
      * @param page Page where we want to jump.
      * @param changePage If page change is forward (1) or backward (-1).
      * @param options Other options.
+     * @param options.cmId Course module ID.
+     * @param options.siteId Site ID. If not defined, current site.
      * @returns Page number where to jump. Or false if completed or first page.
      */
     protected async getPageJumpTo(

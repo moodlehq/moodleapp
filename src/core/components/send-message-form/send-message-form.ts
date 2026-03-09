@@ -115,6 +115,7 @@ export class CoreSendMessageFormComponent {
      * A11y key functionality that prevents keyDown events.
      *
      * @param e Event.
+     * @param other The name of the other key that was clicked, undefined if no other key.
      */
     enterKeyDown(e: KeyboardEvent, other?: string): void {
         if (this.sendDisabled()) {
