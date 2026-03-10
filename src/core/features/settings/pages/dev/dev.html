@@ -79,12 +79,6 @@
             </ion-button>
         </ion-item>
 
-        <ion-item class="ion-text-wrap" (click)="openErrorLog()" [detail]="true" button>
-            <ion-label>
-                <p class="item-heading">Error log</p>
-            </ion-label>
-        </ion-item>
-
         <ion-item class="ion-text-wrap">
             <ion-label>
                 <p class="item-heading">Clean file storage</p>
@@ -94,6 +88,20 @@
                 <ion-icon slot="icon-only" aria-hidden="true" name="fas-broom" />
             </ion-button>
         </ion-item>
+
+        <ion-item class="ion-text-wrap" (click)="openErrorLog()" [detail]="true" button>
+            <ion-label>
+                <p class="item-heading">Error log</p>
+            </ion-label>
+        </ion-item>
+
+        @for (item of extraPageItems(); track item.page) {
+            <ion-item class="ion-text-wrap {{item.class ?? ''}}" (click)="openExtraItem(item)" [detail]="true" button>
+                <ion-label>
+                    <p class="item-heading">{{ item.title }}</p>
+                </ion-label>
+            </ion-item>
+        }
 
         @if (siteId) {
 

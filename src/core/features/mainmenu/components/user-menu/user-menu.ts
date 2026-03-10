@@ -40,6 +40,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
 import { CoreCustomMenu, CoreCustomMenuItem } from '@features/mainmenu/services/custommenu';
 import { CoreCustomMenuItemComponent } from '../custom-menu-item/custom-menu-item';
+import { CORE_SETTINGS_PREFERENCES_PAGE_NAME } from '@features/settings/constants';
 
 /**
  * Component to display a user menu.
@@ -220,7 +221,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     async openPreferences(event: Event): Promise<void> {
         await this.close(event);
 
-        CoreNavigator.navigateToSitePath('preferences');
+        CoreNavigator.navigateToSitePath(CORE_SETTINGS_PREFERENCES_PAGE_NAME);
     }
 
     /**

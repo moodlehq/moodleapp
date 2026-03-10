@@ -13,7 +13,7 @@
 
 <ion-content>
     <ion-list class="list-item-limited-width">
-        <ion-item button class="ion-text-wrap" (click)="openPage('licenses')" [detail]="true">
+        <ion-item button class="ion-text-wrap" (click)="openLicensesPage()" [detail]="true">
             <ion-icon name="far-copyright" slot="start" aria-hidden="true" />
             <ion-label>{{ 'core.settings.opensourcelicenses' | translate }}</ion-label>
         </ion-item>
@@ -48,7 +48,7 @@
 </ion-content>
 
 <ion-footer class="ion-no-border">
-    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" [detail]="false" (click)="openPage('deviceinfo')">
+    <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" [detail]="false" (click)="openDeviceInfoPage()">
         <ion-label>
             <p class="item-heading">{{ appName }} {{ versionName }}</p>
         </ion-label>

@@ -32,6 +32,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { Params } from '@angular/router';
 
 /**
  * Object with space usage and cache entries that can be erased.
@@ -443,10 +444,10 @@ export class CoreSettingsHelperProvider {
      */
     setColorScheme(colorScheme: CoreColorScheme): void {
         this.currentColorScheme = colorScheme;
-        if (colorScheme == CoreColorScheme.SYSTEM && this.prefersDark) {
+        if (colorScheme === CoreColorScheme.SYSTEM && this.prefersDark) {
             this.toggleDarkMode(this.prefersDark.matches);
         } else {
-            this.toggleDarkMode(colorScheme == CoreColorScheme.DARK);
+            this.toggleDarkMode(colorScheme === CoreColorScheme.DARK);
         }
     }
 
@@ -528,6 +529,40 @@ export class CoreSettingsHelperProvider {
         window.location.reload();
     }
 
+    /**
+     * Get extra pages items to display in the developer settings page.
+     *
+     * @returns Extra items.
+     */
+    getDevExtraPageItems(): CoreSettingsHelperDevExtraPageItem[] {
+        return [];
+    }
+
 }
 
 export const CoreSettingsHelper = makeSingleton(CoreSettingsHelperProvider);
+
+/**
+ * Data to display extra links to new pages in the developer settings page.
+ */
+export type CoreSettingsHelperDevExtraPageItem = {
+    /**
+     * Title to display. Dev page titles usually aren't translated.
+     */
+    title: string;
+
+    /**
+     * Class to add to the displayed item.
+     */
+    class?: string;
+
+    /**
+     * Relative path of the page to load when clicked.
+     */
+    page: string;
+
+    /**
+     * Params to pass to the page.
+     */
+    pageParams?: Params;
+};

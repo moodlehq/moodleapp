@@ -19,6 +19,7 @@ import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CORE_SETTINGS_DEVICEINFO_PAGE_NAME, CORE_SETTINGS_LICENSES_PAGE_NAME } from '@features/settings/constants';
 
 /**
  * App settings about menu page.
@@ -55,12 +56,17 @@ export default class CoreSettingsAboutPage {
     }
 
     /**
-     * Opens a page.
-     *
-     * @param page The component deeplink name you want to push onto the navigation stack.
+     * Opens licenses page.
      */
-    openPage(page: string): void {
-        CoreNavigator.navigate(page);
+    openLicensesPage(): void {
+        CoreNavigator.navigate(CORE_SETTINGS_LICENSES_PAGE_NAME);
+    }
+
+    /**
+     * Opens device info page.
+     */
+    openDeviceInfoPage(): void {
+        CoreNavigator.navigate(CORE_SETTINGS_DEVICEINFO_PAGE_NAME);
     }
 
 }

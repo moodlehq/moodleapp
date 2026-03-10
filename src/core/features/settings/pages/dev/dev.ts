@@ -19,7 +19,7 @@ import {
     ALWAYS_SHOW_LOGIN_FORM_CHANGED,
     FAQ_QRCODE_INFO_DONE,
 } from '@features/login/constants';
-import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
+import { CoreSettingsHelper, CoreSettingsHelperDevExtraPageItem } from '@features/settings/services/settings-helper';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreCacheManager } from '@services/cache-manager';
 import { CoreConfig } from '@services/config';
@@ -34,6 +34,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
+import { CORE_SETTINGS_ERROR_LOG_PAGE_NAME } from '@features/settings/constants';
 
 /**
  * Page that displays the developer options.
@@ -75,6 +76,7 @@ export default class CoreSettingsDevPage implements OnInit {
     autoLoginTimeBetweenRequests?: number;
     lastAutoLoginTime?: number;
 
+    readonly extraPageItems = signal<CoreSettingsHelperDevExtraPageItem[]>([]);
     readonly wsOverrides = signal<{ method: string; count: number }[]>([]);
     readonly totalOverrides = computed(() => this.wsOverrides().reduce((sum, override) => sum + override.count, 0));
 
@@ -89,6 +91,7 @@ export default class CoreSettingsDevPage implements OnInit {
         this.siteId = currentSite?.getId();
 
         this.stagingSitesCount = CoreConstants.CONFIG.sites.filter((site) => site.staging).length;
+        this.extraPageItems.set(CoreSettingsHelper.getDevExtraPageItems());
 
         if (this.stagingSitesCount) {
             this.enableStagingSites = await CoreSettingsHelper.hasEnabledStagingSites();
@@ -213,7 +216,7 @@ export default class CoreSettingsDevPage implements OnInit {
      * Open error log.
      */
     openErrorLog(): void {
-        CoreNavigator.navigate('error-log');
+        CoreNavigator.navigate(CORE_SETTINGS_ERROR_LOG_PAGE_NAME);
     }
 
     /**
@@ -281,6 +284,15 @@ export default class CoreSettingsDevPage implements OnInit {
             this.enableStagingSites = !enabled;
             CoreAlerts.showError(error);
         }
+    }
+
+    /**
+     * Open an extra item's page.
+     *
+     * @param item Item to open.
+     */
+    openExtraItem(item: CoreSettingsHelperDevExtraPageItem): void {
+        CoreNavigator.navigate(item.page, { params: item.pageParams });
     }
 
 }
