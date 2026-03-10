@@ -1479,7 +1479,7 @@ export class CoreFilepoolProvider {
      * @returns The normalised component ID. -1 when undefined was passed.
      */
     protected fixComponentId(componentId?: string | number): string | number {
-        if (typeof componentId == 'number') {
+        if (typeof componentId === 'number') {
             return componentId;
         }
 

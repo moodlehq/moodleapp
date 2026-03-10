@@ -137,7 +137,7 @@ export class AddonModLessonProvider {
         let message = '';
 
         if (addMessage) {
-            const params = typeof value != 'boolean' ? { $a: value } : undefined;
+            const params = typeof value !== 'boolean' ? { $a: value } : undefined;
             message = Translate.instant(`addon.mod_lesson.${name}`, params);
         }
 
@@ -726,7 +726,7 @@ export class AddonModLessonProvider {
         result: AddonModLessonCheckAnswerResult,
     ): void {
 
-        let studentAnswer = typeof data.answer == 'string' ? data.answer.trim() : false;
+        let studentAnswer = typeof data.answer === 'string' ? data.answer.trim() : false;
         if (!studentAnswer) {
             result.noanswer = true;
 
@@ -891,7 +891,7 @@ export class AddonModLessonProvider {
             const lastAnswer = pageData.answers[pageData.answers.length - 1] || {};
 
             // Double check that this is the OTHER_ANSWERS answer.
-            if (typeof lastAnswer.answer == 'string' &&
+            if (typeof lastAnswer.answer === 'string' &&
                     lastAnswer.answer.indexOf(ADDON_MOD_LESSON_OTHER_ANSWERS) !== -1) {
                 result.newpageid = lastAnswer.jumpto || 0;
                 result.response = lastAnswer.response || '';
@@ -970,7 +970,7 @@ export class AddonModLessonProvider {
             outoftime: !!options.outOfTime,
             review: !!options.review,
         };
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -980,7 +980,7 @@ export class AddonModLessonProvider {
         const map: Record<string, AddonModLessonEOLPageDataEntry> = {};
 
         response.data.forEach((entry) => {
-            if (entry.value && typeof entry.value == 'string' && entry.value !== '1') {
+            if (entry.value && typeof entry.value === 'string' && entry.value !== '1') {
                 // It's a JSON encoded object. Try to decode it.
                 entry.value = CoreText.parseJSON(entry.value);
             }
@@ -1470,7 +1470,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -1639,7 +1639,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -1710,7 +1710,7 @@ export class AddonModLessonProvider {
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 
@@ -2700,10 +2700,10 @@ export class AddonModLessonProvider {
             lessonid: id,
             review: !!review,
         };
-        if (typeof password == 'string') {
+        if (typeof password === 'string') {
             params.password = password;
         }
-        if (typeof pageId == 'number') {
+        if (typeof pageId === 'number') {
             params.pageid = pageId;
         }
 
@@ -2915,7 +2915,7 @@ export class AddonModLessonProvider {
             lessonid: id,
         };
 
-        if (typeof password == 'string') {
+        if (typeof password === 'string') {
             params.password = password;
         }
 
@@ -3069,7 +3069,7 @@ export class AddonModLessonProvider {
             review: !!options.review,
         };
 
-        if (typeof options.password == 'string') {
+        if (typeof options.password === 'string') {
             params.password = options.password;
         }
 

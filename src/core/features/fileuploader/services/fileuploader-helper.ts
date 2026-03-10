@@ -516,11 +516,11 @@ export class CoreFileUploaderHelperProvider {
      */
     protected treatImageError(error: number | string | CoreError | CoreCaptureError, defaultMessage: string): CoreError {
         // Cancelled or error.
-        if (!error || typeof error == 'number') {
+        if (!error || typeof error === 'number') {
             return new CoreError(defaultMessage);
         }
 
-        if (typeof error == 'string') {
+        if (typeof error === 'string') {
             if (error.toLowerCase().indexOf('no image selected') > -1) {
                 // User cancelled.
                 return new CoreCanceledError();

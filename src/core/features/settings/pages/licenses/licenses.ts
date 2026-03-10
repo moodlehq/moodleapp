@@ -118,7 +118,7 @@ export default class CoreSettingsLicensesPage implements OnInit {
         } else {
             this.filteredLicenses = this.allLicenses.filter((license) => license.name.toLowerCase().indexOf(filter) >=0 ||
                 license.version.toLowerCase().indexOf(filter) >=0 ||
-                typeof license.licenses == 'string' && license.licenses.toLowerCase().indexOf(filter) >=0 ||
+                typeof license.licenses === 'string' && license.licenses.toLowerCase().indexOf(filter) >=0 ||
                 license.repository && license.repository.toLowerCase().indexOf(filter) >=0 ||
                 license.publisher && license.publisher.toLowerCase().indexOf(filter) >=0 ||
                 license.url && license.url.toLowerCase().indexOf(filter) >=0 ||

@@ -622,7 +622,7 @@ export class CoreH5PCore {
             const file = dependency[type][key];
 
             assets.push({
-                path: `${prefix}/${dependency.path}/${(typeof file != 'string' ? file.path : file).trim()}`,
+                path: `${prefix}/${dependency.path}/${(typeof file !== 'string' ? file.path : file).trim()}`,
                 version: dependency.version || '',
             });
         }
@@ -958,7 +958,7 @@ export class CoreH5PCore {
      */
     protected textAddonMatches(params: unknown, pattern: string): boolean {
 
-        if (typeof params == 'string') {
+        if (typeof params === 'string') {
             if (params.match(pattern)) {
                 return true;
             }

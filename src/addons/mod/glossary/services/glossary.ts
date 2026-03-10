@@ -834,7 +834,7 @@ export class AddonModGlossaryProvider {
                 }
             }
 
-            if (typeof attachments == 'number') {
+            if (typeof attachments === 'number') {
                 // When storing in offline the attachments can't be a draft ID.
                 throw new CoreError('Error adding entry.');
             }

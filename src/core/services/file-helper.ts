@@ -636,7 +636,7 @@ export class CoreFileHelperProvider {
      * @returns Treated text.
      */
     restorePluginfileUrls(text: string, files: CoreWSFile[]): string {
-        if (text && typeof text == 'string') {
+        if (text && typeof text === 'string') {
             const fileURL = this.getTextPluginfileUrl(files);
             if (fileURL) {
                 return text.replace(new RegExp(CoreText.escapeForRegex(fileURL), 'g'), '@@PLUGINFILE@@');

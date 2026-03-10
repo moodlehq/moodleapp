@@ -108,7 +108,7 @@ export class CoreH5PContentValidator {
      * @returns Validated text.
      */
     validateText(text: string, semantics: CoreH5PSemantics): string {
-        if (typeof text != 'string') {
+        if (typeof text !== 'string') {
             text = '';
         }
 
@@ -400,11 +400,11 @@ export class CoreH5PContentValidator {
 
         this.filterParams(file, validKeys);
 
-        if (typeof file.width == 'string') {
+        if (typeof file.width === 'string') {
             file.width = parseInt(file.width, 10);
         }
 
-        if (typeof file.height == 'string') {
+        if (typeof file.height === 'string') {
             file.height = parseInt(file.height, 10);
         }
 
@@ -412,7 +412,7 @@ export class CoreH5PContentValidator {
             file.codecs = CoreText.escapeHTML(file.codecs, false);
         }
 
-        if (typeof file.bitrate == 'string') {
+        if (typeof file.bitrate === 'string') {
             file.bitrate = parseInt(file.bitrate, 10);
         }
 
@@ -632,7 +632,7 @@ export class CoreH5PContentValidator {
      * @returns An XSS safe version of the string.
      */
     protected filterXss(text: string, allowedTags?: string[], allowedStyles?: RegExp[]): string {
-        if (!text || typeof text != 'string') {
+        if (!text || typeof text !== 'string') {
             return text;
         }
 

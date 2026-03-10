@@ -27,7 +27,7 @@ export class CoreH5PMetadata {
      * @returns Stringified settings.
      */
     static boolifyAndEncodeSettings(metadataSettings: CoreH5PLibraryMetadataSettings | string): string {
-        if (typeof metadataSettings == 'string') {
+        if (typeof metadataSettings === 'string') {
             return metadataSettings;
         }
 
