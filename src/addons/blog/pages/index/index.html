@@ -125,7 +125,7 @@
 
                         @if (entry.userid === currentUserId && entry.publishstate !== 'draft') {
                             <ion-badge class="entry-visibility-permission" color="success" slot="end">
-                                <ion-icon name="fas-eye" />
+                                <ion-icon name="fas-eye" aria-hidden="true" />
                                 {{ 'addon.blog.' + entry.publishTranslated | translate }}
                             </ion-badge>
                         }

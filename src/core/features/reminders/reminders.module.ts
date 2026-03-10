@@ -16,6 +16,8 @@ import { NgModule, Type, provideAppInitializer } from '@angular/core';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { REMINDERS_SITE_SCHEMA } from './services/database/reminders';
 import { CoreReminders } from './services/reminders';
+import { Routes } from '@angular/router';
+import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 
 /**
  * Get reminders services.
@@ -43,7 +45,17 @@ export async function getRemindersExportedDirectives(): Promise<Type<unknown>[]>
     ];
 }
 
+const routes: Routes = [
+    {
+        path: 'reminders',
+        loadComponent: () => import('./pages/reminders/reminders'),
+    },
+];
+
 @NgModule({
+    imports: [
+        CoreMainMenuTabRoutingModule.forChild(routes),
+    ],
     providers: [
         {
             provide: CORE_SITE_SCHEMAS,

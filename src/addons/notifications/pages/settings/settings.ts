@@ -226,6 +226,13 @@ export default class AddonNotificationsSettingsPage implements OnInit, OnDestroy
     }
 
     /**
+     * Open reminders page.
+     */
+    openReminders(): void {
+        CoreNavigator.navigateToSitePath('reminders');
+    }
+
+    /**
      * Change the value of a certain preference.
      *
      * @param notification Notification object.
