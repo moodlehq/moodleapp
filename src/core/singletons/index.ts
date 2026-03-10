@@ -67,10 +67,13 @@ const singletonsInjector = new CorePromisedValue<Injector>();
 /**
  * Helper to create a method that proxies calls to the underlying singleton instance.
  *
+ * @param instance Singleton instance.
+ * @param method Method to proxy.
+ * @param propertyKey The property name.
  * @returns Function.
  */
 // eslint-disable-next-line
-let createSingletonMethodProxy = (instance: any, method: Function, property: string | number | symbol) => method.bind(instance);
+let createSingletonMethodProxy = (instance: any, method: Function, propertyKey: string | number | symbol) => method.bind(instance);
 
 /**
  * Singleton proxy created using the factory method.

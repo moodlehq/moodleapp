@@ -1465,6 +1465,7 @@ export class AddonModScormProvider {
      * @param scorm SCORM.
      * @param offline Whether the attempt is offline.
      * @param userData User data for this attempt and SCO. If not defined, it will be retrieved from DB. Recommended.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved when data is saved.
      */
     async saveTracks(
@@ -1672,6 +1673,8 @@ export class AddonModScormProvider {
      * @param attempt Attempt number.
      * @param tracks Tracking data saved.
      * @param options Other options.
+     * @param options.cmId Course module ID.
+     * @param options.siteId Site ID. If not defined, current site.
      * @returns Promise resolved when updated.
      */
     protected async updateUserDataAfterSave(

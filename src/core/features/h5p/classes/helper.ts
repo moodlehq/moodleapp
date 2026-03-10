@@ -70,6 +70,7 @@ export class CoreH5PHelper {
     /**
      * Get the core H5P assets, including all core H5P JavaScript and CSS.
      *
+     * @param siteId The site ID. If not defined, current site.
      * @returns Array core H5P assets.
      */
     static async getCoreAssets(

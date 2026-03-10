@@ -14,7 +14,7 @@
 
 import { AddonModDataSyncResult } from '@addons/mod/data/services/data-sync';
 import { Injectable } from '@angular/core';
-import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
+import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourses } from '@features/courses/services/courses';
 import { CoreUser } from '@features/user/services/user';
 import { CoreFilepool } from '@services/filepool';
@@ -69,7 +69,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
         let workshop: AddonModWorkshopData;
         let access: AddonModWorkshopGetWorkshopAccessInformationWSResponse | undefined;
 
-        const modOptions = {
+        const modOptions: CoreCourseCommonModWSOptions = {
             cmId: module.id,
             ...options, // Include all options.
         };
@@ -80,7 +80,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
 
         try {
             workshop = await AddonModWorkshop.getWorkshop(courseId, module.id, options);
-        }  catch (error) {
+        } catch (error) {
             if (options.omitFail) {
                 // Any error, return the info we have.
                 return {
@@ -389,15 +389,14 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
 
                 if (canSubmit && submissionsPromise) {
                     // Prefetch the assessments of the current user's submission.
-                    // eslint-disable-next-line promise/no-nesting
-                    promises2.push(submissionsPromise.then((submissions) => {
-                        const currentUserSubmission = submissions.find(submission => submission.authorid === currentUserId);
-                        if (!currentUserSubmission) {
-                            return;
-                        }
-
-                        return AddonModWorkshop.getSubmissionAssessments(workshop.id, currentUserSubmission.id, modOptions);
-                    }));
+                    promises2.push(
+                        this.prefetchAssessmentsForCurrentUserSubmission(
+                            submissionsPromise,
+                            currentUserId,
+                            workshop.id,
+                            modOptions,
+                        ),
+                    );
                 }
             }
 
@@ -420,7 +419,35 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
     }
 
     /**
-     * @inheritdoc
+     * Convenience function to prefetch the assessments of the current user's submission.
+     *
+     * @param submissionsPromise Promise resolved with the list of submissions.
+     * @param currentUserId Current user ID.
+     * @param workshopId Workshop ID.
+     * @param modOptions Options to pass to WS calls.
+     */
+    protected async prefetchAssessmentsForCurrentUserSubmission(
+        submissionsPromise: Promise<AddonModWorkshopSubmissionData[]>,
+        currentUserId: number,
+        workshopId: number,
+        modOptions: CoreCourseCommonModWSOptions,
+    ): Promise<void> {
+        const submissions = await submissionsPromise;
+        const currentUserSubmission = submissions.find(submission => submission.authorid === currentUserId);
+        if (!currentUserSubmission) {
+            return;
+        }
+
+        await AddonModWorkshop.getSubmissionAssessments(workshopId, currentUserSubmission.id, modOptions);
+    }
+
+    /**
+     * Sync a module.
+     *
+     * @param module Module.
+     * @param courseId Course ID the module belongs to
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved when done.
      */
     async sync(module: CoreCourseAnyModuleData, courseId: number, siteId?: string): Promise<AddonModDataSyncResult> {
         return AddonModWorkshopSync.syncWorkshop(module.instance, siteId);

@@ -59,6 +59,7 @@ export class CoreUserSupportService {
      *
      * @param message Help message.
      * @param supportSubject Support subject.
+     * @param supportConfig Support configuration. If not provided, it will be obtained from the current site or null if no site.
      */
     showHelp(message: string, supportSubject: string, supportConfig?: CoreUserSupportConfig): void {
         const buttons: (AlertButton | string)[] = [];

@@ -234,6 +234,8 @@ export default class AddonBlogIndexPage implements OnInit, OnDestroy {
      * Fetch blog entries.
      *
      * @param refresh Empty events array first.
+     * @param showSyncErrors Whether to show sync errors or not.
+     * @param sync Whether to try to sync entries or not.
      * @returns Promise with the entries.
      */
     protected async fetchEntries(refresh: boolean, showSyncErrors = false, sync?: boolean): Promise<void> {

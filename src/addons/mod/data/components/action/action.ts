@@ -155,6 +155,8 @@ export class AddonModDataActionComponent implements OnInit {
 
     /**
      * Open actions menu popover.
+     *
+     * @param event Event.
      */
     async actionsMenu(event: Event): Promise<void> {
         event.stopPropagation();

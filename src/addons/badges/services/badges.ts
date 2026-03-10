@@ -122,6 +122,7 @@ export class AddonBadgesProvider {
      * Get issued badge by hash.
      *
      * @param hash Badge issued hash.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise to be resolved when the badge is retrieved.
      * @since 4.5 with the recpient name, 4.3 without the recipient name.
      */

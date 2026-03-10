@@ -321,6 +321,8 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
 
     /**
      * Set current policy.
+     *
+     * @param policy Policy to set.
      */
     protected setCurrentPolicy(policy?: CorePolicySitePolicy): void {
         if (!policy) {

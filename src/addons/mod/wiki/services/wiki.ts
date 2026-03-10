@@ -87,6 +87,7 @@ export class AddonModWikiProvider {
      * @param pageId Page ID.
      * @param content content to be saved.
      * @param section section to get.
+     * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved with the page ID.
      */
     async editPage(pageId: number, content: string, section?: string, siteId?: string): Promise<number> {

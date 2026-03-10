@@ -351,7 +351,7 @@ export default class CoreCourseContentsPage implements OnInit, OnDestroy, CoreRe
 
         if (!shouldReload) {
 
-            if (!this.course || !('progress' in this.course) || typeof this.course.progress != 'number') {
+            if (!this.course || !('progress' in this.course) || typeof this.course.progress !== 'number') {
                 return;
             }
 

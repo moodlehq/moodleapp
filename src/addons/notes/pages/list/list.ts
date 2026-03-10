@@ -346,6 +346,8 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
 
     /**
      * Log view.
+     *
+     * @param note Note to log.
      */
     protected async logViewDelete(note: AddonNotesNoteFormatted): Promise<void> {
         if (!note.id) {

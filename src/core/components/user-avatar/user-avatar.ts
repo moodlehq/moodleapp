@@ -117,6 +117,8 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
     /**
      * Avatar image loading handler.
+     *
+     * @param success Whether the image was loaded successfully or not.
      */
     imageLoaded(success: boolean): void {
         this.imageError = !success;

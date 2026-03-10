@@ -255,7 +255,7 @@ export class CoreAlertsService {
      * @returns Alert modal.
      */
     async show(options: CoreAlertsShowOptions = {}): Promise<HTMLIonAlertElement> {
-        let message = typeof options.message == 'string'
+        let message = typeof options.message === 'string'
             ? options.message
             : options.message?.value || '';
         const buttons = options.buttons || [Translate.instant('core.ok')];
@@ -319,7 +319,7 @@ export class CoreAlertsService {
                 if (buttons) {
                     // Execute dismiss function if any.
                     const cancelButton = <AlertButton | undefined> buttons.find(
-                        (button) => typeof button != 'string' && button.handler !== undefined && button.role == 'cancel',
+                        (button) => typeof button !== 'string' && button.handler !== undefined && button.role == 'cancel',
                     );
                     cancelButton?.handler?.(null);
                 }

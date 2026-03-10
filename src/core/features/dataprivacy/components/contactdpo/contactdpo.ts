@@ -69,6 +69,8 @@ export class CoreDataPrivacyContactDPOComponent implements OnInit {
 
     /**
      * Sends the message.
+     *
+     * @param event Event.
      */
     async send(event: Event): Promise<void> {
         event.preventDefault();

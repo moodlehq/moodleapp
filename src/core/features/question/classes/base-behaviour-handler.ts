@@ -21,7 +21,7 @@ import { CoreQuestionQuestionParsed } from '../services/question';
 /**
  * Base handler for question behaviours.
  *
- * This class is needed because parent classes cannot have @Injectable in Angular v6, so the default handler cannot be a
+ * This class is needed because parent classes cannot have `@Injectable` in Angular v6, so the default handler cannot be a
  * parent class.
  */
 export class CoreQuestionBehaviourBaseHandler implements CoreQuestionBehaviourHandler {

@@ -318,8 +318,8 @@ export class AddonModFeedbackHelperProvider {
         const formItem: AddonModFeedbackNumericItem = Object.assign(item, {
             templateName: AddonModFeedbackQuestionTemplateNames.NUMERIC,
             value: item.rawValue !== undefined ? Number(item.rawValue) : '',
-            rangefrom: typeof rangeFrom == 'number' && !isNaN(rangeFrom) ? rangeFrom : '',
-            rangeto: typeof rangeTo == 'number' && !isNaN(rangeTo) ? rangeTo : '',
+            rangefrom: typeof rangeFrom === 'number' && !isNaN(rangeFrom) ? rangeFrom : '',
+            rangeto: typeof rangeTo === 'number' && !isNaN(rangeTo) ? rangeTo : '',
             slottedLabel: true,
         });
         formItem.postfix = this.getNumericBoundariesForDisplay(formItem.rangefrom, formItem.rangeto);

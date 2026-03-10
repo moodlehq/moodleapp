@@ -409,6 +409,8 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
     /**
      * Function called when entry is being rendered.
+     *
+     * @param rendering Whether the entry is being rendered or not.
      */
     setRenderingEntry(rendering: boolean): void {
         this.renderingEntry = rendering;
@@ -417,6 +419,8 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
     /**
      * Function called when comments component is loading data.
+     *
+     * @param loading Whether the comments component is loading data or not.
      */
     setLoadingComments(loading: boolean): void {
         this.loadingComments = loading;
@@ -425,6 +429,8 @@ export default class AddonModDataEntryPage implements OnInit, OnDestroy {
 
     /**
      * Function called when rate component is loading data.
+     *
+     * @param loading Whether the rate component is loading data or not.
      */
     setLoadingRating(loading: boolean): void {
         this.loadingRating = loading;

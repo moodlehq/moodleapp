@@ -172,7 +172,7 @@ export class CoreUtilsProvider {
      * @returns IAB instance, undefined if not open.
      * @deprecated since 5.0. Use CoreOpener.getInAppBrowserInstance instead.
      */
-    getInAppBrowserInstance(): InAppBrowserObject | undefined  {
+    getInAppBrowserInstance(): InAppBrowserObject | undefined {
         return CoreOpener.getInAppBrowserInstance();
     }
 
@@ -242,6 +242,7 @@ export class CoreUtilsProvider {
      *                    after 'checkAll'.
      * @param checkAll True if it should check all the sites, false if it should check only 1 and treat them all
      *                 depending on this result.
+     * @param args Params to pass to isEnabledFn after the siteId.
      * @returns Promise resolved with the list of enabled sites.
      * @deprecated since 5.0. Use CoreSites.filterEnabledSites instead.
      */
@@ -553,7 +554,7 @@ export class CoreUtilsProvider {
      * @deprecated since 5.0. Use CoreObject.toArrayOfObjects instead.
      */
     objectToArrayOfObjects<
-        A extends Record<string,unknown> = Record<string, unknown>,
+        A extends Record<string, unknown> = Record<string, unknown>,
         O extends Record<string, unknown> = Record<string, unknown>,
     >(
         obj: O,
@@ -804,7 +805,7 @@ export class CoreUtilsProvider {
     async ignoreErrors<Result>(promise?: Promise<Result>): Promise<Result | undefined>;
     async ignoreErrors<Result, Fallback>(promise: Promise<Result>, fallback: Fallback): Promise<Result | Fallback>;
     async ignoreErrors<Result, Fallback>(promise?: Promise<Result>, fallback?: Fallback): Promise<Result | Fallback | undefined> {
-        if(promise) {
+        if (promise) {
             return CorePromiseUtils.ignoreErrors(promise, fallback);
         }
 

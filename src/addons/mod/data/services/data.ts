@@ -482,6 +482,9 @@ export class AddonModDataProvider {
      * @param dataId Data ID.
      * @param entries Entries already fetch (just to concatenate them).
      * @param options Other options.
+     * @param pageOptions Pagination options.
+     * @param pageOptions.perPage Number of entries per page.
+     * @param pageOptions.page Page number.
      * @returns Promise resolved when done.
      */
     protected async fetchEntriesRecursive(

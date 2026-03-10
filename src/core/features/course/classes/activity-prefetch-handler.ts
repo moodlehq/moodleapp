@@ -125,7 +125,7 @@ export class CoreCourseActivityPrefetchHandlerBase extends CoreCourseModulePrefe
             let extra = await downloadFunction(siteId);
 
             // Only accept string types.
-            if (typeof extra != 'string') {
+            if (typeof extra !== 'string') {
                 extra = '';
             }
 

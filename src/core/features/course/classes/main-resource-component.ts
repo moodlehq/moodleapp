@@ -324,7 +324,8 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * If module.contents cannot be loaded then the Promise will be rejected.
      *
      * @param refresh Whether we're refreshing data.
-     * @returns Promise resolved when done.
+     * @param contentsAlreadyLoaded Whether the module contents have already been loaded.
+     * @returns The result of the download.
      */
     protected async downloadResourceIfNeeded(
         refresh?: boolean,

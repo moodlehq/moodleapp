@@ -489,7 +489,8 @@ export class AddonModDataHelperProvider {
      * @param database Database activity.
      * @param accessInfo Access info to the activity.
      * @param entry Entry or record where the actions will be performed.
-     * @returns Keyed with the action names and boolean to evalute if it can or cannot be done.
+     * @param mode Mode of the template where the entry is being shown. It can affect to some actions like "more".
+     * @returns Keyed with the action names and boolean to evaluate if it can or cannot be done.
      */
     getActions(
         database: AddonModDataData,

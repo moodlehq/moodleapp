@@ -903,6 +903,7 @@ export class AddonModScormOfflineProvider {
      * @param attempt Attempt number.
      * @param tracks Tracking data to store.
      * @param userData User data for this attempt and SCO.
+     * @param userId User ID. If not defined use current user.
      * @returns True if data to insert is valid, false otherwise. Returning true doesn't mean that the data
      *         has been stored, this function can return true but the insertion can still fail somehow.
      */

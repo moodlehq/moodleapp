@@ -628,6 +628,8 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
      * Returns if the event is in the past or not.
      *
      * @param event Event object.
+     * @param event.timestart Event start time (timestamp).
+     * @param event.timeduration Event duration (seconds).
      * @param currentTime Current time.
      * @returns True if it's in the past.
      */

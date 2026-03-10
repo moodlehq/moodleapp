@@ -35,6 +35,8 @@ export class CoreTagListComponent {
 
     /**
      * Go to tag index page.
+     *
+     * @param tag Tag to open.
      */
     openTag(tag: CoreTagItem): void {
         const params: Params = {

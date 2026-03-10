@@ -339,6 +339,8 @@ export class CoreQuestionDelegateService extends CoreDelegate<CoreQuestionHandle
      * @param question Question.
      * @param prevAnswers Object with the previous question answers.
      * @param newAnswers Object with the new question answers.
+     * @param component The component name the question is related to.
+     * @param componentId Component ID.
      * @returns Whether they're the same.
      */
     isSameResponse(

@@ -171,8 +171,8 @@ import { AddonBlogOfflineEntryDBRecord } from './database/blog';
     /**
      * Upload attachments.
      *
-     * @param params entry creation date or entry ID and attachments ID.
-     *
+     * @param params Entry creation date or entry ID and attachments ID.
+     * @param siteId Site ID.
      * @returns draftId.
      */
     protected async uploadAttachments(params: AddonBlogSyncUploadAttachmentsParams, siteId?: string): Promise<number | undefined> {

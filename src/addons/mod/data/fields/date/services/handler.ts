@@ -53,7 +53,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
         const fieldName = `f_${field.id}`;
         const enabledName = `f_${field.id}_z`;
 
-        if (inputData[enabledName] && typeof inputData[fieldName] == 'string') {
+        if (inputData[enabledName] && typeof inputData[fieldName] === 'string') {
             const date = inputData[fieldName].substring(0, 10).split('-');
 
             return [
@@ -85,7 +85,7 @@ export class AddonModDataFieldDateHandlerService implements AddonModDataFieldHan
     getFieldEditData(field: AddonModDataField, inputData: CoreFormFields<string>): AddonModDataSubfieldData[] {
         const fieldName = `f_${field.id}`;
 
-        if (typeof inputData[fieldName] != 'string') {
+        if (typeof inputData[fieldName] !== 'string') {
             return [];
         }
 

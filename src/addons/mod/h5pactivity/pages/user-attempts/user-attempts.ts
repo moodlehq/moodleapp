@@ -208,6 +208,8 @@ export default class AddonModH5PActivityUserAttemptsPage implements OnInit {
 
     /**
      * Function called when an attempt accordion is toggled.
+     *
+     * @param event Event.
      */
     onAttemptAccordionGroupChanged(event: AccordionGroupCustomEvent<string>): void {
         this.expandedAttemptId = event.detail.value;
