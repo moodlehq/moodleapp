@@ -5,7 +5,9 @@ Feature: Main menu override config
   I want to override the icon and order of main menu items
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "users" exist:
       | username |
       | student  |
     And the following "courses" exist:
