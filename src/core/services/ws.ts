@@ -252,6 +252,12 @@ export class CoreWSProvider {
             throw new CoreNetworkError();
         }
 
+        if (url.startsWith('data:')) {
+            this.logger.error(`Won't download file because URL starts with data: ${url}`);
+
+            throw new CoreError(`Invalid URL, cannot download file: ${url}`);
+        }
+
         // Use a tmp path to download the file and then move it to final location.
         // This is because if the download fails, the local file is deleted.
         const tmpPath = `${path}.tmp`;
