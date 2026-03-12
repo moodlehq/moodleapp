@@ -146,8 +146,14 @@
             </ion-list>
         }
 
-        @if (!userInfo && !isDeleted() && isEnrolled()) {
-            <core-empty-box icon="far-user" [message]=" 'core.user.detailsnotavailable' | translate" />
+        @if (!userInfo && !isDeleted() && isEnrolled() && !cannotViewProfile()) {
+            <core-empty-box icon="far-user" [message]="'core.user.detailsnotavailable' | translate" />
+        } @else if (cannotViewProfile()) {
+            <core-empty-box class="limited-profile">
+                <ion-icon aria-hidden="true" slot="icon-only" name="fas-circle-info" />
+                <h5>{{ 'core.user.limitedprofile' | translate }}</h5>
+                <p>{{ 'core.user.privateprofiledetails' | translate }}</p>
+            </core-empty-box>
         }
 
         @if (isDeleted()) {

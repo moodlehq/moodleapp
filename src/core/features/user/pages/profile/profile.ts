@@ -43,6 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_USER_PROFILE_REFRESHED } from '@features/user/constants';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
+import { CoreWSError } from '@classes/errors/wserror';
 
 @Component({
     selector: 'page-core-user-profile',
@@ -63,6 +64,7 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
     readonly isDeleted = signal(false);
     readonly isSuspended = signal(false);
     readonly isEnrolled = signal(true);
+    readonly cannotViewProfile = signal(false);
     readonly rolesFormatted = computed(() => {
         const user = this.user();
         if (!user) {
@@ -211,6 +213,16 @@ export default class CoreUserProfilePage implements OnInit, OnDestroy {
 
             this.logView(user);
         } catch (error) {
+            if (error instanceof CoreWSError && error?.errorcode === 'cannotviewprofile') {
+                 this.subscription?.unsubscribe();
+                 this.subscription = undefined;
+                 this.user.set(undefined);
+                 this.isLoadingHandlers.set(false);
+                 this.cannotViewProfile.set(true);
+
+                return;
+            }
+
             // Error is null for deleted users, do not show the modal.
             CoreAlerts.showError(error);
         }
