@@ -728,7 +728,7 @@ export class CoreDom {
     static extractUrlsFromCSS(code: string): string[] {
         // First of all, search all the url(...) occurrences that don't include "data:".
         const urls: string[] = [];
-        const matches = code.match(/url\(\s*["']?(?!data:)([^)]+)\)/igm);
+        const matches = code.match(/url\(([^)]+)\)/igm);
 
         if (!matches) {
             return urls;
@@ -737,7 +737,8 @@ export class CoreDom {
         // Extract the URL from each match.
         matches.forEach((match) => {
             const submatches = match.match(/url\(\s*['"]?([^'"]*)['"]?\s*\)/im);
-            if (submatches?.[1]) {
+
+            if (submatches?.[1] && !submatches[1].startsWith('data:')) {
                 urls.push(submatches[1]);
             }
         });

@@ -76,7 +76,7 @@
         "@moodlehq/cordova-plugin-advanced-http": "3.3.1-moodle.1",
         "@moodlehq/cordova-plugin-camera": "7.0.0-moodle.1",
         "@moodlehq/cordova-plugin-file-opener": "4.0.0-moodle.1",
-        "@moodlehq/cordova-plugin-file-transfer": "2.0.0-moodle.2",
+        "@moodlehq/cordova-plugin-file-transfer": "2.0.0-moodle.3",
         "@moodlehq/cordova-plugin-inappbrowser": "6.0.0-moodle.1",
         "@moodlehq/cordova-plugin-intent": "2.2.0-moodle.3",
         "@moodlehq/cordova-plugin-ionic-keyboard": "2.2.0-moodle.3",
