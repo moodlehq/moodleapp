@@ -2,7 +2,8 @@
 Feature: Test language changes
 
   Background:
-    Given the following config values are set as admin:
+    Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
       | enablemycourses | 1 |
     And the following "users" exist:
       | username |
@@ -31,9 +32,10 @@ Feature: Test language changes
     Then I should find "Nur deine Beiträge anzeigen" in the app
     But I should not find "Nur Ihre Beiträge anzeigen" in the app
 
+  @lms_from5.2
   Scenario: Custom lang strings
     Given I log in as "admin"
-    And I navigate to "General > Mobile app > Mobile features" in site administration
+    And I navigate to "General > Mobile app > Premium features" in site administration
     And I set the field "Custom language strings" to multiline:
     """
     core.courses.mycourses|FooBar|en
