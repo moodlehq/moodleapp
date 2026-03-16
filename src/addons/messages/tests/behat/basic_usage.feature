@@ -5,7 +5,9 @@ Feature: Test basic usage of messages in app
   I need basic message functionality to work
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "users" exist:
       | username | firstname  | lastname  | email                |
       | teacher1 | Teacher    | teacher   | teacher1@example.com |
       | student1 | Student1   | student1  | student1@example.com |

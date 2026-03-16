@@ -2,7 +2,9 @@
 Feature: It navigates properly in pages with a split-view component.
 
   Background:
-    Given the following "users" exist:
+    Given the following config values are set as admin:
+     | enablemycourses | 1 |
+    And the following "users" exist:
       | username |
       | student1 |
     And the following "courses" exist:
