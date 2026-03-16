@@ -568,6 +568,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             });
         }
 
+        this.addAllowedScripts(contentsFormatted.extractedScriptUrls);
+
         this.element.classList.remove('core-disable-media-adapt');
         await this.finishRender(!contentsFormatted.options.filter);
     }
@@ -620,6 +622,8 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
         div.innerHTML = formatted;
 
+        const extractedScriptUrls = this.extractScriptUrls(div);
+
         const elementControllers = await this.treatHTMLElements(div);
 
         return {
@@ -627,7 +631,64 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             filters,
             options,
             elementControllers,
+            extractedScriptUrls,
         };
+    }
+
+    /**
+     * Extract script URLs from the content and remove them.
+     *
+     * @param div Container where to search the scripts.
+     * @returns List of script URLs.
+     */
+    protected extractScriptUrls(div: HTMLElement): string[] {
+        const scripts = Array.from(div.querySelectorAll<HTMLScriptElement>('script[src]'));
+
+        return scripts.map((script) => {
+            script.remove(); // Remove it from the content. Scripts in content aren't loaded, but just in case.
+
+            return script.src;
+        });
+    }
+
+    /**
+     * Add to the head of the app the extracted scripts that are allowed for the site.
+     *
+     * @param urls Extracted script URLs.
+     */
+    protected async addAllowedScripts(urls: string[]): Promise<void> {
+        if (!urls.length) {
+            return;
+        }
+
+        const site = await this.getSite();
+        if (!site) {
+            return;
+        }
+
+        const allowedScriptUrls = site.getContentAllowedScriptUrls();
+        if (!allowedScriptUrls.length) {
+            return;
+        }
+
+        // Calculate the scripts to load. Use a Set to load them only once in case a script is repeated.
+        const scriptsToLoad = new Set<string>();
+        urls.forEach((url) => {
+            // For now, only absolute URLs are supported to keep it simple. If a script uses a relative URL it won't be loaded.
+            const isAllowed = allowedScriptUrls.some((allowedUrl) => CoreUrl.isSubpathOf(allowedUrl, url));
+            if (isAllowed) {
+                scriptsToLoad.add(url);
+            }
+        });
+
+        scriptsToLoad.forEach((url) => {
+            // Removing an existing script is not mandatory, but this way the head will be cleaner.
+            // The script is re-added every time because some scripts run certain code only when they're loaded.
+            document.head.querySelector(`script[src="${url}"]`)?.remove();
+            const newScript = document.createElement('script');
+            newScript.src = url;
+            document.head.appendChild(newScript);
+        });
     }
 
     /**
@@ -1233,5 +1294,6 @@ type FormatContentsResult = {
     div: HTMLElement;
     filters: CoreFilterFilter[];
     elementControllers: ElementController[];
+    extractedScriptUrls: string[];
     options: CoreFilterFormatTextOptions;
 };

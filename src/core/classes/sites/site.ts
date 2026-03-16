@@ -915,6 +915,24 @@ export class CoreSite extends CoreAuthenticatedSite {
         return CoreUrl.toRefererScriptUrl(url, this.siteUrl);
     }
 
+    /**
+     * Get URLs of scripts that are allowed in the user generated content.
+     *
+     * @returns List of allowed script URLs.
+     */
+    getContentAllowedScriptUrls(): string[] {
+        if (!this.isVersionGreaterEqualThan('5.2')) {
+            return [];
+        }
+
+        const allowedScriptsConfig = this.getStoredConfig('tool_mobile_scriptallowlist');
+        if (!allowedScriptsConfig) {
+            return [];
+        }
+
+        return allowedScriptsConfig.split(/(?:\r\n|\r|\n)/).map((url) => url.trim()).filter(url => !!url);
+    }
+
 }
 
 /**

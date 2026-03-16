@@ -239,16 +239,7 @@ export class CoreUnauthenticatedSite {
      * @returns Whether the URL belongs to this site.
      */
     containsUrl(url?: string): boolean {
-        if (!url) {
-            return false;
-        }
-
-        const siteUrl = CoreText.addEndingSlash(
-            CoreUrl.removeUrlParts(this.siteUrl, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]),
-        );
-        url = CoreText.addEndingSlash(CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Protocol, CoreUrlPartNames.WWWInDomain]));
-
-        return url.indexOf(siteUrl) == 0;
+        return CoreUrl.isSubpathOf(this.siteUrl, url);
     }
 
     /**
