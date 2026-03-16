@@ -1,4 +1,4 @@
-@app_parallel_run_course @core_course @app @core @javascript @forced_language @lms_from5.2
+@app_parallel_run_course @core_course @app @core @javascript @forced_language @lms_upto5.1
 
 Feature: Forced course language is applied in the app
   In order to ensure users see the course in the correct language
@@ -25,7 +25,7 @@ Feature: Forced course language is applied in the app
       | student | ENGC     | student        |
       | student | ESPC     | student        |
     And I log in as "admin"
-    And I navigate to "General > Mobile app > Premium features" in site administration
+    And I navigate to "General > Mobile app > Mobile features" in site administration
     And I set the field "Custom language strings" to multiline:
     """
     core.user.participants|Alumnos|es
