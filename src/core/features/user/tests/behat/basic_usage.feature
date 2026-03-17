@@ -110,3 +110,23 @@ Feature: Test basic usage of user features
     And I press "Details" in the app
     Then I should find "Asia/Shanghai" in the app
     And I should not find "Europe/Madrid" in the app
+
+  @lms_from4.2
+  Scenario: View hidden profile when access is restricted
+    Given the following "users" exist:
+      | username | firstname | lastname |
+      | student2 | Hidden    | User     |
+    And the following "courses" exist:
+      | fullname | shortname |
+      | Course 1 | C1        |
+    And the following "course enrolments" exist:
+      | user     | course | role    |
+      | student1 | C1     | student |
+      | student2 | C1     | student |
+    And I entered the course "Course 1" as "student1" in the app
+    When I press "Participants" in the app
+    And the following "permission overrides" exist:
+      | capability            | permission | role    | contextlevel | reference |
+      | moodle/user:viewdetails | Prevent    | student | Course       | C1        |
+    And I press "Hidden User" in the app
+    Then I should find "This profile is limited" in the app
