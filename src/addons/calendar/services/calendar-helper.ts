@@ -258,9 +258,9 @@ export class AddonCalendarHelperProvider {
         const courseId = event.courseid || event.groupcourseid;
         this.formatEventContext(eventFormatted, courseId, categoryId);
 
-        if (eventFormatted.duration == 1) {
+        if (eventFormatted.duration === 1) {
             eventFormatted.timeduration = (event.timedurationuntil || 0) - event.timestart;
-        } else if (eventFormatted.duration == 2) {
+        } else if (eventFormatted.duration === 2) {
             eventFormatted.timeduration = (event.timedurationminutes || 0) * CoreTimeConstants.SECONDS_MINUTE;
         } else {
             eventFormatted.timeduration = 0;
@@ -449,8 +449,8 @@ export class AddonCalendarHelperProvider {
                 events: [],
                 hasevents: false,
                 mday: date.date(),
-                isweekend: date.day() == 0 || date.day() == 6,
-                istoday: isCurrentMonth && today.date() == date.date(),
+                isweekend: date.day() === 0 || date.day() === 6,
+                istoday: isCurrentMonth && today.date() === date.date(),
                 calendareventtypes: [],
                 // Added to match the type. And possibly unused.
                 popovertitle: '',
@@ -502,8 +502,8 @@ export class AddonCalendarHelperProvider {
         }
 
         // Check data that depends on duration.
-        if ((data.duration == 1 && data.timedurationuntil != original.timedurationuntil) ||
-                (data.duration == 2 && data.timedurationminutes != original.timedurationminutes)) {
+        if ((data.duration === 1 && data.timedurationuntil != original.timedurationuntil) ||
+                (data.duration === 2 && data.timedurationminutes != original.timedurationminutes)) {
             return true;
         }
 

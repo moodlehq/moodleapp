@@ -69,7 +69,7 @@ export class AddonModUrlProvider {
         let mimetype = CoreMimetype.getMimeType(extension);
 
         if (url.externalurl.indexOf('.php') != -1 || url.externalurl.slice(-1) === '/' ||
-                (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length == 2)) {
+                (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length === 2)) {
             // Seems to be a web, use HTML mimetype.
             mimetype = 'text/html';
         }

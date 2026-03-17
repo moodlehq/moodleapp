@@ -127,7 +127,7 @@ export class CoreFileUploaderHelperProvider {
         wifiThreshold?: number,
         limitedThreshold?: number,
     ): Promise<void> {
-        if (size == 0) {
+        if (size === 0) {
             return;
         }
 

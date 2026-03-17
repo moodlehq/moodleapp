@@ -91,7 +91,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
             // Get data id.
             let dataIds: number[] = offlineActions.map((action) => action.dataid);
             // Get unique values.
-            dataIds = dataIds.filter((id, pos) => dataIds.indexOf(id) == pos);
+            dataIds = dataIds.filter((id, pos) => dataIds.indexOf(id) === pos);
 
             const entriesPromises = dataIds.map(async (dataId) => {
                 const result = force

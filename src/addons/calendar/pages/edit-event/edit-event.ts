@@ -517,9 +517,9 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             data.categoryid = formData.categoryid;
         }
 
-        if (formData.duration == 1) {
+        if (formData.duration === 1) {
             data.timedurationuntil = timeUntilDate;
-        } else if (formData.duration == 2) {
+        } else if (formData.duration === 2) {
             data.timedurationminutes = formData.timedurationminutes;
         }
 

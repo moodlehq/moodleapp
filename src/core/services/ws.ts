@@ -842,7 +842,7 @@ export class CoreWSProvider {
                 const retryPromise = this.addToRetryQueue<T>(method, siteUrl, ajaxData, preSets);
 
                 // Only process the queue one time.
-                if (this.retryTimeout == 0) {
+                if (this.retryTimeout === 0) {
                     this.retryTimeout = parseInt(error.headers.get('Retry-After'), 10) || 5;
                     this.logger.warn(`${error.statusText}. Retrying in ${this.retryTimeout} seconds. ` +
                         `${this.retryCalls.length} calls left.`);
@@ -891,7 +891,7 @@ export class CoreWSProvider {
      * This function uses recursion in order to add a delay between requests to reduce stress.
      */
     protected processRetryQueue(): void {
-        if (this.retryCalls.length > 0 && this.retryTimeout == 0) {
+        if (this.retryCalls.length > 0 && this.retryTimeout === 0) {
             const call = this.retryCalls[0];
             this.retryCalls.shift();
 

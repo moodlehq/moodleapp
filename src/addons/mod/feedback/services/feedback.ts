@@ -841,7 +841,7 @@ export class AddonModFeedbackProvider {
         }
 
         // Check we can jump futher.
-        if ((changePage == 1 && response.hasnextpage) || (changePage == -1 && response.hasprevpage)) {
+        if ((changePage === 1 && response.hasnextpage) || (changePage === -1 && response.hasprevpage)) {
             return this.getPageJumpTo(feedbackId, page + changePage, changePage, options);
         }
 
@@ -1158,7 +1158,7 @@ export class AddonModFeedbackProvider {
             });
 
             // Check completion.
-            if (changePage == 1 && !pageItems.hasnextpage) {
+            if (changePage === 1 && !pageItems.hasnextpage) {
                 response.completed = true;
 
                 return response;
@@ -1168,7 +1168,7 @@ export class AddonModFeedbackProvider {
 
             if (loadPage === false) {
                 // Completed or first page.
-                if (changePage == -1) {
+                if (changePage === -1) {
                     response.jumpto = 0;
                 } else {
                     response.completed = true;

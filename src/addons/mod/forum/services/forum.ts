@@ -652,7 +652,7 @@ export class AddonModForumProvider {
         posts.sort((a, b) => {
             const timeCreatedA = Number(a.timecreated) || 0;
             const timeCreatedB = Number(b.timecreated) || 0;
-            if (timeCreatedA == 0 || timeCreatedB == 0) {
+            if (timeCreatedA === 0 || timeCreatedB === 0) {
             // Leave 0 at the end.
                 return timeCreatedB - timeCreatedA;
             }

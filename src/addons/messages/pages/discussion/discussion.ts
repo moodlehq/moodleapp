@@ -417,7 +417,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * @param addMessages Number of messages still to be read.
      */
     protected setNewMessagesBadge(addMessages: number): void {
-        if (this.newMessages == 0 && addMessages > 0) {
+        if (this.newMessages === 0 && addMessages > 0) {
             this.scrollFunction();
         }
 
@@ -428,7 +428,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * The scroll was moved. Update new messages count.
      */
     scrollFunction(): void {
-        if (this.newMessages == 0) {
+        if (this.newMessages === 0) {
             return;
         }
 
@@ -442,7 +442,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         const scrollElRect = this.scrollElement?.getBoundingClientRect();
         const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
 
-        if (scrollBottomPos == 0) {
+        if (scrollBottomPos === 0) {
             return;
         }
 
@@ -689,7 +689,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Do not update the message unread from label on next refresh.
-        if (this.unreadMessageFrom == 0) {
+        if (this.unreadMessageFrom === 0) {
             // Using negative to indicate the label is not placed but should not be placed.
             this.unreadMessageFrom = -1;
         }

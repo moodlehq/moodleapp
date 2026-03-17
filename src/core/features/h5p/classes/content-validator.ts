@@ -865,7 +865,7 @@ export class CoreH5PContentValidator {
                 default:
             }
 
-            if (working == 0) {
+            if (working === 0) {
                 // Not well formed; remove and try again.
                 attr = attr.replace(/^("[^"]*("|$)|'[^']*('|$)||\S)*\s*/, '');
                 mode = 0;
@@ -873,7 +873,7 @@ export class CoreH5PContentValidator {
         }
 
         // The attribute list ends with a valueless attribute like "selected".
-        if (mode == 1 && !skip) {
+        if (mode === 1 && !skip) {
             attrArray.push(attrName);
         }
 
