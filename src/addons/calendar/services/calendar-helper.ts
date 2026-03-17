@@ -450,8 +450,8 @@ export class AddonCalendarHelperProvider {
                 events: [],
                 hasevents: false,
                 mday: date.date(),
-                isweekend: date.day() == 0 || date.day() == 6,
-                istoday: isCurrentMonth && today.date() == date.date(),
+                isweekend: date.day() === 0 || date.day() === 6,
+                istoday: isCurrentMonth && today.date() === date.date(),
                 calendareventtypes: [],
                 // Added to match the type. And possibly unused.
                 popovertitle: '',

@@ -93,7 +93,7 @@ export default class CoreLoginSitesPage implements OnInit {
             this.showDelete = false;
 
             // If there are no sites left, go to add site.
-            if (this.accountsList.count == 0) {
+            if (this.accountsList.count === 0) {
                 CoreLoginHelper.goToAddSite(true, true);
             }
         } catch (error) {

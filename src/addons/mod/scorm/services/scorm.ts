@@ -206,13 +206,13 @@ export class AddonModScormProvider {
             };
         }
 
-        if (mode == AddonModScormMode.BROWSE) {
+        if (mode === AddonModScormMode.BROWSE) {
             if (scorm.hidebrowse) {
                 // Prevent Browse mode if hidebrowse is set.
                 mode = AddonModScormMode.NORMAL;
             } else {
                 // We don't need to check attempts as browse mode is set.
-                if (attempt == 0) {
+                if (attempt === 0) {
                     attempt = 1;
                     newAttempt = true;
                 }
@@ -235,7 +235,7 @@ export class AddonModScormProvider {
         }
 
         // Validate user request to start a new attempt.
-        if (attempt == 0) {
+        if (attempt === 0) {
             newAttempt = true;
         } else if (incomplete) {
             // The option to start a new attempt should never have been presented. Force false.
@@ -1180,7 +1180,7 @@ export class AddonModScormProvider {
      * @returns Grading method.
      */
     getScormGradeMethod(scorm: AddonModScormScorm): string {
-        if (scorm.maxattempt == 1) {
+        if (scorm.maxattempt === 1) {
             switch (scorm.grademethod) {
                 case AddonModScormGradingMethod.GRADEHIGHEST:
                     return Translate.instant('addon.mod_scorm.gradehighest');
