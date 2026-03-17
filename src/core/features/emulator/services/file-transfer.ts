@@ -271,7 +271,7 @@ export class FileTransferMock {
                 headers = options.headers;
                 httpMethod = options.httpMethod || 'POST';
 
-                if (httpMethod.toUpperCase() == 'PUT') {
+                if (httpMethod.toUpperCase() === 'PUT') {
                     httpMethod = 'PUT';
                 } else {
                     httpMethod = 'POST';

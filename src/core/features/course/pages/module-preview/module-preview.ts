@@ -127,7 +127,7 @@ export default class CoreCourseModulePreviewPage implements OnInit {
         });
 
         if (data) {
-            if (this.loaded && data.action == 'refresh') {
+            if (this.loaded && data.action === 'refresh') {
                 this.loaded = false;
                 try {
                     await this.doRefresh(undefined);

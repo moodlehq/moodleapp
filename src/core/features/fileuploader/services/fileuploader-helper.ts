@@ -89,7 +89,7 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreCanceledError();
         }
 
-        if (result.name == 'File') {
+        if (result.name === 'File') {
             // In some Android 4.4 devices the file name cannot be retrieved. Try to use the one from the URI.
             result.name = this.getChosenFileNameFromPath(result) || result.name;
         }

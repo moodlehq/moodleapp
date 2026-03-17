@@ -23,7 +23,7 @@
     // Redefine window.open.
     const originalWindowOpen = window.open;
     window.open = function(url, name, specs) {
-        if (name == '_self') {
+        if (name === '_self') {
             // Link will be opened in the same frame, no need to treat it.
             return originalWindowOpen(url, name, specs);
         }
@@ -145,10 +145,10 @@
             scheme = scheme.toLowerCase();
         }
 
-        return scheme == 'cdvfile' ||
-                scheme == 'file' ||
-                scheme == 'filesystem' ||
-                scheme == 'moodleappfs';
+        return scheme === 'cdvfile' ||
+                scheme === 'file' ||
+                scheme === 'filesystem' ||
+                scheme === 'moodleappfs';
     }
 
     /**
@@ -163,13 +163,13 @@
             return;
         }
 
-        if (!link.target || link.target == '_self') {
+        if (!link.target || link.target === '_self') {
             // Link needs to be opened in the same iframe. This is already handled properly, we don't need to do anything else.
             // Links opened in the same iframe won't be captured by the app.
             return;
         }
 
-        if (!link.href || getUrlScheme(link.href) == 'javascript') {
+        if (!link.href || getUrlScheme(link.href) === 'javascript') {
             // Links with no URL and Javascript links are ignored.
             return;
         }

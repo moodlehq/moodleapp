@@ -195,7 +195,7 @@ export class AddonModScormDataModel12 {
 
         for (const element in this.currentUserData[this.scoId].userdata) {
             // Ommit for example the nav. elements and the session time element.
-            if (element.substring(0, 3) != 'cmi' || element == 'cmi.core.session_time') {
+            if (element.substring(0, 3) !== 'cmi' || element === 'cmi.core.session_time') {
                 continue;
             }
 
@@ -210,7 +210,7 @@ export class AddonModScormDataModel12 {
             }
 
             // Check if the current element exists in the datamodel and it's not a read only element.
-            if (this.dataModel[this.scoId][element] === undefined || this.dataModel[this.scoId][element].mod == 'r') {
+            if (this.dataModel[this.scoId][element] === undefined || this.dataModel[this.scoId][element].mod === 'r') {
                 continue;
             }
 
@@ -658,7 +658,7 @@ export class AddonModScormDataModel12 {
 
                 const result = this.storeData(true);
                 if (this.getEl('nav.event') != '') {
-                    if (this.getEl('nav.event') == 'continue') {
+                    if (this.getEl('nav.event') === 'continue') {
                         this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT);
                     } else {
                         this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT);
@@ -738,7 +738,7 @@ export class AddonModScormDataModel12 {
                 const elementModel = String(element).replace(expression, '.n.');
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
-                    if (this.dataModel[this.scoId][elementModel].mod != 'w') {
+                    if (this.dataModel[this.scoId][elementModel].mod !== 'w') {
                         this.errorCode = '0';
 
                         return this.getEl(element);
@@ -820,7 +820,7 @@ export class AddonModScormDataModel12 {
                 const elementModel = String(element).replace(expression, '.n.');
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
-                    if (this.dataModel[this.scoId][elementModel].mod != 'r') {
+                    if (this.dataModel[this.scoId][elementModel].mod !== 'r') {
                         expression = new RegExp(this.dataModel[this.scoId][elementModel].format ?? '');
                         value = value + '';
 
@@ -914,7 +914,7 @@ export class AddonModScormDataModel12 {
                                         this.errorCode = this.dataModel[this.scoId][elementModel].writeerror;
                                     }
                                 } else {
-                                    if (element == 'cmi.comments') {
+                                    if (element === 'cmi.comments') {
                                         this.setEl('cmi.comments', this.getEl('cmi.comments') + value);
                                     } else {
                                         this.setEl(element, value);
@@ -992,7 +992,7 @@ export class AddonModScormDataModel12 {
         let tracks: AddonModScormDataEntry[];
 
         if (storeTotalTime) {
-            if (this.getEl('cmi.core.lesson_status') == 'not attempted') {
+            if (this.getEl('cmi.core.lesson_status') === 'not attempted') {
                 this.setEl('cmi.core.lesson_status', 'completed');
             }
 
@@ -1011,7 +1011,7 @@ export class AddonModScormDataModel12 {
 
             if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.BROWSE) {
                 if (this.dataModel[this.scoId]['cmi.core.lesson_status'].defaultvalue == '' &&
-                        this.getEl('cmi.core.lesson_status') == 'not attempted') {
+                        this.getEl('cmi.core.lesson_status') === 'not attempted') {
                     this.setEl('cmi.core.lesson_status', 'browsed');
                 }
             }

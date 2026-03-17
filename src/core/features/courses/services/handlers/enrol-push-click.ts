@@ -40,7 +40,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent?.indexOf('enrol_') === 0 &&
-            notification.name == 'expiry_notification';
+            notification.name === 'expiry_notification';
     }
 
     /**

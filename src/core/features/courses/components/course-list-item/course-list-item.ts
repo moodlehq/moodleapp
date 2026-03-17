@@ -134,7 +134,7 @@ export class CoreCoursesCourseListItemComponent implements OnInit, OnDestroy, On
 
         if (this.isEnrolled) {
             // This field is only available from 3.6 onwards.
-            this.courseOptionMenuEnabled = (this.layout != 'listwithenrol' && this.layout != 'summarycard') &&
+            this.courseOptionMenuEnabled = (this.layout !== 'listwithenrol' && this.layout !== 'summarycard') &&
                 this.course.isfavourite !== undefined;
 
             this.initPrefetchCourse();

@@ -276,7 +276,7 @@ export class CoreH5PContentValidator {
 
             semantics.options.forEach((option: OptionSemantics) => {
                 // Support optgroup - just flatten options into one.
-                if (option.type == 'optgroup') {
+                if (option.type === 'optgroup') {
                     option.options?.forEach((subOption) => {
                         options[subOption.value || ''] = true;
                     });
@@ -521,7 +521,7 @@ export class CoreH5PContentValidator {
 
             for (const key in groupObject) {
                 // If subContentId is set, keep value
-                if (isSubContent && key == 'subContentId') {
+                if (isSubContent && key === 'subContentId') {
                     continue;
                 }
 
@@ -694,7 +694,7 @@ export class CoreH5PContentValidator {
 
         const tag = tags[0];
 
-        if (tag.substring(0, 1) != '<') {
+        if (tag.charAt(0) !== '<') {
             // We matched a lone ">" character.
             return '&gt;';
         } else if (tag.length == 1) {
@@ -770,7 +770,7 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = attrName == 'style' || attrName.substring(0, 2) == 'on' || attrName.substring(0, 1) == '-' ||
+                        skip = attrName === 'style' || attrName.substring(0, 2) === 'on' || attrName.substring(0, 1) === '-' ||
                                 attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');

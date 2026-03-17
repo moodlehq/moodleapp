@@ -116,7 +116,7 @@ export class AddonQtypeDdImageOrTextQuestion {
             const group = this.doc.getClassnameNumericSuffix(dragItemHome, 'group') ?? -1;
 
             // Images need to be inside a div element to admit padding with width and height.
-            if (dragItemHome.tagName == 'IMG') {
+            if (dragItemHome.tagName === 'IMG') {
                 const wrap = document.createElement('div');
                 wrap.className = dragItemHome.className;
                 dragItemHome.className = '';
@@ -348,7 +348,7 @@ export class AddonQtypeDdImageOrTextQuestion {
 
             const itemHomes = this.doc.dragItemHomes();
             itemHomes.forEach((item) => {
-                if (item.tagName != 'IMG') {
+                if (item.tagName !== 'IMG') {
                     return;
                 }
                 // Wait for drag images to be loaded.

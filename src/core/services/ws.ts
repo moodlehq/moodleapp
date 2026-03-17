@@ -193,7 +193,7 @@ export class CoreWSProvider {
                 /* Moodle does not allow "true" or "false" in WS parameters, only in POST parameters.
                    We've been using "true" and "false" for WS settings "filter" and "fileurl",
                    we keep it this way to avoid changing cache keys. */
-                if (key == 'moodlewssettingfilter' || key == 'moodlewssettingfileurl') {
+                if (key === 'moodlewssettingfilter' || key === 'moodlewssettingfileurl') {
                     value = value ? 'true' : 'false';
                 } else {
                     value = value ? '1' : '0';
@@ -311,7 +311,7 @@ export class CoreWSProvider {
                     if (mimetype) {
                         const remoteExtension = CoreMimetype.getExtension(mimetype, url);
                         // If the file is from Google Drive, ignore mimetype application/json.
-                        if (remoteExtension && (!extension || mimetype != 'application/json')) {
+                        if (remoteExtension && (!extension || mimetype !== 'application/json')) {
                             if (extension) {
                                 // Remove existing extension since we will use another one.
                                 path = CoreMimetype.removeExtension(path);
@@ -675,7 +675,7 @@ export class CoreWSProvider {
         const options: any = {};
 
         // This is done because some returned values like 0 are treated as null if responseType is json.
-        if (preSets.typeExpected == 'number' || preSets.typeExpected == 'boolean' || preSets.typeExpected == 'string') {
+        if (preSets.typeExpected === 'number' || preSets.typeExpected === 'boolean' || preSets.typeExpected === 'string') {
             options.responseType = 'text';
         }
 
@@ -824,7 +824,7 @@ export class CoreWSProvider {
 
             if (data.exception !== undefined) {
                 // Special debugging for site plugins, otherwise it's hard to debug errors if the data is cached.
-                if (method == 'tool_mobile_get_content') {
+                if (method === 'tool_mobile_get_content') {
                     this.logger.error('Error calling WS', method, data);
                 }
 
@@ -1197,7 +1197,7 @@ export class CoreWSProvider {
             // Use the cordova plugin.
             if (url.indexOf('file://') === 0) {
                 // We cannot load local files using the http native plugin. Use file provider instead.
-                const content = options.responseType == 'json' ?
+                const content = options.responseType === 'json' ?
                     await CoreFile.readFile<T>(url, CoreFileFormat.FORMATJSON) :
                     await CoreFile.readFile(url, CoreFileFormat.FORMATTEXT);
 
@@ -1253,7 +1253,7 @@ export class CoreWSProvider {
                     break;
 
                 case 'post':
-                    if (angularOptions.serializer == 'json') {
+                    if (angularOptions.serializer === 'json') {
                         angularOptions.data = JSON.stringify(angularOptions.data);
                     }
 

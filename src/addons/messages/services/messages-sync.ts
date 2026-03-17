@@ -224,7 +224,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
 
             const text = ('text' in message ? message.text : message.smallmessage) || '';
             const textFieldName = conversationId ? 'text' : 'smallmessage';
-            const wrappedText = message[textFieldName][0] != '<' ? `<p>${text}</p>` : text;
+            const wrappedText = message[textFieldName][0] !== '<' ? `<p>${text}</p>` : text;
 
             try {
                 if (onlineMessages.indexOf(wrappedText) != -1) {

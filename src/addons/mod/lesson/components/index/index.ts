@@ -165,7 +165,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
 
         if (this.accessInfo.preventaccessreasons.length) {
             let preventReason = AddonModLesson.getPreventAccessReason(this.accessInfo, false);
-            const askPassword = preventReason?.reason == 'passwordprotectedlesson';
+            const askPassword = preventReason?.reason === 'passwordprotectedlesson';
 
             if (askPassword) {
                 try {

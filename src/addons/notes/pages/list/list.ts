@@ -144,7 +144,7 @@ export default class AddonNotesListPage implements OnInit, OnDestroy {
             CoreAlerts.showError(error);
         } finally {
             let canDelete = this.notes && this.notes.length > 0;
-            if (canDelete && this.type == 'personal') {
+            if (canDelete && this.type === 'personal') {
                 canDelete = !!this.notes.find((note) => note.usermodified == this.currentUserId);
             }
             this.canDeleteNotes = canDelete;

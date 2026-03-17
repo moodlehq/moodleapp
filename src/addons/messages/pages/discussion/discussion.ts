@@ -497,7 +497,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                     });
 
                     this.loadMessages(messages);
-                } else if (error.errorcode != 'errorconversationdoesnotexist') {
+                } else if (error.errorcode !== 'errorconversationdoesnotexist') {
                     // Display the error.
                     throw error;
                 }

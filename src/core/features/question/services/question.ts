@@ -382,7 +382,7 @@ export class CoreQuestionProvider {
         // Maybe the name still has the prefix.
         name = this.removeQuestionPrefix(name);
 
-        return name[0] == '-' || name[0] == ':';
+        return name[0] === '-' || name[0] === ':';
     }
 
     /**

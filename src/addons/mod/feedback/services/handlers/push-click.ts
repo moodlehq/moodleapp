@@ -36,8 +36,8 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
      * @inheritdoc
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
-        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'mod_feedback' &&
-                (notification.name == 'submission' || notification.name == 'message')) {
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent === 'mod_feedback' &&
+                (notification.name === 'submission' || notification.name === 'message')) {
 
             return true;
         }
@@ -53,7 +53,7 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
         const courseId = Number(notification.courseid);
         const moduleId = Number(contextUrlParams.id);
 
-        if (notification.name == 'submission') {
+        if (notification.name === 'submission') {
             return AddonModFeedbackHelper.handleShowEntriesLink(contextUrlParams, notification.site);
         } else {
             return CoreCourseHelper.navigateToModule(moduleId, {
