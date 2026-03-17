@@ -886,7 +886,7 @@ export class AddonModLessonProvider {
         result: AddonModLessonCheckAnswerResult,
     ): void {
         // We could check here to see if we have a wrong answer jump to use.
-        if (result.answerid == 0) {
+        if (result.answerid === 0) {
             // Use the all other answers jump details if it is set up.
             const lastAnswer = pageData.answers[pageData.answers.length - 1] || {};
 
@@ -3237,7 +3237,7 @@ export class AddonModLessonProvider {
                 nAttempts = result.online.length + result.offline.length;
             }
 
-            const messageId = nAttempts == 1 ? 'firstwrong' : 'secondpluswrong';
+            const messageId = nAttempts === 1 ? 'firstwrong' : 'secondpluswrong';
 
             result.feedback = '<div class="box feedback">' + Translate.instant('addon.mod_lesson.' + messageId) + '</div>';
         } else {

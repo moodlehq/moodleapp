@@ -92,7 +92,7 @@ export class AddonModSurveyHelperProvider {
 
                 if (parent.type === 1 || parent.type === 2) {
                     // One answer question. Set its name and add it to the returned array.
-                    q1.name = `q${parent.type == 2 ? 'P' : ''}${q1.id}`;
+                    q1.name = `q${parent.type === 2 ? 'P' : ''}${q1.id}`;
                     q1.num = num++;
                 } else {
                     // Two answers per question (COLLES P&A). We'll add two questions.
