@@ -956,7 +956,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         const requests = this.requestQueue;
         this.requestQueue = [];
 
-        if (requests.length == 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
+        if (requests.length === 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
             // Only one request, do a regular web service call.
             try {
                 const data = await CoreWS.call(requests[0].method, requests[0].data, requests[0].wsPreSets);

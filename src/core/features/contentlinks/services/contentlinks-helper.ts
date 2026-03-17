@@ -152,7 +152,7 @@ export class CoreContentLinksHelperProvider {
 
             if (!CoreSites.isLoggedIn()) {
                 // No current site. Perform the action if only 1 site found, choose the site otherwise.
-                if (action.sites?.length == 1) {
+                if (action.sites?.length === 1) {
                     await action.action(action.sites[0]);
                 } else {
                     this.goToChooseSite(url);

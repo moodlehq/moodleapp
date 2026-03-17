@@ -167,7 +167,7 @@ export class CoreCoursesDashboardProvider {
                 }
             });
 
-            if (mainBlocks.length == 0) {
+            if (mainBlocks.length === 0) {
                 mainBlocks = [];
                 sideBlocks = [];
 

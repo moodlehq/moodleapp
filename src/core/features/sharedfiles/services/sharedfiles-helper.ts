@@ -227,7 +227,7 @@ export class CoreSharedFilesHelperProvider {
                 CoreAlerts.showError(Translate.instant('core.sharedfiles.errorreceivefilenosites'));
 
                 return this.removeSharedFile(fileEntry, !path);
-            } else if (siteIds.length == 1) {
+            } else if (siteIds.length === 1) {
                 return this.storeSharedFileInSite(fileEntry, siteIds[0], !path);
             } else if (!this.isChoosingSite()) {
                 this.goToChooseSite(CoreFile.getFileEntryURL(fileEntry), !path);

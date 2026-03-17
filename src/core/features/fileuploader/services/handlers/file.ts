@@ -85,7 +85,7 @@ export class CoreFileUploaderFileHandlerService implements CoreFileUploaderHandl
                 const input = document.createElement('input');
                 input.setAttribute('type', 'file');
                 input.classList.add('core-fileuploader-file-handler-input');
-                if (mimetypes && mimetypes.length && (!CorePlatform.isAndroid() || mimetypes.length == 1)) {
+                if (mimetypes && mimetypes.length && (!CorePlatform.isAndroid() || mimetypes.length === 1)) {
                     // Don't use accept attribute in Android with several mimetypes, it's not supported.
                     input.setAttribute('accept', mimetypes.join(', '));
                 }

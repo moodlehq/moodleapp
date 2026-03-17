@@ -61,7 +61,7 @@ export class AddonCalendarHelperProvider {
      * @returns Event icon.
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
-        if (this.eventTypeIcons.length == 0) {
+        if (this.eventTypeIcons.length === 0) {
             CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];

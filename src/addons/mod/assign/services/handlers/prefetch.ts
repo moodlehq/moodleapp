@@ -350,7 +350,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         // Teacher, prefetch all submissions.
-        if (!groupInfo.groups || groupInfo.groups.length == 0) {
+        if (!groupInfo.groups || groupInfo.groups.length === 0) {
             groupInfo.groups = [{ id: 0, name: '' }];
         }
 

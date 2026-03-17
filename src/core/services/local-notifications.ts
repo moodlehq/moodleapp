@@ -666,7 +666,7 @@ export class CoreLocalNotificationsProvider {
     ): Promise<number> {
         const deferred = new CorePromisedValue<number>();
         const key = `${table}#${id}`;
-        const isQueueEmpty = Object.keys(this.codeRequestsQueue).length == 0;
+        const isQueueEmpty = Object.keys(this.codeRequestsQueue).length === 0;
 
         if (this.codeRequestsQueue[key] !== undefined) {
             // There's already a pending request for this store and ID, add the promise to it.

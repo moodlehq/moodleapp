@@ -593,7 +593,7 @@ export class AddonQtypeDdImageOrTextQuestion {
         const groupItems = this.doc.topNode ?
             Array.from(this.doc.topNode.querySelectorAll<HTMLElement>(`.draghome.group${groupNo}`)) : [];
 
-        if (groupItems.length == 0) {
+        if (groupItems.length === 0) {
             return;
         }
 
