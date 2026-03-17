@@ -41,12 +41,12 @@ export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
         // Treat phases.
         for (const x in this.phases) {
             this.phases[x].tasks.forEach((task) => {
-                if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+                if (!task.link && (task.code === 'examples' || task.code === 'prepareexamples')) {
                     // Add links to manage examples.
                     task.link = this.externalUrl;
                 }
             });
-            const action = this.phases[x].actions.find((action) => action.url && action.type == 'switchphase');
+            const action = this.phases[x].actions.find((action) => action.url && action.type === 'switchphase');
             this.phases[x].switchUrl = action ? action.url : '';
         }
     }
@@ -64,7 +64,7 @@ export class AddonModWorkshopPhaseInfoModalComponent implements OnInit {
      * @param task Task to be done.
      */
     async runTask(task: AddonModWorkshopPhaseTaskData): Promise<void> {
-        if (task.code == 'submit') {
+        if (task.code === 'submit') {
             // This will close the modal and go to the submit.
             ModalController.dismiss(true);
         } else if (task.link) {

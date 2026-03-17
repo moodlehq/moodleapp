@@ -784,7 +784,7 @@ export class CoreFileProvider {
     getBasePathInstant(): string {
         if (!this.basePath) {
             return this.basePath;
-        } else if (this.basePath.slice(-1) == '/') {
+        } else if (this.basePath.slice(-1) === '/') {
             return this.basePath;
         } else {
             return `${this.basePath}/`;
@@ -1292,7 +1292,7 @@ export class CoreFileProvider {
      */
     getWWWPath(): string {
         // Use current URL, removing the path.
-        if (!window.location.pathname || window.location.pathname == '/') {
+        if (!window.location.pathname || window.location.pathname === '/') {
             return window.location.href;
         }
 

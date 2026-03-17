@@ -307,7 +307,7 @@ export class AddonModAssignHelperProvider {
         const enabled: AddonModAssignPlugin[] = [];
 
         assign.configs.forEach((config) => {
-            if (config.subtype == subtype && config.name == 'enabled' && parseInt(config.value, 10) === 1) {
+            if (config.subtype == subtype && config.name === 'enabled' && parseInt(config.value, 10) === 1) {
                 // Format the plugin objects.
                 enabled.push({
                     type: config.plugin,

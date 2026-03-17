@@ -180,8 +180,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.observers.push(CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
             if (
                 this.glossary &&
-                data.component == 'mod_glossary' &&
-                data.ratingArea == 'entry' &&
+                data.component === 'mod_glossary' &&
+                data.ratingArea === 'entry' &&
                 data.contextLevel == ContextLevel.MODULE &&
                 data.instanceId == this.glossary.coursemodule
             ) {
@@ -192,8 +192,8 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
         this.observers.push(CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, (data) => {
             if (
                 this.glossary &&
-                data.component == 'mod_glossary' &&
-                data.ratingArea == 'entry' &&
+                data.component === 'mod_glossary' &&
+                data.ratingArea === 'entry' &&
                 data.contextLevel == ContextLevel.MODULE &&
                 data.instanceId == this.glossary.coursemodule
             ) {

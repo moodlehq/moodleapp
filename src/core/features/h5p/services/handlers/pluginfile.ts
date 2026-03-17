@@ -127,7 +127,7 @@ export class CoreH5PPluginFileHandlerService implements CorePluginFileHandler {
      * @inheritdoc
      */
     shouldHandleFile(file: CoreWSFile): boolean {
-        return CoreMimetype.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) == 'h5p';
+        return CoreMimetype.guessExtensionFromUrl(CoreFileHelper.getFileUrl(file)) === 'h5p';
     }
 
     /**

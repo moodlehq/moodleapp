@@ -147,7 +147,7 @@ export default class CorePolicySitePolicyPage implements OnInit, OnDestroy {
             const mimeType = await CoreMimetype.getMimeTypeFromUrl(this.sitePoliciesURL);
 
             const extension = CoreMimetype.getExtension(mimeType, this.sitePoliciesURL);
-            this.showInline = extension == 'html' || extension == 'htm';
+            this.showInline = extension === 'html' || extension === 'htm';
         } catch {
             // Unable to get mime type, assume it's not supported.
             this.showInline = false;

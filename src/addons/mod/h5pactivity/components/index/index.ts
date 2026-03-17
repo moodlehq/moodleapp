@@ -474,7 +474,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                         this.progressMessage = data.message;
                     } else if (data.loaded !== undefined) {
                         // Downloading or unzipping.
-                        const totalSize = this.progressMessage == 'core.downloading' ? deployedFile.filesize : data.total;
+                        const totalSize = this.progressMessage === 'core.downloading' ? deployedFile.filesize : data.total;
 
                         if (totalSize !== undefined) {
                             const percentageNumber = (Number(data.loaded / totalSize) * 100);

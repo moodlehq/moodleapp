@@ -980,10 +980,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     let value = request.data[key];
                     const match = /^moodlews(setting.*)$/.exec(key);
                     if (match) {
-                        if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
+                        if (match[1] === 'settingfilter' || match[1] === 'settingfileurl') {
                             // Undo special treatment of these settings in CoreWS.convertValuesToString.
-                            value = (value == 'true' ? '1' : '0');
-                        } else if (match[1] == 'settinglang') {
+                            value = (value === 'true' ? '1' : '0');
+                        } else if (match[1] === 'settinglang') {
                             // Use the lang globally to avoid exceptions with languages not installed.
                             lang = value;
 

@@ -361,9 +361,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @param event Event.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
-        if (event.data == 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
+        if (event.data === 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
             this.toggleFullscreen(true, false);
-        } else if (event.data == 'exitFullScreen' && this.fullscreen) {
+        } else if (event.data === 'exitFullScreen' && this.fullscreen) {
             this.toggleFullscreen(false, false);
         }
     }

@@ -140,7 +140,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await this.loadContent(false, true);
         } finally {
-            if (this.action == 'map') {
+            if (this.action === 'map') {
                 this.openMap();
             }
         }

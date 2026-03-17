@@ -58,7 +58,7 @@ export class AddonModLtiProvider {
         // Generate a form with the params.
         let text = `<form action="${url}" name="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">\n`;
         params.forEach((p) => {
-            if (p.name == 'ext_submit') {
+            if (p.name === 'ext_submit') {
                 text += '    <input type="submit"';
             } else {
                 text += '    <input type="hidden" name="' + CoreText.escapeHTML(p.name) + '"';

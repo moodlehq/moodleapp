@@ -133,12 +133,12 @@ export class AddonModLessonHelperProvider {
             const button: AddonModLessonPageButton = {
                 id: buttonEl.id,
                 title: buttonEl.title || buttonEl.value,
-                content: buttonEl.tagName == 'INPUT' ? buttonEl.value : buttonEl.innerHTML.trim(),
+                content: buttonEl.tagName === 'INPUT' ? buttonEl.value : buttonEl.innerHTML.trim(),
                 data: {},
             };
 
             inputs.forEach((input) => {
-                if (input.type != 'submit') {
+                if (input.type !== 'submit') {
                     button.data[input.name] = input.value;
                 }
             });
@@ -567,14 +567,14 @@ export class AddonModLessonHelperProvider {
      * @returns Data to send.
      */
     prepareQuestionData(question: AddonModLessonQuestion, data: CoreFormFields): CoreFormFields {
-        if (question.template == 'essay') {
+        if (question.template === 'essay') {
             const textarea = (<AddonModLessonEssayQuestion> question).textarea;
 
             // Add some HTML to the answer if needed.
             if (textarea) {
                 data[textarea.name] = CoreText.formatHtmlLines(<string> data[textarea.name] || '');
             }
-        } else if (question.template == 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
+        } else if (question.template === 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
             // Only send the options with value set to true.
             for (const name in data) {
                 if (name.match(/answer\[\d+\]/) && data[name] == false) {

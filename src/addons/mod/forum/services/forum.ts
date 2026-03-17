@@ -657,7 +657,7 @@ export class AddonModForumProvider {
                 return timeCreatedB - timeCreatedA;
             }
 
-            if (direction == 'ASC') {
+            if (direction === 'ASC') {
                 return timeCreatedA - timeCreatedB;
             } else {
                 return timeCreatedB - timeCreatedA;

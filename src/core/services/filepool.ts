@@ -1442,7 +1442,7 @@ export class CoreFilepoolProvider {
             }
 
             // Treat video poster.
-            if (element.tagName == 'VIDEO' && element.getAttribute('poster')) {
+            if (element.tagName === 'VIDEO' && element.getAttribute('poster')) {
                 const poster = element.getAttribute('poster');
                 if (poster && CoreUrl.isDownloadableUrl(poster) && urls.indexOf(poster) == -1) {
                     urls.push(poster);

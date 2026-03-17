@@ -86,7 +86,7 @@ export default class CoreSettingsLicensesPage implements OnInit {
                 if (license.repository) {
                     license.repository = license.repository.replace('git://', 'https://');
                     if (license.repository.indexOf('github.com') > 0) {
-                        const version = license.name == 'moodlemobile' ? this.appLicenseVersion : license.version;
+                        const version = license.name === 'moodlemobile' ? this.appLicenseVersion : license.version;
                         license.licenseUrl = `${license.repository}/blob/${version}/${license.licenseFile}`;
                     }
                 }
