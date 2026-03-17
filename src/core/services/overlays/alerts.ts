@@ -176,7 +176,7 @@ export class CoreAlertsService {
             sizeThreshold = options.wifiThreshold ?? CoreFileProvider.WIFI_DOWNLOAD_DEFAULT_CONFIRMATION_THRESHOLD;
         }
 
-        if (size.size < 0 || (size.size == 0 && !size.total)) {
+        if (size.size < 0 || (size.size === 0 && !size.total)) {
             // Seems size was unable to be calculated. Show a warning.
             return this.confirm(wifiPrefix + Translate.instant(
                 options.unknownMessage ?? 'core.course.confirmdownloadunknownsize',
