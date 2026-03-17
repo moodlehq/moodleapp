@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreApp } from '@services/app';
@@ -57,14 +57,26 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
 
     component = ADDON_MOD_BBB_COMPONENT_LEGACY;
     pluginName = ADDON_MOD_BBB_MODNAME;
-    bbb?: AddonModBBBData;
-    groupInfo?: CoreGroupInfo;
-    groupId = 0;
-    meetingInfo?: AddonModBBBMeetingInfo;
-    recordings?: Recording[];
 
+    readonly bbb = signal<AddonModBBBData | undefined>(undefined);
+    readonly groupInfo = signal<CoreGroupInfo | undefined>(undefined);
+    readonly groupId = signal(0);
+    readonly meetingInfo = signal<AddonModBBBMeetingInfo | undefined>(undefined);
+    readonly recordings = signal<Recording[] | undefined>(undefined);
     readonly isRefreshingMeetingInfo = signal(false);
     readonly moderatorHasJoined = signal(false);
+
+    readonly showRoom = computed(() => {
+        const meetingInfo = this.meetingInfo();
+
+        return !!meetingInfo && (!meetingInfo.features || !!meetingInfo.features.showroom);
+    });
+
+    readonly showRecordings = computed(() => {
+        const meetingInfo = this.meetingInfo();
+
+        return !!meetingInfo && (!meetingInfo.features || !!meetingInfo.features.showrecordings);
+    });
 
     /**
      * @inheritdoc
@@ -75,30 +87,24 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         await this.loadContent();
     }
 
-    get showRoom(): boolean {
-        return !!this.meetingInfo && (!this.meetingInfo.features || this.meetingInfo.features.showroom);
-    }
-
-    get showRecordings(): boolean {
-        return !!this.meetingInfo && (!this.meetingInfo.features || this.meetingInfo.features.showrecordings);
-    }
-
     /**
      * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
         this.moderatorHasJoined.set(false);
 
-        this.bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
+        const bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
+        this.bbb.set(bbb);
 
-        this.description = this.bbb.intro;
-        this.dataRetrieved.emit(this.bbb);
+        this.description = bbb.intro;
+        this.dataRetrieved.emit(bbb);
 
-        this.groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
+        const groupInfo = await CoreGroups.getActivityGroupInfo(this.module.id, false);
+        this.groupInfo.set(groupInfo);
 
-        this.groupId = CoreGroups.validateGroupId(this.groupId, this.groupInfo);
+        this.groupId.set(CoreGroups.validateGroupId(this.groupId(), groupInfo));
 
-        if (this.groupInfo.separateGroups && !this.groupInfo.groups.length) {
+        if (groupInfo.separateGroups && !groupInfo.groups.length) {
             throw new CoreError(Translate.instant('addon.mod_bigbluebuttonbn.view_nojoin'));
         }
 
@@ -114,20 +120,21 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @returns Promise resolved when done.
      */
     async fetchMeetingInfo(updateCache?: boolean): Promise<void> {
-        if (!this.bbb) {
+        const bbb = this.bbb();
+        if (!bbb) {
             return;
         }
 
         try {
-            this.meetingInfo = await AddonModBBB.getMeetingInfo(this.bbb.id, this.groupId, {
+            const meetingInfo = await AddonModBBB.getMeetingInfo(bbb.id, this.groupId(), {
                 cmId: this.module.id,
                 updateCache,
             });
 
-            if (this.meetingInfo.statusrunning && this.meetingInfo.userlimit > 0) {
-                const count = (this.meetingInfo.participantcount || 0) + (this.meetingInfo.moderatorcount || 0);
-                if (count === this.meetingInfo.userlimit) {
-                    this.meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+            if (meetingInfo.statusrunning && meetingInfo.userlimit > 0) {
+                const count = (meetingInfo.participantcount || 0) + (meetingInfo.moderatorcount || 0);
+                if (count === meetingInfo.userlimit) {
+                    meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
                 }
             }
 
@@ -139,21 +146,21 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                     const dates: CoreCourseModuleDate[] = [];
                     const now = CoreTime.timestamp();
 
-                    if (this.meetingInfo.openingtime) {
-                        const openLabelId = this.meetingInfo.openingtime > now ? 'activitydate:opens' : 'activitydate:opened';
+                    if (meetingInfo.openingtime) {
+                        const openLabelId = meetingInfo.openingtime > now ? 'activitydate:opens' : 'activitydate:opened';
                         dates.push({
                             dataid: 'timeopen',
                             label: Translate.instant(`core.course.${openLabelId}`),
-                            timestamp: this.meetingInfo.openingtime,
+                            timestamp: meetingInfo.openingtime,
                         });
                     }
 
-                    if (this.meetingInfo.closingtime) {
-                        const closeLabelId = this.meetingInfo.closingtime > now ? 'activitydate:closes' : 'activitydate:closed';
+                    if (meetingInfo.closingtime) {
+                        const closeLabelId = meetingInfo.closingtime > now ? 'activitydate:closes' : 'activitydate:closed';
                         dates.push({
                             dataid: 'timeclose',
                             label: Translate.instant(`core.course.${closeLabelId}`),
-                            timestamp: this.meetingInfo.closingtime,
+                            timestamp: meetingInfo.closingtime,
                         });
                     }
 
@@ -162,6 +169,8 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                     }
                 }
             }
+
+            this.meetingInfo.set(meetingInfo);
         } catch (error) {
             if (error && error.errorcode === 'restrictedcontextexception') {
                 error.message = Translate.instant('addon.mod_bigbluebuttonbn.view_nojoin');
@@ -177,16 +186,17 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @returns Promise resolved when done.
      */
     async fetchRecordings(): Promise<void> {
-        if (!this.bbb || !this.showRecordings) {
+        const bbb = this.bbb();
+        if (!bbb || !this.showRecordings()) {
             return;
         }
 
-        const recordingsTable = await AddonModBBB.getRecordings(this.bbb.id, this.groupId, {
+        const recordingsTable = await AddonModBBB.getRecordings(bbb.id, this.groupId(), {
             cmId: this.module.id,
         });
         const columns = CoreArray.toObject(recordingsTable.columns, 'key');
 
-        this.recordings = recordingsTable.parsedData.map(recordingData => {
+        const recordings = recordingsTable.parsedData.map(recordingData => {
             const details: RecordingDetail[] = [];
             const playbacksEl = convertTextToHTMLElement(String(recordingData.playback));
             const playbacks: RecordingPlayback[] = Array.from(playbacksEl.querySelectorAll('a')).map(playbackAnchor => ({
@@ -231,8 +241,11 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 playbacks,
                 details,
                 expanded: false,
+                timestamp: recordingData.date ? Number(recordingData.date) : undefined,
             };
         });
+
+        this.recordings.set(recordings);
     }
 
     /**
@@ -264,11 +277,12 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @inheritdoc
      */
     protected async logActivity(): Promise<void> {
-        if (!this.bbb) {
+        const bbb = this.bbb();
+        if (!bbb) {
             return; // Shouldn't happen.
         }
 
-        await CorePromiseUtils.ignoreErrors(AddonModBBB.logView(this.bbb.id));
+        await CorePromiseUtils.ignoreErrors(AddonModBBB.logView(bbb.id));
 
         this.analyticsLogEvent('mod_bigbluebuttonbn_view_bigbluebuttonbn');
     }
@@ -280,14 +294,15 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @returns Promise resolved when done.
      */
     async updateMeetingInfo(updateCache?: boolean): Promise<void> {
-        if (!this.bbb) {
+        const bbb = this.bbb();
+        if (!bbb) {
             return;
         }
 
         this.showLoading = true;
 
         try {
-            await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+            await AddonModBBB.invalidateAllGroupsMeetingInfo(bbb.id);
 
             await this.fetchMeetingInfo(updateCache);
         } finally {
@@ -299,17 +314,18 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * Refresh meeting info while in "waiting for moderator" state.
      */
     async refreshWaitingMeetingInfo(): Promise<void> {
-        if (!this.bbb || this.isRefreshingMeetingInfo()) {
+        const bbb = this.bbb();
+        if (!bbb || this.isRefreshingMeetingInfo()) {
             return;
         }
 
         this.isRefreshingMeetingInfo.set(true);
 
         try {
-            await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+            await AddonModBBB.invalidateAllGroupsMeetingInfo(bbb.id);
             await this.fetchMeetingInfo(false);
 
-            if (this.meetingInfo?.canjoin) {
+            if (this.meetingInfo()?.canjoin) {
                 await CoreToasts.show({
                     message: 'addon.mod_bigbluebuttonbn.moderatorhasjoinedshort',
                     translateMessage: true,
@@ -340,9 +356,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         promises.push(AddonModBBB.invalidateBBBs(this.courseId));
         promises.push(CoreGroups.invalidateActivityGroupInfo(this.module.id));
 
-        if (this.bbb) {
-            promises.push(AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id));
-            promises.push(AddonModBBB.invalidateAllGroupsRecordings(this.bbb.id));
+        const bbb = this.bbb();
+        if (bbb) {
+            promises.push(AddonModBBB.invalidateAllGroupsMeetingInfo(bbb.id));
+            promises.push(AddonModBBB.invalidateAllGroupsRecordings(bbb.id));
         }
 
         await Promise.all(promises);
@@ -376,7 +393,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const modal = await CoreLoadings.show();
 
         try {
-            const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId);
+            const joinUrl = await AddonModBBB.getJoinUrl(this.module.id, this.groupId());
 
             await CoreOpener.openInBrowser(joinUrl, {
                 showBrowserWarning: false,
@@ -399,7 +416,8 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @returns Promise resolved when done.
      */
     async endMeeting(): Promise<void> {
-        if (!this.bbb) {
+        const bbb = this.bbb();
+        if (!bbb) {
             return;
         }
 
@@ -416,7 +434,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         const modal = await CoreLoadings.show();
 
         try {
-            await AddonModBBB.endMeeting(this.bbb.id, this.groupId);
+            await AddonModBBB.endMeeting(bbb.id, this.groupId());
 
             this.updateMeetingInfo();
         } catch (error) {
@@ -432,7 +450,8 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @param recording Recording.
      */
     toggle(recording: Recording): void {
-        recording.expanded = !recording.expanded;
+        this.recordings.update(recordings =>
+            recordings?.map(r => r === recording ? { ...r, expanded: !r.expanded } : r));
     }
 
     /**
@@ -459,6 +478,7 @@ type Recording = {
     playbackLabel: string;
     playbacks: RecordingPlayback[];
     details: RecordingDetail[];
+    timestamp?: number;
 };
 
 /**
