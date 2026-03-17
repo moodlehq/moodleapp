@@ -1,7 +1,10 @@
 {
     "end_session_confirm": "Are you sure you want to end the session?",
     "end_session_confirm_title": "Really end session?",
+    "moderatorhasjoinedlong": "The moderator has joined. You can now join the session.",
+    "moderatorhasjoinedshort": "Moderator has joined.",
     "userlimitreached": "The number of users allowed in a session has been reached.",
+    "stillwaitingformoderator": "Still waiting for the moderator to join.",
     "view_conference_action_end": "End session",
     "view_conference_action_join": "Join session",
     "view_error_unable_join_student": "Unable to connect to the BigBlueButton server.",

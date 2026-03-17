@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreApp } from '@services/app';
@@ -35,6 +35,7 @@ import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
@@ -62,6 +63,9 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
     meetingInfo?: AddonModBBBMeetingInfo;
     recordings?: Recording[];
 
+    readonly isRefreshingMeetingInfo = signal(false);
+    readonly moderatorHasJoined = signal(false);
+
     /**
      * @inheritdoc
      */
@@ -83,6 +87,8 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      * @inheritdoc
      */
     protected async fetchContent(): Promise<void> {
+        this.moderatorHasJoined.set(false);
+
         this.bbb = await AddonModBBB.getBBB(this.courseId, this.module.id);
 
         this.description = this.bbb.intro;
@@ -286,6 +292,42 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             await this.fetchMeetingInfo(updateCache);
         } finally {
             this.showLoading = false;
+        }
+    }
+
+    /**
+     * Refresh meeting info while in "waiting for moderator" state.
+     */
+    async refreshWaitingMeetingInfo(): Promise<void> {
+        if (!this.bbb || this.isRefreshingMeetingInfo()) {
+            return;
+        }
+
+        this.isRefreshingMeetingInfo.set(true);
+
+        try {
+            await AddonModBBB.invalidateAllGroupsMeetingInfo(this.bbb.id);
+            await this.fetchMeetingInfo(false);
+
+            if (this.meetingInfo?.canjoin) {
+                await CoreToasts.show({
+                    message: 'addon.mod_bigbluebuttonbn.moderatorhasjoinedshort',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
+
+                this.moderatorHasJoined.set(true);
+            } else {
+                await CoreToasts.show({
+                    message: 'addon.mod_bigbluebuttonbn.stillwaitingformoderator',
+                    translateMessage: true,
+                    duration: ToastDuration.LONG,
+                });
+            }
+        } catch (error) {
+            CoreAlerts.showError(error);
+        } finally {
+            this.isRefreshingMeetingInfo.set(false);
         }
     }
 

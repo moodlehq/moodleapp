@@ -34,6 +34,14 @@
             </ion-item>
         }
 
+        @if (!meetingInfo.canjoin) {
+            <core-alert-card type="warning" [message]="meetingInfo.statusmessage" />
+        }
+
+        @if (moderatorHasJoined()) {
+            <core-alert-card type="success" [message]="'addon.mod_bigbluebuttonbn.moderatorhasjoinedlong' | translate" />
+        }
+
         @if (meetingInfo.statusrunning) {
 
             <ion-item class="ion-text-wrap">
@@ -81,11 +89,6 @@
                 <p slot="end">{{ meetingInfo.participantcount }}</p>
             </ion-item>
 
-        }
-
-        @if (!meetingInfo.canjoin) {
-            <core-alert-card type="warning"
-                [message]="meetingInfo.statusmessage" />
         }
 
         @if (meetingInfo.showpresentations && meetingInfo.presentations.length) {
@@ -160,6 +163,26 @@
 
     @if (!showLoading) {
         <div collapsible-footer slot="fixed">
+            @if (showRoom && meetingInfo && meetingInfo.usermustwaittojoin === true && !meetingInfo.canjoin) {
+                <div class="list-item-limited-width adaptable-buttons-row">
+                    @if (isRefreshingMeetingInfo()) {
+                        <ion-button fill="outline" class="ion-margin ion-text-wrap" expand="block" [disabled]="true"
+                            [ariaLabel]="'core.loading' | translate">
+                            <ion-spinner aria-hidden="true" />
+                        </ion-button>
+                    } @else {
+                        <ion-button fill="outline" class="ion-margin ion-text-wrap" expand="block"
+                            (click)="refreshWaitingMeetingInfo()">
+                            <ion-icon name="fas-rotate-right" slot="start" aria-hidden="true" />
+                            {{ 'core.refresh' | translate }}
+                        </ion-button>
+                    }
+                    <ion-button class="ion-margin ion-text-wrap" expand="block" [disabled]="true">
+                        {{ 'addon.mod_bigbluebuttonbn.view_conference_action_join' | translate }}
+                    </ion-button>
+                </div>
+            }
+
             @if (meetingInfo && showRoom && (meetingInfo.canjoin || (meetingInfo.statusrunning && meetingInfo.ismoderator))) {
                 <div class="list-item-limited-width adaptable-buttons-row">
                     @if (meetingInfo.statusrunning && meetingInfo.ismoderator) {
