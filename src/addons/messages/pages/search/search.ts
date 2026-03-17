@@ -155,24 +155,24 @@ export default class AddonMessagesSearchPage implements OnDestroy {
         let canLoadMoreNonContacts = false;
         let canLoadMoreMessages = false;
 
-        if (!loadMore || loadMore == 'contacts' || loadMore == 'noncontacts') {
+        if (!loadMore || loadMore === 'contacts' || loadMore === 'noncontacts') {
             const limitNum = loadMore ? ADDON_MESSAGES_LIMIT_SEARCH : ADDON_MESSAGES_LIMIT_INITIAL_USER_SEARCH;
             let limitFrom = 0;
-            if (loadMore == 'contacts') {
+            if (loadMore === 'contacts') {
                 limitFrom = this.contacts.results.length;
                 this.contacts.loadingMore = true;
-            } else if (loadMore == 'noncontacts') {
+            } else if (loadMore === 'noncontacts') {
                 limitFrom = this.nonContacts.results.length;
                 this.nonContacts.loadingMore = true;
             }
 
             promises.push(
                 AddonMessages.searchUsers(query, limitFrom, limitNum).then((result) => {
-                    if (!loadMore || loadMore == 'contacts') {
+                    if (!loadMore || loadMore === 'contacts') {
                         newContacts = result.contacts;
                         canLoadMoreContacts = result.canLoadMoreContacts;
                     }
-                    if (!loadMore || loadMore == 'noncontacts') {
+                    if (!loadMore || loadMore === 'noncontacts') {
                         newNonContacts = result.nonContacts;
                         canLoadMoreNonContacts = result.canLoadMoreNonContacts;
                     }
@@ -182,9 +182,9 @@ export default class AddonMessagesSearchPage implements OnDestroy {
             );
         }
 
-        if (!loadMore || loadMore == 'messages') {
+        if (!loadMore || loadMore === 'messages') {
             let limitFrom = 0;
-            if (loadMore == 'messages') {
+            if (loadMore === 'messages') {
                 limitFrom = this.messages.results.length;
                 this.messages.loadingMore = true;
             }
@@ -209,19 +209,19 @@ export default class AddonMessagesSearchPage implements OnDestroy {
 
             this.displayResults = true;
 
-            if (!loadMore || loadMore == 'contacts') {
+            if (!loadMore || loadMore === 'contacts') {
                 this.contacts.results.push(...newContacts);
                 this.contacts.canLoadMore = canLoadMoreContacts;
                 this.setHighlight(newContacts, true);
             }
 
-            if (!loadMore || loadMore == 'noncontacts') {
+            if (!loadMore || loadMore === 'noncontacts') {
                 this.nonContacts.results.push(...newNonContacts);
                 this.nonContacts.canLoadMore = canLoadMoreNonContacts;
                 this.setHighlight(newNonContacts, true);
             }
 
-            if (!loadMore || loadMore == 'messages') {
+            if (!loadMore || loadMore === 'messages') {
                 this.messages.results.push(...newMessages);
                 this.messages.canLoadMore = canLoadMoreMessages;
                 this.messages.loadMoreError = false;
@@ -240,18 +240,18 @@ export default class AddonMessagesSearchPage implements OnDestroy {
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('addon.messages.errorwhileretrievingusers') });
 
-            if (loadMore == 'messages') {
+            if (loadMore === 'messages') {
                 this.messages.loadMoreError = true;
             }
         } finally {
             this.disableSearch = false;
             this.displaySearching = false;
 
-            if (loadMore == 'contacts') {
+            if (loadMore === 'contacts') {
                 this.contacts.loadingMore = false;
-            } else if (loadMore == 'noncontacts') {
+            } else if (loadMore === 'noncontacts') {
                 this.nonContacts.loadingMore = false;
-            } else if (loadMore == 'messages') {
+            } else if (loadMore === 'messages') {
                 this.messages.loadingMore = false;
             }
 

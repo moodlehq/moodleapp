@@ -633,7 +633,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
 
             // Event was deleted, close the view.
             CoreNavigator.back();
-        } else if (data.events && (!isManual || data.source != 'event')) {
+        } else if (data.events && (!isManual || data.source !== 'event')) {
             if (this.eventId < 0) {
                 if (data.offlineIdMap[this.eventId]) {
                     // Event was created, use the online ID.

@@ -78,7 +78,7 @@ export class AddonModImscpProvider {
      * @returns True if we should ommit the file.
      */
     protected checkSpecialFiles(fileName: string): boolean {
-        return fileName == 'imsmanifest.xml';
+        return fileName === 'imsmanifest.xml';
     }
 
     /**
@@ -128,7 +128,7 @@ export class AddonModImscpProvider {
      */
     protected getFileUrlFromContents(items: CoreCourseModuleContentFile[], targetFilePath: string): string | undefined {
         const item = items.find((item) => {
-            if (item.type != 'file') {
+            if (item.type !== 'file') {
                 return false;
             }
 

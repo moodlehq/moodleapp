@@ -61,7 +61,7 @@ export class CoreH5PFileStorage {
             }
 
             // Create new file for cached assets.
-            const fileName = `${key}.${type == 'scripts' ? 'js' : 'css'}`;
+            const fileName = `${key}.${type === 'scripts' ? 'js' : 'css'}`;
             const path = CorePath.concatenatePaths(cachedAssetsPath, fileName);
 
             // Store concatenated content.
@@ -95,7 +95,7 @@ export class CoreH5PFileStorage {
 
             let fileContent = await CoreFile.readFile(asset.path);
 
-            if (type == 'scripts') {
+            if (type === 'scripts') {
                 // No need to treat scripts, just append the content.
                 content += `${fileContent};\n`;
 

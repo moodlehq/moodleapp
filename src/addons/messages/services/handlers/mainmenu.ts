@@ -89,7 +89,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
             (notification) => {
             // New message received. If it's from current site, refresh the data.
                 const isMessage = CoreUtils.isFalseOrZero(notification.notif) ||
-                    notification.name == 'messagecontactrequests';
+                    notification.name === 'messagecontactrequests';
                 if (isMessage && CoreSites.isCurrentSite(notification.site)) {
                     this.refreshBadge(notification.site);
                 }

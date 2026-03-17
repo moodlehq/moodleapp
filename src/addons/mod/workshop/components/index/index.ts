@@ -244,7 +244,7 @@ export class AddonModWorkshopIndexComponent extends CoreCourseModuleMainActivity
         this.phases = await AddonModWorkshop.getUserPlanPhases(this.workshop.id, { cmId: this.module.id });
 
         this.phases[this.workshop.phase].tasks.forEach((task) => {
-            if (!task.link && (task.code == 'examples' || task.code == 'prepareexamples')) {
+            if (!task.link && (task.code === 'examples' || task.code === 'prepareexamples')) {
                 // Add links to manage examples.
                 task.link = this.module.url || '';
             }

@@ -239,7 +239,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
      */
     async refreshData(refresher?: HTMLIonRefresherElement): Promise<void> {
         try {
-            if (this.selected == 'confirmed') {
+            if (this.selected === 'confirmed') {
                 // No need to invalidate contacts, we always try to get the latest.
                 await this.confirmedFetchData(true);
             } else {
@@ -262,7 +262,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
      */
     async loadMore(infiniteComplete?: () => void): Promise<void> {
         try {
-            if (this.selected == 'confirmed') {
+            if (this.selected === 'confirmed') {
                 // No need to invalidate contacts, we always try to get the latest.
                 await this.confirmedFetchData();
             } else {
@@ -287,11 +287,11 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
 
         this.selected = selected;
 
-        if (this.selected == 'confirmed' && !this.confirmedLoaded) {
+        if (this.selected === 'confirmed' && !this.confirmedLoaded) {
             this.initConfirmed();
         }
 
-        if (this.selected == 'requests' && !this.requestsLoaded) {
+        if (this.selected === 'requests' && !this.requestsLoaded) {
             this.initRequests();
         }
     }

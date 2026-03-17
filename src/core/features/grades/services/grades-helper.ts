@@ -145,7 +145,7 @@ export class CoreGradesHelperProvider {
                 row.ariaLabel = `${row.gradeitem} (${row.grade})`;
             }
 
-            if (content == '&nbsp;') {
+            if (content === '&nbsp;') {
                 content = '';
             }
 

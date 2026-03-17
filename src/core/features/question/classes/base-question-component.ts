@@ -284,10 +284,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         if (question.parsedSettings) {
             question.allowsAttachments = question.parsedSettings.attachments != '0';
-            question.allowsAnswerFiles = question.parsedSettings.responseformat == 'editorfilepicker';
-            question.isMonospaced = question.parsedSettings.responseformat == 'monospaced';
-            question.isPlainText = question.isMonospaced || question.parsedSettings.responseformat == 'plain';
-            question.hasInlineText = question.parsedSettings.responseformat != 'noinline';
+            question.allowsAnswerFiles = question.parsedSettings.responseformat === 'editorfilepicker';
+            question.isMonospaced = question.parsedSettings.responseformat === 'monospaced';
+            question.isPlainText = question.isMonospaced || question.parsedSettings.responseformat === 'plain';
+            question.hasInlineText = question.parsedSettings.responseformat !== 'noinline';
         } else {
             question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
             question.allowsAnswerFiles = !!answerDraftIdInput;
