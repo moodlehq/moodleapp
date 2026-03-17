@@ -623,7 +623,7 @@ export class AddonModLessonHelperProvider {
             return { accessInfo };
         }
 
-        const passwordNeeded = accessInfo.preventaccessreasons.length == 1 &&
+        const passwordNeeded = accessInfo.preventaccessreasons.length === 1 &&
             AddonModLesson.isPasswordProtected(accessInfo);
 
         if (!passwordNeeded) {

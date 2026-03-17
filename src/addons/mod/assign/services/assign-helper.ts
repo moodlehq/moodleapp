@@ -456,7 +456,7 @@ export class AddonModAssignHelperProvider {
             }
 
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
-            submission.noGroups = !!participant.groups && participant.groups.length == 0;
+            submission.noGroups = !!participant.groups && participant.groups.length === 0;
             if (participant.groupname) {
                 submission.groupid = participant.groupid ?? 0;
                 submission.groupname = participant.groupname;

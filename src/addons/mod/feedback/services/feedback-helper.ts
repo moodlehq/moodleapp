@@ -388,7 +388,7 @@ export class AddonModFeedbackHelperProvider {
         const choices = formItem.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         formItem.choices = choices.map((choice, index) => {
             const weightValue = choice.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
-            choice = weightValue.length == 1 ? weightValue[0] : `(${weightValue[0]}) ${weightValue[1]}`;
+            choice = weightValue.length === 1 ? weightValue[0] : `(${weightValue[0]}) ${weightValue[1]}`;
 
             return { value: index + 1, label: choice };
         });
