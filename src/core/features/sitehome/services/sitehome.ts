@@ -57,7 +57,7 @@ export class CoreSiteHomeProvider {
         const { AddonModForum } = await import('@addons/mod/forum/services/forum');
 
         const forums = await AddonModForum.getCourseForums(siteHomeId);
-        const forum = forums.find((forum) => forum.type == 'news');
+        const forum = forums.find((forum) => forum.type === 'news');
 
         if (forum) {
             return forum;

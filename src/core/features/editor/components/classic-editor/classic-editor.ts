@@ -331,7 +331,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
         }
 
         if (parameters) {
-            this.toolbarStyles[parameters] = this.toolbarStyles[parameters] == 'true' ? 'false' : 'true';
+            this.toolbarStyles[parameters] = this.toolbarStyles[parameters] === 'true' ? 'false' : 'true';
         }
 
         // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -405,7 +405,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * @param event Event.
      */
     stopBubble(event: Event): void {
-        if (event.type != 'touchend' && event.type != 'mouseup' && event.type != 'keyup') {
+        if (event.type !== 'touchend' && event.type !== 'mouseup' && event.type !== 'keyup') {
             event.preventDefault();
         }
         event.stopPropagation();

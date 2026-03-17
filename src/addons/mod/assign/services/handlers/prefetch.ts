@@ -113,7 +113,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
                         files = files.concat(submissionFiles);
                     } catch (error) {
-                        if (error && error.errorcode == 'nopermission') {
+                        if (error && error.errorcode === 'nopermission') {
                             // The user does not have persmission to view this submission, ignore it.
                             return;
                         }
@@ -506,7 +506,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
             await Promise.all(promises);
         } catch (error) {
             // Ignore if the user can't view their own submission.
-            if (resolveOnNoPermission && error.errorcode != 'nopermission') {
+            if (resolveOnNoPermission && error.errorcode !== 'nopermission') {
                 throw error;
             }
         }

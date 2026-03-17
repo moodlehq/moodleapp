@@ -49,10 +49,10 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId) => {
-                if (!params.action || params.action == 'reportoverview') {
+                if (!params.action || params.action === 'reportoverview') {
                     // Go to overview.
                     await this.openReportOverview(Number(params.id), Number(params.group), siteId);
-                } else if (params.action == 'reportdetail') {
+                } else if (params.action === 'reportdetail') {
                     await this.openUserRetake(Number(params.id), Number(params.userid), Number(params.try), siteId);
                 }
             },
@@ -69,7 +69,7 @@ export class AddonModLessonReportLinkHandlerService extends CoreContentLinksHand
      * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (params.action == 'reportdetail' && !params.userid) {
+        if (params.action === 'reportdetail' && !params.userid) {
             // Individual details are only available if the teacher is seeing a certain user.
             return false;
         }

@@ -325,10 +325,10 @@ export class CoreFileHelperProvider {
             return true;
         }
 
-        if (file.repositorytype == 'onedrive') {
+        if (file.repositorytype === 'onedrive') {
             // In OneDrive, open in browser the office docs
             return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
-                    mimetype == 'text/plain' || mimetype == 'document/unknown';
+                    mimetype === 'text/plain' || mimetype === 'document/unknown';
         }
 
         return false;

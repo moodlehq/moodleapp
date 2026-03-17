@@ -415,7 +415,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
                 return;
             }
 
-            const validLayout: AddonBlockMyOverviewLayouts = layout == 'summary' ? 'list' : layout as AddonBlockMyOverviewLayouts;
+            const validLayout: AddonBlockMyOverviewLayouts = layout === 'summary' ? 'list' : layout as AddonBlockMyOverviewLayouts;
             if (!layoutsOptions.includes(validLayout)) {
                 layoutsOptions.push(validLayout);
             }
@@ -661,16 +661,16 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.saveSort(this.sort.selected);
         }
 
-        if (this.sort.selected == 'lastaccess') {
+        if (this.sort.selected === 'lastaccess') {
             this.filteredCourses.sort((a, b) => (b.lastaccess || 0) - (a.lastaccess || 0));
-        } else if (this.sort.selected == 'fullname') {
+        } else if (this.sort.selected === 'fullname') {
             this.filteredCourses.sort((a, b) => {
                 const compareA = a.fullname.toLowerCase();
                 const compareB = b.fullname.toLowerCase();
 
                 return compareA.localeCompare(compareB);
             });
-        } else if (this.sort.selected == 'shortname') {
+        } else if (this.sort.selected === 'shortname') {
             this.filteredCourses.sort((a, b) => {
                 const compareA = a.shortname.toLowerCase();
                 const compareB = b.shortname.toLowerCase();

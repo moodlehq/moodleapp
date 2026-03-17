@@ -182,7 +182,7 @@ export class CoreTagProvider {
             response = await site.read('core_tag_get_tagindex_per_area', params, preSets);
         } catch (error) {
             // Workaround for WS not passing parameter to error string.
-            if (error && error.errorcode == 'notagsfound') {
+            if (error && error.errorcode === 'notagsfound') {
                 error.message = Translate.instant('core.tag.notagsfound', { $a: name || id || '' });
             }
 

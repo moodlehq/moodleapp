@@ -126,7 +126,7 @@ export class CoreSendMessageFormComponent {
             // Enter clicked, send the message.
             e.preventDefault();
             e.stopPropagation();
-        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other == 'control') {
+        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other === 'control') {
             // Cmd+Enter or Ctrl+Enter, send message.
             e.preventDefault();
             e.stopPropagation();
@@ -147,7 +147,7 @@ export class CoreSendMessageFormComponent {
         if (this.sendOnEnter && !other) {
             // Enter clicked, send the message.
             this.submitForm(e);
-        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other == 'control') {
+        } else if (!this.sendOnEnter && !CorePlatform.isMobile() && other === 'control') {
             // Cmd+Enter or Ctrl+Enter, send message.
             this.submitForm(e);
         }

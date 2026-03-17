@@ -282,7 +282,7 @@ export class AddonModScormOfflineProvider {
             let value = scoUserData[element];
 
             // Ignore elements that are calculated.
-            if (element == 'score_raw' || element == 'status' || element == 'total_time' || element == 'session_time') {
+            if (element === 'score_raw' || element === 'status' || element === 'total_time' || element === 'session_time') {
                 continue;
             }
 
@@ -290,7 +290,7 @@ export class AddonModScormOfflineProvider {
             switch (element) {
                 case 'cmi.core.lesson_status':
                 case 'cmi.completion_status':
-                    if (value == 'not attempted') {
+                    if (value === 'not attempted') {
                         value = 'notattempted';
                     }
                     formatted.status = value;
@@ -646,13 +646,13 @@ export class AddonModScormOfflineProvider {
         let lessonStatusInserted = false;
 
         if (forceCompleted) {
-            if (element == 'cmi.core.lesson_status' && value == 'incomplete') {
+            if (element === 'cmi.core.lesson_status' && value === 'incomplete') {
                 if (scoUserData['cmi.core.score.raw']) {
                     value = 'completed';
                 }
             }
-            if (element == 'cmi.core.score.raw') {
-                if (scoUserData['cmi.core.lesson_status'] == 'incomplete') {
+            if (element === 'cmi.core.score.raw') {
+                if (scoUserData['cmi.core.lesson_status'] === 'incomplete') {
                     lessonStatusInserted = true;
 
                     await this.tracksTables[site.id].insert({
@@ -669,7 +669,7 @@ export class AddonModScormOfflineProvider {
             }
         }
 
-        if (scoUserData[element] && element == 'x.start.time') {
+        if (scoUserData[element] && element === 'x.start.time') {
             // Don't update x.start.time, keep the original value.
             return;
         }
@@ -740,13 +740,13 @@ export class AddonModScormOfflineProvider {
         const siteId = CoreSites.getRequiredCurrentSite().id;
 
         if (forceCompleted) {
-            if (element == 'cmi.core.lesson_status' && value == 'incomplete') {
+            if (element === 'cmi.core.lesson_status' && value === 'incomplete') {
                 if (scoUserData['cmi.core.score.raw']) {
                     value = 'completed';
                 }
             }
-            if (element == 'cmi.core.score.raw') {
-                if (scoUserData['cmi.core.lesson_status'] == 'incomplete') {
+            if (element === 'cmi.core.score.raw') {
+                if (scoUserData['cmi.core.lesson_status'] === 'incomplete') {
                     this.tracksTables[siteId].syncInsert({
                         userid: userId,
                         scormid: scormId,
@@ -761,7 +761,7 @@ export class AddonModScormOfflineProvider {
             }
         }
 
-        if (scoUserData[element] && element == 'x.start.time') {
+        if (scoUserData[element] && element === 'x.start.time') {
             // Don't update x.start.time, keep the original value.
             return true;
         }

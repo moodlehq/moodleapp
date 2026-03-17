@@ -236,7 +236,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
 
         // Refresh data if this forum discussion is synchronized from discussions list.
         this.syncManualObserver = CoreEvents.on(ADDON_MOD_FORUM_MANUAL_SYNCED, data => {
-            if (data.source != 'discussion' && data.forumId == this.forumId &&
+            if (data.source !== 'discussion' && data.forumId == this.forumId &&
                     data.userId == CoreSites.getCurrentSiteUserId()) {
                 // Refresh the data.
                 this.discussionLoaded = false;
@@ -251,14 +251,14 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
 
         // Listen for offline ratings saved and synced.
         this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
-            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == ContextLevel.MODULE &&
+            if (data.component === 'mod_forum' && data.ratingArea === 'post' && data.contextLevel == ContextLevel.MODULE &&
                     data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
                 this.hasOfflineRatings = true;
             }
         });
 
         this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, async (data) => {
-            if (data.component == 'mod_forum' && data.ratingArea == 'post' && data.contextLevel == ContextLevel.MODULE &&
+            if (data.component === 'mod_forum' && data.ratingArea === 'post' && data.contextLevel == ContextLevel.MODULE &&
                     data.instanceId == this.cmId && data.itemSetId == this.discussionId) {
                 this.hasOfflineRatings = false;
             }
@@ -465,7 +465,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
             this.startingPost = AddonModForum.extractStartingPost(posts);
 
             // If sort type is nested, normal sorting is disabled and nested posts will be displayed.
-            if (this.sort == 'nested') {
+            if (this.sort === 'nested') {
                 // Sort first by creation date to make format tree work.
                 AddonModForum.sortDiscussionPosts(posts, 'ASC');
 
@@ -473,7 +473,7 @@ export default class AddonModForumDiscussionPage implements OnInit, AfterViewIni
                 posts = CoreUtils.formatTree(posts, 'parentid', 'id', rootId);
             } else {
                 // Set default reply subject.
-                const direction = this.sort == 'flat-newest' ? 'DESC' : 'ASC';
+                const direction = this.sort === 'flat-newest' ? 'DESC' : 'ASC';
                 AddonModForum.sortDiscussionPosts(posts, direction);
             }
 

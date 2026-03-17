@@ -30,12 +30,12 @@ export class AddonModImscpPluginFileHandlerService implements CorePluginFileHand
      */
     getComponentRevisionRegExp(args: string[]): RegExp | undefined {
         // Check filearea.
-        if (args[2] == 'content') {
+        if (args[2] === 'content') {
             // Component + Filearea + Revision
             return new RegExp('/mod_imscp/content/([0-9]+)/');
         }
 
-        if (args[2] == 'backup') {
+        if (args[2] === 'backup') {
             // Component + Filearea + Revision
             return new RegExp('/mod_imscp/backup/([0-9]+)/');
         }

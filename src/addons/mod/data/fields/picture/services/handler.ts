@@ -137,7 +137,7 @@ export class AddonModDataFieldPictureHandlerService implements AddonModDataField
         }
 
         const found = inputData.some((input) => {
-            if (input.subfield !== undefined && input.subfield == 'file') {
+            if (input.subfield !== undefined && input.subfield === 'file') {
                 return !!input.value;
             }
 

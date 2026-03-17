@@ -246,7 +246,7 @@ export class CoreFileUploaderProvider {
         };
         const fileName = CoreFileUtils.getFileAndDirectoryFromPath(uri).name;
 
-        if (isIOS && (mimetype == 'image/jpeg' || mimetype == 'image/png')) {
+        if (isIOS && (mimetype === 'image/jpeg' || mimetype === 'image/png')) {
             // In iOS, the pictures can have repeated names, even if they come from the album.
             // Add a timestamp to the filename to make it unique.
             const split = fileName.split('.');
@@ -460,7 +460,7 @@ export class CoreFileUploaderProvider {
     prepareFiletypeList(filetypeList: string): CoreFileUploaderTypeList | undefined {
         filetypeList = filetypeList?.trim();
 
-        if (!filetypeList || filetypeList == '*') {
+        if (!filetypeList || filetypeList === '*') {
             // All types supported, return undefined.
             return;
         }

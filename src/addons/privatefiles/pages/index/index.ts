@@ -167,7 +167,7 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
      */
     rootChanged(): void {
         this.filesLoaded = false;
-        this.component = this.root == 'my' ? AddonPrivateFilesProvider.PRIVATE_FILES_COMPONENT :
+        this.component = this.root === 'my' ? AddonPrivateFilesProvider.PRIVATE_FILES_COMPONENT :
             AddonPrivateFilesProvider.SITE_FILES_COMPONENT;
 
         this.fetchFiles().finally(() => {
@@ -216,11 +216,11 @@ export default class AddonPrivateFilesIndexPage implements OnInit, OnDestroy {
             }
 
             // The path is unknown, the user must be requesting a root.
-            if (this.root == 'site') {
+            if (this.root === 'site') {
                 this.title = Translate.instant('addon.privatefiles.sitefiles');
 
                 this.files = await AddonPrivateFiles.getSiteFiles();
-            } else if (this.root == 'my') {
+            } else if (this.root === 'my') {
                 this.title = Translate.instant('addon.privatefiles.files');
 
                 this.files = await AddonPrivateFiles.getPrivateFiles();

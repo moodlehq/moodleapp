@@ -125,7 +125,7 @@ export class AddonModChatPrefetchHandlerLazyService extends AddonModChatPrefetch
             }
         } catch (error) {
             // Ignore group error.
-            if (error && error.errorcode == 'notingroup') {
+            if (error && error.errorcode === 'notingroup') {
                 return;
             }
 

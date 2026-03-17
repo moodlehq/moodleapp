@@ -39,7 +39,7 @@ export class CoreAjaxWSError extends CoreSiteError {
         this.backtrace = error.backtrace;
         this.available = available ?? (
             this.debug
-                ? (this.debug.code == 'invalidrecord' ? -1 : 1)
+                ? (this.debug.code === 'invalidrecord' ? -1 : 1)
                 : 0
         );
     }

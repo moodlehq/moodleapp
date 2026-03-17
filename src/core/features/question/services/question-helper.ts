@@ -372,7 +372,7 @@ export class CoreQuestionHelperProvider {
             const name = element.name || '';
 
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON') {
                 return;
             }
 
@@ -401,7 +401,7 @@ export class CoreQuestionHelperProvider {
             const name = element.name || element.getAttribute('ng-reflect-name') || '';
 
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON') {
                 return;
             }
 
@@ -411,9 +411,9 @@ export class CoreQuestionHelperProvider {
             }
 
             // Get the value.
-            if (element.type == 'checkbox') {
+            if (element.type === 'checkbox') {
                 answers[name] = !!element.checked;
-            } else if (element.type == 'radio') {
+            } else if (element.type === 'radio') {
                 if (element.checked) {
                     answers[name] = element.value;
                 }
@@ -561,7 +561,7 @@ export class CoreQuestionHelperProvider {
             return false;
         }
 
-        if (url.slice(-1) != '/') {
+        if (url.slice(-1) !== '/') {
             url = url += '/';
         }
         url += 'draftfile.php';

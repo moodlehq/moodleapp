@@ -129,7 +129,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy {
         this.content.classList.add('has-collapsible-footer');
 
         // Move element to the nearest ion-content if it's not the parent.
-        if (this.element.parentElement?.nodeName != 'ION-CONTENT') {
+        if (this.element.parentElement?.nodeName !== 'ION-CONTENT') {
             this.content.appendChild(this.element);
         }
 

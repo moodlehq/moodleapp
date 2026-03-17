@@ -742,7 +742,7 @@ export class AddonModLessonProvider {
             let ignoreCase = '';
 
             if (useRegExp) {
-                if (expectedAnswer.slice(-2) == '/i') {
+                if (expectedAnswer.slice(-2) === '/i') {
                     expectedAnswer = expectedAnswer.substring(0, expectedAnswer.length - 2);
                     ignoreCase = 'i';
                 }
@@ -2330,15 +2330,15 @@ export class AddonModLessonProvider {
         for (let i = 0; i < info.preventaccessreasons.length; i++) {
             const entry = info.preventaccessreasons[i];
 
-            if (entry.reason == 'lessonopen' || entry.reason == 'lessonclosed') {
+            if (entry.reason === 'lessonopen' || entry.reason === 'lessonclosed') {
                 // Time restrictions are the most prioritary, return it.
                 return entry;
-            } else if (entry.reason == 'passwordprotectedlesson') {
+            } else if (entry.reason === 'passwordprotectedlesson') {
                 if (!ignorePassword) {
                     // Treat password before all other reasons.
                     reason = entry;
                 }
-            } else if (entry.reason == 'noretake' && isReview) {
+            } else if (entry.reason === 'noretake' && isReview) {
                 // Ignore noretake error when reviewing.
             } else if (!reason) {
                 // Rest of cases, just return any of them.
@@ -2659,7 +2659,7 @@ export class AddonModLessonProvider {
         for (let i = 0; i < info.preventaccessreasons.length; i++) {
             const entry = info.preventaccessreasons[i];
 
-            if (entry.reason == 'passwordprotectedlesson') {
+            if (entry.reason === 'passwordprotectedlesson') {
                 return true;
             }
         }

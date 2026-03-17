@@ -40,8 +40,8 @@ export class AddonBadgesPushClickHandlerService implements CorePushNotifications
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         const data = notification.customdata || {};
 
-        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
-                (notification.name == 'badgerecipientnotice' || (notification.name == 'badgecreatornotice' && data.hash))) {
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent === 'moodle' &&
+                (notification.name === 'badgerecipientnotice' || (notification.name === 'badgecreatornotice' && data.hash))) {
             if (notification.customdata?.hash) {
                 return await AddonBadgesHelper.canOpenBadge(String(notification.customdata?.hash), notification.site);
             }
