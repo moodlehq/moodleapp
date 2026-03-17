@@ -756,7 +756,7 @@ export class CoreCoursesProvider {
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        if (!courseIds || courseIds.length == 0) {
+        if (!courseIds || courseIds.length === 0) {
             return of({});
         }
 
@@ -827,7 +827,7 @@ export class CoreCoursesProvider {
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        if (!courseIds || courseIds.length == 0) {
+        if (!courseIds || courseIds.length === 0) {
             return of({});
         }
 

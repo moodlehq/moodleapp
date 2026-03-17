@@ -1036,7 +1036,7 @@ export class SQLiteDB {
                 sql += ' OR ';
             }
 
-            if (params.length == 1) {
+            if (params.length === 1) {
                 sql += `${field} = ?`;
             } else {
                 const questionMarks = ',?'.repeat(params.length).substring(1);

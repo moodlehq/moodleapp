@@ -656,7 +656,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             }, this.siteId);
 
             // Update navBar links and buttons.
-            const newCanDelete = (last && 'id' in last && last.id && this.messages.length == 1) || this.messages.length > 1;
+            const newCanDelete = (last && 'id' in last && last.id && this.messages.length === 1) || this.messages.length > 1;
             if (this.canDelete != newCanDelete) {
                 this.checkCanDelete();
             }

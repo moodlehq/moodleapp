@@ -120,7 +120,7 @@ export class AddonBlockRecentlyAccessedCoursesComponent extends CoreBlockBaseCom
             CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        if (courseIds.length  == 1) {
+        if (courseIds.length === 1) {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
         } else {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
