@@ -186,7 +186,7 @@ export class AddonModFeedbackPrefetchHandlerService extends CoreCourseActivityPr
 
         const promises: Promise<unknown>[] = [];
 
-        if (!groupInfo.groups || groupInfo.groups.length == 0) {
+        if (!groupInfo.groups || groupInfo.groups.length === 0) {
             groupInfo.groups = [{ id: 0, name: '' }];
         }
 

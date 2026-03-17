@@ -511,7 +511,7 @@ export class CoreH5PContentValidator {
         // Groups with just one field are compressed in the editor to only output the child content.
         const isSubContent = semantics.isSubContent === true;
 
-        if (semantics.fields.length == 1 && flatten && !isSubContent) {
+        if (semantics.fields.length === 1 && flatten && !isSubContent) {
             const field = semantics.fields[0];
             const validateFunction = this[this.typeMap[field.type || '']].bind(this);
 
@@ -697,7 +697,7 @@ export class CoreH5PContentValidator {
         if (tag.charAt(0) !== '<') {
             // We matched a lone ">" character.
             return '&gt;';
-        } else if (tag.length == 1) {
+        } else if (tag.length === 1) {
             // We matched a lone "<" character.
             return '&lt;';
         }
@@ -758,7 +758,7 @@ export class CoreH5PContentValidator {
         let attrName = '';
         let skip = false;
 
-        while (attr.length != 0) {
+        while (attr.length !== 0) {
             // Was the last operation successful?
             let working = 0;
             let matches: RegExpMatchArray | null = null;

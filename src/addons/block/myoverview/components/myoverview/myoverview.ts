@@ -247,7 +247,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             CorePromiseUtils.allPromises(courseIds.map((courseId) =>
                 AddonCourseCompletion.invalidateCourseCompletion(courseId)))));
 
-        if (courseIds.length  == 1) {
+        if (courseIds.length === 1) {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions(courseIds[0]));
         } else {
             promises.push(CoreCourseOptionsDelegate.clearAndInvalidateCoursesOptions());
@@ -422,7 +422,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
         });
 
         // If no layout is available use list.
-        if (layoutsOptions.length == 0) {
+        if (layoutsOptions.length === 0) {
             layoutsOptions.push('list');
         }
 

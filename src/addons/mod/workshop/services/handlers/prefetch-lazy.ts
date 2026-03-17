@@ -99,7 +99,7 @@ export class AddonModWorkshopPrefetchHandlerLazyService extends AddonModWorkshop
             access = await AddonModWorkshop.getWorkshopAccessInformation(workshop.id, modOptions);
             if (access.canviewallsubmissions) {
                 const groupInfo = await CoreGroups.getActivityGroupInfo(module.id, false, undefined, options.siteId);
-                if (!groupInfo.groups || groupInfo.groups.length == 0) {
+                if (!groupInfo.groups || groupInfo.groups.length === 0) {
                     groupInfo.groups = [{ id: 0, name: '' }];
                 }
                 groups = groupInfo.groups;

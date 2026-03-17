@@ -120,7 +120,7 @@ export class AddonModFeedbackProvider {
                     }
 
                     // We can finish checking if only searching on one value and we found it.
-                    if (values.length == 1) {
+                    if (values.length === 1) {
                         return false;
                     }
                 }

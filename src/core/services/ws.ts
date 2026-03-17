@@ -184,7 +184,7 @@ export class CoreWSProvider {
             } else if (typeof value === 'string') {
                 if (stripUnicode) {
                     const stripped = CoreText.stripUnicode(value);
-                    if (stripped != value && stripped.trim().length == 0) {
+                    if (stripped != value && stripped.trim().length === 0) {
                         return null;
                     }
                     value = stripped;
