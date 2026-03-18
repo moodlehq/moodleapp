@@ -1008,14 +1008,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     protected getAdvancedGrade(gradeForDisplay?: string): boolean {
         // Check if the grade uses advanced grading.
-        if (gradeForDisplay) {
-            const position = gradeForDisplay.indexOf('class="advancedgrade"');
-            if (position > -1) {
-                return true;
-            }
-        }
-
-        return false;
+        return !!gradeForDisplay && gradeForDisplay.includes('class="advancedgrade"');
     }
 
     /**
