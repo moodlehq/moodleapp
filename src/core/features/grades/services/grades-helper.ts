@@ -101,8 +101,8 @@ export class CoreGradesHelperProvider {
 
                 await this.setRowIconAndType(row, content);
                 this.setRowStyleClasses(row, itemNameColumn.class);
-                row.rowclass += itemNameColumn.class.indexOf('hidden') >= 0 ? ' hidden' : '';
-                row.rowclass += itemNameColumn.class.indexOf('dimmed_text') >= 0 ? ' dimmed_text' : '';
+                row.rowclass += itemNameColumn.class.includes('hidden') ? ' hidden' : '';
+                row.rowclass += itemNameColumn.class.includes('dimmed_text') ? ' dimmed_text' : '';
 
                 if (!useLegacyLayout) {
                     // Remove the "title" of the row (activity name, 'Manual item', 'Aggregation', etc.).
@@ -555,40 +555,40 @@ export class CoreGradesHelperProvider {
      */
     protected async setRowIconAndType(row: CoreGradesFormattedRowCommonData, text: string): Promise<void> {
         text = text.replace('%2F', '/').replace('%2f', '/');
-        if (text.indexOf('/agg_mean') > -1) {
+        if (text.includes('/agg_mean')) {
             row.itemtype = 'agg_mean';
             row.icon = 'moodle-agg-mean';
             row.iconAlt = Translate.instant('core.grades.aggregatemean');
-        } else if (text.indexOf('/agg_sum') > -1) {
+        } else if (text.includes('/agg_sum')) {
             row.itemtype = 'agg_sum';
             row.icon = 'moodle-agg-sum';
             row.iconAlt = Translate.instant('core.grades.aggregatesum');
         } else if (
-            text.indexOf('/outcomes') > -1 ||
-            text.indexOf('fa-tasks') > -1 ||
-            text.indexOf('fa-list-check') > -1
+            text.includes('/outcomes') ||
+            text.includes('fa-tasks') ||
+            text.includes('fa-list-check')
         ) {
             row.itemtype = 'outcome';
             row.icon = 'fas-list-check';
             row.iconAlt = Translate.instant('core.grades.outcome');
-        } else if (text.indexOf('i/folder') > -1 || text.indexOf('fa-folder') > -1 || text.indexOf('category-content') > -1) {
+        } else if (text.includes('i/folder') || text.includes('fa-folder') || text.includes('category-content')) {
             row.itemtype = 'category';
             row.icon = 'fas-folder';
             row.iconAlt = Translate.instant('core.grades.category');
         } else if (
-            text.indexOf('/manual_item') > -1 ||
-            text.indexOf('fa-square-o') > -1 ||
-            text.indexOf('fa-pencil-square-o') > -1 ||
-            text.indexOf('fa-pen-to-square') > -1
+            text.includes('/manual_item') ||
+            text.includes('fa-square-o') ||
+            text.includes('fa-pencil-square-o') ||
+            text.includes('fa-pen-to-square')
         ) {
             row.itemtype = 'manual';
             row.icon = 'fas-pen-to-square';
             row.iconAlt = Translate.instant('core.grades.manualitem');
-        } else if (text.indexOf('/calc') > -1 || text.indexOf('fa-calculator') > -1) {
+        } else if (text.includes('/calc') || text.includes('fa-calculator')) {
             row.itemtype = 'calc';
             row.icon = 'fas-calculator';
             row.iconAlt = Translate.instant('core.grades.calculatedgrade');
-        } else if (text.indexOf('/mod/') > -1) {
+        } else if (text.includes('/mod/')) {
             const module = text.match(/mod\/([^/]*)\//);
             const modname = module?.[1];
 
@@ -605,12 +605,12 @@ export class CoreGradesHelperProvider {
                 row.itemtype = 'category';
                 row.icon = 'fas-cubes';
                 row.iconAlt = Translate.instant('core.grades.category');
-            } else if (text.indexOf('src=') > -1) {
+            } else if (text.includes('src=')) {
                 row.itemtype = 'unknown';
                 const src = text.match(/src="([^"]*)"/);
                 row.image = src?.[1];
                 row.iconAlt = Translate.instant('core.unknown');
-            } else if (text.indexOf('<i ') > -1) {
+            } else if (text.includes('<i ')) {
                 row.itemtype = 'unknown';
                 const src = text.match(/<i class="(?:[^"]*?\s)?(fa-[a-z0-9-]+)/);
                 row.icon = src ? src[1] : '';

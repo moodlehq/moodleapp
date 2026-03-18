@@ -618,10 +618,10 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             // Use displayname if available, or fullname if not.
             if (this.filteredCourses[0].displayname !== undefined) {
                 this.filteredCourses = this.filteredCourses.filter((course) =>
-                    course.displayname && course.displayname.toLowerCase().indexOf(value) > -1);
+                    course.displayname && course.displayname.toLowerCase().includes(value));
             } else {
                 this.filteredCourses = this.filteredCourses.filter((course) =>
-                    course.fullname.toLowerCase().indexOf(value) > -1);
+                    course.fullname.toLowerCase().includes(value));
             }
         }
 
