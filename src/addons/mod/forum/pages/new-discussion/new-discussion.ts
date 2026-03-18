@@ -419,7 +419,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     protected filterGroups(forumGroups: CoreGroup[], userGroups: CoreGroup[]): CoreGroup[] {
         const userGroupsIds = userGroups.map(group => group.id);
 
-        return forumGroups.filter(forumGroup => userGroupsIds.indexOf(forumGroup.id) > -1);
+        return forumGroups.filter(forumGroup => userGroupsIds.includes(forumGroup.id));
     }
 
     /**
