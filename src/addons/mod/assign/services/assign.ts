@@ -328,8 +328,8 @@ export class AddonModAssignProvider {
             return CoreIonicColorNames.NONE;
         }
 
-        if (status == AddonModAssignGradingStates.GRADED
-                || status == AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
+        if (status === AddonModAssignGradingStates.GRADED
+            || status === AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
             return CoreIonicColorNames.SUCCESS;
         }
 
@@ -348,8 +348,8 @@ export class AddonModAssignProvider {
         }
 
         if (status === AddonModAssignGradingStates.GRADED
-                || status === AddonModAssignGradingStates.NOT_GRADED
-                || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
+            || status === AddonModAssignGradingStates.NOT_GRADED
+            || status === AddonModAssignGradingStates.GRADED_FOLLOWUP_SUBMIT) {
             return `addon.mod_assign.${status}`;
         }
 
@@ -873,7 +873,7 @@ export class AddonModAssignProvider {
         }
 
         if (submission) {
-            if (assign.submissiondrafts && submission.status == AddonModAssignSubmissionStatusValues.SUBMITTED) {
+            if (assign.submissiondrafts && submission.status === AddonModAssignSubmissionStatusValues.SUBMITTED) {
                 // Drafts are tracked and the student has submitted the assignment.
                 return false;
             }
@@ -956,7 +956,7 @@ export class AddonModAssignProvider {
         submission: AddonModAssignSubmissionFormatted,
         assign: AddonModAssignAssign,
     ): Promise<boolean> {
-        if (submission.status != AddonModAssignSubmissionStatusValues.SUBMITTED) {
+        if (submission.status !== AddonModAssignSubmissionStatusValues.SUBMITTED) {
             return false;
         }
 
@@ -965,8 +965,8 @@ export class AddonModAssignProvider {
             return true;
         }
 
-        if (submission.gradingstatus != AddonModAssignGradingStates.GRADED &&
-                submission.gradingstatus != AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
+        if (submission.gradingstatus !== AddonModAssignGradingStates.GRADED &&
+            submission.gradingstatus !== AddonModAssignGradingStates.MARKING_WORKFLOW_STATE_RELEASED) {
             // Not graded.
             return true;
         }

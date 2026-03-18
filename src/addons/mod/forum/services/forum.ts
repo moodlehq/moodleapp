@@ -400,9 +400,9 @@ export class AddonModForumProvider {
 
             // Format discussions.
             discussions.forEach((disc) => {
-                if (disc.groupid == ADDON_MOD_FORUM_ALL_PARTICIPANTS) {
+                if (disc.groupid === ADDON_MOD_FORUM_ALL_PARTICIPANTS) {
                     disc.groupname = strAllParts;
-                } else if (disc.groupid == ADDON_MOD_FORUM_ALL_GROUPS) {
+                } else if (disc.groupid === ADDON_MOD_FORUM_ALL_GROUPS) {
                     // Offline discussions only.
                     disc.groupname = strAllGroups;
                 } else {
