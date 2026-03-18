@@ -224,7 +224,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         delete this.keepMessageMap[hash];
 
-        const position = this.messages.findIndex((message) => message.hash == hash);
+        const position = this.messages.findIndex((message) => message.hash === hash);
         if (position >= 0) {
             this.messages.splice(position, 1);
         }

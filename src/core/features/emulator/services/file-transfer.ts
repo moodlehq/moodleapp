@@ -195,7 +195,7 @@ export class FileTransferMock {
             for (const i in headers) {
                 const headerString = headers[i];
                 const separatorPos = headerString.indexOf(':');
-                if (separatorPos != -1) {
+                if (separatorPos !== -1) {
                     result[headerString.substring(0, separatorPos)] = headerString.substring(separatorPos + 1).trim();
                 }
             }
