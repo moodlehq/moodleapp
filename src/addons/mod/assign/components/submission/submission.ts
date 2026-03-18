@@ -1022,7 +1022,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.syncObserver?.off();
+        this.syncObserver.off();
     }
 
 }

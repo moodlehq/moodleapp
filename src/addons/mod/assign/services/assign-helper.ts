@@ -269,7 +269,7 @@ export class AddonModAssignHelperProvider {
 
                     return;
                 }))
-            :[];
+            : [];
 
         await Promise.all(promises);
 

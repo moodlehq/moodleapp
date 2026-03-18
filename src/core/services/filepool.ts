@@ -173,7 +173,7 @@ class CoreFilepoolQueue {
      * @returns Resolved with tru if the object exists, false otherwise-
      */
     async exist(siteId: string, fileId: string): Promise<boolean> {
-        return await CorePromiseUtils.promiseWorks(this.getEntry( siteId, fileId));
+        return await CorePromiseUtils.promiseWorks(this.getEntry(siteId, fileId));
     }
 
     /**
@@ -184,7 +184,7 @@ class CoreFilepoolQueue {
      * @returns Resolved with file object from DB on success, rejected otherwise.
      */
     async get(siteId: string, fileId: string): Promise<CoreFilepoolQueueEntry> {
-        const entry = await this.getEntry( siteId, fileId);
+        const entry = await this.getEntry(siteId, fileId);
 
         return CoreFilepoolQueue.formatEntry(entry);
     }
@@ -2562,7 +2562,7 @@ export class CoreFilepoolProvider {
      */
     isFileEventDownloadedOrDeleted(data: CoreFilepoolFileEventData): boolean {
         return (data.action === CoreFilepoolFileActions.DOWNLOAD && data.success == true) ||
-                data.action === CoreFilepoolFileActions.DELETED;
+            data.action === CoreFilepoolFileActions.DELETED;
     }
 
     /**
@@ -3336,7 +3336,7 @@ type CoreFilepoolPromisedValue = CorePromisedValue<void> & {
     onProgress?: CoreFilepoolOnProgressCallback; // On Progress function.
 };
 
-type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority'|'revision'> & {
+type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority' | 'revision'> & {
     priority: number; // The priority this file should get in the queue (range 0-999).
     revision: number; // The revision of the file.
     timemodified: number; // The time this file was modified. Can be used to check file state.

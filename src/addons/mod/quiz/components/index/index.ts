@@ -348,10 +348,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         if (!this.bestGrade?.hasgrade || this.gradebookData?.grade === undefined) {
-            this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
-                grade: Translate.instant('addon.mod_quiz.notyetgraded'),
-                max: quiz.gradeFormatted,
-            } });
+            this.gradeResult = Translate.instant('core.grades.gradelong', {
+                $a: {
+                    grade: Translate.instant('addon.mod_quiz.notyetgraded'),
+                    max: quiz.gradeFormatted,
+                },
+            });
 
             return;
         }
@@ -368,10 +370,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.gradeOverridden = false;
         }
 
-        this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
-            grade: formattedGradebookGrade,
-            max: quiz.gradeFormatted,
-        } });
+        this.gradeResult = Translate.instant('core.grades.gradelong', {
+            $a: {
+                grade: formattedGradebookGrade,
+                max: quiz.gradeFormatted,
+            },
+        });
 
         if (quiz.showFeedback) {
             // Get the quiz overall feedback.
@@ -623,7 +627,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             }
 
             if (quiz.showFeedback && attempt.state === AddonModQuizAttemptStates.FINISHED &&
-                    options.someoptions.overallfeedback && isSafeNumber(formattedAttempt.rescaledGrade)) {
+                options.someoptions.overallfeedback && isSafeNumber(formattedAttempt.rescaledGrade)) {
 
                 // Feedback should be displayed, get the feedback for the grade.
                 const response = await AddonModQuiz.getFeedbackForGrade(quiz.id, formattedAttempt.rescaledGrade, {

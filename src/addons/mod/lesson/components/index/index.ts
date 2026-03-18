@@ -535,7 +535,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
             return;
         }
 
-        const formattedData = <AttemptsOverview> data;
+        const formattedData = <AttemptsOverview>data;
 
         // Format times and grades.
         if (formattedData.avetime != null && formattedData.numofattempts) {
@@ -643,7 +643,7 @@ export class AddonModLessonIndexComponent extends CoreCourseModuleMainActivityCo
         this.showLoading = true;
 
         try {
-            await this.validatePassword(<string> password);
+            await this.validatePassword(<string>password);
 
             // Password validated.
             this.lessonReady();
