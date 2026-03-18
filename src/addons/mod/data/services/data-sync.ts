@@ -282,10 +282,10 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
         };
 
         const editAction = entryActions.find((action) =>
-            action.action == AddonModDataAction.ADD || action.action == AddonModDataAction.EDIT);
+            action.action === AddonModDataAction.ADD || action.action === AddonModDataAction.EDIT);
         const approveAction = entryActions.find((action) =>
-            action.action == AddonModDataAction.APPROVE || action.action == AddonModDataAction.DISAPPROVE);
-        const deleteAction = entryActions.find((action) => action.action == AddonModDataAction.DELETE);
+            action.action === AddonModDataAction.APPROVE || action.action === AddonModDataAction.DISAPPROVE);
+        const deleteAction = entryActions.find((action) => action.action === AddonModDataAction.DELETE);
 
         const options: CoreCourseCommonModWSOptions = {
             cmId: database.coursemodule,
@@ -377,7 +377,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
                     }
                 }));
 
-                if (editAction.action == AddonModDataAction.ADD) {
+                if (editAction.action === AddonModDataAction.ADD) {
                     const result = await AddonModData.addEntryOnline(
                         editAction.dataid,
                         editAction.fields,
@@ -406,7 +406,7 @@ export class AddonModDataSyncProvider extends CoreCourseActivitySyncBaseProvider
 
         if (approveAction) {
             try {
-                await AddonModData.approveEntryOnline(entryId, approveAction.action == AddonModDataAction.APPROVE, siteId);
+                await AddonModData.approveEntryOnline(entryId, approveAction.action === AddonModDataAction.APPROVE, siteId);
             } catch (error) {
                 if (CoreWSError.isWebServiceError(error)) {
                     // The WebService has thrown an error, this means it cannot be performed. Discard.

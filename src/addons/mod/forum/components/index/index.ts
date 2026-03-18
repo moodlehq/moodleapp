@@ -298,7 +298,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         // Listen for offline ratings saved and synced.
         this.ratingOfflineObserver = CoreEvents.on(CoreRatingProvider.RATING_SAVED_EVENT, (data) => {
             if (this.forum && data.component === 'mod_forum' && data.ratingArea === 'post' &&
-                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+                    data.contextLevel === ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings = true;
                 this.hasOffline = true;
             }
@@ -306,7 +306,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
         this.ratingSyncObserver = CoreEvents.on(CoreRatingSyncProvider.SYNCED_EVENT, async (data) => {
             if (this.forum && data.component === 'mod_forum' && data.ratingArea === 'post' &&
-                    data.contextLevel == ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
+                    data.contextLevel === ContextLevel.MODULE && data.instanceId == this.forum.cmid) {
                 this.hasOfflineRatings =
                     await CoreRatingOffline.hasRatings('mod_forum', 'post', ContextLevel.MODULE, this.forum.cmid);
                 this.hasOffline = this.hasOffline || this.hasOfflineRatings;

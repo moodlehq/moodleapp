@@ -555,7 +555,7 @@ export default class AddonModLessonPlayerPage implements OnInit, OnDestroy, CanL
      * @param pageId The page to load.
      */
     protected async loadPage(pageId: number): Promise<void> {
-        if (pageId == AddonModLessonJumpTo.EOL) {
+        if (pageId === AddonModLessonJumpTo.EOL) {
             // End of lesson reached.
             await this.finishRetake();
 
