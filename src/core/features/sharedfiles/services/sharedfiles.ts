@@ -173,7 +173,7 @@ export class CoreSharedFilesProvider {
                     const extension = CoreMimetype.getFileExtension(entry.name);
                     const mimetype = CoreMimetype.getMimeType(extension);
 
-                    return !mimetype || mimetypes.indexOf(mimetype) > -1;
+                    return !mimetype || mimetypes.includes(mimetype);
                 });
             }
 

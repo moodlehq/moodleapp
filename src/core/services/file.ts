@@ -973,7 +973,7 @@ export class CoreFileProvider {
      * @returns Path with basePath added.
      */
     addBasePathIfNeeded(path: string): string {
-        if (path.indexOf(this.basePath) > -1) {
+        if (path.includes(this.basePath)) {
             return path;
         } else {
             return CorePath.concatenatePaths(this.basePath, path);

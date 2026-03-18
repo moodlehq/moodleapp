@@ -699,7 +699,7 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (CoreUrl.isThemeImageUrl(fileUrl) && fileUrl.indexOf('flagged') > -1) {
+            if (CoreUrl.isThemeImageUrl(fileUrl) && fileUrl.includes('flagged')) {
                 // Ignore flag images.
                 return;
             }
@@ -911,13 +911,13 @@ export class CoreQuestionHelperProvider {
             const incorrectIcon = this.getIncorrectIcon();
             const partiallyCorrectIcon = this.getPartiallyCorrectIcon();
             if ('src' in icon) {
-                if ((icon as HTMLImageElement).src.indexOf('grade_partiallycorrect') >= 0) {
+                if ((icon as HTMLImageElement).src.includes('grade_partiallycorrect')) {
                     iconData = partiallyCorrectIcon;
                     color = CoreIonicColorNames.WARNING;
-                } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
+                } else if ((icon as HTMLImageElement).src.includes('incorrect') ) {
                     iconData = incorrectIcon;
                     color = CoreIonicColorNames.DANGER;
-                } else if((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
+                } else if((icon as HTMLImageElement).src.includes('correct')) {
                     iconData = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
                 }
