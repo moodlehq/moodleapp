@@ -300,7 +300,7 @@ export class CoreText {
         }
 
         const hasHTMLTags = CoreText.hasHTMLTags(text);
-        if (text.indexOf('<p>') === -1) {
+        if (!text.includes('<p>')) {
             // Wrap the text in <p> tags.
             text = `<p>${text}</p>`;
         }

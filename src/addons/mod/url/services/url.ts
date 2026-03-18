@@ -59,7 +59,7 @@ export class AddonModUrlProvider {
         // Detect links to local moodle pages.
         const currentSite = CoreSites.getCurrentSite();
         if (currentSite && currentSite.containsUrl(url.externalurl)) {
-            if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.includes('.php')) {
+            if (!url.externalurl.includes('file.php') && url.externalurl.includes('.php')) {
                 // Most probably our moodle page with navigation.
                 return ModResourceDisplay.OPEN;
             }

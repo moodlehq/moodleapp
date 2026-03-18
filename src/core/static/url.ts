@@ -827,7 +827,7 @@ export class CoreUrl {
      * @todo Use CoreUrl.parse. It cannot use it right now because it won't detect username on custom URL with double protocol.
      */
     static getUsernameFromUrl(url: string): string | undefined {
-            if (url.indexOf('@') < 0) {
+            if (!url.includes('@')) {
                 return;
             }
 

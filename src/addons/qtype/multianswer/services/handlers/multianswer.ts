@@ -72,7 +72,7 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
                 if (!value) {
                     return QuestionCompleteGradableResponse.NO;
                 }
-            } else if (completedCheckboxes.indexOf(parts[0]) === -1) {
+            } else if (!completedCheckboxes.includes(parts[0])) {
                 // Checkboxes.
                 if (!value || value === 'false') {
                     return QuestionCompleteGradableResponse.NO;

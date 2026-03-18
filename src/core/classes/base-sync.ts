@@ -75,7 +75,7 @@ export class CoreSyncBaseProvider<T = void> {
     protected addOfflineDataDeletedWarning(warnings: string[], name: string, error: CoreAnyError): void {
         const warning = this.getOfflineDataDeletedWarning(name, error);
 
-        if (warnings.indexOf(warning) == -1) {
+        if (!warnings.includes(warning)) {
             warnings.push(warning);
         }
     }

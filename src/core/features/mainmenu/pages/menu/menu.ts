@@ -305,7 +305,7 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
         // Use only the handlers that don't appear in the main view.
         this.moreBadge = this.allHandlers.some((handler) =>
-            'badge' in handler && !!handler.badge && mainHandlers.indexOf(handler) === -1);
+            'badge' in handler && !!handler.badge && !mainHandlers.includes(handler));
     }
 
     /**

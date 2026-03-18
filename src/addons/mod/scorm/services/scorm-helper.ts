@@ -158,7 +158,7 @@ export class AddonModScormHelperProvider {
             const filtered: Record<string, AddonModScormDataValue> = {};
 
             for (const element in sco.userdata) {
-                if (element.indexOf('.') == -1 && elementsToIgnore.indexOf(element) == -1) {
+                if (!element.includes('.') && !elementsToIgnore.includes(element)) {
                     // The element doesn't use a dot notation, probably SCO data.
                     filtered[element] = sco.userdata[element];
                 }
