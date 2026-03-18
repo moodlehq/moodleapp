@@ -62,7 +62,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
             };
             let page = `course/${courseId}`;
 
-            if (notification.contexturl?.indexOf('user/index.php') != -1) {
+            if (notification.contexturl?.includes('user/index.php')) {
                 // Open the participants tab.
                 params.selectedTab = 'participants'; // @todo Set this when participants is done.
             } else if (!result.enrolled) {

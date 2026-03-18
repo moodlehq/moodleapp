@@ -606,7 +606,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
                 if (this.deletedEvents.length) {
                     // Mark as deleted the events that were deleted in offline.
                     day.eventsFormated?.forEach((event) => {
-                        event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                        event.deleted = this.deletedEvents.includes(event.id);
                     });
                 }
 

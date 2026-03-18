@@ -43,7 +43,7 @@ export class AddonModQuizPushClickHandlerService implements CorePushNotification
      */
     async handles(notification: AddonModQuizPushNotificationData): Promise<boolean> {
         return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent === 'mod_quiz' &&
-                AddonModQuizPushClickHandlerService.SUPPORTED_NAMES.indexOf(notification.name ?? '') !== -1 &&
+                AddonModQuizPushClickHandlerService.SUPPORTED_NAMES.includes(notification.name ?? '') &&
                 !!(notification.customdata?.instance || notification.contexturl);
     }
 
