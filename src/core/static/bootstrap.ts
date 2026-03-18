@@ -88,8 +88,7 @@ export class CoreBootstrap {
                 title = null;
             }
 
-            if (!content ||
-                    (!trigger.includes('hover') && !trigger.includes('focus') && !trigger.includes('click'))) {
+            if (!content || (!trigger.includes('hover') && !trigger.includes('focus') && !trigger.includes('click'))) {
                 return;
             }
 

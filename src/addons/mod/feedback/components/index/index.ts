@@ -261,8 +261,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         const site = await CoreSites.getSite(this.siteId);
 
         if (!site.isVersionGreaterEqualThan('4.2')
-                || !this.feedback?.page_after_submit
-                || !this.feedback.pageaftersubmitfiles) {
+            || !this.feedback?.page_after_submit
+            || !this.feedback.pageaftersubmitfiles) {
             return;
         }
 
@@ -355,8 +355,8 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
                 break;
 
             case AddonModFeedbackQuestionType.INFO:
-                item.data = <string[]> item.data.map((dataItem) => {
-                    const parsed = <Record<string, string>> CoreText.parseJSON(dataItem);
+                item.data = <string[]>item.data.map((dataItem) => {
+                    const parsed = <Record<string, string>>CoreText.parseJSON(dataItem);
 
                     return parsed.show !== undefined ? parsed.show : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
@@ -371,15 +371,15 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
 
             case AddonModFeedbackQuestionType.MULTICHOICERATED:
             case AddonModFeedbackQuestionType.MULTICHOICE: {
-                const parsedData = <Record<string, string | number>[]> item.data.map((dataItem) => {
-                    const parsed = <Record<string, string | number>> CoreText.parseJSON(dataItem);
+                const parsedData = <Record<string, string | number>[]>item.data.map((dataItem) => {
+                    const parsed = <Record<string, string | number>>CoreText.parseJSON(dataItem);
 
                     return parsed.answertext !== undefined ? parsed : false;
                 }).filter((dataItem) => dataItem); // Filter false entries.
 
                 // Format labels.
                 item.labels = parsedData.map((dataItem) => {
-                    dataItem.quotient = (<number> dataItem.quotient * 100).toFixed(2);
+                    dataItem.quotient = (<number>dataItem.quotient * 100).toFixed(2);
                     let label = '';
 
                     if (dataItem.value !== undefined) {
@@ -514,7 +514,7 @@ export class AddonModFeedbackIndexComponent extends CoreCourseModuleMainActivity
         if (this.selectedTab === AddonModFeedbackIndexTabName.ANALYSIS) {
             let num = 1;
 
-            this.items = <AddonModFeedbackItem[]> analysis.itemsdata.map((itemData) => {
+            this.items = <AddonModFeedbackItem[]>analysis.itemsdata.map((itemData) => {
                 const item: AddonModFeedbackItem = Object.assign(itemData.item, {
                     data: itemData.data,
                     num: num++,

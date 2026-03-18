@@ -67,7 +67,7 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
 
             // Split name by _ to guess the type.
             const parts = name.split('_');
-            if (parts.length  === 2 && parts[1] === 'answer') {
+            if (parts.length === 2 && parts[1] === 'answer') {
                 // Radio, dropdown or textarea.
                 if (!value) {
                     return QuestionCompleteGradableResponse.NO;
@@ -110,7 +110,7 @@ export class AddonQtypeMultiAnswerHandlerService implements CoreQuestionHandler 
 
             // Split name by _ to guess the type.
             const parts = name.split('_');
-            if (parts.length  === 2 && parts[1] === 'answer') {
+            if (parts.length === 2 && parts[1] === 'answer') {
                 // Radio, dropdown or textarea.
                 if (value) {
                     return QuestionCompleteGradableResponse.YES;

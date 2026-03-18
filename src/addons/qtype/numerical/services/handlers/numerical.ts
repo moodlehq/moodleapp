@@ -74,14 +74,14 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
             return QuestionCompleteGradableResponse.NO;
         }
 
-        const { answer, unit } = this.parseAnswer(question, <string> answers.answer);
+        const { answer, unit } = this.parseAnswer(question, <string>answers.answer);
         if (answer === null) {
             return QuestionCompleteGradableResponse.NO;
         }
 
         if (!question.parsedSettings) {
             if (this.hasSeparateUnitField(question)) {
-                return this.isValidValue(<string> answers.unit)
+                return this.isValidValue(<string>answers.unit)
                     ? QuestionCompleteGradableResponse.YES
                     : QuestionCompleteGradableResponse.NO;
             }
@@ -95,14 +95,14 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
             return QuestionCompleteGradableResponse.NO;
         }
 
-        if (this.hasSeparateUnitField(question) && !this.isValidValue(<string> answers.unit)) {
+        if (this.hasSeparateUnitField(question) && !this.isValidValue(<string>answers.unit)) {
             // Unit not supplied as a separate field and it's required.
             return QuestionCompleteGradableResponse.NO;
         }
 
         if (question.parsedSettings.unitdisplay === AddonQtypeNumericalHandlerService.UNITINPUT &&
-                question.parsedSettings.unitgradingtype === AddonQtypeNumericalHandlerService.UNITGRADED &&
-                !this.isValidValue(unit)) {
+            question.parsedSettings.unitgradingtype === AddonQtypeNumericalHandlerService.UNITGRADED &&
+            !this.isValidValue(unit)) {
             // Unit not supplied inside the input and it's required.
             return QuestionCompleteGradableResponse.NO;
         }
@@ -124,7 +124,7 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
         question: CoreQuestionQuestionParsed,
         answers: CoreQuestionsAnswers,
     ): QuestionCompleteGradableResponse {
-        return this.isValidValue(<string> answers.answer)
+        return this.isValidValue(<string>answers.answer)
             ? QuestionCompleteGradableResponse.YES
             : QuestionCompleteGradableResponse.NO;
     }
@@ -216,12 +216,12 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
             return Translate.instant('addon.qtype_numerical.pleaseenterananswer');
         }
 
-        const { answer, unit } = this.parseAnswer(question, <string> answers.answer);
+        const { answer, unit } = this.parseAnswer(question, <string>answers.answer);
         if (answer === null) {
             return Translate.instant('addon.qtype_numerical.invalidnumber');
         }
 
-        if (this.hasSeparateUnitField(question) && !this.isValidValue(<string> answers.unit)) {
+        if (this.hasSeparateUnitField(question) && !this.isValidValue(<string>answers.unit)) {
             return Translate.instant('addon.qtype_numerical.unitnotselected');
         }
 
@@ -238,9 +238,9 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
         if (question.parsedSettings.unitdisplay === AddonQtypeNumericalHandlerService.UNITINPUT &&
             question.parsedSettings.unitgradingtype === AddonQtypeNumericalHandlerService.UNITGRADED &&
             !this.isValidValue(unit)) {
-                // It would be great to return an error if the unit is required and not supplied.
-                // But in LMS this is not implemented.
-                return;
+            // It would be great to return an error if the unit is required and not supplied.
+            // But in LMS this is not implemented.
+            return;
         }
 
         return;

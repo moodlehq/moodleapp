@@ -394,7 +394,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         this.subwikiPages = AddonModWiki.sortPagesByTitle(
-            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> onlinePages).concat(dbPages),
+            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]>onlinePages).concat(dbPages),
         );
 
         return this.subwikiPages;
@@ -845,7 +845,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         const sameSubwiki = this.currentSubwiki &&
             ((this.currentSubwiki.id > 0 && this.currentSubwiki.id === editedPageData.subwikiId) ||
-            (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
+                (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
 
         if (sameSubwiki && editedPageData.pageTitle === this.pageTitle) {
             this.showLoadingAndRefresh(true, false);
@@ -899,8 +899,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModWikiAutoSyncData): boolean {
         if (this.currentSubwiki && syncEventData.subwikiId == this.currentSubwiki.id &&
-                syncEventData.wikiId == this.currentSubwiki.wikiid && syncEventData.userId == this.currentSubwiki.userid &&
-                syncEventData.groupId == this.currentSubwiki.groupid) {
+            syncEventData.wikiId == this.currentSubwiki.wikiid && syncEventData.userId == this.currentSubwiki.userid &&
+            syncEventData.groupId == this.currentSubwiki.groupid) {
 
             if (this.isCurrentView && syncEventData.warnings && syncEventData.warnings.length) {
                 // Show warnings.
