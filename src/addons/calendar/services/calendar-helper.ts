@@ -774,7 +774,7 @@ export class AddonCalendarHelperProvider {
      */
     sortEvents(events: (AddonCalendarEventToDisplay)[]): (AddonCalendarEventToDisplay)[] {
         return events.sort((a, b) => {
-            if (a.timestart == b.timestart) {
+            if (a.timestart === b.timestart) {
                 return a.timeduration - b.timeduration;
             }
 

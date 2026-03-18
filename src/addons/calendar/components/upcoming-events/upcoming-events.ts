@@ -99,7 +99,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
 
                 // Remove it from the list of deleted events if it's there.
                 const index = this.deletedEvents.indexOf(data.eventId);
-                if (index != -1) {
+                if (index !== -1) {
                     this.deletedEvents.splice(index, 1);
                 }
             },
@@ -303,7 +303,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         if (this.offlineEvents.length) {
             // Remove the online events that were modified in offline.
             result = result.filter((event) => {
-                const offlineEvent = this.offlineEvents.find((ev) => ev.id == event.id);
+                const offlineEvent = this.offlineEvents.find((ev) => ev.id === event.id);
 
                 return !offlineEvent;
             });
@@ -326,7 +326,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
      * @param eventId Event ID.
      */
     protected undeleteEvent(eventId: number): void {
-        const event = this.onlineEvents.find((event) => event.id == eventId);
+        const event = this.onlineEvents.find((event) => event.id === eventId);
 
         if (event) {
             event.deleted = false;

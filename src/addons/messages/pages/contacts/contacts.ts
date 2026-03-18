@@ -84,12 +84,12 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
             ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
             (data) => {
                 if (data.userBlocked || data.userUnblocked) {
-                    const user = this.confirmedContacts.find((user) => user.id == data.userId);
+                    const user = this.confirmedContacts.find((user) => user.id === data.userId);
                     if (user) {
                         user.isblocked = !!data.userBlocked;
                     }
                 } else if (data.contactRemoved) {
-                    const index = this.confirmedContacts.findIndex((contact) => contact.id == data.userId);
+                    const index = this.confirmedContacts.findIndex((contact) => contact.id === data.userId);
                     if (index >= 0) {
                         this.confirmedContacts.splice(index, 1);
                     }
@@ -98,7 +98,7 @@ export default class AddonMessagesContactsPage implements OnInit, OnDestroy {
                 }
 
                 if (data.contactRequestConfirmed || data.contactRequestDeclined) {
-                    const index = this.requests.findIndex((request) => request.id == data.userId);
+                    const index = this.requests.findIndex((request) => request.id === data.userId);
                     if (index >= 0) {
                         this.requests.splice(index, 1);
                     }
