@@ -53,7 +53,7 @@ export class AddonModFolderHelperProvider {
             let completePath = '';
 
             // Remove first and last slash if needed.
-            if (path.substring(0, 1) === '/') {
+            if (path.charAt(0) === '/') {
                 path = path.substring(1);
             }
             if (path.substring(path.length - 1) === '/') {
