@@ -558,13 +558,13 @@ export class AddonModScormDataModel12 {
                     this.currentUserData[scoId].userdata[elementDotFormat] = this.defExtra[scoId][element];
 
                     // Get the correct counter and current index.
-                    if (elementDotFormat.indexOf('cmi.evaluation.comments') === 0) {
+                    if (elementDotFormat.startsWith('cmi.evaluation.comments')) {
                         counterElement = 'cmi.evaluation.comments._count';
                         currentCounterIndex = elementDotFormat.match(/.(\d+)./)?.[1] || '0';
-                    } else if (elementDotFormat.indexOf('cmi.objectives') === 0) {
+                    } else if (elementDotFormat.startsWith('cmi.objectives')) {
                         counterElement = 'cmi.objectives._count';
                         currentCounterIndex = elementDotFormat.match(/.(\d+)./)?.[1] || '0';
-                    } else if (elementDotFormat.indexOf('cmi.interactions') === 0) {
+                    } else if (elementDotFormat.startsWith('cmi.interactions')) {
                         if (elementDotFormat.indexOf('.objectives.') > 0) {
                             const currentN = elementDotFormat.match(/cmi.interactions.(\d+)./)?.[1];
                             currentCounterIndex = elementDotFormat.match(/objectives.(\d+)./)?.[1] || '0';
@@ -831,7 +831,7 @@ export class AddonModScormDataModel12 {
                             if (element != elementModel) {
 
                                 // Init default counters and values.
-                                if (element.indexOf('cmi.objectives') === 0) {
+                                if (element.startsWith('cmi.objectives')) {
                                     const currentN = element.match(/cmi.objectives.(\d+)./)?.[1];
                                     const counterElement = 'cmi.objectives.' + currentN + '.score';
 
@@ -845,7 +845,7 @@ export class AddonModScormDataModel12 {
                                         this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.max'], '');
                                     }
 
-                                } else if (element.indexOf('cmi.interactions') === 0) {
+                                } else if (element.startsWith('cmi.interactions')) {
                                     const currentN = element.match(/cmi.interactions.(\d+)./)?.[1];
                                     let counterElement = 'cmi.interactions.' + currentN + '.objectives._count';
 

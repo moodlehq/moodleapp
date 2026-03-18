@@ -71,7 +71,7 @@ export class CoreSharedFilesHelperProvider {
         });
 
         CoreEvents.on(CoreEvents.APP_LAUNCHED_URL, (data) => {
-            if (data.url.indexOf('file://') === 0) {
+            if (data.url.startsWith('file://')) {
                 // We received a file in iOS, it's probably a shared file. Treat it.
                 lastCheck = Date.now();
                 this.searchIOSNewSharedFiles(data.url);

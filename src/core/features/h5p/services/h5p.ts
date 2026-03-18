@@ -253,7 +253,7 @@ export class CoreH5PProvider {
      * @returns Treated url.
      */
     treatH5PUrl(url: string, siteUrl: string): string {
-        if (url.indexOf(CorePath.concatenatePaths(siteUrl, '/webservice/pluginfile.php')) === 0) {
+        if (url.startsWith(CorePath.concatenatePaths(siteUrl, '/webservice/pluginfile.php'))) {
             url = url.replace('/webservice/pluginfile', '/pluginfile');
         }
 
