@@ -116,7 +116,7 @@ export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutle
             }
 
             // Search the tab loaded.
-            const tabIndex = this.tabs.findIndex((tab) => tab.page == stackEvent.enteringView.url);
+            const tabIndex = this.tabs.findIndex((tab) => tab.page === stackEvent.enteringView.url);
             const tab = tabIndex >= 0 ? this.tabs[tabIndex] : undefined;
 
             // Add tabid to the tab content element.

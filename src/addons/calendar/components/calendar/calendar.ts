@@ -105,7 +105,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
 
                 // Remove it from the list of deleted events if it's there.
                 const index = this.manager?.getSource().deletedEvents.indexOf(data.eventId) ?? -1;
-                if (index != -1) {
+                if (index !== -1) {
                     this.manager?.getSource().deletedEvents.splice(index, 1);
                 }
             },
@@ -303,7 +303,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
             }
 
             return month.weeks?.some((week) => week.days.some((day) => {
-                const event = day.eventsFormated?.find((event) => event.id == eventId);
+                const event = day.eventsFormated?.find((event) => event.id === eventId);
 
                 if (event) {
                     event.deleted = false;

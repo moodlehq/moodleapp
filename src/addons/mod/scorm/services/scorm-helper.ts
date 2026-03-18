@@ -281,7 +281,7 @@ export class AddonModScormHelperProvider {
      * @returns Next SCO.
      */
     getNextScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
+        const currentTocIndex = toc.findIndex((item) => item.id === scoId);
 
         // We found the current SCO. Now search the next visible SCO with fulfilled prerequisites.
         for (let j = currentTocIndex + 1; j < toc.length; j++) {
@@ -299,7 +299,7 @@ export class AddonModScormHelperProvider {
      * @returns Previous SCO.
      */
     getPreviousScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
+        const currentTocIndex = toc.findIndex((item) => item.id === scoId);
 
         // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
         for (let j = currentTocIndex - 1; j >= 0; j--) {
@@ -317,7 +317,7 @@ export class AddonModScormHelperProvider {
      * @returns SCO.
      */
     getScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        return toc.find(sco => sco.id == scoId);
+        return toc.find(sco => sco.id === scoId);
     }
 
     /**

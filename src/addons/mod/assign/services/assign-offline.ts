@@ -91,7 +91,7 @@ export class AddonModAssignOfflineProvider {
         // Get assign id.
         let assignIds: number[] = flatten.map((assign) => assign.assignid);
         // Get unique values.
-        assignIds = assignIds.filter((id, pos) => assignIds.indexOf(id) == pos);
+        assignIds = assignIds.filter((id, pos) => assignIds.indexOf(id) === pos);
 
         return assignIds;
     }

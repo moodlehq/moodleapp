@@ -1298,7 +1298,7 @@ export class CoreFileProvider {
 
         const position = window.location.href.indexOf(window.location.pathname);
 
-        if (position != -1) {
+        if (position !== -1) {
             return window.location.href.substring(0, position);
         }
 

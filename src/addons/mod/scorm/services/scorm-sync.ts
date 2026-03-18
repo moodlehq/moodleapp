@@ -761,8 +761,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 const tracks = await AddonModScormOffline.getScormStoredData(scormId, attempt, true, false, siteId);
 
                 // Check if there are elements to sync.
-                const hasDataToSend = tracks.find(track => track.element.includes('.'));
-
+                const hasDataToSend = tracks.some(track => track.element.includes('.'));
                 if (!hasDataToSend) {
                     // Nothing to sync, delete the attempt.
                     return CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));

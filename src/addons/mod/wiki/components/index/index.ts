@@ -202,14 +202,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // This is an offline page. Check if the page was created.
-        const page = data.created.find((page) => page.title == this.pageTitle);
+        const page = data.created.find((page) => page.title === this.pageTitle);
         if (page) {
             // Page was created, set the ID so it's retrieved from server.
             this.currentPage = page.pageId;
             this.pageIsOffline = false;
         } else {
             // Page not found in created list, check if it was discarded.
-            const page = data.discarded.find((page) => page.title == this.pageTitle);
+            const page = data.discarded.find((page) => page.title === this.pageTitle);
             if (page) {
                 // Page discarded, show warning.
                 this.pageWarning = page.warning;
