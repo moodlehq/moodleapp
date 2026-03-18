@@ -585,7 +585,7 @@ export class AddonModScormDataModel12 {
                             this.currentUserData[scoId].userdata[counterElement] = 0;
                         }
                         // Check if we need to sum.
-                        if (Number(currentCounterIndex) == Number(counterData)) {
+                        if (Number(currentCounterIndex) === Number(counterData)) {
                             this.currentUserData[scoId].userdata[counterElement] = Number(counterData) + 1;
                         }
                         if (Number(currentCounterIndex) > Number(counterData)) {

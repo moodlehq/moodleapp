@@ -286,10 +286,10 @@ export class AddonModFeedbackHelperProvider {
 
         const type = parseInt(formItem.presentation, 10);
 
-        if (type == MODE_COURSE || type == MODE_CATEGORY) {
+        if (type === MODE_COURSE || type === MODE_CATEGORY) {
             formItem.presentation = formItem.otherdata;
             formItem.value = formItem.rawValue !== undefined ? formItem.rawValue : formItem.otherdata;
-        } else if (type == MODE_RESPONSETIME) {
+        } else if (type === MODE_RESPONSETIME) {
             formItem.value = '__CURRENT__TIMESTAMP__';
 
             const rawValue = Number(formItem.rawValue);
@@ -406,7 +406,7 @@ export class AddonModFeedbackHelperProvider {
                 const values = formItem.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
                 formItem.choices.forEach((choice) => {
                     for (const x in values) {
-                        if (choice.value == Number(values[x])) {
+                        if (choice.value === Number(values[x])) {
                             choice.checked = true;
 
                             return;
