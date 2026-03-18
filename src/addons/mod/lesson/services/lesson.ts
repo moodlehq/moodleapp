@@ -2121,7 +2121,7 @@ export class AddonModLessonProvider {
         ends = ends || [];
 
         // Search until there are no more pages or it reaches a page of the searched types.
-        while (pageId && ends.indexOf(pages[pageId].qtype) == -1) {
+        while (pageId && !ends.includes(pages[pageId].qtype)) {
             subPages.push(pages[pageId]);
             pageId = pages[pageId].nextpageid;
         }
@@ -3359,7 +3359,7 @@ export class AddonModLessonProvider {
                 delete viewedPagesIds[position]; // Remove it.
 
                 // Since the user did see one page in the cluster, add the cluster pageid to the viewedPagesIds.
-                if (viewedPagesIds.indexOf(page.id) == -1) {
+                if (!viewedPagesIds.includes(page.id)) {
                     viewedPagesIds.push(page.id);
                 }
             });

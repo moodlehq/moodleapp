@@ -107,7 +107,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
      * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (params.view && SUPPORTED_VIEWS.indexOf(params.view) == -1) {
+        if (params.view && !SUPPORTED_VIEWS.includes(params.view)) {
             // This type of view isn't supported in the app.
             return false;
         }

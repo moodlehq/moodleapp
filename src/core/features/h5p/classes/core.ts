@@ -115,7 +115,7 @@ export class CoreH5PCore {
             // Check that embed type is available for library
             const embedTypes = libraryEmbedTypes.toLowerCase();
 
-            if (embedTypes.indexOf(embedType) == -1) {
+            if (!embedTypes.includes(embedType)) {
                 // Not available, pick default.
                 embedType = embedTypes.includes('div') ? 'div' : 'iframe';
             }
@@ -488,7 +488,7 @@ export class CoreH5PCore {
             let url = asset.path;
 
             // Add URL prefix if not external.
-            if (asset.path.indexOf('://') == -1 && assetsFolderPath) {
+            if (!asset.path.includes('://') && assetsFolderPath) {
                 url = CorePath.concatenatePaths(assetsFolderPath, url);
             }
 

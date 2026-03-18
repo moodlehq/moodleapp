@@ -431,7 +431,7 @@ export class CoreFileUploaderProvider {
             if (mimetype) {
                 extension = CoreMimetype.getExtension(mimetype);
 
-                if (mimetypes.indexOf(mimetype) == -1) {
+                if (!mimetypes.includes(mimetype)) {
                     // Get the "main" mimetype of the extension.
                     // It's possible that the list of accepted mimetypes only includes the "main" mimetypes.
                     mimetype = CoreMimetype.getMimeType(extension);
@@ -443,7 +443,7 @@ export class CoreFileUploaderProvider {
                 throw new CoreError('No mimetype or path supplied.');
             }
 
-            if (mimetype && mimetypes.indexOf(mimetype) == -1) {
+            if (mimetype && !mimetypes.includes(mimetype)) {
                 extension = extension || Translate.instant('core.unknown');
 
                 return Translate.instant('core.fileuploader.invalidfiletype', { $a: extension });

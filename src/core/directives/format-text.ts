@@ -378,7 +378,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
         const forcedWidth = Number(originalWidth?.value);
         if (originalWidth && !isNaN(forcedWidth)) {
-            if (originalWidth.value.indexOf('%') < 0) {
+            if (!originalWidth.value.includes('%')) {
                 img.style.width = `${forcedWidth}px`;
             } else {
                 img.style.width = `${forcedWidth}%`;

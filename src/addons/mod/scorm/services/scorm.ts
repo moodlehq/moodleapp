@@ -517,7 +517,7 @@ export class AddonModScormProvider {
         // Calculate the total.
         result.offline.forEach((attempt) => {
             // Check if this attempt also exists in online, it might have been copied to local.
-            if (result.online.indexOf(attempt) == -1) {
+            if (!result.online.includes(attempt)) {
                 result.total++;
             }
         });

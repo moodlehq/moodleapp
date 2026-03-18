@@ -1438,14 +1438,14 @@ export class CoreFilepoolProvider {
             const element = elements[i];
             const url = 'href' in element ? element.href : element.src;
 
-            if (url && CoreUrl.isDownloadableUrl(url) && urls.indexOf(url) == -1) {
+            if (url && CoreUrl.isDownloadableUrl(url) && !urls.includes(url)) {
                 urls.push(url);
             }
 
             // Treat video poster.
             if (element.tagName === 'VIDEO' && element.getAttribute('poster')) {
                 const poster = element.getAttribute('poster');
-                if (poster && CoreUrl.isDownloadableUrl(poster) && urls.indexOf(poster) == -1) {
+                if (poster && CoreUrl.isDownloadableUrl(poster) && !urls.includes(poster)) {
                     urls.push(poster);
                 }
             }
