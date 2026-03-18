@@ -36,7 +36,7 @@ export class AddonModWikiPageOrMapLinkHandlerLazyService extends AddonModWikiPag
     async handleAction(url: string, siteId: string, params: Record<string, string>): Promise<void> {
         const modal = await CoreLoadings.show();
         const pageId = parseInt(params.pageid, 10);
-        const action = url.indexOf('mod/wiki/map.php') != -1 ? 'map' : 'page';
+        const action = url.includes('mod/wiki/map.php') ? 'map' : 'page';
 
         try {
             // Get the page data to obtain wikiId, subwikiId, etc.
@@ -80,7 +80,7 @@ export class AddonModWikiPageOrMapLinkHandlerLazyService extends AddonModWikiPag
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        const isMap = url.indexOf('mod/wiki/map.php') != -1;
+        const isMap = url.includes('mod/wiki/map.php');
 
         if (params.id && !isMap) {
             // ID param is more prioritary than pageid in index page, it's a index URL.

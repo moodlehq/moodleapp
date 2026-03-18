@@ -171,7 +171,7 @@ export class AddonQtypeNumericalHandlerService implements CoreQuestionHandler {
 
         // If a '.' is present or there are multiple ',' (i.e. 2,456,789) assume ',' is a thousands separator and strip it.
         // Else assume it is a decimal separator, and change it to '.'.
-        if (answer.indexOf('.') !== -1 || answer.split(',').length - 1 > 1) {
+        if (answer.includes('.') || answer.split(',').length - 1 > 1) {
             answer = answer.replace(',', '');
         } else {
             answer = answer.replace(',', '.');

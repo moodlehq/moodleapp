@@ -1282,7 +1282,7 @@ export class CoreFileProvider {
      * @returns Whether the file is in the app's folder.
      */
     isFileInAppFolder(path: string): boolean {
-        return path.indexOf(this.basePath) != -1;
+        return path.includes(this.basePath);
     }
 
     /**
@@ -1355,7 +1355,7 @@ export class CoreFileProvider {
      * @returns Whether it's in the app folder.
      */
     protected isPathInAppFolder(path: string): boolean {
-        return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.indexOf(this.basePath) != -1;
+        return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.includes(this.basePath);
     }
 
     /**

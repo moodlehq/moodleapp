@@ -59,7 +59,7 @@ export class AddonModUrlProvider {
         // Detect links to local moodle pages.
         const currentSite = CoreSites.getCurrentSite();
         if (currentSite && currentSite.containsUrl(url.externalurl)) {
-            if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.indexOf('.php') != -1) {
+            if (url.externalurl.indexOf('file.php') == -1 && url.externalurl.includes('.php')) {
                 // Most probably our moodle page with navigation.
                 return ModResourceDisplay.OPEN;
             }
@@ -68,13 +68,13 @@ export class AddonModUrlProvider {
         const download = ['application/zip', 'application/x-tar', 'application/g-zip', 'application/pdf', 'text/html'];
         let mimetype = CoreMimetype.getMimeType(extension);
 
-        if (url.externalurl.indexOf('.php') != -1 || url.externalurl.slice(-1) === '/' ||
-                (url.externalurl.indexOf('//') != -1 && url.externalurl.match(/\//g)?.length === 2)) {
+        if (url.externalurl.includes('.php') || url.externalurl.slice(-1) === '/' ||
+                (url.externalurl.includes('//') && url.externalurl.match(/\//g)?.length === 2)) {
             // Seems to be a web, use HTML mimetype.
             mimetype = 'text/html';
         }
 
-        if (mimetype && download.indexOf(mimetype) != -1) {
+        if (mimetype && download.includes(mimetype)) {
             return ModResourceDisplay.DOWNLOAD;
         }
 

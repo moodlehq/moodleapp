@@ -157,7 +157,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             events,
             async (data) => {
                 // Check that user is grading and this grade wasn't blocked when sync was performed.
-                if (!this.loaded || !this.canGrade || data.gradesBlocked.indexOf(this.submitId) !== -1) {
+                if (!this.loaded || !this.canGrade || data.gradesBlocked.includes(this.submitId)) {
                     return;
                 }
 

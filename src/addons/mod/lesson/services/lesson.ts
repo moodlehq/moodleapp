@@ -686,7 +686,7 @@ export class AddonModLessonProvider {
             let max: number;
             let min: number;
 
-            if (answer.answer && answer.answer.indexOf(':') != -1) {
+            if (answer.answer && answer.answer.includes(':')) {
                 // There's a pair of values.
                 const split = answer.answer.split(':');
                 min = parseFloat(split[0]);
@@ -892,7 +892,7 @@ export class AddonModLessonProvider {
 
             // Double check that this is the OTHER_ANSWERS answer.
             if (typeof lastAnswer.answer === 'string' &&
-                    lastAnswer.answer.indexOf(ADDON_MOD_LESSON_OTHER_ANSWERS) !== -1) {
+                    lastAnswer.answer.includes(ADDON_MOD_LESSON_OTHER_ANSWERS)) {
                 result.newpageid = lastAnswer.jumpto || 0;
                 result.response = lastAnswer.response || '';
 

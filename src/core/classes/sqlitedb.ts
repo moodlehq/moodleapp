@@ -157,7 +157,7 @@ export class SQLiteDB {
         try {
             await this.execute(`ALTER TABLE ${table} ADD COLUMN ${column} ${type} ${constraints}`);
         } catch (error) {
-            if (error && error.code == 5 && error?.message.indexOf('duplicate column name') != -1) {
+            if (error && error.code == 5 && error?.message.includes('duplicate column name')) {
                 // Column already exists.
                 return;
             }

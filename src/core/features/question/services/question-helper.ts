@@ -566,7 +566,7 @@ export class CoreQuestionHelperProvider {
         }
         url += 'draftfile.php';
 
-        return html.indexOf(url) != -1;
+        return html.includes(url);
     }
 
     /**

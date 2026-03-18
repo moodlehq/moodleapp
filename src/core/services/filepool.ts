@@ -1619,7 +1619,7 @@ export class CoreFilepoolProvider {
         // Decode URL.
         url = CoreText.decodeHTML(CoreUrl.decodeURIComponent(url));
 
-        if (url.indexOf('/webservice/pluginfile') !== -1) {
+        if (url.includes('/webservice/pluginfile')) {
             // Remove attributes that do not matter.
             this.urlAttributes.forEach((regex) => {
                 url = url.replace(regex, '');
@@ -1656,7 +1656,7 @@ export class CoreFilepoolProvider {
         // Decode URL.
         url = CoreText.decodeHTML(CoreUrl.decodeURIComponent(url));
 
-        if (url.indexOf('/webservice/pluginfile') !== -1) {
+        if (url.includes('/webservice/pluginfile')) {
             // Remove attributes that do not matter.
             this.urlAttributes.forEach((regex) => {
                 url = url.replace(regex, '');
@@ -2063,7 +2063,7 @@ export class CoreFilepoolProvider {
 
         url = this.removeRevisionFromUrl(url);
 
-        if (url.indexOf('/webservice/pluginfile') !== -1) {
+        if (url.includes('/webservice/pluginfile')) {
             // Remove attributes that do not matter.
             this.urlAttributes.forEach((regex) => {
                 url = url.replace(regex, '');
@@ -2347,7 +2347,7 @@ export class CoreFilepoolProvider {
     protected guessFilenameFromUrl(fileUrl: string): string {
         let filename = '';
 
-        if (fileUrl.indexOf('/webservice/pluginfile') !== -1) {
+        if (fileUrl.includes('/webservice/pluginfile')) {
             // It's a pluginfile URL. Search for the 'file' param to extract the name.
             const params = CoreUrl.extractUrlParams(fileUrl);
             if (params.file) {
