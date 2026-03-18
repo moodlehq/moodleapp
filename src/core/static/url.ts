@@ -480,7 +480,7 @@ export class CoreUrl {
         const urlAndAnchor = urlToTreat.split('#');
         urlToTreat = urlAndAnchor[0];
 
-        let separator = urlToTreat.indexOf('?') !== -1 ? '&' : '?';
+        let separator = urlToTreat.includes('?') ? '&' : '?';
 
         for (const key in params) {
             let value = params[key];
@@ -655,7 +655,7 @@ export class CoreUrl {
         const canUseTokenPluginFile = accessKey && CoreUrl.canUseTokenPluginFile(url, siteUrl, accessKey);
 
         // First check if we need to fix this url or is already fixed.
-        if (!canUseTokenPluginFile && url.indexOf('token=') !== -1) {
+        if (!canUseTokenPluginFile && url.includes('token=')) {
             return url;
         }
 
@@ -868,7 +868,7 @@ export class CoreUrl {
      * @returns Whether the URL is a gravatar URL.
      */
     static isGravatarUrl(url: string): boolean {
-        return url?.indexOf('gravatar.com/avatar') !== -1;
+        return url?.includes('gravatar.com/avatar') ?? false;
     }
 
     /**
@@ -921,7 +921,7 @@ export class CoreUrl {
      * @returns Whether the URL is a pluginfile URL.
      */
     static isPluginFileUrl(url: string): boolean {
-        return url.indexOf('/pluginfile.php') !== -1;
+        return url.includes('/pluginfile.php');
     }
 
     /**
@@ -931,7 +931,7 @@ export class CoreUrl {
      * @returns Whether the URL is a tokenpluginfile URL.
      */
     static isTokenPluginFileUrl(url: string): boolean {
-        return url.indexOf('/tokenpluginfile.php') !== -1;
+        return url.includes('/tokenpluginfile.php');
     }
 
     /**
@@ -946,7 +946,7 @@ export class CoreUrl {
             return imageUrl.startsWith(`${siteUrl}/theme/image.php`);
         }
 
-        return imageUrl?.indexOf('/theme/image.php') !== -1;
+        return imageUrl?.includes('/theme/image.php') ?? false;
     }
 
     /**

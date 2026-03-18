@@ -296,7 +296,7 @@ export class AddonCalendarUpcomingEventsComponent implements OnInit, DoCheck, On
         if (this.deletedEvents.length) {
             // Mark as deleted the events that were deleted in offline.
             result.forEach((event) => {
-                event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                event.deleted = this.deletedEvents.includes(event.id);
             });
         }
 

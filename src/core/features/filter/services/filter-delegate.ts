@@ -265,7 +265,7 @@ export class CoreFilterDelegateService extends CoreDelegate<CoreFilterHandler> {
             return false;
         }
 
-        if (skipFilters && skipFilters.indexOf(filter.filter) !== -1) {
+        if (skipFilters && skipFilters.includes(filter.filter)) {
             // Skip this filter.
             return false;
         }

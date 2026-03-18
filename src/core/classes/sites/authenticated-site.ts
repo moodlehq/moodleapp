@@ -775,7 +775,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 }
 
                 throw new CoreWSError(error);
-            } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+            } else if (preSets.cacheErrors && preSets.cacheErrors.includes(error.errorcode)) {
                 // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                 this.saveToCache(method, data, error, preSets);
 

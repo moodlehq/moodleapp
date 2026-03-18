@@ -227,7 +227,7 @@ export class AddonMessagesSyncProvider extends CoreSyncBaseProvider<AddonMessage
             const wrappedText = message[textFieldName][0] !== '<' ? `<p>${text}</p>` : text;
 
             try {
-                if (onlineMessages.indexOf(wrappedText) != -1) {
+                if (onlineMessages.includes(wrappedText)) {
                     // Message already sent, ignore it to prevent duplicates.
                 } else if (conversationId) {
                     await AddonMessages.sendMessageToConversationOnline(conversationId, text, siteId);
