@@ -54,7 +54,7 @@ const NAV_EVENT = '^previous$|^continue$';
 // Children lists.
 const CMI_CHILDREN = 'core,suspend_data,launch_data,comments,objectives,student_data,student_preference,interactions';
 const CORE_CHILDREN = 'student_id,student_name,lesson_location,credit,lesson_status,entry,score,total_time,lesson_mode,' +
-        'exit,session_time';
+    'exit,session_time';
 const SCORE_CHILDREN = 'raw,min,max';
 const COMMENTS_CHILDREN = 'content,location,time';
 const OBJECTIVES_CHILDREN = 'id,score,status';
@@ -837,12 +837,12 @@ export class AddonModScormDataModel12 {
 
                                     if (this.currentUserData[this.scoId].userdata[counterElement + '._children'] === undefined) {
                                         this.setEl(
-                                            <string> this.currentUserData[this.scoId].userdata[counterElement + '._children'],
+                                            <string>this.currentUserData[this.scoId].userdata[counterElement + '._children'],
                                             SCORE_CHILDREN,
                                         );
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.raw'], '');
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.min'], '');
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.max'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.raw'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.min'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.max'], '');
                                     }
 
                                 } else if (element.indexOf('cmi.interactions') === 0) {
@@ -999,8 +999,8 @@ export class AddonModScormDataModel12 {
             if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.NORMAL) {
                 if (this.getEl('cmi.core.credit') === 'credit') {
                     if (this.getEl('cmi.student_data.mastery_score') !== '' && this.getEl('cmi.core.score.raw') !== '') {
-                        if (parseFloat(<string> this.getEl('cmi.core.score.raw')) >=
-                                parseFloat(<string> this.getEl('cmi.student_data.mastery_score'))) {
+                        if (parseFloat(<string>this.getEl('cmi.core.score.raw')) >=
+                            parseFloat(<string>this.getEl('cmi.student_data.mastery_score'))) {
                             this.setEl('cmi.core.lesson_status', 'passed');
                         } else {
                             this.setEl('cmi.core.lesson_status', 'failed');
@@ -1011,7 +1011,7 @@ export class AddonModScormDataModel12 {
 
             if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.BROWSE) {
                 if (this.dataModel[this.scoId]['cmi.core.lesson_status'].defaultvalue == '' &&
-                        this.getEl('cmi.core.lesson_status') === 'not attempted') {
+                    this.getEl('cmi.core.lesson_status') === 'not attempted') {
                     this.setEl('cmi.core.lesson_status', 'browsed');
                 }
             }
@@ -1042,7 +1042,7 @@ export class AddonModScormDataModel12 {
      * @returns Total time element.
      */
     protected totalTime(): AddonModScormDataEntry {
-        const totalTime = this.addTime(<string> this.getEl('cmi.core.total_time'), <string> this.getEl('cmi.core.session_time'));
+        const totalTime = this.addTime(<string>this.getEl('cmi.core.total_time'), <string>this.getEl('cmi.core.session_time'));
 
         return { element: 'cmi.core.total_time', value: totalTime };
     }
@@ -1053,7 +1053,7 @@ export class AddonModScormDataModel12 {
      * @param name Name of the event to trigger.
      */
     protected triggerEvent(name: string): void {
-        CoreEvents.trigger(name, <AddonModScormCommonEventData> {
+        CoreEvents.trigger(name, <AddonModScormCommonEventData>{
             scormId: this.scorm.id,
             scoId: this.scoId,
             attempt: this.attempt,

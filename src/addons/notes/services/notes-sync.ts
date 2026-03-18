@@ -33,7 +33,7 @@ import { DEFAULT_TEXT_FORMAT } from '@static/text';
 /**
  * Service to sync notes.
  */
-@Injectable( { providedIn: 'root' } )
+@Injectable({ providedIn: 'root' })
 export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncResult> {
 
     constructor() {

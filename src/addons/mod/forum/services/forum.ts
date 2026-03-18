@@ -653,7 +653,7 @@ export class AddonModForumProvider {
             const timeCreatedA = Number(a.timecreated) || 0;
             const timeCreatedB = Number(b.timecreated) || 0;
             if (timeCreatedA === 0 || timeCreatedB === 0) {
-            // Leave 0 at the end.
+                // Leave 0 at the end.
                 return timeCreatedB - timeCreatedA;
             }
 
@@ -873,8 +873,7 @@ export class AddonModForumProvider {
                 result.error = true;
 
                 return result;
-            })
-        ;
+            });
 
         return getPage(options.page ?? 0);
     }
@@ -1136,8 +1135,8 @@ export class AddonModForumProvider {
             message: message,
 
             options: CoreObject.toArrayOfObjects<
-            AddonModForumAddDiscussionPostWSOptionsArray[0],
-            AddonModForumAddDiscussionPostWSOptionsObject
+                AddonModForumAddDiscussionPostWSOptionsArray[0],
+                AddonModForumAddDiscussionPostWSOptionsObject
             >(
                 options || {},
                 'name',
@@ -1278,7 +1277,7 @@ export class AddonModForumProvider {
      */
     async preparePostForEdition(
         postId: number,
-        area: 'attachment'|'post',
+        area: 'attachment' | 'post',
         options: AddonModForumPreparePostOptions = {},
     ): Promise<AddonModForumPrepareDraftAreaForPostWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
@@ -1321,8 +1320,8 @@ export class AddonModForumProvider {
             message: message,
 
             options: CoreObject.toArrayOfObjects<
-            AddonModForumUpdateDiscussionPostWSOptionsArray[0],
-            AddonModForumUpdateDiscussionPostWSOptionsObject
+                AddonModForumUpdateDiscussionPostWSOptionsArray[0],
+                AddonModForumUpdateDiscussionPostWSOptionsObject
             >(
                 options || {},
                 'name',
@@ -1379,38 +1378,38 @@ type AddonModForumGetForumsByCoursesWSParams = {
  * it should be.
  */
 export type AddonModForumData =
-    Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'> & {
-    type: AddonModForumType; // The forum type.
-    duedate?: number; // Duedate for the user.
-    cutoffdate?: number; // Cutoffdate for the user.
-    assessed: number; // Aggregate type.
-    assesstimestart: number; // Assess start time.
-    assesstimefinish: number; // Assess finish time.
-    scale: number; // Scale.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    grade_forum: number; // Whole forum grade.
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    grade_forum_notify: number; // Whether to send notifications to students upon grading by default.
-    maxbytes: number; // Maximum attachment size.
-    maxattachments: number; // Maximum number of attachments.
-    forcesubscribe: number; // Force users to subscribe.
-    trackingtype: number; // Subscription mode.
-    rsstype: number; // RSS feed for this activity.
-    rssarticles: number; // Number of RSS recent articles.
-    timemodified: number; // Time modified.
-    warnafter: number; // Post threshold for warning.
-    blockafter: number; // Post threshold for blocking.
-    blockperiod: number; // Time period for blocking.
-    completiondiscussions: number; // Student must create discussions.
-    completionreplies: number; // Student must post replies.
-    completionposts: number; // Student must post discussions or replies.
-    cmid: number; // Course module id.
-    numdiscussions?: number; // Number of discussions in the forum.
-    cancreatediscussions?: boolean; // If the user can create discussions.
-    lockdiscussionafter?: number; // After what period a discussion is locked.
-    istracked?: boolean; // If the user is tracking the forum.
-    unreadpostscount?: number; // The number of unread posts for tracked forums.
-};
+    Omit<CoreCourseModuleStandardElements, 'coursemodule' | 'section' | 'visible' | 'groupmode' | 'groupingid'> & {
+        type: AddonModForumType; // The forum type.
+        duedate?: number; // Duedate for the user.
+        cutoffdate?: number; // Cutoffdate for the user.
+        assessed: number; // Aggregate type.
+        assesstimestart: number; // Assess start time.
+        assesstimefinish: number; // Assess finish time.
+        scale: number; // Scale.
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        grade_forum: number; // Whole forum grade.
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        grade_forum_notify: number; // Whether to send notifications to students upon grading by default.
+        maxbytes: number; // Maximum attachment size.
+        maxattachments: number; // Maximum number of attachments.
+        forcesubscribe: number; // Force users to subscribe.
+        trackingtype: number; // Subscription mode.
+        rsstype: number; // RSS feed for this activity.
+        rssarticles: number; // Number of RSS recent articles.
+        timemodified: number; // Time modified.
+        warnafter: number; // Post threshold for warning.
+        blockafter: number; // Post threshold for blocking.
+        blockperiod: number; // Time period for blocking.
+        completiondiscussions: number; // Student must create discussions.
+        completionreplies: number; // Student must post replies.
+        completionposts: number; // Student must post discussions or replies.
+        cmid: number; // Course module id.
+        numdiscussions?: number; // Number of discussions in the forum.
+        cancreatediscussions?: boolean; // If the user can create discussions.
+        lockdiscussionafter?: number; // After what period a discussion is locked.
+        istracked?: boolean; // If the user is tracking the forum.
+        unreadpostscount?: number; // The number of unread posts for tracked forums.
+    };
 
 /**
  * Data returned by mod_forum_get_forums_by_courses WS.

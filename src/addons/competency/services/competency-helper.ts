@@ -21,7 +21,7 @@ import { AddonCompetencyLearningPlanStatus, AddonCompetencyReviewStatus } from '
 /**
  * Service that provides some features regarding learning plans.
  */
-@Injectable( { providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class AddonCompetencyHelperProvider {
 
     /**

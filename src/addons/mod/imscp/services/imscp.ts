@@ -32,7 +32,7 @@ import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@featu
 /**
  * Service that provides some features for IMSCP.
  */
-@Injectable( { providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class AddonModImscpProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModImscp:';

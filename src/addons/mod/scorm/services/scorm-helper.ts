@@ -337,7 +337,7 @@ export class AddonModScormHelperProvider {
     ): Promise<AddonModScormTOCScoWithIcon[]> {
         const toc = await AddonModScorm.getOrganizationToc(scormId, lastAttempt, options);
 
-        const tocArray = <AddonModScormTOCScoWithIcon[]> AddonModScorm.formatTocToArray(toc);
+        const tocArray = <AddonModScormTOCScoWithIcon[]>AddonModScorm.formatTocToArray(toc);
 
         // Get images for each SCO.
         tocArray.forEach((sco) => {

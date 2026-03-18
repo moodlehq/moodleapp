@@ -369,8 +369,8 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             config?.displaygroupingallincludinghidden?.value == '1' ||
             sampleCourse.hidden !== undefined && (!config || config.displaygroupinghidden?.value == '1');
 
-        this.filters.show.allincludinghidden =  !config || config.displaygroupingallincludinghidden?.value == '1';
-        this.filters.show.all =  !config || config.displaygroupingall?.value == '1';
+        this.filters.show.allincludinghidden = !config || config.displaygroupingallincludinghidden?.value == '1';
+        this.filters.show.all = !config || config.displaygroupingall?.value == '1';
         this.filters.show.inprogress = !config || config.displaygroupinginprogress?.value == '1';
         this.filters.show.past = !config || config.displaygroupingpast?.value == '1';
         this.filters.show.future = !config || config.displaygroupingfuture?.value == '1';
@@ -580,7 +580,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             this.saveFilters(timeFilter);
 
             // Apply filters.
-            switch(timeFilter) {
+            switch (timeFilter) {
                 case 'allincludinghidden':
                     // No nothing, it's all courses.
                     break;
@@ -719,7 +719,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
      * Go to search courses.
      */
     async openSearch(): Promise<void> {
-        CoreNavigator.navigateToSitePath('courses/list', { params : { mode: 'search', searchText: this.textFilter.trim() } });
+        CoreNavigator.navigateToSitePath('courses/list', { params: { mode: 'search', searchText: this.textFilter.trim() } });
     }
 
     /**
@@ -789,8 +789,9 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
 
 }
 
-type AddonBlockMyOverviewLayouts = 'card'|'list';
-type AddonBlockMyOverviewTimeFilters = 'allincludinghidden'|'all'|'inprogress'|'future'|'past'|'favourite'|'hidden'|'custom';
+type AddonBlockMyOverviewLayouts = 'card' | 'list';
+type AddonBlockMyOverviewTimeFilters =
+    'allincludinghidden' | 'all' | 'inprogress' | 'future' | 'past' | 'favourite' | 'hidden' | 'custom';
 
 export type AddonBlockMyOverviewFilterOptions = {
     enabled: boolean;

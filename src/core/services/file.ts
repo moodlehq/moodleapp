@@ -163,13 +163,13 @@ export class CoreFileProvider {
         this.logger.debug(`Get file: ${path}`);
 
         try {
-            return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
+            return <FileEntry>await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
         } catch (error) {
             if (error && (error.code === FileError.NOT_FOUND_ERR || error.code === FileError.ENCODING_ERR)) {
                 // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
                 const encodedPath = encodeURI(path);
                 if (encodedPath !== path) {
-                    return <FileEntry> await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(encodedPath));
+                    return <FileEntry>await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(encodedPath));
                 }
             }
 
@@ -265,7 +265,7 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the directory is created.
      */
     async createDir(path: string, failIfExists?: boolean): Promise<DirectoryEntry> {
-        const entry = <DirectoryEntry> await this.create(true, path, failIfExists);
+        const entry = <DirectoryEntry>await this.create(true, path, failIfExists);
 
         return entry;
     }
@@ -278,7 +278,7 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the file is created.
      */
     async createFile(path: string, failIfExists?: boolean): Promise<FileEntry> {
-        const entry = <FileEntry> await this.create(false, path, failIfExists);
+        const entry = <FileEntry>await this.create(false, path, failIfExists);
 
         return entry;
     }
@@ -348,7 +348,7 @@ export class CoreFileProvider {
 
         const result = await File.listDir(this.basePath, path);
 
-        return <(FileEntry | DirectoryEntry)[]> result;
+        return <(FileEntry | DirectoryEntry)[]>result;
     }
 
     /**
@@ -575,7 +575,7 @@ export class CoreFileProvider {
                 if (event.target?.result !== undefined && event.target.result !== null) {
                     if (format === CoreFileFormat.FORMATJSON) {
                         // Convert to object.
-                        const parsed = CoreText.parseJSON(<string> event.target.result, null);
+                        const parsed = CoreText.parseJSON(<string>event.target.result, null);
 
                         if (parsed === null) {
                             reject('Error parsing JSON file.');
@@ -803,7 +803,7 @@ export class CoreFileProvider {
     async moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<DirectoryEntry> {
         const entry = await this.copyOrMoveFileOrDir(originalPath, newPath, true, false, destDirExists);
 
-        return <DirectoryEntry> entry;
+        return <DirectoryEntry>entry;
     }
 
     /**
@@ -818,7 +818,7 @@ export class CoreFileProvider {
     async moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<FileEntry> {
         const entry = await this.copyOrMoveFileOrDir(originalPath, newPath, false, false, destDirExists);
 
-        return <FileEntry> entry;
+        return <FileEntry>entry;
     }
 
     /**
@@ -833,7 +833,7 @@ export class CoreFileProvider {
     async copyDir(from: string, to: string, destDirExists?: boolean): Promise<DirectoryEntry> {
         const entry = await this.copyOrMoveFileOrDir(from, to, true, true, destDirExists);
 
-        return <DirectoryEntry> entry;
+        return <DirectoryEntry>entry;
     }
 
     /**
@@ -848,7 +848,7 @@ export class CoreFileProvider {
     async copyFile(from: string, to: string, destDirExists?: boolean): Promise<FileEntry> {
         const entry = await this.copyOrMoveFileOrDir(from, to, false, true, destDirExists);
 
-        return <FileEntry> entry;
+        return <FileEntry>entry;
     }
 
     /**
@@ -894,7 +894,7 @@ export class CoreFileProvider {
         try {
             const entry = await moveCopyFn(this.basePath, from, this.basePath, to);
 
-            return <FileEntry | DirectoryEntry> entry;
+            return <FileEntry | DirectoryEntry>entry;
         } catch (error) {
             try {
                 // The copy/move can fail if the final path contains the % character and it's not an encoded char. Try encoding it.
@@ -902,7 +902,7 @@ export class CoreFileProvider {
                 if (to !== encodedTo) {
                     const entry = await moveCopyFn(this.basePath, from, this.basePath, encodedTo);
 
-                    return <FileEntry | DirectoryEntry> entry;
+                    return <FileEntry | DirectoryEntry>entry;
                 }
             } catch {
                 // Still failing, continue with next fallback.
@@ -915,7 +915,7 @@ export class CoreFileProvider {
             if (from != decodedFrom || to != decodedTo) {
                 const entry = await moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
 
-                return <FileEntry | DirectoryEntry> entry;
+                return <FileEntry | DirectoryEntry>entry;
             } else {
                 return Promise.reject(error);
             }
@@ -1036,7 +1036,7 @@ export class CoreFileProvider {
      * @returns Promise resolved in success.
      */
     async replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<void> {
-        let content = <string> await this.readFile(path);
+        let content = <string>await this.readFile(path);
 
         if (content === undefined || content === null || !content.replace) {
             throw new CoreError(`Error reading file ${path}`);
