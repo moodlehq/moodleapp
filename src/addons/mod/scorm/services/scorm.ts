@@ -323,7 +323,7 @@ export class AddonModScormProvider {
                         setElement = setElement.trim();
 
                         if (trackData[setElement] !== undefined &&
-                                (trackData[setElement].status === 'completed' || trackData[setElement].status === 'passed')) {
+                            (trackData[setElement].status === 'completed' || trackData[setElement].status === 'passed')) {
                             count++;
                         }
                     });
@@ -362,7 +362,7 @@ export class AddonModScormProvider {
                 } else {
                     // Everything else must be an element defined like S45 ...
                     if (trackData[element] !== undefined &&
-                            (trackData[element].status === 'completed' || trackData[element].status === 'passed')) {
+                        (trackData[element].status === 'completed' || trackData[element].status === 'passed')) {
                         element = 'true';
                     } else {
                         element = 'false';
@@ -414,7 +414,7 @@ export class AddonModScormProvider {
         let formatted: AddonModScormTOCListSco[] = [];
 
         toc.forEach((node) => {
-            const sco = <AddonModScormTOCListSco> node;
+            const sco = <AddonModScormTOCListSco>node;
             sco.level = level;
             formatted.push(sco);
 
@@ -604,9 +604,9 @@ export class AddonModScormProvider {
             }
 
             if (userData.score_raw || (scorm.scormtype !== undefined &&
-                        scorm.scormtype === 'sco' && userData.score_raw !== undefined)) {
+                scorm.scormtype === 'sco' && userData.score_raw !== undefined)) {
 
-                const scoreRaw = parseFloat(<string> userData.score_raw);
+                const scoreRaw = parseFloat(<string>userData.score_raw);
                 attemptScore.values++;
                 attemptScore.sum += scoreRaw;
                 attemptScore.max = Math.max(scoreRaw, attemptScore.max);
@@ -687,7 +687,7 @@ export class AddonModScormProvider {
         options: AddonModScormGetScosWithDataOptions = {},
     ): Promise<AddonModScormTOCTreeSco[]> {
 
-        const scos = <AddonModScormTOCTreeSco[]> await this.getScosWithData(scormId, attempt, options);
+        const scos = <AddonModScormTOCTreeSco[]>await this.getScosWithData(scormId, attempt, options);
 
         const map: Record<string, number> = {};
         const rootScos: AddonModScormTOCTreeSco[] = [];
@@ -809,12 +809,12 @@ export class AddonModScormProvider {
         response.data.forEach((sco) => {
             data[sco.scoid] = {
                 scoid: sco.scoid,
-                defaultdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(
+                defaultdata: <Record<string, AddonModScormDataValue>>CoreObject.toKeyValueMap(
                     sco.defaultdata,
                     'element',
                     'value',
                 ),
-                userdata: <Record<string, AddonModScormDataValue>> CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
+                userdata: <Record<string, AddonModScormDataValue>>CoreObject.toKeyValueMap(sco.userdata, 'element', 'value'),
             };
 
         });
@@ -915,12 +915,12 @@ export class AddonModScormProvider {
             sco.isvisible = scoData.isvisible === undefined || (!!scoData.isvisible && scoData.isvisible !== 'false');
             // Check pre-requisites status.
             sco.prereq = scoData.prerequisites === undefined ||
-                this.evalPrerequisites(<string> scoData.prerequisites, trackDataBySCO);
+                this.evalPrerequisites(<string>scoData.prerequisites, trackDataBySCO);
             // Add status.
             sco.status = (scoData.status === undefined || scoData.status === '') ? 'notattempted' : <string> scoData.status;
             // Exit var.
-            sco.exitvar = scoData.exitvar === undefined ? 'cmi.core.exit' : <string> scoData.exitvar;
-            sco.exitvalue = <string> scoData[sco.exitvar];
+            sco.exitvar = scoData.exitvar === undefined ? 'cmi.core.exit' : <string>scoData.exitvar;
+            sco.exitvalue = <string>scoData[sco.exitvar];
             // Copy score.
             sco.scoreraw = scoData.score_raw;
         });
@@ -942,7 +942,7 @@ export class AddonModScormProvider {
         // Build the launch URL. Moodle web checks SCORM version, we don't need to, it's always SCORM 1.2.
         let launchUrl = sco.launch;
         const parametersEntry = sco.extradata?.find((entry) => entry.element === 'parameters');
-        let parameters = <string | undefined> parametersEntry?.value;
+        let parameters = <string | undefined>parametersEntry?.value;
 
         if (parameters) {
             const connector = launchUrl.includes('?') ? '&' : '?';
@@ -1645,7 +1645,7 @@ export class AddonModScormProvider {
             }
 
             const isOutdated = data.status === DownloadStatus.OUTDATED ||
-                    (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
+                (data.status === DownloadStatus.DOWNLOADING && data.previous === DownloadStatus.OUTDATED);
 
             // Package needs to be downloaded if it's not outdated (not downloaded) or if the hash has changed.
             return !isOutdated || data.extra != scorm.sha1hash;
@@ -1689,7 +1689,6 @@ export class AddonModScormProvider {
 
         // Check if we need to update. We only update if we sent some track with a dot notation.
         const needsUpdate = tracks.some(track => track.element && track.element.includes('.'));
-
         if (!needsUpdate) {
             return;
         }
@@ -1800,7 +1799,7 @@ export type AddonModScormUserDataMap = Record<number, AddonModScormScoUserData>;
 /**
  * User data returned mod_scorm_get_scorm_user_data, but formatted.
  */
-export type AddonModScormScoUserData = Omit<AddonModScormWSScoUserData, 'defaultdata'|'userdata'> & {
+export type AddonModScormScoUserData = Omit<AddonModScormWSScoUserData, 'defaultdata' | 'userdata'> & {
     defaultdata: Record<string, AddonModScormDataValue>;
     userdata: Record<string, AddonModScormDataValue>;
 };

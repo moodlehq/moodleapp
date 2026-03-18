@@ -92,7 +92,7 @@ export class AddonModLessonProvider {
     ): string {
         // Add a table row containing the answer.
         feedback += '<tr><td class="cell c0 lastcol">' + (answerFormat ? answer : CoreText.cleanTags(answer)) +
-                '</td></tr>';
+            '</td></tr>';
 
         // If the response exists, add a table row containing the response. If not, add en empty row.
         if (response?.trim()) {
@@ -342,7 +342,7 @@ export class AddonModLessonProvider {
             case AddonModLessonPageSubtype.BRANCHTABLE:
                 // Load the new page immediately.
                 result.inmediatejump = true;
-                result.newpageid = this.getNewPageId(pageData.page!.id, <number> data.jumpto, jumps);
+                result.newpageid = this.getNewPageId(pageData.page!.id, <number>data.jumpto, jumps);
                 break;
 
             case AddonModLessonPageSubtype.ESSAY:
@@ -402,11 +402,11 @@ export class AddonModLessonProvider {
         if (data['answer_editor[text]'] !== undefined) {
             studentAnswer = data['answer_editor[text]'];
         } else if (typeof data.answer_editor === 'object') {
-            studentAnswer = (<{ text: string }> data.answer_editor).text;
+            studentAnswer = (<{ text: string }>data.answer_editor).text;
         } else if (data['answer[text]'] !== undefined) {
             studentAnswer = data['answer[text]'];
         } else if (typeof data.answer === 'object') {
-            studentAnswer = (<{ text: string }> data.answer).text;
+            studentAnswer = (<{ text: string }>data.answer).text;
         } else {
             studentAnswer = data.answer;
         }
@@ -631,7 +631,7 @@ export class AddonModLessonProvider {
                 return;
             }
 
-            result.answerid = <number> data.answerid;
+            result.answerid = <number>data.answerid;
 
             // Search the answer.
             for (const i in pageData.answers) {
@@ -664,7 +664,7 @@ export class AddonModLessonProvider {
         result: AddonModLessonCheckAnswerResult,
     ): void {
         // In LMS, this unformat float is done by the 'float' form field.
-        const parsedAnswer = CoreUtils.unformatFloat(<string> data.answer, true);
+        const parsedAnswer = CoreUtils.unformatFloat(<string>data.answer, true);
 
         // Set defaults.
         result.response = '';
@@ -776,7 +776,7 @@ export class AddonModLessonProvider {
                 } else { // We are using regular expressions analysis.
                     const startCode = expectedAnswer.substring(0, 2);
 
-                    switch (startCode){
+                    switch (startCode) {
                         // 1- Check for absence of required string in studentAnswer (coded by initial '--').
                         case '--':
                             expectedAnswer = expectedAnswer.substring(2);
@@ -857,7 +857,7 @@ export class AddonModLessonProvider {
             return;
         }
 
-        result.answerid = <number> data.answerid;
+        result.answerid = <number>data.answerid;
 
         // Get the answer.
         for (const i in pageData.answers) {
@@ -1245,7 +1245,7 @@ export class AddonModLessonProvider {
         const result = await this.getContentPagesViewed(lessonId, retake, options);
 
         const ids: Record<number, boolean> = {};
-        const pages = (<(AddonModLessonContentPageOrRecord)[]> result.online).concat(result.offline);
+        const pages = (<(AddonModLessonContentPageOrRecord)[]>result.online).concat(result.offline);
 
         pages.forEach((page) => {
             if (!ids[page.pageid]) {
@@ -1364,11 +1364,11 @@ export class AddonModLessonProvider {
                 const pageTime = 'timeseen' in page ? page.timeseen : page.timemodified;
                 if (pageTime > answer.timemodified) {
                     // This content page was viewed more recently than the question page.
-                    lastPageSeen = (<AddonModLessonPageAttemptRecord> page).newpageid || page.pageid;
+                    lastPageSeen = (<AddonModLessonPageAttemptRecord>page).newpageid || page.pageid;
                 }
             } else {
                 // Has not answered any questions but has viewed a content page.
-                lastPageSeen = (<AddonModLessonPageAttemptRecord> page).newpageid || page.pageid;
+                lastPageSeen = (<AddonModLessonPageAttemptRecord>page).newpageid || page.pageid;
             }
         }
 
@@ -1844,7 +1844,7 @@ export class AddonModLessonProvider {
         const result = await this.getQuestionsAttempts(lessonId, retake, options);
 
         const ids: Record<number, boolean> = {};
-        const attempts = (<AddonModLessonAnyAttemptData[]> result.online).concat(result.offline);
+        const attempts = (<AddonModLessonAnyAttemptData[]>result.online).concat(result.offline);
 
         attempts.forEach((attempt) => {
             if (!ids[attempt.pageid]) {
@@ -1897,10 +1897,12 @@ export class AddonModLessonProvider {
                         this.addMessage(messages, 'addon.mod_lesson.numberofcorrectanswers', { $a: gradeInfo.earned });
 
                         if (lesson.grade !== undefined && lesson.grade !== CoreGradeType.NONE) {
-                            this.addMessage(messages, 'addon.mod_lesson.yourcurrentgradeisoutof', { $a: {
-                                grade: CoreText.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
-                                total: lesson.grade,
-                            } });
+                            this.addMessage(messages, 'addon.mod_lesson.yourcurrentgradeisoutof', {
+                                $a: {
+                                    grade: CoreText.roundToDecimals(gradeInfo.grade * lesson.grade / 100, 1),
+                                    total: lesson.grade,
+                                },
+                            });
                         }
                     }
                 }
@@ -2198,7 +2200,7 @@ export class AddonModLessonProvider {
     protected getUserResponseMatching(data: Record<string, unknown>): Record<string, string> {
         if (data.response) {
             // The data is already stored as expected. Return it.
-            return <Record<string, string>> data.response;
+            return <Record<string, string>>data.response;
         }
 
         // Data is stored in properties like 'response[379]'. Recreate the response object.
@@ -2208,7 +2210,7 @@ export class AddonModLessonProvider {
             const match = key.match(/^response\[(\d+)\]/);
 
             if (match && match.length > 1) {
-                response[match[1]] = <string> data[key];
+                response[match[1]] = <string>data[key];
             }
         }
 
@@ -2786,7 +2788,7 @@ export class AddonModLessonProvider {
             userId: options.userId,
         });
 
-        const attempts = (<AddonModLessonAnyAttemptData[]> attemptsData.online).concat(attemptsData.offline);
+        const attempts = (<AddonModLessonAnyAttemptData[]>attemptsData.online).concat(attemptsData.offline);
 
         if (!attempts.length) {
             // No attempts.
@@ -2842,7 +2844,7 @@ export class AddonModLessonProvider {
                 // If essay question, handle it, otherwise add to score.
                 if (options.pageIndex[lastAttempt.pageid].qtype === AddonModLessonPageSubtype.ESSAY) {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const score: number | undefined = (<any> lastAttempt.useranswer)?.score;
+                    const score: number | undefined = (<any>lastAttempt.useranswer)?.score;
                     if (score !== undefined) {
                         result.earned += score;
                     }
@@ -2955,7 +2957,7 @@ export class AddonModLessonProvider {
         const pageId = page.id;
 
         if (!options.offline) {
-            const response = <AddonModLessonProcessPageResponse> await this.processPageOnline(lesson.id, pageId, data, options);
+            const response = <AddonModLessonProcessPageResponse>await this.processPageOnline(lesson.id, pageId, data, options);
 
             CoreEvents.trigger(ADDON_MOD_LESSON_DATA_SENT_EVENT, {
                 lessonId: lesson.id,
@@ -2984,7 +2986,7 @@ export class AddonModLessonProvider {
 
         const pageIndex = this.createPagesIndex(pages);
         const result: AddonModLessonProcessPageResponse = {
-            newpageid: <number> data.newpageid,
+            newpageid: <number>data.newpageid,
             inmediatejump: false,
             nodefaultresponse: false,
             feedback: '',
@@ -3193,7 +3195,7 @@ export class AddonModLessonProvider {
                     if (lesson.maxattempts > 1) { // Don't bother with message if only one attempt.
                         result.maxattemptsreached = true;
                     }
-                    result.newpageid =  AddonModLessonJumpTo.NEXTPAGE;
+                    result.newpageid = AddonModLessonJumpTo.NEXTPAGE;
                 } else if (lesson.maxattempts && lesson.maxattempts > 1) { // Don't show message if only one attempt or unlimited.
                     result.attemptsremaining = lesson.maxattempts - nAttempts;
                     if (result.attemptsremaining <= 0) {
@@ -3341,7 +3343,7 @@ export class AddonModLessonProvider {
     ): number {
 
         if (page.qtype !== AddonModLessonPageSubtype.ENDOFCLUSTER &&
-                page.qtype !== AddonModLessonPageSubtype.ENDOFBRANCH) {
+            page.qtype !== AddonModLessonPageSubtype.ENDOFBRANCH) {
             // Add this page as a valid page.
             validPages[page.id] = 1;
         }
@@ -3369,7 +3371,6 @@ export class AddonModLessonProvider {
     }
 
 }
-
 export const AddonModLesson = makeSingleton(AddonModLessonProvider);
 
 /**

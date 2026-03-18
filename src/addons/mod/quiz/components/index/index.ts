@@ -350,10 +350,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         if (!this.bestGrade?.hasgrade || this.gradebookData?.grade === undefined) {
-            this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
-                grade: Translate.instant('addon.mod_quiz.notyetgraded'),
-                max: quiz.gradeFormatted,
-            } });
+            this.gradeResult = Translate.instant('core.grades.gradelong', {
+                $a: {
+                    grade: Translate.instant('addon.mod_quiz.notyetgraded'),
+                    max: quiz.gradeFormatted,
+                },
+            });
 
             return;
         }
@@ -370,10 +372,12 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             this.gradeOverridden = false;
         }
 
-        this.gradeResult = Translate.instant('core.grades.gradelong', { $a: {
-            grade: formattedGradebookGrade,
-            max: quiz.gradeFormatted,
-        } });
+        this.gradeResult = Translate.instant('core.grades.gradelong', {
+            $a: {
+                grade: formattedGradebookGrade,
+                max: quiz.gradeFormatted,
+            },
+        });
 
         if (quiz.showFeedback && !('feedback' in this.bestGrade)) {
             // Get the quiz overall feedback in Moodle 5.1 or older.

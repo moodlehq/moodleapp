@@ -453,7 +453,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
                     // capability to override it.
                     // Just in case the forum was fetched from WS when the cut-off date was not reached but it is now.
                     const cutoffDateReached = AddonModForumHelper.isCutoffDateReached(forum)
-                                    && !accessInfo.cancanoverridecutoff;
+                        && !accessInfo.cancanoverridecutoff;
                     this.canAddDiscussion = !!forum.cancreatediscussions && !cutoffDateReached;
                     this.showQAMessage = forum.type === AddonModForumType.QANDA && !accessInfo.canviewqandawithoutposting;
 

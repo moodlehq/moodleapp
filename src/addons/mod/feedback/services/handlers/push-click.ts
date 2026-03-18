@@ -37,7 +37,7 @@ export class AddonModFeedbackPushClickHandlerService implements CorePushNotifica
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
         if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent === 'mod_feedback' &&
-                (notification.name === 'submission' || notification.name === 'message')) {
+            (notification.name === 'submission' || notification.name === 'message')) {
 
             return true;
         }

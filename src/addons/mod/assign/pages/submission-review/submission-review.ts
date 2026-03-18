@@ -142,7 +142,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
 
         // Grades can be saved if simple grading.
         if (gradeInfo.advancedgrading && gradeInfo.advancedgrading[0] &&
-                gradeInfo.advancedgrading[0].method !== undefined) {
+            gradeInfo.advancedgrading[0].method !== undefined) {
 
             const method = gradeInfo.advancedgrading[0].method || 'simple';
             this.canSaveGrades = method === 'simple';

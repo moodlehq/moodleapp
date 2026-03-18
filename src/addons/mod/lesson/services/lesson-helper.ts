@@ -84,7 +84,7 @@ export class AddonModLessonHelperProvider {
         const element = convertTextToHTMLElement(html);
 
         // Search the input button.
-        const button = <HTMLInputElement> element.querySelector('input[type="button"]');
+        const button = <HTMLInputElement>element.querySelector('input[type="button"]');
 
         if (button) {
             // Extract the button content and remove it from the HTML.
@@ -122,7 +122,7 @@ export class AddonModLessonHelperProvider {
         const forms = Array.from(buttonsContainer.querySelectorAll('form'));
         forms.forEach((form) => {
             const buttonSelector = 'input[type="submit"], button[type="submit"]';
-            const buttonEl = <HTMLInputElement | HTMLButtonElement> form.querySelector(buttonSelector);
+            const buttonEl = <HTMLInputElement | HTMLButtonElement>form.querySelector(buttonSelector);
             const inputs = Array.from(form.querySelectorAll('input'));
 
             if (!buttonEl || !inputs || !inputs.length) {
@@ -186,16 +186,16 @@ export class AddonModLessonHelperProvider {
         const element = convertTextToHTMLElement(pageData.pagecontent || '');
 
         // Get the container of the question answers if it exists.
-        const fieldContainer = <HTMLElement> element.querySelector('.fcontainer');
+        const fieldContainer = <HTMLElement>element.querySelector('.fcontainer');
 
         // Get hidden inputs and add their data to the form group.
-        const hiddenInputs = <HTMLInputElement[]> Array.from(element.querySelectorAll('input[type="hidden"]'));
+        const hiddenInputs = <HTMLInputElement[]>Array.from(element.querySelectorAll('input[type="hidden"]'));
         hiddenInputs.forEach((input) => {
             questionForm.addControl(input.name, this.formBuilder.control(input.value));
         });
 
         // Get the submit button and extract its value.
-        const submitButton = <HTMLInputElement> element.querySelector('input[type="submit"]');
+        const submitButton = <HTMLInputElement>element.querySelector('input[type="submit"]');
         const question: AddonModLessonQuestion = {
             template: '',
             submitLabel: submitButton ? submitButton.value : Translate.instant('addon.mod_lesson.submit'),
@@ -240,7 +240,7 @@ export class AddonModLessonHelperProvider {
         question: AddonModLessonQuestion,
         fieldContainer: HTMLElement,
     ): AddonModLessonMultichoiceQuestion {
-        const multiChoiceQuestion = <AddonModLessonMultichoiceQuestion> {
+        const multiChoiceQuestion = <AddonModLessonMultichoiceQuestion>{
             ...question,
             template: 'multichoice',
             options: [],
@@ -248,11 +248,11 @@ export class AddonModLessonHelperProvider {
         };
 
         // Get all the inputs. Search radio first.
-        let inputs = <HTMLInputElement[]> Array.from(fieldContainer.querySelectorAll('input[type="radio"]'));
+        let inputs = <HTMLInputElement[]>Array.from(fieldContainer.querySelectorAll('input[type="radio"]'));
         if (!inputs || !inputs.length) {
             // Radio buttons not found, it might be a multi answer. Search for checkbox.
             multiChoiceQuestion.multi = true;
-            inputs = <HTMLInputElement[]> Array.from(fieldContainer.querySelectorAll('input[type="checkbox"]'));
+            inputs = <HTMLInputElement[]>Array.from(fieldContainer.querySelectorAll('input[type="checkbox"]'));
 
             if (!inputs || !inputs.length) {
                 // No checkbox found either. Stop.
@@ -319,7 +319,7 @@ export class AddonModLessonHelperProvider {
         questionType: number,
     ): AddonModLessonInputQuestion {
 
-        const inputQuestion = <AddonModLessonInputQuestion> question;
+        const inputQuestion = <AddonModLessonInputQuestion>question;
         inputQuestion.template = 'shortanswer';
 
         // Get the input.
@@ -357,7 +357,7 @@ export class AddonModLessonHelperProvider {
         question: AddonModLessonQuestion,
         fieldContainer: HTMLElement,
     ): AddonModLessonEssayQuestion {
-        const essayQuestion = <AddonModLessonEssayQuestion> question;
+        const essayQuestion = <AddonModLessonEssayQuestion>question;
         essayQuestion.template = 'essay';
 
         // Get the textarea.
@@ -400,7 +400,7 @@ export class AddonModLessonHelperProvider {
         fieldContainer: HTMLElement,
     ): AddonModLessonMatchingQuestion {
 
-        const matchingQuestion = <AddonModLessonMatchingQuestion> {
+        const matchingQuestion = <AddonModLessonMatchingQuestion>{
             ...question,
             template: 'matching',
             rows: [],
@@ -568,13 +568,13 @@ export class AddonModLessonHelperProvider {
      */
     prepareQuestionData(question: AddonModLessonQuestion, data: CoreFormFields): CoreFormFields {
         if (question.template === 'essay') {
-            const textarea = (<AddonModLessonEssayQuestion> question).textarea;
+            const textarea = (<AddonModLessonEssayQuestion>question).textarea;
 
             // Add some HTML to the answer if needed.
             if (textarea) {
-                data[textarea.name] = CoreText.formatHtmlLines(<string> data[textarea.name] || '');
+                data[textarea.name] = CoreText.formatHtmlLines(<string>data[textarea.name] || '');
             }
-        } else if (question.template === 'multichoice' && (<AddonModLessonMultichoiceQuestion> question).multi) {
+        } else if (question.template === 'multichoice' && (<AddonModLessonMultichoiceQuestion>question).multi) {
             // Only send the options with value set to true.
             for (const name in data) {
                 if (name.match(/answer\[\d+\]/) && data[name] == false) {
@@ -834,7 +834,7 @@ export type AddonModLessonAnswerData =
  * Any possible question data.
  */
 export type AddonModLessonQuestion = AddonModLessonQuestionBasicData & Partial<AddonModLessonMultichoiceQuestion> &
-Partial<AddonModLessonInputQuestion> & Partial<AddonModLessonEssayQuestion> & Partial<AddonModLessonMatchingQuestion>;
+    Partial<AddonModLessonInputQuestion> & Partial<AddonModLessonEssayQuestion> & Partial<AddonModLessonMatchingQuestion>;
 
 /**
  * Activity link data.

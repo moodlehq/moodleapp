@@ -375,7 +375,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             // Let's try to get cached data about the attempt.
             userData = await CorePromiseUtils.ignoreErrors(
                 AddonModScorm.getScormUserData(scormId, attempt, { cmId, siteId }),
-                <AddonModScormUserDataMap> {},
+                <AddonModScormUserDataMap>{},
             );
 
             // We need to add the synced data to the snapshot.

@@ -252,7 +252,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         this.attemptsLeft = AddonModScorm.countAttemptsLeft(scorm, this.attempts.lastAttempt.num);
 
         if (scorm.forcenewattempt === AddonModScormForceAttempt.ALWAYS ||
-                (scorm.forcenewattempt && !this.incomplete)) {
+            (scorm.forcenewattempt && !this.incomplete)) {
             this.startNewAttempt = true;
         }
 

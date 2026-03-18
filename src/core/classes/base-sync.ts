@@ -25,7 +25,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 /**
  * Blocked sync error.
  */
-export class CoreSyncBlockedError extends CoreError {}
+export class CoreSyncBlockedError extends CoreError { }
 
 /**
  * Base class to create sync providers. It provides some common functions.
@@ -196,7 +196,7 @@ export class CoreSyncBaseProvider<T = void> {
         try {
             const entry = await CoreSync.getSyncRecord(this.component, id, siteId);
 
-            return <string[]> CoreText.parseJSON(entry.warnings, []);
+            return <string[]>CoreText.parseJSON(entry.warnings, []);
         } catch {
             return [];
         }
@@ -324,7 +324,7 @@ export class CoreSyncBaseProvider<T = void> {
      */
     protected get componentTranslate(): string {
         if (!this.componentTranslateInternal) {
-            this.componentTranslateInternal = <string> Translate.instant(this.componentTranslatableString);
+            this.componentTranslateInternal = <string>Translate.instant(this.componentTranslatableString);
         }
 
         return this.componentTranslateInternal;

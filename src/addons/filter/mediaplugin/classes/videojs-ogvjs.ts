@@ -449,7 +449,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns Video width.
      */
     videoWidth(): number {
-        return (<HTMLVideoElement> this.el_).videoWidth ?? 0;
+        return (<HTMLVideoElement>this.el_).videoWidth ?? 0;
     }
 
     /**
@@ -458,7 +458,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns Video heigth.
      */
     videoHeight(): number {
-        return (<HTMLVideoElement> this.el_).videoHeight ?? 0;
+        return (<HTMLVideoElement>this.el_).videoHeight ?? 0;
     }
 
     /**
@@ -510,7 +510,7 @@ export class VideoJSOgvJS extends Tech {
      * @param url The poster image's url.
      */
     setPoster(url: string): void {
-        (<HTMLVideoElement> this.el_).poster = url;
+        (<HTMLVideoElement>this.el_).poster = url;
     }
 
     /**
@@ -519,7 +519,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns Whether it's preloaded.
      */
     preload(): PreloadOption {
-        return <PreloadOption> this.el_.preload || 'none';
+        return <PreloadOption>this.el_.preload || 'none';
     }
 
     /**

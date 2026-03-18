@@ -109,7 +109,7 @@ export class CoreAlertsService {
      * @param options Alert options.
      * @returns Promise resolved if the user confirms and rejected with a canceled error if he cancels.
      */
-    async confirmDelete(message: string, options: Omit<AlertOptions, 'message'|'buttons'> = {}): Promise<void> {
+    async confirmDelete(message: string, options: Omit<AlertOptions, 'message' | 'buttons'> = {}): Promise<void> {
         message = await CoreLang.filterMultilang(message);
 
         await this.confirm(message, {
@@ -267,7 +267,7 @@ export class CoreAlertsService {
             message = await CoreLang.filterMultilang(message);
         }
 
-        const alertId = Md5.hashAsciiStr(`${options.header || ''}#${message|| ''}`);
+        const alertId = Md5.hashAsciiStr(`${options.header || ''}#${message || ''}`);
 
         if (this.displayedAlerts[alertId]) {
             // There's already an alert with the same message and title. Return it.
@@ -318,7 +318,7 @@ export class CoreAlertsService {
 
                 if (buttons) {
                     // Execute dismiss function if any.
-                    const cancelButton = <AlertButton | undefined> buttons.find(
+                    const cancelButton = <AlertButton | undefined>buttons.find(
                         (button) => typeof button !== 'string' && button.handler !== undefined && button.role === 'cancel',
                     );
                     cancelButton?.handler?.(null);
@@ -480,7 +480,7 @@ export const CoreAlerts = makeSingleton(CoreAlertsService);
 /**
  * Options to pass to CoreAlerts.confirm.
  */
-export type CoreAlertsConfirmOptions = Omit<AlertOptions, 'message'|'buttons'> & {
+export type CoreAlertsConfirmOptions = Omit<AlertOptions, 'message' | 'buttons'> & {
     okText?: string; // Text of the OK button. By default, 'OK'.
     cancelText?: string; // Text of the Cancel button. By default, 'Cancel'.
     isDestructive?: boolean; // Whether confirming is destructive (will remove data), so the button will have a danger color.

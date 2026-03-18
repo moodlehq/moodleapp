@@ -1465,43 +1465,43 @@ export type AddonModAssignSubmissionStatusOptions = CoreCourseCommonModWSOptions
  */
 export type AddonModAssignAssign =
     Omit<CoreCourseModuleStandardElements, 'coursemodule'|'section'|'visible'|'groupmode'|'groupingid'|'lang'> & {
-    cmid: number; // Course module id.
-    nosubmissions: number; // No submissions.
-    submissiondrafts: number; // Submissions drafts.
-    sendnotifications: number; // Send notifications.
-    sendlatenotifications: number; // Send notifications.
-    sendstudentnotifications: number; // Send student notifications (default).
-    duedate: number; // Assignment due date.
-    allowsubmissionsfromdate: number; // Allow submissions from date.
-    grade: number; // Grade type.
-    timemodified: number; // Last time assignment was modified.
-    completionsubmit: number; // If enabled, set activity as complete following submission.
-    cutoffdate: number; // Date after which submission is not accepted without an extension.
-    gradingduedate?: number; // The expected date for marking the submissions.
-    teamsubmission: number; // If enabled, students submit as a team.
-    requireallteammemberssubmit: number; // If enabled, all team members must submit.
-    teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
-    blindmarking: number; // If enabled, hide identities until reveal identities actioned.
-    hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
-    revealidentities: number; // Show identities for a blind marking assignment.
-    attemptreopenmethod: AddonModAssignAttemptReopenMethodValues; // Method used to control opening new attempts.
-    maxattempts: number; // Maximum number of attempts allowed.
-    markingworkflow: number; // Enable marking workflow.
-    markingallocation: number; // Enable marking allocation.
-    markercount?: number; // @since 5.2. Number of markers.
-    multimarkmethod?: number; // @since 5.2. Method to use when combining marks to a final grade.
-    multimarkrounding?: number; // @since 5.2. Rounding direction to use when handling decimal marks.
-    requiresubmissionstatement: number; // Student must accept submission statement.
-    preventsubmissionnotingroup?: number; // Prevent submission not in group.
-    submissionstatement?: string; // Submission statement formatted.
-    submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    configs: AddonModAssignConfig[]; // Configuration settings.
-    introattachments?: CoreWSExternalFile[];
-    activity?: string; // @since 4.0. Description of activity.
-    activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
-    activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
-    timelimit?: number; // @since 4.0. Time limit to complete assigment.
-    submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
+        cmid: number; // Course module id.
+        nosubmissions: number; // No submissions.
+        submissiondrafts: number; // Submissions drafts.
+        sendnotifications: number; // Send notifications.
+        sendlatenotifications: number; // Send notifications.
+        sendstudentnotifications: number; // Send student notifications (default).
+        duedate: number; // Assignment due date.
+        allowsubmissionsfromdate: number; // Allow submissions from date.
+        grade: number; // Grade type.
+        timemodified: number; // Last time assignment was modified.
+        completionsubmit: number; // If enabled, set activity as complete following submission.
+        cutoffdate: number; // Date after which submission is not accepted without an extension.
+        gradingduedate?: number; // The expected date for marking the submissions.
+        teamsubmission: number; // If enabled, students submit as a team.
+        requireallteammemberssubmit: number; // If enabled, all team members must submit.
+        teamsubmissiongroupingid: number; // The grouping id for the team submission groups.
+        blindmarking: number; // If enabled, hide identities until reveal identities actioned.
+        hidegrader?: number; // @since 3.7. If enabled, hide grader to student.
+        revealidentities: number; // Show identities for a blind marking assignment.
+        attemptreopenmethod: AddonModAssignAttemptReopenMethodValues; // Method used to control opening new attempts.
+        maxattempts: number; // Maximum number of attempts allowed.
+        markingworkflow: number; // Enable marking workflow.
+        markingallocation: number; // Enable marking allocation.
+        markercount?: number; // @since 5.2. Number of markers.
+        multimarkmethod?: number; // @since 5.2. Method to use when combining marks to a final grade.
+        multimarkrounding?: number; // @since 5.2. Rounding direction to use when handling decimal marks.
+        requiresubmissionstatement: number; // Student must accept submission statement.
+        preventsubmissionnotingroup?: number; // Prevent submission not in group.
+        submissionstatement?: string; // Submission statement formatted.
+        submissionstatementformat?: CoreTextFormat; // Submissionstatement format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
+        configs: AddonModAssignConfig[]; // Configuration settings.
+        introattachments?: CoreWSExternalFile[];
+        activity?: string; // @since 4.0. Description of activity.
+        activityformat?: CoreTextFormat; // @since 4.0. Format of activity.
+        activityattachments?: CoreWSExternalFile[]; // @since 4.0. Files from activity field.
+        timelimit?: number; // @since 4.0. Time limit to complete assigment.
+        submissionattachments?: number; // @since 4.0. Flag to only show files during submission.
 };
 
 /**
@@ -1644,33 +1644,34 @@ type AddonModAssignListParticipantsWSResponse = AddonModAssignParticipant[];
  * Participant returned by mod_assign_list_participants.
  */
 export type AddonModAssignParticipant = Omit<CoreUserDescriptionExporter,
-    'auth'|'confirmed'|'lang'|'calendartype'|'theme'|'timezone'|'mailformat'|'profileimageurlsmall'|'profileimageurl'> & {
-    profileimageurlsmall?: string; // User image profile URL - small version.
-    profileimageurl?: string; // User image profile URL - big version.
+    'auth' | 'confirmed' | 'lang' | 'calendartype' | 'theme' | 'timezone' | 'mailformat' | 'profileimageurlsmall' |
+    'profileimageurl'> & {
+        profileimageurlsmall?: string; // User image profile URL - small version.
+        profileimageurl?: string; // User image profile URL - big version.
 
-    recordid?: number; // @since 3.7. Record id.
-    groups?: { // User groups.
-        id: number; // Group id.
-        name: string; // Group name.
-        description: string; // Group description.
-    }[];
-    roles?: { // User roles.
-        roleid: number; // Role id.
-        name: string; // Role name.
-        shortname: string; // Role shortname.
-        sortorder: number; // Role sortorder.
-    }[];
-    enrolledcourses?: { // Courses where the user is enrolled - limited by which courses the user is able to see.
-        id: number; // Id of the course.
-        fullname: string; // Fullname of the course.
-        shortname: string; // Shortname of the course.
-    }[];
-    submitted: boolean; // Have they submitted their assignment.
-    requiregrading: boolean; // Is their submission waiting for grading.
-    grantedextension?: boolean; // Have they been granted an extension.
-    groupid?: number; // For group assignments this is the group id.
-    groupname?: string; // For group assignments this is the group name.
-};
+        recordid?: number; // @since 3.7. Record id.
+        groups?: { // User groups.
+            id: number; // Group id.
+            name: string; // Group name.
+            description: string; // Group description.
+        }[];
+        roles?: { // User roles.
+            roleid: number; // Role id.
+            name: string; // Role name.
+            shortname: string; // Role shortname.
+            sortorder: number; // Role sortorder.
+        }[];
+        enrolledcourses?: { // Courses where the user is enrolled - limited by which courses the user is able to see.
+            id: number; // Id of the course.
+            fullname: string; // Fullname of the course.
+            shortname: string; // Shortname of the course.
+        }[];
+        submitted: boolean; // Have they submitted their assignment.
+        requiregrading: boolean; // Is their submission waiting for grading.
+        grantedextension?: boolean; // Have they been granted an extension.
+        groupid?: number; // For group assignments this is the group id.
+        groupname?: string; // For group assignments this is the group name.
+    };
 
 /**
  * Result of WS mod_assign_get_assignments.

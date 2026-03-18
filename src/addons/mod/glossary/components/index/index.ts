@@ -274,7 +274,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModGlossaryAutoSyncedData): boolean {
         return !!this.glossary && syncEventData.glossaryId == this.glossary.id &&
-                syncEventData.userId == CoreSites.getCurrentSiteUserId();
+            syncEventData.userId == CoreSites.getCurrentSiteUserId();
     }
 
     /**

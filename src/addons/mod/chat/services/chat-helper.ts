@@ -58,8 +58,8 @@ export class AddonModChatHelperProvider {
             formattedMessage.beep = Number(formattedMessage.beep);
         }
 
-        formattedMessage.special = !!formattedMessage.beep || (<AddonModChatSessionMessage> message).issystem ||
-            (<AddonModChatMessage> message).system;
+        formattedMessage.special = !!formattedMessage.beep || (<AddonModChatSessionMessage>message).issystem ||
+            (<AddonModChatMessage>message).system;
 
         if (formattedMessage.message.substring(0, 4) === '/me ') {
             formattedMessage.special = true;

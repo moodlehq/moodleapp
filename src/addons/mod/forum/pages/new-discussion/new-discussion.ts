@@ -392,7 +392,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
 
                     // The call failed, let's return true so the group is shown.
                     // If the user can't post to it an error will be shown when he tries to add the discussion.
-                    .catch(() =>({ status: true }))
+                    .catch(() => ({ status: true }))
 
                     .then((response) => {
                         if (response.status) {
