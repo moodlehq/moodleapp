@@ -521,7 +521,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         if (typeof error === 'string') {
-            if (error.toLowerCase().indexOf('no image selected') > -1) {
+            if (error.toLowerCase().includes('no image selected')) {
                 // User cancelled.
                 return new CoreCanceledError();
             }
@@ -657,9 +657,9 @@ export class CoreFileUploaderHelperProvider {
                 options.mediaType = Camera.MediaType.ALLMEDIA;
             }
         } else if (mimetypes) {
-            if (mimetypes.indexOf('image/jpeg') > -1) {
+            if (mimetypes.includes('image/jpeg')) {
                 options.encodingType = Camera.EncodingType.JPEG;
-            } else if (mimetypes.indexOf('image/png') > -1) {
+            } else if (mimetypes.includes('image/png')) {
                 options.encodingType = Camera.EncodingType.PNG;
             }
         }

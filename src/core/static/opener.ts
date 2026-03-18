@@ -172,7 +172,7 @@ export class CoreOpener {
             CoreOpener.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
             CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
-            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+            if (!extension || extension.includes('/') || extension.includes('\\')) {
                 // Extension not found.
                 throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }

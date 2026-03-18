@@ -463,8 +463,8 @@ export default class CoreLoginSitePage implements OnInit {
             this.filteredSites = this.fixedSites;
         } else {
             this.filteredSites = this.fixedSites.filter((site) =>
-                site.title.toLowerCase().indexOf(newValue) > -1 || site.noProtocolUrl.toLowerCase().indexOf(newValue) > -1 ||
-                site.location.toLowerCase().indexOf(newValue) > -1);
+                site.title.toLowerCase().includes(newValue) || site.noProtocolUrl.toLowerCase().includes(newValue) ||
+                site.location.toLowerCase().includes(newValue));
         }
     }
 

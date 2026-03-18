@@ -945,7 +945,7 @@ export class AddonModScormProvider {
         let parameters = <string | undefined> parametersEntry?.value;
 
         if (parameters) {
-            const connector = launchUrl.indexOf('?') > -1 ? '&' : '?';
+            const connector = launchUrl.includes('?') ? '&' : '?';
             if (parameters.charAt(0) === '?') {
                 parameters = parameters.substring(1);
             }
@@ -1040,7 +1040,7 @@ export class AddonModScormProvider {
         const status = sco.status || '';
 
         if (sco.isvisible) {
-            if (VALID_STATUSES.indexOf(status) >= 0) {
+            if (VALID_STATUSES.includes(status)) {
                 if (sco.scormtype === 'sco') {
                     imageName = status;
                     descName = status;
@@ -1405,7 +1405,7 @@ export class AddonModScormProvider {
         if (!packageUrl) {
             return false;
         }
-        if (packageUrl.indexOf('imsmanifest.xml') > -1) {
+        if (packageUrl.includes('imsmanifest.xml')) {
             return false;
         }
 
@@ -1688,7 +1688,7 @@ export class AddonModScormProvider {
         }
 
         // Check if we need to update. We only update if we sent some track with a dot notation.
-        const needsUpdate = tracks.some(track => track.element && track.element.indexOf('.') > -1);
+        const needsUpdate = tracks.some(track => track.element && track.element.includes('.'));
 
         if (!needsUpdate) {
             return;

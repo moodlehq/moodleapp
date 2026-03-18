@@ -198,7 +198,7 @@ export class AddonModScormHelperProvider {
         }
 
         // Check if last online incomplete.
-        const hasOffline = attempts.offline.indexOf(lastOnline) > -1;
+        const hasOffline = attempts.offline.includes(lastOnline);
 
         const incomplete = await AddonModScorm.isAttemptIncomplete(scorm.id, lastOnline, {
             offline: hasOffline,
@@ -263,7 +263,7 @@ export class AddonModScormHelperProvider {
         if (scorm.maxattempt && attempts.lastAttempt.num > scorm.maxattempt) {
             return {
                 num: scorm.maxattempt,
-                offline: attempts.offline.indexOf(scorm.maxattempt) > -1,
+                offline: attempts.offline.includes(scorm.maxattempt),
             };
         } else {
             return {

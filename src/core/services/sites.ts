@@ -1571,7 +1571,7 @@ export class CoreSitesProvider {
         const formattedSites: CoreSiteBasicInfo[] = [];
 
         await Promise.all(sites.map(async (site) => {
-            if (!ids || ids.indexOf(site.id) > -1) {
+            if (!ids || ids.includes(site.id)) {
                 const siteInfo = site.info ? <CoreSiteInfo> CoreText.parseJSON(site.info) : undefined;
                 const siteInstance = CoreSitesFactory.makeSite(site.id, site.siteUrl, site.token, { info: siteInfo });
 
