@@ -770,7 +770,7 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = attrName === 'style' || attrName.substring(0, 2) === 'on' || attrName.substring(0, 1) === '-' ||
+                        skip = attrName === 'style' || attrName.substring(0, 2) === 'on' || attrName.charAt(0) === '-' ||
                                 attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');
