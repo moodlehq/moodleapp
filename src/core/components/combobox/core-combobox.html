@@ -24,7 +24,7 @@
             <span class="sr-only">{{ label() }},</span>
         }
         <div class="select-text">
-            <slot name="text"><core-format-text [text]="selection()" /></slot>
+            <slot name="text"><core-format-text [text]="selectionText()" /></slot>
         </div>
 
         <div class="select-icon" role="presentation" aria-hidden="true" slot="end">
