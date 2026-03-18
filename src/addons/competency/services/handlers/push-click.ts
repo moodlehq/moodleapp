@@ -65,7 +65,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
             return;
         }
 
-        if (notification.contexturl && notification.contexturl.indexOf('user_competency_in_plan.php') != -1) {
+        if (notification.contexturl && notification.contexturl.includes('user_competency_in_plan.php')) {
             // Open the competency.
             const courseId = Number(notification.course);
             const competencyId = Number(contextUrlParams.competencyid);

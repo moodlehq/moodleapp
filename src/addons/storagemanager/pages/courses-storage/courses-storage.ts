@@ -81,7 +81,7 @@ export default class AddonStorageManagerCoursesStoragePage implements OnInit, On
         const downloadedCourseIds = await CoreCourseDownloadStatusHelper.getDownloadedCourseIds();
         const downloadedCourses = await Promise.all(
             this.userCourses
-                .filter((course) => downloadedCourseIds.indexOf(course.id) !== -1)
+                .filter((course) => downloadedCourseIds.includes(course.id))
                 .map((course) => this.getDownloadedCourse(course)),
         );
 

@@ -117,19 +117,19 @@ export class CoreH5PContentValidator {
             let tags = ['div', 'span', 'p', 'br'].concat(semantics.tags);
 
             // Add related tags for table etc.
-            if (tags.indexOf('table') != -1) {
+            if (tags.includes('table')) {
                 tags = tags.concat(['tr', 'td', 'th', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'figure', 'figcaption']);
             }
-            if (tags.indexOf('b') != -1) {
+            if (tags.includes('b')) {
                 tags.push('strong');
             }
-            if (tags.indexOf('i') != -1) {
+            if (tags.includes('i')) {
                 tags.push('em');
             }
-            if (tags.indexOf('ul') != -1 || tags.indexOf('ol') != -1) {
+            if (tags.includes('ul') || tags.includes('ol')) {
                 tags.push('li');
             }
-            if (tags.indexOf('del') != -1 || tags.indexOf('strike') != -1) {
+            if (tags.includes('del') || tags.includes('strike')) {
                 tags.push('s');
             }
 
@@ -162,7 +162,7 @@ export class CoreH5PContentValidator {
             }
 
             // Allow styling of tables if they are allowed
-            if (semantics.tags?.indexOf('table') != -1) {
+            if (semantics.tags?.includes('table')) {
                 // CKEditor outputs border as width style color
                 // eslint-disable-next-line @stylistic/max-len
                 stylePatterns.push(/^border: *[0-9.]+(em|px|%|) *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
@@ -737,7 +737,7 @@ export class CoreH5PContentValidator {
         // Clean up attributes.
         let attr2 = this.filterXssAttributes(
             newAttrList,
-            ALLOWED_STYLEABLE_TAGS.indexOf(elem) != -1 ? this.allowedStyles : undefined,
+            ALLOWED_STYLEABLE_TAGS.includes(elem) ? this.allowedStyles : undefined,
         ).join(' ');
         attr2 = attr2.replace(/[<>]/g, '');
         attr2 = attr2.length ? ` ${attr2}` : '';

@@ -476,7 +476,7 @@ export class CoreFileUploaderProvider {
                 return;
             }
 
-            if (filetype.indexOf('/') != -1) {
+            if (filetype.includes('/')) {
                 // It's a mimetype.
                 typesInfo.push({
                     name: CoreMimetype.getMimetypeDescription(filetype),
@@ -565,7 +565,7 @@ export class CoreFileUploaderProvider {
                     filename: file.filename,
                     fileurl: CoreFileHelper.getFileUrl(file),
                 });
-            } else if (file.fullPath?.indexOf(folderPath) != -1) {
+            } else if (file.fullPath?.includes(folderPath)) {
                 // File already in the submission folder.
                 result.offline++;
             } else {

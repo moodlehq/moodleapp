@@ -355,7 +355,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
                 CoreAlerts.show({ message: result.warnings[0] });
             }
 
-            if (result.deleted && result.deleted.indexOf(this.eventId) != -1) {
+            if (result.deleted && result.deleted.includes(this.eventId)) {
                 // This event was deleted during the sync.
                 deleted = true;
             } else if (this.eventId < 0 && result.offlineIdMap[this.eventId]) {
@@ -624,7 +624,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             return;
         }
 
-        if (data.deleted && data.deleted.indexOf(this.eventId) != -1) {
+        if (data.deleted && data.deleted.includes(this.eventId)) {
             CoreToasts.show({
                 message: 'addon.calendar.eventcalendareventdeleted',
                 translateMessage: true,

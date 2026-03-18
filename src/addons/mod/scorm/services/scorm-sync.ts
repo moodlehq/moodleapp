@@ -342,7 +342,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 throw error;
             }
 
-            for (let attempt = lastSuccessful; offlineAttempts.indexOf(attempt) != -1; attempt++) {
+            for (let attempt = lastSuccessful; offlineAttempts.includes(attempt); attempt++) {
                 // Move it back.
                 await AddonModScormOffline.changeAttemptNumber(scormId, attempt + newAttempts.length, attempt, siteId);
             }

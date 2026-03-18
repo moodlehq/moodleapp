@@ -165,7 +165,7 @@ export class VideoJSOgvJS extends Tech {
      * @returns 'probably', 'maybe', or '' (empty string).
      */
     static canPlayType(type: string): string {
-        return (type.indexOf('/ogg') !== -1 || type.indexOf('/webm')) ? 'maybe' : '';
+        return (type.includes('/ogg') || type.includes('/webm')) ? 'maybe' : '';
     }
 
     /**

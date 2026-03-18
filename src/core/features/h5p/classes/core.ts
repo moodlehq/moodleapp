@@ -109,7 +109,7 @@ export class CoreH5PCore {
      */
     static determineEmbedType(contentEmbedType: string, libraryEmbedTypes: string): string {
         // Detect content embed type.
-        let embedType = contentEmbedType.toLowerCase().indexOf('div') != -1 ? 'div' : 'iframe';
+        let embedType = contentEmbedType.toLowerCase().includes('div') ? 'div' : 'iframe';
 
         if (libraryEmbedTypes) {
             // Check that embed type is available for library
@@ -117,7 +117,7 @@ export class CoreH5PCore {
 
             if (embedTypes.indexOf(embedType) == -1) {
                 // Not available, pick default.
-                embedType = embedTypes.indexOf('div') != -1 ? 'div' : 'iframe';
+                embedType = embedTypes.includes('div') ? 'div' : 'iframe';
             }
         }
 

@@ -862,7 +862,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             groupId: editedPageData.groupId,
         });
 
-        if (editedPageData.pageId && (!this.pageContent || this.pageContent.indexOf('/mod/wiki/create.php') != -1)) {
+        if (editedPageData.pageId && (!this.pageContent || this.pageContent.includes('/mod/wiki/create.php'))) {
             // Refresh current page anyway because the new page could have been created using the create link.
             this.showLoadingAndRefresh(true, false);
         }
