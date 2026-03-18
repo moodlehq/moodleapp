@@ -546,8 +546,8 @@ export class CoreUrl {
         // Do not use tokenpluginfile if site doesn't use slash params, the URL doesn't work.
         // Also, only use it for "core" pluginfile endpoints. Some plugins can implement their own endpoint (like customcert).
         return !CoreConstants.CONFIG.disableTokenFile && !!accessKey && !url.match(/[&?]file=/) && (
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0 ||
-            url.indexOf(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php')) === 0) &&
+            url.startsWith(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) ||
+            url.startsWith(CorePath.concatenatePaths(siteUrl, 'webservice/pluginfile.php'))) &&
             !CoreMedia.sourceUsesJavascriptPlayer({ src: url });
     }
 
@@ -665,7 +665,7 @@ export class CoreUrl {
         }
 
         // Check if is a valid URL (contains the pluginfile endpoint) and belongs to the site.
-        if (!CoreUrl.isPluginFileUrl(url) || url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
+        if (!CoreUrl.isPluginFileUrl(url) || !url.startsWith(CoreText.addEndingSlash(siteUrl))) {
             return url;
         }
 
@@ -674,7 +674,7 @@ export class CoreUrl {
             url = url.replace(/(\/webservice)?\/pluginfile\.php/, `/tokenpluginfile.php/${accessKey}`);
         } else {
             // Use pluginfile.php. Some webservices returns directly the correct download url, others not.
-            if (url.indexOf(CorePath.concatenatePaths(siteUrl, 'pluginfile.php')) === 0) {
+            if (url.startsWith(CorePath.concatenatePaths(siteUrl, 'pluginfile.php'))) {
                 url = url.replace('/pluginfile', '/webservice/pluginfile');
             }
 
@@ -1069,7 +1069,7 @@ export class CoreUrl {
         url = url.replace(/&amp;/g, '&');
 
         // It site URL is supplied, check if the URL belongs to the site.
-        if (siteUrl && url.indexOf(CoreText.addEndingSlash(siteUrl)) !== 0) {
+        if (siteUrl && !url.startsWith(CoreText.addEndingSlash(siteUrl))) {
             return url;
         }
 

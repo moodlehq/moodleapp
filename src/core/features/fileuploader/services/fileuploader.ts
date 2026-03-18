@@ -484,7 +484,7 @@ export class CoreFileUploaderProvider {
                 });
 
                 mimetypes[filetype] = true;
-            } else if (filetype.indexOf('.') === 0) {
+            } else if (filetype.startsWith('.')) {
                 // It's an extension.
                 const mimetype = CoreMimetype.getMimeType(filetype);
                 typesInfo.push({
