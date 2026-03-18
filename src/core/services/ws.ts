@@ -1195,7 +1195,7 @@ export class CoreWSProvider {
 
         if (CorePlatform.isMobile()) {
             // Use the cordova plugin.
-            if (url.indexOf('file://') === 0) {
+            if (url.startsWith('file://')) {
                 // We cannot load local files using the http native plugin. Use file provider instead.
                 const content = options.responseType === 'json' ?
                     await CoreFile.readFile<T>(url, CoreFileFormat.FORMATJSON) :
