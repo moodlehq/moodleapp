@@ -233,7 +233,7 @@ export class CoreFileProvider {
         path = this.removeBasePath(path);
         base = base || this.basePath;
 
-        if (path.indexOf('/') == -1) {
+        if (!path.includes('/')) {
             if (isDirectory) {
                 this.logger.debug(`Create dir ${path} in ${base}`);
 

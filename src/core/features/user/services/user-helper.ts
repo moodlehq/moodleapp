@@ -42,7 +42,7 @@ export class CoreUserHelperProvider {
         return roles.map((value) => {
             const translation = Translate.instant(`core.user.${value.shortname}`);
 
-            return translation.indexOf('core.user.') < 0 ? translation : value.shortname;
+            return !translation.includes('core.user.') ? translation : value.shortname;
         }).join(`${separator} `);
     }
 

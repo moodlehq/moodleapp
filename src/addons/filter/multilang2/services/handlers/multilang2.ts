@@ -39,7 +39,7 @@ export class AddonFilterMultilang2HandlerService extends CoreFilterDefaultHandle
      * @returns string The filtered text for this multilang block.
      */
     async filter(text: string): Promise<string> {
-        if (text.indexOf('mlang') === -1) {
+        if (!text.includes('mlang')) {
             return text;
         }
 

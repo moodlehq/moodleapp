@@ -625,7 +625,7 @@ export class CoreH5PContentValidator {
      */
     filterParams(params: Record<string, unknown>, allowlist: string[]): void {
         for (const key in params) {
-            if (allowlist.indexOf(key) == -1) {
+            if (!allowlist.includes(key)) {
                 delete params[key];
             }
         }
