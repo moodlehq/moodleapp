@@ -182,7 +182,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.glossary &&
                 data.component === 'mod_glossary' &&
                 data.ratingArea === 'entry' &&
-                data.contextLevel == ContextLevel.MODULE &&
+                data.contextLevel === ContextLevel.MODULE &&
                 data.instanceId == this.glossary.coursemodule
             ) {
                 this.hasOfflineRatings = true;
@@ -194,7 +194,7 @@ export class AddonModGlossaryIndexComponent extends CoreCourseModuleMainActivity
                 this.glossary &&
                 data.component === 'mod_glossary' &&
                 data.ratingArea === 'entry' &&
-                data.contextLevel == ContextLevel.MODULE &&
+                data.contextLevel === ContextLevel.MODULE &&
                 data.instanceId == this.glossary.coursemodule
             ) {
                 this.hasOfflineRatings = false;

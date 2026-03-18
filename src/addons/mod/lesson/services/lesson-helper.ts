@@ -166,7 +166,7 @@ export class AddonModLessonHelperProvider {
 
         // Cannot find contents element.
         if (AddonModLesson.isQuestionPage(data.page?.type || -1) ||
-                data.page?.qtype == AddonModLessonPageSubtype.BRANCHTABLE) {
+            data.page?.qtype === AddonModLessonPageSubtype.BRANCHTABLE) {
             // Return page.contents to prevent having duplicated elements (some elements like videos might not work).
             return data.page?.contents || '';
         } else {

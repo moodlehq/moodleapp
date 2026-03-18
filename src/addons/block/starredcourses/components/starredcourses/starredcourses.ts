@@ -173,7 +173,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
             return this.refreshContent();
         }
 
-        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state == CORE_COURSES_STATE_FAVOURITE) {
+        if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state === CORE_COURSES_STATE_FAVOURITE) {
             const courseIndex = this.courses.findIndex((course) => course.id === data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.

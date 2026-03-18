@@ -156,7 +156,7 @@ export class AddonModLessonProvider {
      */
     answerPageIsContent(page: AddonModLessonUserAttemptAnswerPageWSData): boolean {
         // The page doesn't have any reliable field to use for checking this. Check qtype first (translated string).
-        if (page.qtype == Translate.instant('addon.mod_lesson.branchtable')) {
+        if (page.qtype === Translate.instant('addon.mod_lesson.branchtable')) {
             return true;
         }
 
@@ -490,7 +490,7 @@ export class AddonModLessonProvider {
                 const answer = answers[id];
 
                 result.studentanswer += `<br />${answer.answer} = ${value}`;
-                if (answer.response && answer.response.trim() == value.trim()) {
+                if (answer.response && answer.response.trim() === value.trim()) {
                     hits++;
                 }
             }
@@ -2365,15 +2365,15 @@ export class AddonModLessonProvider {
         if (!jumpTo) {
             // Same page
             return false;
-        } else if (jumpTo == AddonModLessonJumpTo.NEXTPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.NEXTPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.RANDOMPAGE) {
+        } else if (jumpTo === AddonModLessonJumpTo.RANDOMPAGE) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.CLUSTERJUMP) {
+        } else if (jumpTo === AddonModLessonJumpTo.CLUSTERJUMP) {
             return true;
-        } else if (jumpTo == AddonModLessonJumpTo.EOL) {
+        } else if (jumpTo === AddonModLessonJumpTo.EOL) {
             return true;
         }
 
@@ -2726,7 +2726,7 @@ export class AddonModLessonProvider {
      * @returns True if left during timed, false otherwise.
      */
     leftDuringTimed(info?: AddonModLessonGetAccessInformationWSResponse): boolean {
-        return !!(info?.lastpageseen && info.lastpageseen != AddonModLessonJumpTo.EOL && info.leftduringtimedsession);
+        return !!(info?.lastpageseen && info.lastpageseen !== AddonModLessonJumpTo.EOL && info.leftduringtimedsession);
     }
 
     /**
@@ -2746,8 +2746,8 @@ export class AddonModLessonProvider {
             for (const jumpto in jumps[pageId]) {
                 const jumptoNum = Number(jumpto);
 
-                if (jumptoNum == AddonModLessonJumpTo.CLUSTERJUMP ||
-                        jumptoNum == AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
+                if (jumptoNum === AddonModLessonJumpTo.CLUSTERJUMP ||
+                    jumptoNum === AddonModLessonJumpTo.UNSEENBRANCHPAGE) {
                     return true;
                 }
             }
