@@ -331,7 +331,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
         // Calculate the grade for each attempt.
         attempts.online.forEach((attempt) => {
             // Check that attempt isn't in offline to prevent showing the same attempt twice. Offline should be more recent.
-            if (attempts.offline.indexOf(attempt) == -1) {
+            if (!attempts.offline.includes(attempt)) {
                 promises.push(this.getAttemptGrade(attempt, false, onlineAttempts));
             }
         });

@@ -574,7 +574,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // Make sure the path has the protocol. In iOS it doesn't.
-        if (CorePlatform.isMobile() && path.indexOf('file://') == -1) {
+        if (CorePlatform.isMobile() && !path.includes('file://')) {
             path = `file://${path}`;
         }
 

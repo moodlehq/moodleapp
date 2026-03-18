@@ -612,7 +612,7 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
 
                 if (this.offlineEditedEventsIds.length) {
                     // Remove the online events that were modified in offline.
-                    day.events = day.events.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+                    day.events = day.events.filter((event) => !this.offlineEditedEventsIds.includes(event.id));
                 }
 
                 if (monthOfflineEvents && monthOfflineEvents[day.mday] && day.eventsFormated) {

@@ -259,7 +259,7 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
             if (this.event.moduleIcon) {
                 // It's a module event, translate the module name to the current language.
                 const name = CoreCourseModuleHelper.translateModuleName(this.event.modulename || '');
-                if (name.indexOf('core.mod_') === -1) {
+                if (!name.includes('core.mod_')) {
                     this.event.modulename = name;
                 }
 

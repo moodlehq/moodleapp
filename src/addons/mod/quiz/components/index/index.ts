@@ -239,7 +239,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         // For closed quizzes we don't receive the hasquestions value (to be fixed in MDL-84360), so we need to check the types.
         this.hasQuestions = quiz.hasquestions !== undefined ? quiz.hasquestions !== 0 : types.length > 0;
         this.unsupportedQuestions = AddonModQuiz.getUnsupportedQuestions(types);
-        this.hasSupportedQuestions = !!types.find((type) => type !== 'random' && this.unsupportedQuestions.indexOf(type) === -1);
+        this.hasSupportedQuestions = !!types.find((type) => type !== 'random' && !this.unsupportedQuestions.includes(type));
 
         await this.getAttempts(quiz, this.quizAccessInfo);
 

@@ -89,7 +89,7 @@ export class CoreBootstrap {
             }
 
             if (!content ||
-                    (trigger.indexOf('hover') === -1 && trigger.indexOf('focus') === -1 && trigger.indexOf('click') === -1)) {
+                    (!trigger.includes('hover') && !trigger.includes('focus') && !trigger.includes('click'))) {
                 return;
             }
 

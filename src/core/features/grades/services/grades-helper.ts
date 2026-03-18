@@ -389,7 +389,7 @@ export class CoreGradesHelperProvider {
         const el = CoreDom.toDom(text)[0];
         const link = el.attributes['href'] ? el.attributes['href'].value : false;
 
-        if (!link || link.indexOf('/mod/') < 0) {
+        if (!link || !link.includes('/mod/')) {
             return false;
         }
 

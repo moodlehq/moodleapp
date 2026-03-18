@@ -762,7 +762,7 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         if (this.offlineEditedEventsIds.length) {
             // Remove the online events that were modified in offline.
-            result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+            result = result.filter((event) => !this.offlineEditedEventsIds.includes(event.id));
 
             if (result.length != day.onlineEvents?.length) {
                 day.hasOffline = true;
