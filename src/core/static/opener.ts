@@ -315,7 +315,7 @@ export class CoreOpener {
             ...CoreOpener.calculateInAppBrowserToolbarColors(options || {}),
         };
 
-        if (!iabOptions.location && CorePlatform.isIOS() && url.indexOf('file://') === 0) {
+        if (!iabOptions.location && CorePlatform.isIOS() && url.startsWith('file://')) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             iabOptions.location = 'no';

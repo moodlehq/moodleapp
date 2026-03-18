@@ -182,7 +182,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
-        const protocol = this.site.siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
+        const protocol = this.site.siteUrl.startsWith('http://') ? 'http://' : undefined;
 
         try {
             if (!this.siteCheck) {
