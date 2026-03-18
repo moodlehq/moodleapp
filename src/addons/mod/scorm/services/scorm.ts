@@ -860,7 +860,7 @@ export class AddonModScormProvider {
 
         if (options.organization) {
             // Filter SCOs by organization.
-            return response.scoes.filter((sco) => sco.organization == options.organization);
+            return response.scoes.filter((sco) => sco.organization === options.organization);
         }
 
         return response.scoes;

@@ -396,7 +396,7 @@ export class AddonModH5PActivityProvider {
 
             const attemptsResults = await AddonModH5PActivity.getAllAttemptsResults(id, cacheOptions);
 
-            const attempt = attemptsResults.attempts.find((attempt) => attempt.id == attemptId);
+            const attempt = attemptsResults.attempts.find((attempt) => attempt.id === attemptId);
 
             if (!attempt) {
                 throw error;

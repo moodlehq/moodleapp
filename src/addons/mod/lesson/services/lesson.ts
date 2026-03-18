@@ -3354,7 +3354,7 @@ export class AddonModLessonProvider {
 
             subPages.forEach((subPage) => {
                 const position = viewedPagesIds.indexOf(subPage.id);
-                if (position == -1) {
+                if (position === -1) {
                     return;
                 }
 

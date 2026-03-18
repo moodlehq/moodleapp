@@ -445,7 +445,7 @@ export class AddonBlockMyOverviewComponent extends CoreBlockBaseComponent implem
             return this.refreshContent(true);
         }
 
-        const course = this.allCourses.find((course) => course.id == data.courseId);
+        const course = this.allCourses.find((course) => course.id === data.courseId);
         if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED) {
             if (!course) {
                 // Not found, use WS update.

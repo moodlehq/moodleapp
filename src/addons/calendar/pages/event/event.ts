@@ -643,9 +643,9 @@ export default class AddonCalendarEventPage implements OnInit, OnDestroy {
                     this.refreshEvent();
                 }
             } else {
-                const event = data.events.find((ev) => ev.id == this.eventId);
+                const found = data.events.some((ev) => ev.id === this.eventId);
 
-                if (event) {
+                if (found) {
                     this.eventLoaded = false;
                     this.refreshEvent();
                 }

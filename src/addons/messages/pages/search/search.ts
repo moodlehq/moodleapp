@@ -92,18 +92,18 @@ export default class AddonMessagesSearchPage implements OnDestroy {
                     return;
                 }
 
-                const contact = this.contacts.results.find((user) => user.id == data.userId);
+                const contact = this.contacts.results.find((user) => user.id === data.userId);
                 if (contact) {
                     contact.isblocked = !!data.userBlocked;
                 } else {
-                    const nonContact = this.nonContacts.results.find((user) => user.id == data.userId);
+                    const nonContact = this.nonContacts.results.find((user) => user.id === data.userId);
                     if (nonContact) {
                         nonContact.isblocked = !!data.userBlocked;
                     }
                 }
 
                 this.messages.results.forEach((message: AddonMessagesMessageAreaContact): void => {
-                    if (message.userid == data.userId) {
+                    if (message.userid === data.userId) {
                         message.isblocked = !!data.userBlocked;
                     }
                 });

@@ -143,7 +143,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         const courses = await CoreCourses.getCoursesByField('ids', courseIds.join(','));
 
         this.courses = starredCourses.map((recentCourse) => {
-            const course = courses.find((course) => recentCourse.id == course.id);
+            const course = courses.find((course) => recentCourse.id === course.id);
 
             return Object.assign(recentCourse, course);
         });
@@ -174,7 +174,7 @@ export class AddonBlockStarredCoursesComponent extends CoreBlockBaseComponent im
         }
 
         if (data.action === CoreCoursesMyCoursesUpdatedEventAction.STATE_CHANGED && data.state == CORE_COURSES_STATE_FAVOURITE) {
-            const courseIndex = this.courses.findIndex((course) => course.id == data.courseId);
+            const courseIndex = this.courses.findIndex((course) => course.id === data.courseId);
             if (courseIndex < 0) {
                 // Not found, use WS update. Usually new favourite.
                 return this.refreshContent();

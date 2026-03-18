@@ -373,7 +373,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                     subPromises.push(AddonModAssign.getAssignmentGrades(assign.id, modOptions));
 
                     // Prefetch the submission of the current user even if it does not exist, this will be create it.
-                    if (!submissions || !submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid == userId)) {
+                    if (!submissions || !submissions.find((subm: AddonModAssignSubmissionFormatted) => subm.submitid === userId)) {
                         const submissionOptions = {
                             userId,
                             groupId: group.id,

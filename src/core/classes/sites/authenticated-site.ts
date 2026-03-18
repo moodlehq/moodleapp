@@ -1615,7 +1615,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         const position = releases.indexOf(data.major);
 
-        if (position == -1 || position == releases.length - 1) {
+        if (position === -1 || position === releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
             return MOODLE_RELEASES[releases[position]];
         }

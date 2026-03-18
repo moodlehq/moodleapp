@@ -2374,16 +2374,16 @@ export class CoreFilepoolProvider {
         }
 
         // If there are hashes in the URL, extract them.
-        const index = filename.indexOf('#');
+        const hashIndex = filename.indexOf('#');
         let hashes: string[] | undefined;
 
-        if (index != -1) {
+        if (hashIndex !== -1) {
             hashes = filename.split('#');
 
             // Remove the URL from the array.
             hashes.shift();
 
-            filename = filename.substring(0, index);
+            filename = filename.substring(0, hashIndex);
         }
 
         // Remove the extension from the filename.
