@@ -394,7 +394,7 @@ export class AddonModFeedbackHelperProvider {
         });
 
         if (formItem.subtype === AddonModFeedbackMultichoiceSubtype.RADIO &&
-            formItem.options.search(ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+            !formItem.options.includes(ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT)) {
             formItem.choices.unshift({ value: 0, label: Translate.instant('addon.mod_feedback.not_selected') });
             formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : 0;
         } else if (formItem.subtype === AddonModFeedbackMultichoiceSubtype.DROPDOWN) {
