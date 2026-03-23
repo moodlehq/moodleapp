@@ -104,6 +104,13 @@ export class WasmSQLiteObject implements SQLiteObject {
         let insertId: number | undefined = undefined;
         const rows = [] as unknown[];
 
+        // Solid workaround to get the last inserted ID,
+        // as SQLite WASM doesn't return it for some reason, even if the statement is an INSERT.
+        // Conversion to Number is needed because the rowId returned by SQLite WASM is a BigInt.
+        if (statement.trim().toUpperCase().startsWith('INSERT') && !statement.toUpperCase().includes(' RETURNING ')) {
+            statement = `${statement} RETURNING *`;
+        }
+
         await this.promiser('exec', {
             sql: statement,
             bind: params,
@@ -112,7 +119,7 @@ export class WasmSQLiteObject implements SQLiteObject {
                     return;
                 }
 
-                insertId ||= rowId;
+                insertId ||= Number(rowId);
 
                 rows.push(columnNames.reduce((record, column, index) => {
                     record[column] = row[index];
