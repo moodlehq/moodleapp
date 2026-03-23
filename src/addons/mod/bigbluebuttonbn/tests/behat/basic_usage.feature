@@ -25,6 +25,8 @@ Feature: Test basic usage of BBB activity in app
       | bigbluebuttonbn | BBB 1 | Test BBB description | C1     | bbb1     | 0    | ## 1 January 2050 00:00 ## | 0                          |
       | bigbluebuttonbn | BBB 2 | Test BBB description | C1     | bbb2     | 0    | 0                          | ## 1 January 2000 00:00 ## |
       | bigbluebuttonbn | BBB 3 | Test BBB description | C1     | bbb3     | 0    | ## 1 January 2000 00:00 ## | ## 1 January 2050 00:00 ## |
+      | bigbluebuttonbn | BBB 4 | Test BBB description | C1     | bbb4     | 1    | ## 1 January 2050 00:00 ## | 0                          |
+      | bigbluebuttonbn | BBB 5 | Test BBB description | C1     | bbb5     | 1    | 0                          | ## 1 January 2000 00:00 ## |
     And I entered the course "Course 1" as "student1" in the app
     And I press "BBB 1" in the app
     Then I should find "The session has not started yet." in the app
@@ -40,6 +42,15 @@ Feature: Test basic usage of BBB activity in app
     Then I should find "This room is ready. You can join the session now." in the app
     And I should find "1 January 2000, 12:00 AM" near "Opened:" in the app
     And I should find "1 January 2050, 12:00 AM" near "Closes:" in the app
+
+    # Check that dates are more prioritary than waiting for moderator.
+    When I go back in the app
+    And I press "BBB 4" in the app
+    Then I should find "The session has not started yet." in the app
+
+    When I go back in the app
+    And I press "BBB 5" in the app
+    Then I should find "The session has ended." in the app
 
   Scenario: Join meeting (student)
     Given the following "activities" exist:

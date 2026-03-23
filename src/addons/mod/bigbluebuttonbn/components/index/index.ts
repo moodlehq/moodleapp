@@ -131,12 +131,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 updateCache,
             });
 
-            if (meetingInfo.statusrunning && meetingInfo.userlimit > 0) {
-                const count = (meetingInfo.participantcount || 0) + (meetingInfo.moderatorcount || 0);
-                if (count === meetingInfo.userlimit) {
-                    meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
-                }
-            }
+            this.setStatusMessage(meetingInfo);
 
             // If the module doesn't include activity dates, populate them from meetingInfo.
             // As of LMS v5.1.0, these dates are normally provided by the module.
@@ -177,6 +172,39 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             }
 
             throw error;
+        }
+    }
+
+    /**
+     * Change the status message of the meeting info if needed.
+     *
+     * @param meetingInfo Meeting info to change its status message if needed.
+     */
+    protected setStatusMessage(meetingInfo: AddonModBBBMeetingInfo): void {
+        // User limit wasn't calculated properly before MDL-76303 (4.0.8, 4.1.3).
+        if (meetingInfo.statusrunning && meetingInfo.userlimit > 0) {
+            const count = (meetingInfo.participantcount || 0) + (meetingInfo.moderatorcount || 0);
+            if (count === meetingInfo.userlimit) {
+                meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+
+                return;
+            }
+        }
+
+        // Wait for moderator has more priority than open/close dates, when it shouldn't. See MDL-88273.
+        // Calculate the right status message.
+        if (meetingInfo.openingtime && meetingInfo.openingtime > CoreTime.timestamp()) {
+            meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.view_message_conference_not_started');
+            meetingInfo.usermustwaittojoin = false;
+
+            return;
+        }
+
+        if (meetingInfo.closingtime && meetingInfo.closingtime < CoreTime.timestamp()) {
+            meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.view_message_conference_has_ended');
+            meetingInfo.usermustwaittojoin = false;
+
+            return;
         }
     }
 
