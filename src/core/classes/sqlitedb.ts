@@ -748,7 +748,7 @@ export class SQLiteDB {
      */
     async insertRecord(table: string, data: SQLiteDBRecordValues, replace = true): Promise<number> {
         const sqlAndParams = this.getSqlInsertQuery(table, data, replace);
-        const result = await this.execute(sqlAndParams.sql, sqlAndParams.params);
+        const result: SQLiteInsertResult = await this.execute(sqlAndParams.sql, sqlAndParams.params);
 
         return result.insertId;
     }
@@ -1059,3 +1059,9 @@ export type SQLiteDBQueryParams = {
 };
 
 export type SQLiteDBRecordValue = number | string  | undefined | null;
+
+export type SQLiteInsertResult = {
+    insertId: number;
+    rowsAffected: number;
+    rows: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+};
