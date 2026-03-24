@@ -806,9 +806,8 @@ export class CoreLocalNotificationsProvider {
      * time is changed.
      *
      * @param notification Triggered notification.
-     * @returns Promise resolved when stored, rejected otherwise.
      */
-    async trigger(notification: ILocalNotification): Promise<number> {
+    async trigger(notification: ILocalNotification): Promise<void> {
         let time = Date.now();
         if (notification.trigger?.at) {
             // The type says "at" is a Date, but in Android we can receive timestamps instead.
@@ -819,7 +818,7 @@ export class CoreLocalNotificationsProvider {
             }
         }
 
-        return this.triggeredTable.insert({
+        await this.triggeredTable.insert({
             id: notification.id,
             at: time,
         });

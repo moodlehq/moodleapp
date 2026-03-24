@@ -313,7 +313,6 @@ export class AddonModAssignOfflineProvider {
      * @param timemodified The time the submission was last modified in online.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if marked, rejected if failure.
      */
     async markSubmitted(
         assignId: number,
@@ -323,7 +322,7 @@ export class AddonModAssignOfflineProvider {
         timemodified: number,
         userId?: number,
         siteId?: string,
-    ): Promise<number> {
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
@@ -352,7 +351,7 @@ export class AddonModAssignOfflineProvider {
             };
         }
 
-        return site.getDb().insertRecord(SUBMISSIONS_TABLE, submission);
+        await site.getDb().insertRecord(SUBMISSIONS_TABLE, submission);
     }
 
     /**
@@ -365,7 +364,6 @@ export class AddonModAssignOfflineProvider {
      * @param submitted True if submission has been submitted, false otherwise.
      * @param userId User ID. If not defined, site's current user.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if stored, rejected if failure.
      */
     async saveSubmission(
         assignId: number,
@@ -375,7 +373,7 @@ export class AddonModAssignOfflineProvider {
         submitted: boolean,
         userId?: number,
         siteId?: string,
-    ): Promise<number> {
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         userId = userId || site.getUserId();
@@ -392,7 +390,7 @@ export class AddonModAssignOfflineProvider {
             onlinetimemodified: timemodified,
         };
 
-        return site.getDb().insertRecord(SUBMISSIONS_TABLE, entry);
+        await site.getDb().insertRecord(SUBMISSIONS_TABLE, entry);
     }
 
     /**
@@ -409,7 +407,6 @@ export class AddonModAssignOfflineProvider {
      * @param outcomes Object including all outcomes values. If empty, any of them will be sent.
      * @param pluginData Plugin data to save.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved if stored, rejected if failure.
      */
     async submitGradingForm(
         assignId: number,
@@ -423,7 +420,7 @@ export class AddonModAssignOfflineProvider {
         outcomes: AddonModAssignOutcomes,
         pluginData: AddonModAssignSavePluginData,
         siteId?: string,
-    ): Promise<number> {
+    ): Promise<void> {
         const site = await CoreSites.getSite(siteId);
 
         const now = CoreTime.timestamp();
@@ -441,7 +438,7 @@ export class AddonModAssignOfflineProvider {
             timemodified: now,
         };
 
-        return site.getDb().insertRecord(SUBMISSIONS_GRADES_TABLE, entry);
+        await site.getDb().insertRecord(SUBMISSIONS_GRADES_TABLE, entry);
     }
 
 }

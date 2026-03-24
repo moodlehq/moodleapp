@@ -198,9 +198,8 @@ export class AddonCalendarOfflineProvider {
      * @param name Name of the event to delete.
      * @param deleteAll If it's a repeated event. whether to delete all events of the series.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
-    async markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<number> {
+    async markDeleted(eventId: number, name: string, deleteAll?: boolean, siteId?: string): Promise<void> {
         const site = await CoreSites.getSite(siteId);
         const event: AddonCalendarOfflineDeletedEventDBRecord = {
             id: eventId,
@@ -209,7 +208,7 @@ export class AddonCalendarOfflineProvider {
             timemodified: Date.now(),
         };
 
-        return site.getDb().insertRecord(DELETED_EVENTS_TABLE, event);
+        await site.getDb().insertRecord(DELETED_EVENTS_TABLE, event);
     }
 
     /**
