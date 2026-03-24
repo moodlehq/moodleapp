@@ -25,6 +25,8 @@ Feature: Test basic usage of BBB activity in app
       | bigbluebuttonbn | BBB 1 | Test BBB description | C1     | bbb1     | 0    | ## 1 January 2050 00:00 ## | 0                          |
       | bigbluebuttonbn | BBB 2 | Test BBB description | C1     | bbb2     | 0    | 0                          | ## 1 January 2000 00:00 ## |
       | bigbluebuttonbn | BBB 3 | Test BBB description | C1     | bbb3     | 0    | ## 1 January 2000 00:00 ## | ## 1 January 2050 00:00 ## |
+      | bigbluebuttonbn | BBB 4 | Test BBB description | C1     | bbb4     | 1    | ## 1 January 2050 00:00 ## | 0                          |
+      | bigbluebuttonbn | BBB 5 | Test BBB description | C1     | bbb5     | 1    | 0                          | ## 1 January 2000 00:00 ## |
     And I entered the course "Course 1" as "student1" in the app
     And I press "BBB 1" in the app
     Then I should find "The session has not started yet." in the app
@@ -40,6 +42,15 @@ Feature: Test basic usage of BBB activity in app
     Then I should find "This room is ready. You can join the session now." in the app
     And I should find "1 January 2000, 12:00 AM" near "Opened:" in the app
     And I should find "1 January 2050, 12:00 AM" near "Closes:" in the app
+
+    # Check that dates are more prioritary than waiting for moderator.
+    When I go back in the app
+    And I press "BBB 4" in the app
+    Then I should find "The session has not started yet." in the app
+
+    When I go back in the app
+    And I press "BBB 5" in the app
+    Then I should find "The session has ended." in the app
 
   Scenario: Join meeting (student)
     Given the following "activities" exist:
@@ -79,6 +90,7 @@ Feature: Test basic usage of BBB activity in app
     And I should find "1" near "Moderator" in the app
     And I should find "0" near "Viewer" in the app
 
+  @lms_from5.2
   Scenario: Wait for moderator
     Given the following "activities" exist:
       | activity        | name     | intro                | course | idnumber | wait | moderators          |
@@ -87,16 +99,24 @@ Feature: Test basic usage of BBB activity in app
     Then I should find "Waiting for a moderator to join." in the app
     And I should not be able to press "Join session" in the app
 
+    When I press "Refresh" in the app
+    Then I should find "Still waiting for the moderator to join." in the app
+    And I should not be able to press "Join session" in the app
+
     # Join the session as moderator in a browser.
     When I open a browser tab with url "$WWWROOT"
     And I am on the "bbb1" Activity page logged in as teacher1
     And I click on "Join session" "link"
     And I wait for the BigBlueButton room to start
     And I switch back to the app
-    And I pull to refresh until I find "The session is in progress" in the app
+    And I press "Refresh" in the app
+    Then I should find "Moderator has joined" in the app
+    And I should find "The moderator has joined. You can now join the session." in the app
+    And I should find "The session is in progress" in the app
     Then I should find "1" near "Moderator" in the app
     And I should find "0" near "Viewer" in the app
     And I should be able to press "Join session" in the app
+    But I should not be able to press "Refresh" in the app
 
     When I close all opened windows
     And I press "Join session" in the app

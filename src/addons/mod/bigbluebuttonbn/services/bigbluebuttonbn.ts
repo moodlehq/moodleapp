@@ -437,6 +437,7 @@ export type AddonModBBBMeetingInfoWSResponse = {
         isenabled: boolean;
     }[];
     showpresentations?: boolean; // @since 4.5. Whether to show presentation files.
+    usermustwaittojoin?: boolean; // @since 5.2. User must wait to join.
 };
 
 /**
