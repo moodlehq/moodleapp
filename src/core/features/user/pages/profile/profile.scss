@@ -7,4 +7,21 @@
             right: calc(50% - 12px - var(--core-avatar-size) / 2) !important;
         }
     }
+
+    .limited-profile {
+        margin: 1rem;
+
+        h5 {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            margin-top: 0;
+        }
+
+        ion-icon {
+            font-size: 24px;
+        }
+    }
 }
