@@ -121,7 +121,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @inheritdoc
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModChoiceAutoSyncData): boolean {
-        if (this.choice && syncEventData.choiceId == this.choice.id && syncEventData.userId == this.userId) {
+        if (this.choice && syncEventData.choiceId === this.choice.id && syncEventData.userId === this.userId) {
             this.content?.scrollToTop();
 
             return true;
@@ -352,7 +352,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.data = [];
         this.labels = [];
 
-        this.results = results.map<AddonModChoiceResultFormatted>((result) => {
+        this.results = results.options.map<AddonModChoiceResultFormatted>((result) => {
             if (result.numberofuser > 0) {
                 hasVotes = true;
             }
@@ -378,7 +378,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
                     };
 
                     result.userresponses.forEach((user) => {
-                        if (user.userid == this.userId) {
+                        if (user.userid === this.userId) {
                             option.checked = true;
                         }
                     });
