@@ -440,14 +440,16 @@
         @if (canEdit || canSubmit || canGrade) {
             <div class="list-item-limited-width">
                 @if (canGrade) {
-                    @if (canSaveGrades) {
+                    @if (canSaveGrades && !hasMultipleMarkers()) {
                         <ion-button expand="block" class="ion-text-wrap" (click)="openGrade()">
                             {{ 'core.gradeverb' | translate }}
                         </ion-button>
                     } @else {
                         <!-- Warning message if cannot save grades. -->
+                        @let message = hasMultipleMarkers() ? 'addon.mod_assign.multiplemarkersnotsupported'
+                            : 'addon.mod_assign.cannotgradefromapp';
                         <core-alert-card type="warning"
-                            [message]="'addon.mod_assign.cannotgradefromapp' | translate" >
+                            [message]="message | translate" >
                             @if (gradeUrl) {
                                 <ion-button expand="block" [href]="gradeUrl" core-link [showBrowserWarning]="false">
                                     {{ 'core.openinbrowser' | translate }}
