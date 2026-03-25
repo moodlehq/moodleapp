@@ -556,6 +556,9 @@ export class TestingBehatRuntimeService {
     isSelected(locator: TestingBehatElementLocator): string {
         this.log('Action - Is Selected', locator);
 
+        locator.selector = locator.selector
+            ?? 'ion-checkbox, ion-radio, ion-toggle, ion-select-option, [aria-current], [aria-selected], [aria-checked]';
+
         try {
             const element = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: false });
 
@@ -594,6 +597,49 @@ export class TestingBehatRuntimeService {
             }
 
             await TestingBehatDomUtils.pressElement(found);
+
+            // Block Behat for at least 500ms, WS calls or DOM changes might not begin immediately.
+            TestingBehatBlocking.wait(500);
+
+            return 'OK';
+        } catch (error) {
+            return `ERROR: ${error.message}`;
+        }
+    }
+
+    /**
+     * Function to select arbitrary item based on its text or Aria label.
+     *
+     * @param locator Element locator.
+     * @param action Whether to select or unselect the item.
+     * @returns OK if successful, or ERROR: followed by message
+     */
+    async select(locator: TestingBehatElementLocator, action: 'select' | 'unselect' = 'select'): Promise<string> {
+        locator.selector = locator.selector
+            ?? 'ion-checkbox, ion-radio, ion-toggle, ion-select-option, [aria-current], [aria-selected], [aria-checked]';
+
+        this.log('Action - Select', locator);
+        const select = action === 'select' ? true : false;
+
+        try {
+            const found = TestingBehatDomUtils.findElementBasedOnText(locator, { onlyClickable: true });
+
+            if (!found) {
+                return 'ERROR: No element matches locator to select.';
+            }
+
+            const isSelected = TestingBehatDomUtils.isElementSelected(found);
+            // Don't do anything if the item is already in the expected state.
+            if (isSelected === select) {
+                return 'OK';
+            }
+
+            await TestingBehatDomUtils.pressElement(found);
+
+            // The element has not changed to the expected state.
+            if (isSelected === select) {
+                return `Item wasn't ${action}ed after pressing it`;
+            }
 
             // Block Behat for at least 500ms, WS calls or DOM changes might not begin immediately.
             TestingBehatBlocking.wait(500);
