@@ -31,7 +31,7 @@ import {
     AddonModAssignSync,
 } from '../../services/assign-sync';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { Translate } from '@singletons';
 import { CoreCourse } from '@features/course/services/course';
@@ -663,46 +663,35 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         this.hasOfflineGrade = false;
 
-        let gradeModified = 0;
-        const gradebookGrades = await CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId);
-        gradebookGrades.forEach((grade: CoreGradesFormattedItem) => {
-            if (!grade.outcomeid && !grade.scaleid) {
-                gradeModified = grade.gradedategraded ?? gradeModified;
-            }
-        });
-
-        // Load offline grades.
+        // Load offline grades. Do not use offline if feedback was modified after the offline grade was stored.
         if (submissionGrade && (!feedback || !feedback.gradeddate || feedback.gradeddate < submissionGrade.timemodified)) {
-            // If grade has been modified from gradebook, do not use offline.
-            if (gradeModified < submissionGrade.timemodified) {
-                let gradeForDisplay: string;
-                if (gradeInfo.scale) {
-                    const scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'), ',', -1);
-                    const scaleItem = scale.find(scaleItem => scaleItem.value === submissionGrade.grade);
-                    gradeForDisplay = scaleItem?.label ?? String(submissionGrade.grade);
-                } else {
-                    gradeForDisplay = CoreUtils.formatFloat(submissionGrade.grade);
-                }
-
-                if (!this.feedback) {
-                    this.feedback = {
-                        gradefordisplay: gradeForDisplay,
-                        gradeddate: gradeModified,
-                        plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
-                    };
-                } else {
-                    this.feedback.gradefordisplay = gradeForDisplay;
-                    this.feedback.gradeddate = gradeModified;
-                }
-
-                this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
-
-                this.hasOfflineGrade = true;
-                this.gradingStatusBadge = {
-                    translationId: 'addon.mod_assign.gradenotsynced',
-                    color: CoreIonicColorNames.NONE,
-                };
+            let gradeForDisplay: string;
+            if (gradeInfo.scale) {
+                const scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'), ',', -1);
+                const scaleItem = scale.find(scaleItem => scaleItem.value === submissionGrade.grade);
+                gradeForDisplay = scaleItem?.label ?? String(submissionGrade.grade);
+            } else {
+                gradeForDisplay = CoreUtils.formatFloat(submissionGrade.grade);
             }
+
+            if (!this.feedback) {
+                this.feedback = {
+                    gradefordisplay: gradeForDisplay,
+                    gradeddate: submissionGrade.timemodified,
+                    plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
+                };
+            } else {
+                this.feedback.gradefordisplay = gradeForDisplay;
+                this.feedback.gradeddate = submissionGrade.timemodified;
+            }
+
+            this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
+
+            this.hasOfflineGrade = true;
+            this.gradingStatusBadge = {
+                translationId: 'addon.mod_assign.gradenotsynced',
+                color: CoreIonicColorNames.NONE,
+            };
         }
     }
 
