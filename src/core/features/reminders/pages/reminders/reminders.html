@@ -1,0 +1,46 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button [text]="'core.back' | translate" />
+        </ion-buttons>
+        <ion-title>{{ 'core.reminders.scheduledreminders' | translate }}</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content>
+    <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event.target)" >
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+    <ion-list>
+        @for (reminder of reminders(); track reminder.id) {
+            <ion-item class="ion-text-wrap" [class.item-dimmed]="reminder.passed">
+                @if (reminder.reminderType === 'activity') {
+                    <core-mod-icon [modname]="reminder.moduleName" slot="start" [colorize]="false" />
+                } @else if (reminder.icon) {
+                    <ion-icon [name]="reminder.icon" aria-hidden="true" slot="start" />
+                }
+
+                <ion-label>
+                    <p class="item-heading">{{ reminder.title }}</p>
+                    @if (reminder.scheduledTime) {
+                        <p>{{ reminder.scheduledTime * 1000 | coreFormatDate }}</p>
+                    }
+                </ion-label>
+
+                @if (reminder.reminderType === 'event') {
+                    <ion-button fill="clear" slot="end" color="primary" (click)="openReminder(reminder)"
+                        [ariaLabel]="'core.view' | translate">
+                        <ion-icon name="fas-eye" aria-hidden="true" slot="icon-only" />
+                    </ion-button>
+                } @else if (reminder.url) {
+                    <ion-button fill="clear" slot="end" color="primary" [href]="reminder.url" core-link [capture]="true"
+                        [ariaLabel]="'core.view' | translate">
+                        <ion-icon name="fas-eye" aria-hidden="true" slot="icon-only" />
+                    </ion-button>
+                }
+            </ion-item>
+        } @empty {
+            <core-empty-box icon="fas-bell" [message]="'core.reminders.noreminders' | translate" />
+        }
+    </ion-list>
+</ion-content>

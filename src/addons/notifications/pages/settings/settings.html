@@ -11,6 +11,8 @@
 </ion-header>
 <core-navbar-buttons slot="end">
     <core-context-menu>
+        <core-context-menu-item [priority]="100" [content]="'core.reminders.scheduledreminders' | translate" (action)="openReminders()"
+            iconAction="fas-bell" />
         <core-context-menu-item *ngFor="let handler of processorHandlers" [priority]="handler.priority"
             [content]="handler.label | translate" (action)="openExtraPreferences(handler)" [iconAction]="handler.icon" />
     </core-context-menu>
