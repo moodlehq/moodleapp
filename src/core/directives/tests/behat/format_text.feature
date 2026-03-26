@@ -69,7 +69,9 @@ Feature: Test functionality added by the format-text directive
     Then "iframe[src='http://moodle.org/']" "css_element" should exist
 
   Scenario: Changes how regular links are opened based on data-app-open-in attribute
-    Given the following "activities" exist:
+    Given the following config values are set as admin:
+      | enablemycourses | 1 |
+    And the following "activities" exist:
       | activity   | course | name          | intro                                                                                                |
       | label      | C1     | Label title   | <p><a href="http://moodle.org/">Open in browser</a></p>                                              |
       | label      | C1     | Label 2 title | <p><a href="http://moodle.org/" data-app-open-in="embedded">Open embedded new</a></p>                |
@@ -77,7 +79,7 @@ Feature: Test functionality added by the format-text directive
       | label      | C1     | Label 4 title | <p><a href="#wwwroot#/admin/search.php" data-app-open-in="inappbrowser">Open inappbrowser new</a></p> |
       | label      | C1     | Label 5 title | <p><a href="#wwwroot#/admin/search.php" data-app-open-in="app">Open inappbrowser legacy</a></p>       |
       | label      | C1     | Label 6 title | <p><a href="#wwwroot#/my/courses.php" data-app-open-in="embedded">Captured link</a></p>              |
-    Given I entered the course "Course 1" as "student1" in the app
+    And I entered the course "Course 1" as "student1" in the app
     When I press "Open in browser" in the app
     Then I should find "You are about to leave the app" in the app
 
