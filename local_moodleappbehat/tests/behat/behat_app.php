@@ -836,45 +836,22 @@ class behat_app extends behat_app_helper {
      * to race conditions.
      *
      * @Then /^I (unselect|select) (".+") in the app$/
-     * @param string $selectedtext Text inidicating if the element should be selected or unselected
+     * @param string $action Text inidicating if the element should be selected or unselected
      * @param string $locator Element locator
      * @throws DriverException If the press doesn't work
      */
-    public function i_select_in_the_app(string $selectedtext, string $locator) {
-        $selected = $selectedtext === 'select' ? 'YES' : 'NO';
+    public function i_select_in_the_app(string $action, string $locator) {
         $locator = $this->parse_element_locator($locator);
 
-        $this->spin(function() use ($selectedtext, $selected, $locator) {
-            // Don't do anything if the item is already in the expected state.
-            $result = $this->runtime_js("isSelected($locator)");
-
-            if ($result === $selected) {
-                return true;
-            }
-
-            // Press element.
-            $result = $this->runtime_js("press($locator)");
+        $this->spin(function() use ($action, $locator) {
+            // Select/unselect element.
+            $result = $this->runtime_js("select($locator, '$action')");
 
             if ($result !== 'OK') {
-                throw new DriverException('Error pressing element - ' . $result);
+                throw new DriverException('Error selecting element - ' . $result);
             }
 
-            // Check that it worked as expected.
-            $this->wait_for_pending_js();
-
-            $result = $this->runtime_js("isSelected($locator)");
-
-            switch ($result) {
-                case 'YES':
-                case 'NO':
-                    if ($result !== $selected) {
-                        throw new ExpectationException("Item wasn't $selectedtext after pressing it", $this->getSession()->getDriver());
-                    }
-
-                    return true;
-                default:
-                    throw new DriverException('Error finding item - ' . $result);
-            }
+            return true;
         });
 
         $this->wait_for_pending_js();

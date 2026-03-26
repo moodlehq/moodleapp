@@ -24,6 +24,7 @@ import {
     AddonModChoiceChoice,
     AddonModChoiceOption,
     AddonModChoiceResult,
+    AddonModChoiceUserResponseOption,
 } from '../../services/choice';
 import { AddonModChoiceOffline } from '../../services/choice-offline';
 import {
@@ -80,6 +81,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     groupsSupported = false;
     groupId = 0;
     groupInfo?: CoreGroupInfo;
+    userResponse?: AddonModChoiceUserResponseOption[];
 
     protected userId?: number;
     protected syncEventName = ADDON_MOD_CHOICE_AUTO_SYNCED;
@@ -121,7 +123,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
      * @inheritdoc
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModChoiceAutoSyncData): boolean {
-        if (this.choice && syncEventData.choiceId == this.choice.id && syncEventData.userId == this.userId) {
+        if (this.choice && syncEventData.choiceId === this.choice.id && syncEventData.userId === this.userId) {
             this.content?.scrollToTop();
 
             return true;
@@ -352,7 +354,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
         this.data = [];
         this.labels = [];
 
-        this.results = results.map<AddonModChoiceResultFormatted>((result) => {
+        this.results = results.options.map<AddonModChoiceResultFormatted>((result) => {
             if (result.numberofuser > 0) {
                 hasVotes = true;
             }
@@ -362,30 +364,18 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
             return Object.assign(result, { percentageamountfixed: result.percentageamount.toFixed(1) });
         });
 
-        // Workaround to MOBILE-4904:
-        // Show the user choice when the choice is closed and the results are not anonymous.
-        if (this.results.length >= 0 && this.options.length === 0 && !this.canEdit && !this.showPreview) {
-            this.results.forEach((result) => {
-                if (result.userresponses.length > 0) {
-                    const option = {
-                        id: result.id,
-                        text: result.text,
-                        maxanswers: 0,
-                        displaylayout: false,
-                        countanswers: result.numberofuser,
-                        checked: false,
-                        disabled: false,
-                    };
-
-                    result.userresponses.forEach((user) => {
-                        if (user.userid == this.userId) {
-                            option.checked = true;
-                        }
-                    });
-
-                    this.options.push(option);
-                }
-            });
+        const site = CoreSites.getRequiredCurrentSite();
+        if (results.userresponse) {
+            this.userResponse = results.userresponse;
+        } else if (this.results.length && !this.showPreview && !site.isVersionGreaterEqualThan('5.2')) {
+            // Workaround of MDL-86932.
+            // Show the user choice when the results are not anonymous. It does not cover the anonymous case.
+            this.userResponse = this.results
+                .filter((result) => result.id > 0 && result.userresponses.some((response) => response.userid === this.userId))
+                .map<AddonModChoiceUserResponseOption>((result) => ({
+                    optionid: result.id,
+                    text: result.text,
+                }));
         }
 
         this.canSeeResults = hasVotes || AddonModChoice.canStudentSeeResults(choice, this.hasAnsweredOnline, this.now);

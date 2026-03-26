@@ -127,7 +127,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
         groupId: number,
         modOptions: CoreCourseCommonModWSOptions,
     ): Promise<void> {
-        const options = await AddonModChoice.getResults(choiceId, {
+        const results = await AddonModChoice.getResults(choiceId, {
             ...modOptions,
             groupId,
         });
@@ -135,7 +135,7 @@ export class AddonModChoicePrefetchHandlerService extends CoreCourseActivityPref
         // If we can see the users that answered, prefetch their profile and avatar.
         const promises: Promise<unknown>[] = [];
 
-        options.forEach((option) => {
+        results.options.forEach((option) => {
             option.userresponses.forEach((response) => {
                 if (response.userid) {
                     promises.push(CoreUser.getProfile(response.userid, courseId, false, modOptions.siteId));

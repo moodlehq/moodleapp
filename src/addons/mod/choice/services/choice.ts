@@ -286,7 +286,10 @@ export class AddonModChoiceProvider {
      * @param options Other options.
      * @returns Promise resolved with choice results.
      */
-    async getResults(choiceId: number, options: AddonModChoiceGetResultsOptions = {}): Promise<AddonModChoiceResult[]> {
+    async getResults(
+        choiceId: number,
+        options: AddonModChoiceGetResultsOptions = {},
+    ): Promise<AddonModChoiceGetChoiceResultsWSResponse> {
         const site = await CoreSites.getSite(options.siteId);
 
         const params: AddonModChoiceGetChoiceResultsWSParams = {
@@ -297,19 +300,17 @@ export class AddonModChoiceProvider {
         }
 
         const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getChoiceOptionsCacheKey(choiceId),
+            cacheKey: this.getChoiceResultsCacheKey(choiceId),
             component: ADDON_MOD_CHOICE_COMPONENT_LEGACY,
             componentId: options.cmId,
             ...CoreSites.getReadingStrategyPreSets(options.readingStrategy), // Include reading strategy preSets.
         };
 
-        const response = await site.read<AddonModChoiceGetChoiceResultsWSResponse>(
+        return await site.read<AddonModChoiceGetChoiceResultsWSResponse>(
             'mod_choice_get_choice_results',
             params,
             preSets,
         );
-
-        return response.options;
     }
 
     /**
@@ -547,6 +548,7 @@ export type AddonModChoiceGetChoiceResultsWSParams = {
 export type AddonModChoiceGetChoiceResultsWSResponse = {
     options: AddonModChoiceResult[];
     warnings?: CoreWSExternalWarning[];
+    userresponse?: AddonModChoiceUserResponseOption[]; // @since 5.2. User response to this choice.
 };
 
 /**
@@ -567,6 +569,13 @@ export type AddonModChoiceResult = {
     percentageamount: number; // Percentage of users answers.
 };
 
+/**
+ * Option selected by user.
+ */
+export type AddonModChoiceUserResponseOption = {
+    optionid: number; // Option id.
+    text: string; // Text of the choice option.
+};
 /**
  * Params of mod_choice_view_choice WS.
  */

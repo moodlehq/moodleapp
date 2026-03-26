@@ -18,7 +18,7 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
-    @if (options.length) {
+    @if (options.length || userResponse?.length) {
         @if (showPreview) {
             <!-- Activity availability messages -->
             <core-alert-card type="info" [message]="'addon.mod_choice.previewing' | translate" />
@@ -30,6 +30,19 @@
         }
 
         @if (choice) {
+            @if (userResponse?.length){
+                <ion-card>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
+                            @for (option of userResponse; track option.optionid) {
+                                <p><core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id"
+                                    [courseId]="courseId" /></p>
+                            }
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            }
             @if (canEdit || showPreview) {
                 <!-- Choice options -->
                 <ion-card>
@@ -53,24 +66,6 @@
                                 </ion-item>
                             }
                         </ion-radio-group>
-                    }
-                </ion-card>
-            } @else {
-                <ion-card>
-                    <ion-item-divider>
-                        <ion-label>
-                            <h2>{{ 'addon.mod_choice.yourselection' | translate }}</h2>
-                        </ion-label>
-                    </ion-item-divider>
-                    @for (option of options; track option.id) {
-                        @if (option.checked) {
-                            <ion-item class="ion-text-wrap">
-                                <ion-label>
-                                    <core-format-text [text]="option.text" contextLevel="module" [contextInstanceId]="module.id"
-                                        [courseId]="courseId" />
-                                </ion-label>
-                            </ion-item>
-                        }
                     }
                 </ion-card>
             }
