@@ -398,6 +398,15 @@ export class CoreH5PContentValidator {
         }
         validKeys = CoreArray.unique(validKeys);
 
+        // Hack to sanitize quality name. Ideally we should not allow extraAttributes, or we must build
+        // functionality for generically sanitize it.
+        if (validKeys.includes('metadata') && file.metadata) {
+            const fileMetadata = file.metadata;
+            if (fileMetadata.qualityName) {
+                fileMetadata.qualityName = CoreText.escapeHTML(fileMetadata.qualityName, false);
+            }
+        }
+
         this.filterParams(file, validKeys);
 
         if (typeof file.width === 'string') {
@@ -795,7 +804,7 @@ export class CoreH5PContentValidator {
                             // Allow certain styles.
 
                             // Prevent font family from getting split wrong because of the ; in &quot;
-                            if (matches[1].includes('font-family')) {
+                            if (matches[1].toLowerCase().includes('font-family')) {
                                 matches[1] = matches[1].replace(/&quot;/g, '\'');
                             }
 
@@ -1413,6 +1422,7 @@ type FileLike = {
         label?: string;
     };
     copyright?: unknown;
+    metadata?: Record<string, string | number | undefined | null>;
 };
 
 /**

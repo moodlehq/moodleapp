@@ -153,7 +153,7 @@
     "screenshotsDescription": "Add up to five screenshots of your content",
     "share": "Share",
     "shareFailed": "Share failed.",
-    "shareTryAgain": "Something went wrong, please try to share again.",
+    "shareTryAgain": "Couldn't communicate with the H5P Hub. Please try again later.",
     "shared": "Shared",
     "sharingNote": "All content details can be edited after sharing",
     "shortDescription": "Short description",

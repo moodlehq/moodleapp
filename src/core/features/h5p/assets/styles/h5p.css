@@ -1,36 +1,16 @@
-/* Import common fonts */
-@import 'font-open-sans.css';
-/* General CSS for H5P. Licensed under the MIT License.*/
-/* Custom H5P font to use for icons. */
-@font-face {
-  font-family: 'h5p';
-  src:  url('../fonts/h5p-core-30.eot?h1atjl');
-  src:  url('../fonts/h5p-core-30.eot?h1atjl#iefix') format('embedded-opentype'),
-    url('../fonts/h5p-core-30.ttf?h1atjl') format('truetype'),
-    url('../fonts/h5p-core-30.woff?h1atjl') format('woff'),
-    url('../fonts/h5p-core-30.svg?h1atjl#h5p-core-30') format('svg');
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'h5p-hub-publish';
-  src: url('../fonts/h5p-hub-publish.eot?wy8ylc');
-  src: url('../fonts/h5p-hub-publish.eot?wy8ylc#iefix') format('embedded-opentype'),
-  url('../fonts/h5p-hub-publish.ttf?wy8ylc') format('truetype'),
-  url('../fonts/h5p-hub-publish.woff?wy8ylc') format('woff'),
-  url('../fonts/h5p-hub-publish.svg?wy8ylc#h5p-hub') format('svg');
-  font-weight: normal;
-  font-style: normal;
-  font-display: block;
-}
-
 html.h5p-iframe, html.h5p-iframe > body {
   font-family: Sans-Serif; /* Use the browser's default sans-serif font. (Since Heletica doesn't look nice on Windows, and Arial on OS X.) */
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
+}
+html.h5p-iframe .h5p-theme,
+html.h5p-iframe > body .h5p-theme,
+.h5peditor .h5p-theme {
+  font-family: var(
+    --h5p-theme-font-name
+  ); /* Use the browser's default sans-serif font. (Since Heletica doesn't look nice on Windows, and Arial on OS X.) */
 }
 .h5p-semi-fullscreen, .h5p-fullscreen, html.h5p-iframe .h5p-container {
   overflow: hidden;
@@ -71,6 +51,7 @@ html.h5p-iframe .h5p-semi-fullscreen .h5p-content {
 .h5p-container {
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 .h5p-iframe-wrapper.h5p-fullscreen {
   background-color: #000;
@@ -103,6 +84,32 @@ body.h5p-semi-fullscreen {
 
 .h5p-content-controls > a:link, .h5p-content-controls > a:visited, a.h5p-disable-fullscreen:link, a.h5p-disable-fullscreen:visited {
   color: #e5eef6;
+}
+
+.h5p-theme .h5p-content-controls .h5p-enable-fullscreen:before {
+  font-family: 'h5p-theme';
+  font-weight: bold;
+  content: "\e915";
+}
+.h5p-theme .h5p-content-controls .h5p-disable-fullscreen:before {
+  font-family: 'h5p-theme';
+  font-weight: bold;
+  content: "\e914";
+}
+.h5p-theme .h5p-content-controls .h5p-enable-fullscreen, .h5p-theme .h5p-content-controls .h5p-disable-fullscreen {
+  cursor: pointer;
+  color: #EEE;
+  background: rgb(0,0,0);
+  background: rgba(0,0,0,0.3);
+  font-size: var(--h5p-theme-font-size-m);
+  text-indent: 0.04em;
+  padding: var(--h5p-theme-spacing-xs);
+}
+
+.h5p-theme .h5p-content-controls .h5p-enable-fullscreen:focus-visible, .h5p-theme .h5p-content-controls .h5p-disable-fullscreen:focus-visible {
+  outline: 2px ridge var(--h5p-theme-contrast-cta-white);
+  border-radius: 4px;
+  outline-offset: 2px;
 }
 
 .h5p-enable-fullscreen:before {
@@ -138,6 +145,9 @@ body.h5p-semi-fullscreen {
 }
 
 .h5p-enable-fullscreen:hover, .h5p-disable-fullscreen:hover {
+  background: rgba(0,0,0,0.5);
+}
+.h5p-content-controls.themed .h5p-enable-fullscreen:hover, .h5p-content-controls.themed .h5p-disable-fullscreen:hover {
   background: rgba(0,0,0,0.5);
 }
 .h5p-semi-fullscreen .h5p-enable-fullscreen {
@@ -332,6 +342,10 @@ div.h5p-fullscreen {
   font-size: 12px;
   margin-left: 1em;
 }
+/* TODO: Fix the color of the link */
+.h5p-theme .h5p-popup-dialog .h5p-inner > h2 > a{
+  color: var(--h5p-theme-main-cta-base);
+}
 .h5p-embed-dialog .h5p-inner,
 .h5p-reuse-dialog .h5p-inner,
 .h5p-content-user-data-reset-dialog .h5p-inner {
@@ -340,6 +354,38 @@ div.h5p-fullscreen {
   left: 50%;
   top: 50%;
   transform: translateX(-50%);
+}
+.h5p-theme .h5p-embed-dialog .h5p-inner,
+.h5p-theme .h5p-reuse-dialog .h5p-inner,
+.h5p-theme .h5p-content-user-data-reset-dialog .h5p-inner {
+  max-width: 45rem !important;
+  min-width: 35rem !important;
+}
+.h5p-content:has(.h5p-theme) .h5p-embed-dialog .h5p-embed-code-container,
+.h5p-content:has(.h5p-theme) .h5p-embed-size{
+  border: 1px solid var(--h5p-theme-stroke-1);
+  background-color: var(--h5p-theme-ui-base);
+  padding: var(--h5p-theme-spacing-xs);
+  font-size: var(--h5p-theme-font-size-m);
+  line-height: 1;
+  min-height: var(--h5p-theme-spacing-l);
+  letter-spacing: normal;
+  color: var(--h5p-theme-text-third);
+  border-radius: var(--h5p-theme-border-radius-medium);
+}
+.h5p-content:has(.h5p-theme) .h5p-content-copyrights {
+  border-left: none;
+  margin-left: 0;
+  padding-left: 0;
+  border-left: solid 2px var(--h5p-theme-alternative-dark);
+  padding: 5px;
+}
+.h5p-content:has(.h5p-theme) .h5p-media-copyright{
+  border: solid 1px var(--h5p-theme-alternative-dark);
+  padding: var(--h5p-theme-spacing-s);
+  background: var(--h5p-theme-alternative-light);
+  border-radius: var(--h5p-theme-border-radius-medium);
+  margin-bottom: 1rem;
 }
 .h5p-embed-dialog .h5p-embed-code-container,
 .h5p-embed-size {
@@ -361,6 +407,10 @@ div.h5p-fullscreen {
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
+.h5p-content:has(.h5p-theme) .h5p-embed-dialog .h5p-embed-code-container{
+  display: block;
+
+}
 .h5p-embed-dialog .h5p-embed-code-container:focus {
   height: 5em;
 }
@@ -377,6 +427,9 @@ div.h5p-fullscreen {
   -moz-box-sizing: border-box;
   color: #555555;
   z-index: 1;
+}
+.h5p-content:has(.h5p-theme) .h5p-popup-dialog .h5p-scroll-content {
+  color: var(--h5p-theme-text-secondary);
 }
 .h5p-popup-dialog.h5p-open .h5p-scroll-content {
   overflow: auto;
@@ -412,6 +465,10 @@ div.h5p-fullscreen {
   font-family: 'H5P';
   content: "\e894";
 }
+.h5p-popup-dialog .h5p-close:focus-visible {
+  outline: 2px ridge var(--h5p-theme-contrast-cta-white);
+  outline-offset: 2px;
+}
 .h5p-popup-dialog .h5p-close:hover:after,
 .h5p-popup-dialog .h5p-close:focus:after {
   color: #454545;
@@ -428,9 +485,14 @@ div.h5p-fullscreen {
 .h5p-popup-dialog dl {
   margin: 0.25em 0 0.75em;
 }
+.h5p-content:has(.h5p-theme) .h5p-popup-dialog dl{
+  margin: 0.25em 0 0.25em;
+}
+
 .h5p-popup-dialog dt {
   float: left;
   margin: 0 0.75em 0 0;
+  font-weight: bold;
 }
 .h5p-popup-dialog dt:after {
   content: ':';
@@ -443,6 +505,16 @@ div.h5p-fullscreen {
   font-size: 1.125em;
   margin: 0.5em 0 0;
   display: inline-block;
+}
+.h5p-content:has(.h5p-theme) .h5p-expander{
+  border: solid 1px var(--h5p-theme-stroke-1);
+  padding: var(--h5p-theme-spacing-xs);
+  border-radius: var(--h5p-theme-border-radius-medium);
+  font-size: var(--h5p-theme-font-size-m);
+  background-color: var(--h5p-theme-alternative-base);
+}
+.h5p-content:has(.h5p-theme) .h5p-popup-dialog dt{
+  margin: 0 0.25em 0 0;
 }
 .h5p-expander:before {
   content: "+";
@@ -489,6 +561,10 @@ div.h5p-fullscreen {
 .h5p-dialog-ok-button:hover,
 .h5p-dialog-ok-button:focus {
   background: #fafafa;
+}
+.h5p-dialog-ok-button:focus-visible {
+  outline: 2px ridge var(--h5p-theme-contrast-cta-white);
+  outline-offset: 2px;
 }
 .h5p-dialog-ok-button:active {
   background: #eeffee;
@@ -620,12 +696,12 @@ iframe.h5peditor-semi-fullscreen {
 }
 
 .h5p-content-hub-button.unpublish:before {
-  content: "\e916";
+  content: "\e917";
 }
 
 .h5p-content-hub-button.waiting:before,
 .h5p-content-hub-button.sync:before {
-  content: "\e917";
+  content: "\e916";
 }
 
 .h5p-content-hub-button.waiting:before {
