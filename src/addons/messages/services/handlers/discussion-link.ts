@@ -76,7 +76,7 @@ export class AddonMessagesDiscussionLinkHandlerService extends CoreContentLinksH
             // Check if user1 is the current user, since the app only supports current user.
             const site = await CoreSites.getSite(siteId);
 
-            return parseInt(params.user1, 10) == site.getUserId();
+            return parseInt(params.user1, 10) === site.getUserId();
         }
 
         return true;

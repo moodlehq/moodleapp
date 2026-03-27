@@ -23,7 +23,9 @@ Feature: It navigates properly using deep links.
       | defaulthomepage | 0 |             |
 
   Scenario: Receive a push notification
-    Given I entered the app as "student2"
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
+    And I entered the app as "student2"
     When I log out in the app
     And I press "Add" in the app
     And I set the field "Your site" to "$WWWROOT" in the app
@@ -47,6 +49,8 @@ Feature: It navigates properly using deep links.
     And I should not find "Forum message" in the app
 
   Scenario: Open a link with a custom URL
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
     When I launch the app
     And I open a custom link in the app for:
       | discussion  |
@@ -63,7 +67,9 @@ Feature: It navigates properly using deep links.
     And I should not find "Forum message" in the app
 
   Scenario: Open a link with a custom URL that calls WebServices for a logged out site
-    Given I entered the app as "student2"
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
+    And I entered the app as "student2"
     When I log out in the app
     And I open a custom link in the app for:
       | forum      |

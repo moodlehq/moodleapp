@@ -75,7 +75,7 @@ export class CoreContentLinksModuleGradeHandler extends CoreContentLinksHandlerB
                 // Check if userid is the site's current user.
                 const modal = await CoreLoadings.show();
                 const site = await CoreSites.getSite(siteId);
-                if (!params.userid || Number(params.userid) == site.getUserId()) {
+                if (!params.userid || Number(params.userid) === site.getUserId()) {
                     // No user specified or current user. Navigate to module.
                     await CoreCourseHelper.navigateToModule(
                         Number(params.id),

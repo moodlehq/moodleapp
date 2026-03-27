@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesMy } from '@features/courses/services/my';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { CoreCoursesDashboard } from '@features/courses/services/dashboard';
@@ -38,7 +38,7 @@ export class AddonBlockTimelineHandlerService extends CoreBlockBaseHandler {
         const currentSite = CoreSites.getCurrentSite();
 
         return enabled && ((currentSite && currentSite.isVersionGreaterEqualThan('3.6')) ||
-            !CoreCourses.isMyCoursesDisabledInSite());
+            !CoreCoursesMy.isDisabledInSite());
     }
 
     /**

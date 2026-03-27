@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreBlockHandlerData } from '@features/block/services/block-delegate';
-import { CoreCourses } from '@features/courses/services/courses';
+import { CoreCoursesMy } from '@features/courses/services/my';
 import { CoreBlockBaseHandler } from '@features/block/classes/base-block-handler';
 import { makeSingleton } from '@singletons';
 import { ADDON_BLOCK_MYOVERVIEW_BLOCK_NAME } from '../constants';
@@ -34,7 +34,7 @@ export class AddonBlockMyOverviewHandlerService extends CoreBlockBaseHandler {
      */
     async isEnabled(): Promise<boolean> {
         return (CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.6')) ||
-            !CoreCourses.isMyCoursesDisabledInSite();
+            !CoreCoursesMy.isDisabledInSite();
     }
 
     /**

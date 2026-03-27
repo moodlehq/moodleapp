@@ -20,6 +20,8 @@ Feature: Test basic usage of login in app
       | teacher1 | C1     | editingteacher |
 
   Scenario: Add a new account in the app & Site name in displayed when adding a new account
+    Given the following config values are set as admin:
+      | enablemyhome | 1 |
     When I launch the app
     And I set the field "Your site" to "$WWWROOT" in the app
     And I press "Connect to your site" in the app

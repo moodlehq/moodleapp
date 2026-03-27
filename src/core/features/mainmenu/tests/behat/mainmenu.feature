@@ -4,7 +4,7 @@ Feature: Main Menu opens the right page
   Background:
     # These 2 settings are needed in Moodle 5.2+, in previous versions they're ignored.
     Given the following config values are set as admin:
-      | enablemyhome | 1 |
+      | enablemyhome    | 1 |
       | enablemycourses | 1 |
     And the following "users" exist:
       | username |
@@ -69,6 +69,38 @@ Feature: Main Menu opens the right page
     And I entered the app as "student"
     Then "My courses" "ion-tab-button" should be selected in the app
     And I should find "Course 1" in the app
+
+  @lms_from5.2
+  Scenario: Site home is disabled
+    Given the following config values are set as admin:
+      | enablemyhome    | 0 |
+      | enablemycourses | 1 |
+      | defaulthomepage | 1 |
+    And I entered the app as "student"
+    Then "Home" "ion-tab-button" should be selected in the app
+    And I should find "Course overview" in the app
+    But I should not find "Site home" in the app
+
+  @lms_from5.2
+  Scenario: Site home is disabled and my courses too
+    Given the following config values are set as admin:
+      | enablemyhome    | 0 |
+      | enablemycourses | 0 |
+    And I entered the app as "student"
+    Then "Home" "ion-tab-button" should be selected in the app
+    And I should find "Course overview" in the app
+    But I should not find "Site home" in the app
+    And I should not find "My courses" in the app
+
+  @lms_from5.2
+  Scenario: My courses is disabled
+    Given the following config values are set as admin:
+      | enablemyhome    | 1 |
+      | enablemycourses | 0 |
+    And I entered the app as "student"
+    Then "Dashboard" should be selected in the app
+    But I should not find "My courses" in the app
+
 
 # @todo MOBILE-4119: This test is too flaky to run in CI until the race condition is fixed.
 #   @disabled_features
