@@ -29,7 +29,7 @@ export class CoreCommentsSyncCronHandlerService implements CoreCronHandler {
      * Receives the ID of the site affected, undefined for all sites.
      *
      * @param siteId ID of the site affected, undefined for all sites.
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @returns Promise resolved when done, rejected if failure.
      */
     execute(siteId?: string, force?: boolean): Promise<void> {

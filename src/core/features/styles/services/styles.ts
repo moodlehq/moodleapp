@@ -39,11 +39,11 @@ export interface CoreStyleHandler {
     priority: number;
 
     /**
-     * Wether the handler should be enabled for the site.
+     * Whether the handler should be enabled for the site.
      *
      * @param siteId Site Id.
      * @param config Site public config for temp sites.
-     * @returns Wether the handler should be enabled for the site.
+     * @returns Whether the handler should be enabled for the site.
      */
     isEnabled(siteId: string, config?: CoreSitePublicConfigResponse): boolean | Promise<boolean>;
 

@@ -47,7 +47,7 @@ export class CoreRatingSyncProvider extends CoreSyncBaseProvider<CoreRatingSyncI
      * @param contextLevel Context level: course, module, user, etc.
      * @param instanceId Context instance id.
      * @param itemSetId Item set id.
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */

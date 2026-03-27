@@ -40,7 +40,7 @@ import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from './module-
 import { CoreNetwork } from '@services/network';
 import { DEFAULT_TEXT_FORMAT } from '@static/text';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
@@ -160,7 +160,7 @@ export class CoreCourseHelperProvider {
      * @param module Module to check.
      * @param section Section to check. If the module belongs to a subsection, you can pass either the subsection or the parent
      *               section. Subsections inherit the visibility from their parent section.
-     * @returns Wether the module is stealth.
+     * @returns Whether the module is stealth.
      */
     isModuleStealth(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
         // visibleoncoursepage can be 1 for teachers when the section is hidden.
@@ -173,7 +173,7 @@ export class CoreCourseHelperProvider {
      * @param module Module to check.
      * @param section Section to check. Omitted if not defined. If the module belongs to a subsection, you can pass either the
      *                subsection or the parent section. Subsections inherit the visibility from their parent section.
-     * @returns Wether the section is visible by the user.
+     * @returns Whether the section is visible by the user.
      */
     canUserViewModule(module: CoreCourseModuleData, section?: CoreCourseWSSection): boolean {
         return module.uservisible !== false && (!section || CoreCourseHelper.canUserViewSection(section));
@@ -184,7 +184,7 @@ export class CoreCourseHelperProvider {
      * This should not be true on Moodle 4.0 onwards.
      *
      * @param section Section to check.
-     * @returns Wether section is stealth (accessible but not visible to students).
+     * @returns Whether section is stealth (accessible but not visible to students).
      */
     isSectionStealth(section: CoreCourseWSSection): boolean {
         return section.hiddenbynumsections === 1 || section.id === CORE_COURSE_STEALTH_MODULES_SECTION_ID;
@@ -194,7 +194,7 @@ export class CoreCourseHelperProvider {
      * Section is visible by the user.
      *
      * @param section Section to check.
-     * @returns Wether the section is visible by the user.
+     * @returns Whether the section is visible by the user.
      */
     canUserViewSection(section: CoreCourseWSSection): boolean {
         return section.uservisible !== false;
@@ -961,7 +961,7 @@ export class CoreCourseHelperProvider {
      */
     async openCourse(
         course: CoreCourseAnyCourseData | { id: number },
-        navOptions?: CoreNavigationOptions & { siteId?: string },
+        navOptions?: CoreNavigationOptionsWithSite,
     ): Promise<void> {
         const siteId = navOptions?.siteId;
         if (!siteId || siteId === CoreSites.getCurrentSiteId()) {

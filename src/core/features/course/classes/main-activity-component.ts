@@ -85,7 +85,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Perform the refresh content function.
      *
      * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
     protected async refreshContent(sync = false, showErrors = false): Promise<void> {
@@ -106,7 +106,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Show loading and perform the load content function.
      *
      * @param sync If the fetch needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
     protected async showLoadingAndFetch(sync = false, showErrors = false): Promise<void> {
@@ -120,7 +120,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      * Show loading and perform the refresh content function.
      *
      * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
     protected showLoadingAndRefresh(sync = false, showErrors = false): Promise<void> {
@@ -135,7 +135,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      *
      * @param refresh Whether we're refreshing data.
      * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Promise resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -148,7 +148,7 @@ export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainR
      *
      * @param refresh Whether we're refreshing data.
      * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Promise resolved when done.
      */
     protected async loadContent(refresh?: boolean, sync = false, showErrors = false): Promise<void> {

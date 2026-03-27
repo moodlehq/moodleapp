@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData } from '../module-delegate';
 import { CoreCourseModuleData } from '../course-helper';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleHelper } from '../course-module-helper';
 import { CoreModuleHandlerBase } from '@features/course/classes/module-base-handler';
 
@@ -87,7 +87,7 @@ export class CoreCourseModuleDefaultHandler extends CoreModuleHandlerBase implem
     /**
      * @inheritdoc
      */
-    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptionsWithSite): Promise<void> {
         options = options || {};
         options.params = options.params || {};
         Object.assign(options.params, { module });

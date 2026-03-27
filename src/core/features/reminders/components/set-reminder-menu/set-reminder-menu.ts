@@ -134,7 +134,7 @@ export class CoreRemindersSetReminderMenuComponent implements OnInit {
      *
      * @param unit Time unit.
      * @param value Time value.
-     * @returns Wether is a valid time or not.
+     * @returns Whether is a valid time or not.
      */
     protected isValidTime(unit: number, value: number): boolean {
         const eventTime = this.eventTime();

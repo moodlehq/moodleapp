@@ -48,7 +48,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * Try to synchronize all the courses in a certain site or in all sites.
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     syncAllCourses(siteId?: string, force?: boolean): Promise<void> {
@@ -58,7 +58,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
     /**
      * Sync all courses on a site.
      *
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @param siteId Site ID to sync.
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
@@ -73,7 +73,7 @@ export class CoreCourseSyncProvider extends CoreSyncBaseProvider<CoreCourseSyncR
      * Sync courses offline completion.
      *
      * @param siteId Site ID to sync.
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     protected async syncCoursesCompletion(siteId: string, force: boolean): Promise<void> {

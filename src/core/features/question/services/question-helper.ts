@@ -152,7 +152,7 @@ export class CoreQuestionHelperProvider {
      * We don't remove them from HTML because the whole im-controls block will be removed afterwards.
      *
      * @param question Question to treat.
-     * @returns Wether the certainty is found.
+     * @returns Whether the certainty is found.
      */
     extractQbehaviourCBM(question: CoreQuestionQuestion): boolean {
         const element = convertTextToHTMLElement(question.html);

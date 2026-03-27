@@ -197,7 +197,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     /**
      * Sets if expand button is enabled or not.
      *
-     * @param enable Wether enable or disable.
+     * @param enable Whether enable or disable.
      */
     protected setExpandButtonEnabled(enable: boolean): void {
         this.toggleExpandEnabled = enable;
@@ -248,7 +248,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     /**
      * Expand or collapse text.
      *
-     * @param expand Wether expand or collapse text. If undefined, will toggle.
+     * @param expand Whether expand or collapse text. If undefined, will toggle.
      */
     protected toggleExpand(expand?: boolean): void {
         if (expand === undefined) {

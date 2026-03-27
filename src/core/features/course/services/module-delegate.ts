@@ -23,7 +23,7 @@ import { CoreCourseModuleHelper } from './course-module-helper';
 import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseModuleData } from './course-helper';
-import { CoreNavigationOptions } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite } from '@services/navigator';
 import { DownloadStatus } from '@/core/constants';
 import { CORE_COURSE_MODULE_FEATURE_PREFIX } from '../constants';
 import { ModFeature } from '@addons/mod/constants';
@@ -115,7 +115,7 @@ export interface CoreCourseModuleHandler extends CoreDelegateHandler {
      * @param options Options for the navigation.
      * @returns Promise resolved when done.
      */
-    openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void>;
+    openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptionsWithSite): Promise<void>;
 
     /**
      * Whether the activity is branded.
@@ -185,7 +185,7 @@ export type CoreCourseModuleHandlerData = {
     showDownloadButton?: boolean;
 
     /**
-     * Wether activity has the custom cmlist item flag enabled.
+     * Whether activity has the custom cmlist item flag enabled.
      *
      * Activities like label uses this flag to indicate that it should be
      * displayed as a custom course item instead of a tipical activity card.
@@ -361,7 +361,7 @@ export class CoreCourseModuleDelegateService extends CoreDelegate<CoreCourseModu
         modname: string,
         module: CoreCourseModuleData,
         courseId: number,
-        options?: CoreNavigationOptions,
+        options?: CoreNavigationOptionsWithSite,
     ): Promise<void> {
         return this.executeFunctionOnEnabled<void>(
             modname,

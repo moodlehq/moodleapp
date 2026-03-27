@@ -37,6 +37,7 @@ import { CoreCourseOverviewOptionHandler } from './services/handlers/overview-op
 import { CoreCourseOverviewLinkHandler } from './services/handlers/overview-link';
 import { CoreContentLinksDelegate } from '@features/contentlinks/services/contentlinks-delegate';
 import { CoreCourseForceLanguage } from './services/course-force-language';
+import { CoreCourseActivityNavigationLinkHandler } from './services/handlers/activity-navigation-link';
 
 /**
  * Get course services.
@@ -56,6 +57,7 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
     const { CoreCourseOfflineProvider } = await import('@features/course/services/course-offline');
     const { CoreCourseSyncProvider } = await import('@features/course/services/sync');
     const { CoreCoursePrefetchService } = await import('@features/course/services/course-prefetch');
+    const { CoreCourseNavigationService } = await import('@features/course/services/course-navigation');
 
     return [
         CoreCourseProvider,
@@ -70,6 +72,7 @@ export async function getCourseServices(): Promise<Type<unknown>[]> {
         CoreCourseOfflineProvider,
         CoreCourseSyncProvider,
         CoreCoursePrefetchService,
+        CoreCourseNavigationService,
     ];
 }
 
@@ -187,6 +190,7 @@ const courseIndexRoutes: Routes = [
             CoreTagAreaDelegate.registerHandler(CoreCourseModulesTagAreaHandler.instance);
             CoreCourseOptionsDelegate.registerHandler(CoreCourseOverviewOptionHandler.instance);
             CoreContentLinksDelegate.registerHandler(CoreCourseOverviewLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(CoreCourseActivityNavigationLinkHandler.instance);
 
             CoreCourse.initialize();
             CoreCourseForceLanguage.initialize();

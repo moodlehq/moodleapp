@@ -68,6 +68,13 @@ export type CoreNavigationOptions = AnimationOptions & {
 };
 
 /**
+ * Navigation options with site ID.
+ */
+export type CoreNavigationOptionsWithSite = CoreNavigationOptions & {
+    siteId?: string;
+};
+
+/**
  * Route options to get current route.
  */
 export type CoreNavigatorCurrentRouteOptions = Partial<{
@@ -143,7 +150,7 @@ export class CoreNavigatorService {
      *
      * @param path Path to navigate to.
      * @param options Navigation options.
-     * @returns Whether navigation suceeded.
+     * @returns Whether navigation succeeded.
      */
     async navigate(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
         const url: string[] = [/^[./]/.test(path) ? path : `./${path}`];
@@ -192,7 +199,7 @@ export class CoreNavigatorService {
      * Navigate to the login credentials route.
      *
      * @param params Page params.
-     * @returns Whether navigation suceeded.
+     * @returns Whether navigation succeeded.
      */
     async navigateToLoginCredentials(params: Params = {}): Promise<boolean> {
         // If necessary, open the previous path to keep the navigation history.
@@ -210,7 +217,7 @@ export class CoreNavigatorService {
      * Navigate to the home route of the current site.
      *
      * @param options Navigation options.
-     * @returns Whether navigation suceeded.
+     * @returns Whether navigation succeeded.
      */
     async navigateToSiteHome(options: Omit<CoreNavigationOptions, 'reset'> & { siteId?: string } = {}): Promise<boolean> {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
@@ -229,11 +236,11 @@ export class CoreNavigatorService {
      *
      * @param path Site path to visit.
      * @param options Navigation and site options.
-     * @returns Whether navigation suceeded.
+     * @returns Whether navigation succeeded.
      */
     async navigateToSitePath(
         path: string,
-        options: CoreNavigationOptions & { siteId?: string } = {},
+        options: CoreNavigationOptionsWithSite = {},
     ): Promise<boolean> {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);
@@ -559,7 +566,7 @@ export class CoreNavigatorService {
      *
      * @param path Main menu path.
      * @param options Navigation options.
-     * @returns Whether navigation suceeded.
+     * @returns Whether navigation succeeded.
      */
     protected async navigateToMainMenuPath(path: string, options: CoreNavigationOptions = {}): Promise<boolean> {
         options = {

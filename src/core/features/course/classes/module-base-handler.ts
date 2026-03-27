@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleHelper } from '../services/course-module-helper';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleHandler, CoreCourseModuleHandlerData, CoreCourseOverviewItemContent } from '../services/module-delegate';
@@ -67,7 +67,7 @@ export class CoreModuleHandlerBase implements Partial<CoreCourseModuleHandler> {
      * @param options Options for the navigation.
      * @returns Promise resolved when done.
      */
-    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptionsWithSite): Promise<void> {
         if (!CoreCourseModuleHelper.moduleHasView(module)) {
             return;
         }
