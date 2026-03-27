@@ -388,7 +388,7 @@ export class CoreCoursesHelperProvider {
      *
      * @param course Course Object.
      * @param gradePeriodAfter Classify past courses as in progress for these many days after the course end date.
-     * @returns Wether the course is past.
+     * @returns Whether the course is past.
      */
     isPastCourse(course: CoreEnrolledCourseDataWithOptions, gradePeriodAfter = 0): boolean {
         if (course.completed) {
@@ -411,7 +411,7 @@ export class CoreCoursesHelperProvider {
      * @param course Course Object.
      * @param gradePeriodAfter Classify past courses as in progress for these many days after the course end date.
      * @param gradePeriodBefore Classify future courses as in progress for these many days prior to the course start date.
-     * @returns Wether the course is future.
+     * @returns Whether the course is future.
      */
     isFutureCourse(
         course: CoreEnrolledCourseDataWithOptions,

@@ -49,7 +49,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * Try to synchronize all the glossaries in a certain site or in all sites.
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      */
     async syncAllGlossaries(siteId?: string, force?: boolean): Promise<void> {
         await this.syncOnSites('all glossaries', (siteId) => this.syncAllGlossariesFunc(!!force, siteId), siteId);
@@ -58,7 +58,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Sync all glossaries on a site.
      *
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
      */
     protected async syncAllGlossariesFunc(force: boolean, siteId: string): Promise<void> {
@@ -73,7 +73,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
     /**
      * Sync entries of all glossaries on a site.
      *
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
      */
     protected async syncAllGlossariesEntries(force: boolean, siteId: string): Promise<void> {
@@ -245,7 +245,7 @@ export class AddonModGlossarySyncProvider extends CoreCourseActivitySyncBaseProv
      * Synchronize offline ratings.
      *
      * @param cmId Course module to be synced. If not defined, sync all glossaries.
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @param siteId Site ID. If not defined, current site.
      * @returns Promise resolved if sync is successful, rejected otherwise.
      */

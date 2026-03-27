@@ -60,7 +60,7 @@ export class CoreBlockHelperProvider {
      * Returns if the course has any block.
      *
      * @param courseId Course ID.
-     * @returns Wether course has blocks.
+     * @returns Whether course has blocks.
      */
     async hasCourseBlocks(courseId: number): Promise<boolean> {
         try {

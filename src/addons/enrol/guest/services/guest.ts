@@ -89,7 +89,7 @@ export class AddonEnrolGuestService {
      *
      * @param enrolmentInstanceId Instance id of guest enrolment plugin.
      * @param password Course Password.
-     * @returns Wether the password is valid.
+     * @returns Whether the password is valid.
      */
     async validateGuestAccessPassword(
         enrolmentInstanceId: number,

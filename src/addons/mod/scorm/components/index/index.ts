@@ -497,7 +497,7 @@ export class AddonModScormIndexComponent extends CoreCourseModuleMainActivityCom
      * Open a SCORM. It will download the SCORM package if it's not downloaded or it has changed.
      *
      * @param event Event.
-     * @param preview Wether open screen in preview mode or not.
+     * @param preview Whether open screen in preview mode or not.
      * @param scoId SCO that needs to be loaded when the SCORM is opened. If not defined, load first SCO.
      */
     async open(event?: Event, preview = false, scoId?: number): Promise<void> {

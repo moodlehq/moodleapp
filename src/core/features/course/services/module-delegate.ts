@@ -185,7 +185,7 @@ export type CoreCourseModuleHandlerData = {
     showDownloadButton?: boolean;
 
     /**
-     * Wether activity has the custom cmlist item flag enabled.
+     * Whether activity has the custom cmlist item flag enabled.
      *
      * Activities like label uses this flag to indicate that it should be
      * displayed as a custom course item instead of a tipical activity card.

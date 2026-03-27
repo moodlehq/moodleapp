@@ -397,7 +397,7 @@ export class AddonModChoiceIndexComponent extends CoreCourseModuleMainActivityCo
     /**
      * Return true if the user has selected at least one option.
      *
-     * @returns Wether  the user has responded.
+     * @returns Whether the user has responded.
      */
     canSave(): boolean {
         if (!this.choice) {

@@ -368,7 +368,7 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
      * Checks if Space or Enter have been pressed.
      *
      * @param event Keyboard Event.
-     * @returns Wether space or enter have been pressed.
+     * @returns Whether space or enter have been pressed.
      */
     protected isValidKeyboardKey(event: KeyboardEvent): boolean {
         return event.key === ' ' || event.key === 'Enter';

@@ -106,7 +106,7 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
     protected firstSelectedTab?: string; // ID of the first selected tab to control history.
     protected backButtonFunction: (event: BackButtonEvent) => void;
     // Swiper documentation: https://swiperjs.com/swiper-api
-    protected isInTransition = false; // Wether Slides is in transition.
+    protected isInTransition = false; // Whether Slides is in transition.
     protected subscriptions: Subscription[] = [];
     protected onReadyPromise = new CorePromisedValue<void>();
 

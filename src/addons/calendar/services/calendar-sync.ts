@@ -55,7 +55,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
      * Try to synchronize all events in a certain site or in all sites.
      *
      * @param siteId Site ID to sync. If not defined, sync all sites.
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */
     async syncAllEvents(siteId?: string, force = false): Promise<void> {
@@ -65,7 +65,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
     /**
      * Sync all events on a site.
      *
-     * @param force Wether to force sync not depending on last execution.
+     * @param force Whether to force sync not depending on last execution.
      * @param siteId Site ID to sync.
      * @returns Promise resolved if sync is successful, rejected if sync fails.
      */

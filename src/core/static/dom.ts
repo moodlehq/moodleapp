@@ -175,7 +175,7 @@ export class CoreDom {
      * Check whether an element is visible or not.
      *
      * @param element Element.
-     * @param checkSize Wether to check size to check for visibility.
+     * @param checkSize Whether to check size to check for visibility.
      * @returns True if element is visible inside the DOM.
      */
     static isElementVisible(element: HTMLElement, checkSize = true): boolean {
@@ -272,7 +272,7 @@ export class CoreDom {
      * @param element The element to scroll to.
      * @param selector Selector to find the element to scroll to inside the defined element.
      * @param scrollOptions Scroll Options.
-     * @returns Wether the scroll suceeded.
+     * @returns Whether the scroll suceeded.
      */
     static async scrollToElement(element: HTMLElement, selector?: string, scrollOptions: CoreScrollOptions = {}): Promise<boolean> {
         if (selector) {
@@ -328,7 +328,7 @@ export class CoreDom {
      *
      * @param scrollElement Scroll Element.
      * @param marginError Error margin when calculating.
-     * @returns Wether the scroll reached the bottom.
+     * @returns Whether the scroll reached the bottom.
      */
     static scrollIsBottom(scrollElement?: HTMLElement, marginError = 0): boolean {
         if (!scrollElement) {
@@ -541,7 +541,7 @@ export class CoreDom {
      * Wait an element to be in dom and visible.
      *
      * @param element Element to wait.
-     * @param checkSize Wether to check size to check for visibility.
+     * @param checkSize Whether to check size to check for visibility.
      * @returns Cancellable promise.
      */
     static waitToBeVisible(element: HTMLElement, checkSize = true): CoreCancellablePromise<void> {

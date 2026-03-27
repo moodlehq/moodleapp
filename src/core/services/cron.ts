@@ -73,7 +73,7 @@ export class CoreCronDelegateService {
      * If the handler cannot be executed or it fails, it will be re-executed after mmCoreCronMinInterval.
      *
      * @param name Name of the handler.
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @param siteId Site ID. If not defined, all sites.
      * @returns Promise resolved if handler is executed successfully, rejected otherwise.
      */
@@ -139,7 +139,7 @@ export class CoreCronDelegateService {
      * Run a handler, cancelling the execution if it takes more than MAX_TIME_PROCESS.
      *
      * @param name Name of the handler.
-     * @param force Wether the execution is forced (manual sync).
+     * @param force Whether the execution is forced (manual sync).
      * @param siteId Site ID. If not defined, all sites.
      * @returns Promise resolved when the handler finishes or reaches max time, rejected if it fails.
      */

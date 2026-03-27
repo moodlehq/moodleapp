@@ -75,7 +75,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
     protected logger: CoreLogger;
     protected debouncedUpdateModule?: () => void; // Update the module after a certain time.
     protected showCompletion = false; // Whether to show completion inside the activity.
-    protected displayDescription = true; // Wether to show Module description on module page, and not on summary or the contrary.
+    protected displayDescription = true; // Whether to show Module description on module page, and not on summary or the contrary.
     protected isDestroyed = false; // Whether the component is destroyed.
     protected checkCompletionAfterLog = true; // Whether to check if completion has changed after calling logActivity.
     protected finishSuccessfulFetch: () => void;
@@ -143,7 +143,7 @@ export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy,
      * Perform the refresh content function.
      *
      * @param sync If the refresh needs syncing.
-     * @param showErrors Wether to show errors to the user or hide them.
+     * @param showErrors Whether to show errors to the user or hide them.
      * @returns Resolved when done.
      */
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
