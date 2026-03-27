@@ -58,3 +58,34 @@ button.h5p-core-cancel-button:focus {
   border: none;
   color: #e40000;
 }
+
+/* H5P theme */
+
+.h5p-theme .h5p-core-cancel-button:focus {
+  color: var(--h5p-theme-main-cta-base);
+  border: solid 3px var(--h5p-theme-main-cta-base);
+}
+
+.h5p-theme .h5p-core-cancel-button:focus:active {
+  color: var(--h5p-theme-contrast-cta);
+}
+
+.h5p-theme .h5p-core-cancel-button:hover {
+  background-color: var(--h5p-theme-main-cta-base);
+  border: solid 3px var(--h5p-theme-main-cta-base);
+  color: var(--h5p-theme-contrast-cta);
+  cursor: pointer;
+}
+
+.h5p-theme .h5p-core-button {
+  display: flex;
+}
+
+.h5p-theme .h5p-core-button:before {
+  font-family: 'h5p-theme';
+  padding-right: unset;
+  font-size: unset;
+  vertical-align: unset;
+  line-height: unset;
+}
+
