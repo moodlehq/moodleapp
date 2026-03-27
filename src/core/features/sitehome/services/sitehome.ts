@@ -57,7 +57,7 @@ export class CoreSiteHomeProvider {
         const { AddonModForum } = await import('@addons/mod/forum/services/forum');
 
         const forums = await AddonModForum.getCourseForums(siteHomeId);
-        const forum = forums.find((forum) => forum.type == 'news');
+        const forum = forums.find((forum) => forum.type === 'news');
 
         if (forum) {
             return forum;
@@ -193,7 +193,7 @@ export class CoreSiteHomeProvider {
             }
 
             // Do not add an item twice.
-            if (add && filteredItems.indexOf(FrontPageItemNames[itemNumber]) < 0) {
+            if (add && !filteredItems.includes(FrontPageItemNames[itemNumber])) {
                 filteredItems.push(FrontPageItemNames[itemNumber]);
             }
         }

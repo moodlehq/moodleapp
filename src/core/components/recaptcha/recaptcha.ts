@@ -94,9 +94,9 @@ export class CoreRecaptchaComponent implements OnInit {
                 return;
             }
 
-            if (event.data.action == 'expired') {
+            if (event.data.action === 'expired') {
                 this.expireRecaptchaAnswer();
-            } else if (event.data.action == 'callback') {
+            } else if (event.data.action === 'callback') {
                 this.expired = false;
                 this.model[this.modelValueName] = event.data.value;
 

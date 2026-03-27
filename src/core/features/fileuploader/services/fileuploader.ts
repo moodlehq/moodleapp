@@ -246,7 +246,7 @@ export class CoreFileUploaderProvider {
         };
         const fileName = CoreFileUtils.getFileAndDirectoryFromPath(uri).name;
 
-        if (isIOS && (mimetype == 'image/jpeg' || mimetype == 'image/png')) {
+        if (isIOS && (mimetype === 'image/jpeg' || mimetype === 'image/png')) {
             // In iOS, the pictures can have repeated names, even if they come from the album.
             // Add a timestamp to the filename to make it unique.
             const split = fileName.split('.');
@@ -431,7 +431,7 @@ export class CoreFileUploaderProvider {
             if (mimetype) {
                 extension = CoreMimetype.getExtension(mimetype);
 
-                if (mimetypes.indexOf(mimetype) == -1) {
+                if (!mimetypes.includes(mimetype)) {
                     // Get the "main" mimetype of the extension.
                     // It's possible that the list of accepted mimetypes only includes the "main" mimetypes.
                     mimetype = CoreMimetype.getMimeType(extension);
@@ -443,7 +443,7 @@ export class CoreFileUploaderProvider {
                 throw new CoreError('No mimetype or path supplied.');
             }
 
-            if (mimetype && mimetypes.indexOf(mimetype) == -1) {
+            if (mimetype && !mimetypes.includes(mimetype)) {
                 extension = extension || Translate.instant('core.unknown');
 
                 return Translate.instant('core.fileuploader.invalidfiletype', { $a: extension });
@@ -460,7 +460,7 @@ export class CoreFileUploaderProvider {
     prepareFiletypeList(filetypeList: string): CoreFileUploaderTypeList | undefined {
         filetypeList = filetypeList?.trim();
 
-        if (!filetypeList || filetypeList == '*') {
+        if (!filetypeList || filetypeList === '*') {
             // All types supported, return undefined.
             return;
         }
@@ -476,7 +476,7 @@ export class CoreFileUploaderProvider {
                 return;
             }
 
-            if (filetype.indexOf('/') != -1) {
+            if (filetype.includes('/')) {
                 // It's a mimetype.
                 typesInfo.push({
                     name: CoreMimetype.getMimetypeDescription(filetype),
@@ -484,7 +484,7 @@ export class CoreFileUploaderProvider {
                 });
 
                 mimetypes[filetype] = true;
-            } else if (filetype.indexOf('.') === 0) {
+            } else if (filetype.startsWith('.')) {
                 // It's an extension.
                 const mimetype = CoreMimetype.getMimeType(filetype);
                 typesInfo.push({
@@ -565,7 +565,7 @@ export class CoreFileUploaderProvider {
                     filename: file.filename,
                     fileurl: CoreFileHelper.getFileUrl(file),
                 });
-            } else if (file.fullPath?.indexOf(folderPath) != -1) {
+            } else if (file.fullPath?.includes(folderPath)) {
                 // File already in the submission folder.
                 result.offline++;
             } else {

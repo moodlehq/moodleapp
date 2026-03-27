@@ -392,7 +392,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
 
                     // The call failed, let's return true so the group is shown.
                     // If the user can't post to it an error will be shown when he tries to add the discussion.
-                    .catch(() =>({ status: true }))
+                    .catch(() => ({ status: true }))
 
                     .then((response) => {
                         if (response.status) {
@@ -419,7 +419,7 @@ export default class AddonModForumNewDiscussionPage implements OnInit, OnDestroy
     protected filterGroups(forumGroups: CoreGroup[], userGroups: CoreGroup[]): CoreGroup[] {
         const userGroupsIds = userGroups.map(group => group.id);
 
-        return forumGroups.filter(forumGroup => userGroupsIds.indexOf(forumGroup.id) > -1);
+        return forumGroups.filter(forumGroup => userGroupsIds.includes(forumGroup.id));
     }
 
     /**

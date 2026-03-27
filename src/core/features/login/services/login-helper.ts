@@ -243,7 +243,7 @@ export class CoreLoginHelperProvider {
             siteConfig.identityproviders.forEach((provider) => {
                 const urlParams = CoreUrl.extractUrlParams(provider.url);
 
-                if (provider.url && (provider.url.indexOf(httpsUrl) !== -1 || provider.url.indexOf(httpUrl) !== -1) &&
+                if (provider.url && (provider.url.includes(httpsUrl) || provider.url.includes(httpUrl)) &&
                         !site.isFeatureDisabled(IDENTITY_PROVIDER_FEATURE_NAME_PREFIX + urlParams.id)) {
                     validProviders.push(provider);
                 }

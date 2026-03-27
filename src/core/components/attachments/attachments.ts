@@ -109,7 +109,7 @@ export class CoreAttachmentsComponent implements OnInit {
 
         this.acceptedTypes = this.acceptedTypes?.trim();
 
-        if (this.acceptedTypes && this.acceptedTypes != '*') {
+        if (this.acceptedTypes && this.acceptedTypes !== '*') {
             this.fileTypes = CoreFileUploader.prepareFiletypeList(this.acceptedTypes);
         }
 

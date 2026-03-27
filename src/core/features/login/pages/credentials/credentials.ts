@@ -182,7 +182,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         this.pageLoaded = false;
 
         // If the site is configured with http:// protocol we force that one, otherwise we use default mode.
-        const protocol = this.site.siteUrl.indexOf('http://') === 0 ? 'http://' : undefined;
+        const protocol = this.site.siteUrl.startsWith('http://') ? 'http://' : undefined;
 
         try {
             if (!this.siteCheck) {
@@ -223,7 +223,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
             return;
         }
 
-        this.canSignup = this.siteConfig.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME);
+        this.canSignup = this.siteConfig.registerauth === 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME);
         this.showForgottenPassword = !this.site.isFeatureDisabled(FORGOTTEN_PASSWORD_FEATURE_NAME);
         this.exceededAttemptsHTML = CoreLoginHelper.buildExceededAttemptsHTML(
             !!this.supportConfig?.canContactSupport(),
@@ -317,7 +317,7 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
 
             if (error.loggedout) {
                 CoreNavigator.navigate('/login/sites', { reset: true });
-            } else if (error.errorcode == 'forcepasswordchangenotice') {
+            } else if (error.errorcode === 'forcepasswordchangenotice') {
                 // Reset password field.
                 this.credForm.controls.password.reset();
             } else if (error.errorcode === 'invalidlogin') {

@@ -109,15 +109,15 @@ export class CoreH5PCore {
      */
     static determineEmbedType(contentEmbedType: string, libraryEmbedTypes: string): string {
         // Detect content embed type.
-        let embedType = contentEmbedType.toLowerCase().indexOf('div') != -1 ? 'div' : 'iframe';
+        let embedType = contentEmbedType.toLowerCase().includes('div') ? 'div' : 'iframe';
 
         if (libraryEmbedTypes) {
             // Check that embed type is available for library
             const embedTypes = libraryEmbedTypes.toLowerCase();
 
-            if (embedTypes.indexOf(embedType) == -1) {
+            if (!embedTypes.includes(embedType)) {
                 // Not available, pick default.
-                embedType = embedTypes.indexOf('div') != -1 ? 'div' : 'iframe';
+                embedType = embedTypes.includes('div') ? 'div' : 'iframe';
             }
         }
 
@@ -488,7 +488,7 @@ export class CoreH5PCore {
             let url = asset.path;
 
             // Add URL prefix if not external.
-            if (asset.path.indexOf('://') == -1 && assetsFolderPath) {
+            if (!asset.path.includes('://') && assetsFolderPath) {
                 url = CorePath.concatenatePaths(assetsFolderPath, url);
             }
 

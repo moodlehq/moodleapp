@@ -67,7 +67,7 @@ export default class CoreMainMenuHomePage implements OnInit {
         const loaded = CoreMainMenuHomeDelegate.areHandlersLoaded();
         const handlersMap = CoreArray.toObject(handlers, 'title');
         const newTabs = handlers.map((handler): CoreTabsOutletTab => {
-            const tab = this.tabs.find(tab => tab.title == handler.title);
+            const tab = this.tabs.find(tab => tab.title === handler.title);
 
             // If a handler is already in the list, use existing object to prevent re-creating the tab.
             if (tab) {

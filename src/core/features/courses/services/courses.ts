@@ -536,7 +536,7 @@ export class CoreCoursesProvider {
                     const courseIds = String(originalValue).split(',').map((id) => parseInt(id, 10));
 
                     // Only courses from the original selection.
-                    response.courses = response.courses.filter((course) => courseIds.indexOf(course.id) >= 0);
+                    response.courses = response.courses.filter((course) => courseIds.includes(course.id));
                 }
 
                 // Courses will be sorted using sortorder if available.
@@ -753,7 +753,7 @@ export class CoreCoursesProvider {
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        if (!courseIds || courseIds.length == 0) {
+        if (!courseIds || courseIds.length === 0) {
             return of({});
         }
 
@@ -824,7 +824,7 @@ export class CoreCoursesProvider {
         courseIds: number[],
         options: CoreSitesCommonWSOptions = {},
     ): WSObservable<CoreCourseUserAdminOrNavOptionCourseIndexed> {
-        if (!courseIds || courseIds.length == 0) {
+        if (!courseIds || courseIds.length === 0) {
             return of({});
         }
 

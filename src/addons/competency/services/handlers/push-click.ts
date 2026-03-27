@@ -27,7 +27,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 /**
  * Handler for competencies push notifications clicks.
  */
-@Injectable( { providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class AddonCompetencyPushClickHandlerService implements CorePushNotificationsClickHandler {
 
     name = 'AddonCompetencyPushClickHandler';
@@ -37,8 +37,8 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
      * @inheritdoc
      */
     async handles(notification: AddonCompetencyPushNotificationData): Promise<boolean> {
-        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent == 'moodle' &&
-                (notification.name == 'competencyplancomment' || notification.name == 'competencyusercompcomment')) {
+        if (CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent === 'moodle' &&
+            (notification.name === 'competencyplancomment' || notification.name === 'competencyusercompcomment')) {
             // If all competency features are disabled, don't handle the click.
             return AddonCompetency.areCompetenciesEnabled({ siteId: notification.site });
         }
@@ -52,7 +52,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
     async handleClick(notification: AddonCompetencyPushNotificationData): Promise<void> {
         const contextUrlParams = CoreUrl.extractUrlParams(notification.contexturl);
 
-        if (notification.name == 'competencyplancomment') {
+        if (notification.name === 'competencyplancomment') {
             // Open the learning plan.
             const planId = Number(contextUrlParams.id);
 
@@ -65,7 +65,7 @@ export class AddonCompetencyPushClickHandlerService implements CorePushNotificat
             return;
         }
 
-        if (notification.contexturl && notification.contexturl.indexOf('user_competency_in_plan.php') != -1) {
+        if (notification.contexturl && notification.contexturl.includes('user_competency_in_plan.php')) {
             // Open the competency.
             const courseId = Number(notification.course);
             const competencyId = Number(contextUrlParams.competencyid);

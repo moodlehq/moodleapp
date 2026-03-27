@@ -839,7 +839,7 @@ export class AddonModDataHelperProvider {
     getTemplate(data: AddonModDataData, type: AddonModDataTemplateType, fields: AddonModDataField[]): string {
         let template = data[type] || this.getDefaultTemplate(type, fields);
 
-        if (type != AddonModDataTemplateType.LIST_HEADER && type != AddonModDataTemplateType.LIST_FOOTER) {
+        if (type !== AddonModDataTemplateType.LIST_HEADER && type !== AddonModDataTemplateType.LIST_FOOTER) {
             // Try to fix syntax errors so the template can be parsed by Angular.
             template = CoreDom.fixHtml(template);
         }

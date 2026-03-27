@@ -48,7 +48,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
     ): CoreContentLinksAction[] | Promise<CoreContentLinksAction[]> {
         return [{
             action: async (siteId?: string): Promise<void> => {
-                if (!params.view || params.view == 'month' || params.view == 'mini' || params.view == 'minithree') {
+                if (!params.view || params.view === 'month' || params.view === 'mini' || params.view === 'minithree') {
                     // Monthly view, open the calendar tab.
                     const stateParams: Params = {
                         courseId: params.course,
@@ -65,7 +65,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
                         preferCurrentTab: false,
                     });
 
-                } else if (params.view == 'day') {
+                } else if (params.view === 'day') {
                     // Daily view, open the page.
                     const stateParams: Params = {
                         courseId: params.course,
@@ -79,7 +79,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
 
                     await CoreNavigator.navigateToSitePath('/calendar/day', { params: stateParams, siteId });
 
-                } else if (params.view == 'upcoming' || params.view == 'upcoming_mini') {
+                } else if (params.view === 'upcoming' || params.view === 'upcoming_mini') {
                     // Upcoming view, open the calendar tab.
                     const stateParams: Params = {
                         courseId: params.course,
@@ -107,7 +107,7 @@ export class AddonCalendarViewLinkHandlerService extends CoreContentLinksHandler
      * @returns Whether the handler is enabled for the URL and site.
      */
     async isEnabled(siteId: string, url: string, params: Record<string, string>): Promise<boolean> {
-        if (params.view && SUPPORTED_VIEWS.indexOf(params.view) == -1) {
+        if (params.view && !SUPPORTED_VIEWS.includes(params.view)) {
             // This type of view isn't supported in the app.
             return false;
         }

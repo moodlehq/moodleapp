@@ -197,7 +197,7 @@ export default class AddonMessagesSettingsPage implements OnInit, OnDestroy {
         if (this.loggedInOffLegacyMode) {
             promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_loggedin`, value));
             promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_loggedoff`, value));
-        }  else {
+        } else {
             promises.push(CoreUserPreferences.setPreferenceOnline(`${notification.preferencekey}_enabled`, value));
         }
 
