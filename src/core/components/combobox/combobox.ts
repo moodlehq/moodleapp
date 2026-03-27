@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input, model, output, signal } from '@angular/core';
+import { Component, computed, input, model, output, signal } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreModals } from '@services/overlays/modals';
@@ -58,40 +58,62 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreFormatTextDirective,
     ],
 })
-export class CoreComboboxComponent implements ControlValueAccessor {
+export class CoreComboboxComponent<T = unknown> implements ControlValueAccessor {
 
     readonly interface = input<'popover' | 'modal'>('popover');
     readonly label = input(Translate.instant('core.show')); // Aria label.
-    readonly disabled = model(false);
-    readonly selection = model('');
+    readonly emptySelectionText = input('');
+
+    // When selection is an object, `textKey` specifies which property to show as the visible text in the combobox.
+    readonly textKey = input<string>('text');
 
     // Additional options when interface modal is selected.
     readonly icon = input<string>(); // Icon for modal interface.
     readonly modalOptions = input<ModalOptions>(); // Will emit an event the value changed.
     readonly listboxId = input<string>('');
 
+    readonly disabled = model(false);
+    // Selection can be a string or an object depending on the interface used.
+    // E.g. when using `interface="modal"` the modal can return complex objects.
+    readonly selection = model<T | undefined | null>(undefined);
+
     /**
      * @deprecated since 5.1. Use (selectionChange) instead.
      */
-    readonly onChange = output<unknown>(); // Will emit an event the value changed.
+    readonly onChange = output<T | undefined | null>(); // Will emit an event the value changed.
+
+    readonly selectionText = computed<string>(() => {
+        const selection = this.selection();
+        if (selection === undefined || selection === '' || selection === null) {
+            return this.emptySelectionText();
+        }
+
+        const selectionText = this.textKey() && typeof selection === 'object'
+            ? (selection as Record<string, unknown>)[this.textKey()]
+            : selection;
+
+        return selectionText === undefined || selectionText === null || selectionText === ''
+             ? this.emptySelectionText()
+             : String(selectionText);
+    });
 
     readonly expanded = signal(false);
 
     protected readonly touched = signal(false);
-    protected formOnChange?: (value: unknown) => void;
+    protected formOnChange?: (value: T | undefined | null) => void;
     protected formOnTouched?: () => void;
 
     /**
      * @inheritdoc
      */
-    writeValue(selection: string): void {
+    writeValue(selection: T | undefined | null): void {
         this.selection.set(selection);
     }
 
     /**
      * @inheritdoc
      */
-    registerOnChange(onChange: (value: unknown) => void): void {
+    registerOnChange(onChange: (value: T | undefined | null) => void): void {
         this.formOnChange = onChange;
     }
 
@@ -114,7 +136,7 @@ export class CoreComboboxComponent implements ControlValueAccessor {
      *
      * @param selection Selected value.
      */
-    onValueChanged(selection: unknown): void {
+    onValueChanged(selection: T | undefined | null): void {
         this.touch();
         this.onChange.emit(selection); // eslint-disable-line @typescript-eslint/no-deprecated
         this.formOnChange?.(selection);
@@ -122,8 +144,6 @@ export class CoreComboboxComponent implements ControlValueAccessor {
 
     /**
      * Shows combobox modal.
-     *
-     * @returns Promise resolved when done.
      */
     async openModal(): Promise<void> {
         this.touch();
@@ -135,13 +155,14 @@ export class CoreComboboxComponent implements ControlValueAccessor {
 
         this.expanded.set(true);
 
-        const data = await CoreModals.openModal<string>({
+        const data = await CoreModals.openModal<T>({
             ...modalOptions,
             id: this.listboxId() || modalOptions.id,
         });
         this.expanded.set(false);
 
-        if (data) {
+        // Undefined is considered as cancelled.
+        if (data !== undefined) {
             this.selection.set(data);
             this.onValueChanged(data);
         }
