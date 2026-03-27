@@ -341,6 +341,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
      * @param quiz Quiz.
      */
     protected async getResultInfo(quiz: AddonModQuizQuizData): Promise<void> {
+        this.overallFeedback = this.bestGrade?.feedback?.feedbacktext;
+
         if (!this.attempts.length || !quiz.showAttemptsGrades) {
             this.gradeResult = undefined;
 
@@ -373,8 +375,8 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
             max: quiz.gradeFormatted,
         } });
 
-        if (quiz.showFeedback) {
-            // Get the quiz overall feedback.
+        if (quiz.showFeedback && !('feedback' in this.bestGrade)) {
+            // Get the quiz overall feedback in Moodle 5.1 or older.
             const response = await AddonModQuiz.getFeedbackForGrade(quiz.id, this.gradebookData.grade, {
                 cmId: this.module.id,
             });
@@ -622,10 +624,20 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
                 formattedAttempt.cannotReviewMessage = AddonModQuizHelper.getCannotReviewMessage(quiz, attempt, true);
             }
 
-            if (quiz.showFeedback && attempt.state === AddonModQuizAttemptStates.FINISHED &&
+            if ('feedback' in formattedAttempt) {
+                if (formattedAttempt.feedback?.feedbacktext) {
+                    formattedAttempt.additionalData = [
+                        {
+                            id: 'feedback',
+                            title: Translate.instant('addon.mod_quiz.feedback'),
+                            content: formattedAttempt.feedback.feedbacktext,
+                        },
+                    ];
+                }
+            } else if (quiz.showFeedback && attempt.state === AddonModQuizAttemptStates.FINISHED &&
                     options.someoptions.overallfeedback && isSafeNumber(formattedAttempt.rescaledGrade)) {
 
-                // Feedback should be displayed, get the feedback for the grade.
+                // Get the feedback for the grade in Moodle 5.1 or older.
                 const response = await AddonModQuiz.getFeedbackForGrade(quiz.id, formattedAttempt.rescaledGrade, {
                     cmId: quiz.coursemodule,
                 });
