@@ -68,6 +68,13 @@ export type CoreNavigationOptions = AnimationOptions & {
 };
 
 /**
+ * Navigation options with site ID.
+ */
+export type CoreNavigationOptionsWithSite = CoreNavigationOptions & {
+    siteId?: string;
+};
+
+/**
  * Route options to get current route.
  */
 export type CoreNavigatorCurrentRouteOptions = Partial<{
@@ -233,7 +240,7 @@ export class CoreNavigatorService {
      */
     async navigateToSitePath(
         path: string,
-        options: CoreNavigationOptions & { siteId?: string } = {},
+        options: CoreNavigationOptionsWithSite = {},
     ): Promise<boolean> {
         const siteId = options.siteId ?? CoreSites.getCurrentSiteId();
         const navigationOptions: CoreNavigationOptions = CoreObject.without(options, ['siteId']);

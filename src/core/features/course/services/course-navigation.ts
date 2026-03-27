@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { CoreCourseHelper, CoreCourseModuleData } from './course-helper';
@@ -160,26 +160,29 @@ export class CoreCourseNavigationService {
      * @param module Module to open.
      * @param direction Direction to go (next or previous).
      * @param replaceCurrentNavigationPage Whether to replace the current page in the navigation stack or not. Defaults to true.
+     * @param siteId Site ID. If not defined, current site.
      */
     async navigateToActivity(
         module: CoreCourseModuleData,
         direction = CoreCourseNavigationDirection.NEXT,
         replaceCurrentNavigationPage = true,
+        siteId?: string,
     ): Promise<void> {
 
-        const options: CoreNavigationOptions = {
+        const options: CoreNavigationOptionsWithSite = {
             replace: replaceCurrentNavigationPage,
             animationDirection:
                 !replaceCurrentNavigationPage || direction === CoreCourseNavigationDirection.NEXT ? 'forward' : 'back',
+            siteId,
         };
 
         if (!CoreCourseHelper.canUserViewModule(module)) {
             options.params = {
                 module,
             };
-            CoreNavigator.navigateToSitePath(`course/${module.course}/${module.id}/module-preview`, options);
+            await CoreNavigator.navigateToSitePath(`course/${module.course}/${module.id}/module-preview`, options);
         } else {
-            CoreCourseModuleDelegate.openActivityPage(module.modname, module, module.course, options);
+            await CoreCourseModuleDelegate.openActivityPage(module.modname, module, module.course, options);
         }
     }
 

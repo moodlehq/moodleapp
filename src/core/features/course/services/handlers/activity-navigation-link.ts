@@ -62,6 +62,7 @@ export class CoreCourseActivityNavigationLinkHandlerService extends CoreContentL
                     direction,
                     {
                         readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+                        siteId,
                     },
                 ));
                 modal.dismiss();

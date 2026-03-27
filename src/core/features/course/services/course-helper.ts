@@ -40,7 +40,7 @@ import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from './module-
 import { CoreNetwork } from '@services/network';
 import { DEFAULT_TEXT_FORMAT } from '@static/text';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreCourseWithImageAndColor } from '@features/courses/services/courses-helper';
 import { CoreRemindersPushNotificationData } from '@features/reminders/services/reminders';
@@ -961,7 +961,7 @@ export class CoreCourseHelperProvider {
      */
     async openCourse(
         course: CoreCourseAnyCourseData | { id: number },
-        navOptions?: CoreNavigationOptions & { siteId?: string },
+        navOptions?: CoreNavigationOptionsWithSite,
     ): Promise<void> {
         const siteId = navOptions?.siteId;
         if (!siteId || siteId === CoreSites.getCurrentSiteId()) {

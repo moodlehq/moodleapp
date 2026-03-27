@@ -27,7 +27,7 @@ import {
     CoreSitePluginsCourseModuleHandlerData,
     CoreSitePluginsPlugin,
 } from '@features/siteplugins/services/siteplugins';
-import { CoreNavigationOptions, CoreNavigator } from '@services/navigator';
+import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
 import { CoreLogger } from '@static/logger';
 import { CoreEvents } from '@static/events';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -234,7 +234,7 @@ export class CoreSitePluginsModuleHandler extends CoreModuleHandlerBase implemen
     /**
      * @inheritdoc
      */
-    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptions): Promise<void> {
+    async openActivityPage(module: CoreCourseModuleData, courseId: number, options?: CoreNavigationOptionsWithSite): Promise<void> {
         if (!CoreCourseModuleHelper.moduleHasView(module)) {
             return;
         }
