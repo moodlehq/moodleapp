@@ -476,9 +476,9 @@ export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewIn
             return;
         }
 
-        const suceeded = await this.loadTab(tabToSelect);
+        const succeeded = await this.loadTab(tabToSelect);
 
-        if (suceeded !== false) {
+        if (succeeded !== false) {
             this.tabSelected(tabToSelect, index);
         }
         this.onReadyPromise.resolve();

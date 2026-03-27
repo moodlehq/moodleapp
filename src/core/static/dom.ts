@@ -272,7 +272,7 @@ export class CoreDom {
      * @param element The element to scroll to.
      * @param selector Selector to find the element to scroll to inside the defined element.
      * @param scrollOptions Scroll Options.
-     * @returns Whether the scroll suceeded.
+     * @returns Whether the scroll succeeded.
      */
     static async scrollToElement(element: HTMLElement, selector?: string, scrollOptions: CoreScrollOptions = {}): Promise<boolean> {
         if (selector) {
