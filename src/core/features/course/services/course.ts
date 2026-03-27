@@ -1826,7 +1826,7 @@ export type CoreCourseModuleGradeInfo = {
  */
 export type CoreCourseModuleAdvancedGradingSetting = {
     area: string; // Gradable area name.
-    method: string; // Grading method.
+    method: string | null; // Grading method.
 };
 
 /**

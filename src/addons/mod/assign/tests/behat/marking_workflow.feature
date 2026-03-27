@@ -123,3 +123,26 @@ Feature: Test marking workflow in assignment activity in app
     Then I should find "80" within "Current grade in gradebook" "ion-item" in the app
     And the field "Grade out of 100" matches value "80" in the app
     And I should not find "Current grade in assignment" in the app
+
+  @lms_from5.2
+  Scenario: Grading with multiple markers is not supported in the app
+    Given the following "activities" exist:
+      | activity | course | idnumber | name             | assignsubmission_onlinetext_enabled | markingworkflow | markingallocation | markercount |
+      | assign   | C1     | assign2  | Mult Mark Assign | 1                                   | 1               | 1                 | 3           |
+    And the following "mod_assign > submissions" exist:
+      | assign  | user      | onlinetext |
+      | assign2 | student1  | Lorem      |
+    And I entered the assign activity "Mult Mark Assign" on course "Course 1" as "teacher1" in the app
+    When I press "Participants" in the app
+    And I press "Student1" in the app
+    Then I should find "Multiple markers are not yet supported by the app and cannot be modified." in the app
+    And I should not be able to press "Grade" "ion-button" in the app
+
+    When I press "Open in browser" in the app
+    Then the app should have opened a browser tab
+
+    When I switch to the browser tab opened by the app
+    And I log in as "teacher1"
+    Then I should see "Lorem"
+    And I should see "Grade out of 100"
+    And I should see "Marker 1"

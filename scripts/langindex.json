@@ -401,6 +401,7 @@
   "addon.mod_assign.markingworkflowstatereadyforreview": "assign",
   "addon.mod_assign.markingworkflowstatereleased": "assign",
   "addon.mod_assign.modulenameplural": "assign",
+  "addon.mod_assign.multiplemarkersnotsupported": "local_moodlemobileapp",
   "addon.mod_assign.multipleteams": "assign",
   "addon.mod_assign.multipleteams_desc": "assign",
   "addon.mod_assign.noattempt": "assign",

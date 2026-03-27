@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, inject, viewChildren } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, viewChildren, signal } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -31,7 +31,7 @@ import {
     AddonModAssignSync,
 } from '../../services/assign-sync';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
+import { CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
 import { Translate } from '@singletons';
 import { CoreCourse } from '@features/course/services/course';
@@ -124,6 +124,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     grader?: CoreUserProfile; // Profile of the teacher that graded the submission.
     canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
+    readonly hasMultipleMarkers = signal(false); // Whether the assignment has multiple markers.
     gradeUrl?: string; // URL to grade in browser.
     submissionUrl?: string; // URL to add/edit a submission in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
@@ -477,6 +478,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             }
 
             this.blindMarking = this.isSubmittedForGrading && !!this.assign.blindmarking && !this.assign.revealidentities;
+            this.hasMultipleMarkers.set(!!this.assign.markingworkflow && !!this.assign.markingallocation &&
+                this.assign.markercount !== undefined && this.assign.markercount > 1);
 
             if (!this.blindMarking && this.submitId != this.currentUserId) {
                 promises.push(this.loadSubmissionUserProfile());
@@ -643,8 +646,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             }
         }
 
-        // Check if there's any offline data for this submission.
-        if (!this.canSaveGrades) {
+        if (!this.canSaveGrades || this.hasMultipleMarkers()) {
             // User cannot save grades in the app. Load the URL to grade it in browser.
             const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
             this.gradeUrl = `${mod.url}&action=grader&userid=${this.submitId}`;
@@ -652,6 +654,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Check if there's any offline data for this submission.
         // Submission grades aren't identified by attempt number so it can retrieve the feedback for a previous attempt.
         // The app will not treat that as an special case.
         const submissionGrade = await CorePromiseUtils.ignoreErrors(
@@ -660,46 +663,35 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         this.hasOfflineGrade = false;
 
-        let gradeModified = 0;
-        const gradebookGrades = await CoreGradesHelper.getGradeModuleItems(this.courseId, this.moduleId, this.submitId);
-        gradebookGrades.forEach((grade: CoreGradesFormattedItem) => {
-            if (!grade.outcomeid && !grade.scaleid) {
-                gradeModified = grade.gradedategraded ?? gradeModified;
-            }
-        });
-
-        // Load offline grades.
+        // Load offline grades. Do not use offline if feedback was modified after the offline grade was stored.
         if (submissionGrade && (!feedback || !feedback.gradeddate || feedback.gradeddate < submissionGrade.timemodified)) {
-            // If grade has been modified from gradebook, do not use offline.
-            if (gradeModified < submissionGrade.timemodified) {
-                let gradeForDisplay: string;
-                if (gradeInfo.scale) {
-                    const scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'), ',', -1);
-                    const scaleItem = scale.find(scaleItem => scaleItem.value === submissionGrade.grade);
-                    gradeForDisplay = scaleItem?.label ?? String(submissionGrade.grade);
-                } else {
-                    gradeForDisplay = CoreUtils.formatFloat(submissionGrade.grade);
-                }
-
-                if (!this.feedback) {
-                    this.feedback = {
-                        gradefordisplay: gradeForDisplay,
-                        gradeddate: gradeModified,
-                        plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
-                    };
-                } else {
-                    this.feedback.gradefordisplay = gradeForDisplay;
-                    this.feedback.gradeddate = gradeModified;
-                }
-
-                this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
-
-                this.hasOfflineGrade = true;
-                this.gradingStatusBadge = {
-                    translationId: 'addon.mod_assign.gradenotsynced',
-                    color: CoreIonicColorNames.NONE,
-                };
+            let gradeForDisplay: string;
+            if (gradeInfo.scale) {
+                const scale = CoreUtils.makeMenuFromList(gradeInfo.scale, Translate.instant('core.nograde'), ',', -1);
+                const scaleItem = scale.find(scaleItem => scaleItem.value === submissionGrade.grade);
+                gradeForDisplay = scaleItem?.label ?? String(submissionGrade.grade);
+            } else {
+                gradeForDisplay = CoreUtils.formatFloat(submissionGrade.grade);
             }
+
+            if (!this.feedback) {
+                this.feedback = {
+                    gradefordisplay: gradeForDisplay,
+                    gradeddate: submissionGrade.timemodified,
+                    plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
+                };
+            } else {
+                this.feedback.gradefordisplay = gradeForDisplay;
+                this.feedback.gradeddate = submissionGrade.timemodified;
+            }
+
+            this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
+
+            this.hasOfflineGrade = true;
+            this.gradingStatusBadge = {
+                translationId: 'addon.mod_assign.gradenotsynced',
+                color: CoreIonicColorNames.NONE,
+            };
         }
     }
 

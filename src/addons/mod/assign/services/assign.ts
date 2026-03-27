@@ -1488,6 +1488,9 @@ export type AddonModAssignAssign =
     maxattempts: number; // Maximum number of attempts allowed.
     markingworkflow: number; // Enable marking workflow.
     markingallocation: number; // Enable marking allocation.
+    markercount?: number; // @since 5.2. Number of markers.
+    multimarkmethod?: number; // @since 5.2. Method to use when combining marks to a final grade.
+    multimarkrounding?: number; // @since 5.2. Rounding direction to use when handling decimal marks.
     requiresubmissionstatement: number; // Student must accept submission statement.
     preventsubmissionnotingroup?: number; // Prevent submission not in group.
     submissionstatement?: string; // Submission statement formatted.
@@ -1629,6 +1632,7 @@ type AddonModAssignListParticipantsWSParams = {
     onlyids?: boolean; // Do not return all user fields.
     includeenrolments?: boolean; // Do return courses where the user is enrolled.
     tablesort?: boolean; // Apply current user table sorting preferences.
+    marking?: boolean; // @since 5.2. Are we marking instead of grading?
 };
 
 /**
@@ -1837,6 +1841,7 @@ type AddonModAssignSubmitGradingFormWSParams = {
     assignmentid: number; // The assignment id to operate on.
     userid: number; // The user id the submission belongs to.
     jsonformdata: string; // The data from the grading form, encoded as a json array.
+    marker?: boolean; // @since 5.2. Flag, false if grading, true if marking.
 };
 
 /**
