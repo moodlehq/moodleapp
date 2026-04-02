@@ -2147,6 +2147,11 @@ export type AddonModQuizAttemptWSData = {
         maxgrade: number; // The total this grade is out of.
     }[];
     gradednotificationsenttime?: number; // Time when the student was notified that manual grading of their attempt was complete.
+    feedback?: { // @since 5.2.
+        feedbacktext: string; // Feedback text to display (only if set).
+        feedbacktextformat?: CoreTextFormat; // Feedback format (only if set).
+        feedbackinlinefiles?: CoreWSExternalFile[]; // Feedback inline files (only if set).
+    };
 };
 
 /**
@@ -2412,6 +2417,11 @@ export type AddonModQuizGetUserBestGradeWSResponse = {
     hasgrade: boolean; // Whether the user has a grade on the given quiz.
     grade?: SafeNumber; // The grade (only if the user has a grade).
     gradetopass?: number; // @since 3.11. The grade to pass the quiz (only if set).
+    feedback?: { // @since 5.2.
+        feedbacktext: string; // Feedback text to display (only if set).
+        feedbacktextformat?: CoreTextFormat; // Feedback format (only if set).
+        feedbackinlinefiles?: CoreWSExternalFile[]; // Feedback inline files (only if set).
+    };
     warnings?: CoreWSExternalWarning[];
 };
 
