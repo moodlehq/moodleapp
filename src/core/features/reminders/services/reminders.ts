@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { CoreTime } from '@static/time';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreReminderDBRecord, REMINDERS_TABLE } from './database/reminders';
-import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { CorePlatform } from '@services/platform';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { CoreConfig } from '@services/config';

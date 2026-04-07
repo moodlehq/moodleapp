@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser';
+import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreFilepool } from '@services/filepool';
