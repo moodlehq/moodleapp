@@ -11,9 +11,9 @@
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
-    "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.2.1",
-    "esbuild": "^0.28.0",
+    "chokidar-cli": "3.0.0",
+    "concurrently": "9.2.1",
+    "esbuild": "0.28.0",
     "typescript": "5.9.3"
   }
 }
