@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreText, CoreTextFormat } from '@static/text';
@@ -202,10 +202,25 @@ export class AddonCalendarProvider {
      * @param eventId Event ID to delete.
      * @param deleteAll If it's a repeated event. whether to delete all events of the series.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolved when done.
      */
     async deleteEventOnline(eventId: number, deleteAll = false, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
+        await this.deleteEventWS(eventId, deleteAll, { siteId });
+
+        // Delete the event from local DB and cancel reminders/notifications.
+        // @todo It might not delete repeated events when deleteAll is true but it will be solved in the sync process,
+        // so we can live with it for now.
+        await CorePromiseUtils.ignoreErrors(this.deleteLocalEvent(eventId, siteId));
+    }
+
+    /**
+     * Calls the WebService to delete an event. It will fail if offline or cannot connect.
+     *
+     * @param eventId Event ID to delete.
+     * @param deleteAll If it's a repeated event. whether to delete all events of the series.
+     * @param options Options for the WS call.
+     */
+    protected async deleteEventWS(eventId: number, deleteAll = false, options: CoreSitesCommonWSOptions = {}): Promise<void> {
+        const site = await CoreSites.getSite(options.siteId);
         const params: AddonCalendarDeleteCalendarEventsWSParams = {
             events: [
                 {
