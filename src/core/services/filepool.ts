@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Md5 } from 'ts-md5/dist/md5';
-
+import { Md5 } from 'ts-md5';
 import { CoreAppDB } from '@services/app-db';
 import { CoreNetwork } from '@services/network';
 import { CoreEventPackageStatusChanged, CoreEvents } from '@static/events';

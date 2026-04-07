@@ -145,7 +145,7 @@ describe('Credentials page', () => {
         formControls['password'].setValue('secret');
 
         for (let i = 0; i < 3; i++) {
-            form.submit();
+            form.dispatchEvent(new Event('submit'));
             await fixture.whenStable();
         }
 

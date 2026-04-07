@@ -576,5 +576,5 @@ export async function useTranslations(lang = 'en'): Promise<void> {
  */
 export function fakeTime(date: Date = new Date('2014-02-01T01:02:03Z')): void {
     jest.useFakeTimers();
-    jest.setSystemTime(date);
+    jest.setSystemTime(date.getTime());
 }

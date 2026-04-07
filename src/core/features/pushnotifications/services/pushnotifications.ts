@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { NotificationEventResponse, PushOptions, RegistrationEventResponse } from '@awesome-cordova-plugins/push/ngx';
 
 import { CoreAppDB } from '@services/app-db';

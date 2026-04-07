@@ -43,7 +43,7 @@ export enum CoreIonicColorNames {
 export class CoreColors {
 
     protected static readonly BLACK_TRANSPARENT_COLORS =
-        ['rgba(0, 0, 0, 0)', 'transparent', '#00000000', '#0000', 'hsl(0, 0%, 0%, 0)'];
+        ['rgba(0, 0, 0, 0)', 'transparent', '#00000000', '#0000', 'hsl(0, 0%, 0%, 0)', 'hsla(0, 100%, 0%, 0)'];
 
     // Avoid creating instances.
     private constructor() {

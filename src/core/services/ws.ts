@@ -16,8 +16,8 @@ import { Injectable } from '@angular/core';
 import { HttpResponse, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http';
-import { Md5 } from 'ts-md5/dist/md5';
+import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http/ngx';
+import { Md5 } from 'ts-md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 

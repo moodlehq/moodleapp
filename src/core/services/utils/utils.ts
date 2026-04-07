@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser';
+import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreRedirects } from '@static/redirects';

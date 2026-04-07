@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications';
+import { ILocalNotification } from '@awesome-cordova-plugins/local-notifications/ngx';
 
 import { CoreAppDB } from '@services/app-db';
 import { CoreConfig } from '@services/config';

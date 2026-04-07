@@ -28,7 +28,7 @@ import { AddonMessagesSync } from '../../services/messages-sync';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLogger } from '@static/logger';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreError } from '@classes/errors/error';
 import { Translate } from '@singletons';

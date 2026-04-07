@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Md5 } from 'ts-md5/dist/md5';
-
+import { Md5 } from 'ts-md5';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreUtils } from '@static/utils';

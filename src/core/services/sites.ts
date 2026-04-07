@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 import { timeout } from 'rxjs/operators';
 
 import { CoreApp, CoreStoreConfig } from '@services/app';

@@ -14,8 +14,7 @@
 
 import { Injectable, SecurityContext } from '@angular/core';
 import { Params } from '@angular/router';
-import { Md5 } from 'ts-md5/dist/md5';
-
+import { Md5 } from 'ts-md5';
 import { CoreApp, CoreStoreConfig } from '@services/app';
 import { CoreConfig } from '@services/config';
 import { CoreEvents, CoreEventSessionExpiredData, CoreEventSiteData } from '@static/events';
