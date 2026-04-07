@@ -42,7 +42,6 @@ const appConfig = {
         globals: {
             ...globals.browser,
             ...globals.node,
-            ...globals.es6,
         },
         parserOptions: {
             project: 'tsconfig.app.json', // Use tsconfig.app instead of tsconfig because it limits the files loaded by TS.

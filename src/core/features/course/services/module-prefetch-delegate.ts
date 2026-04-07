@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Subject, BehaviorSubject, Subscription } from 'rxjs';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 
 import { CoreFile } from '@services/file';
 import { CoreFileHelper } from '@services/file-helper';

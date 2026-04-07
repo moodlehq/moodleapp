@@ -17,7 +17,7 @@ import { HttpResponse, HttpParams, HttpErrorResponse, HttpHeaders } from '@angul
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http/ngx';
-import { Md5 } from 'ts-md5/dist/md5';
+import { Md5 } from 'ts-md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
