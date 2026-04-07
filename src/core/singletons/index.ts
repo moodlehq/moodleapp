@@ -177,10 +177,13 @@ export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
 export const NativeHttp = makeSingleton(HTTP);
 export const StatusBar = makeSingleton(StatusBarService);
-export const SplashScreen = makeSingleton(SplashScreenService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
+/**
+ * @deprecated since 5.2. Use navigator.splashscreen directly.
+ */
+export const SplashScreen = makeSingleton(SplashScreenService);
 
 export const Camera = makeSingleton(CameraService);
 

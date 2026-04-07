@@ -17,7 +17,6 @@ import { IonRouterOutlet, IonicModule } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
 import { CoreLoginHelper } from '@features/login/services/login-helper';
-import { SplashScreen } from '@singletons';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSubscriptions } from '@static/subscriptions';
@@ -135,7 +134,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             await CorePlatform.ready();
 
             this.logger.debug('Hide splash screen');
-            SplashScreen.hide();
+            navigator.splashscreen?.hide();
             this.setSystemUIColorsAfterSplash();
         });
     }
