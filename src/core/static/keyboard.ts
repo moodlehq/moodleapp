@@ -29,6 +29,17 @@ export class CoreKeyboard {
 
     // Avoid creating instances.
     private constructor() {
+        // Nothing to do.
+    }
+
+    /**
+     * Initialise keyboard UI state bindings.
+     *
+     * This sets up the reactive effect that keeps the `keyboard-is-open` body
+     * class in sync with the keyboard visibility signal. Keyboard event
+     * subscriptions are registered elsewhere.
+     */
+    static initialize(): void {
         effect(() => {
             document.body.classList.toggle('keyboard-is-open', CoreKeyboard.IS_KEYBOARD_SHOWN());
         });
