@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
-
+import { Component } from '@angular/core';
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
-import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { SubPartial } from '@/core/utils/types';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreWait } from '@static/wait';
 
 /**
  * Component that displays help to connect to a site.
@@ -32,18 +29,10 @@ import { CoreWait } from '@static/wait';
     imports: [
         CoreSharedModule,
     ],
-    host: {
-        '[class.hydrated]': 'hydrated',
-    },
 })
-export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
+export class CoreLoginSiteHelpComponent {
 
-    openQuestion?: number;
     questions: Question[] = [];
-    protected hydrated = false;
-
-    private promises: CoreCancellablePromise[] = [];
-    protected el: HTMLElement = inject(ElementRef).nativeElement;
 
     constructor() {
         const getStartedTitle = Translate.instant('core.login.faqsetupsitelinktitle');
@@ -115,82 +104,10 @@ export class CoreLoginSiteHelpComponent implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * @inheritdoc
-     */
-    async ngAfterViewInit(): Promise<void> {
-        const answers = Array.from(this.el.querySelectorAll<HTMLElement>('.core-login-site-help--answer'));
-
-        await Promise.all(answers.map(async answer => {
-            await this.track(CoreWait.waitFor(() => answer.clientHeight !== 0));
-            await this.track(CoreWait.waitForImages(answer));
-
-            answer.style.setProperty('--height', `${answer.clientHeight}px`);
-        }));
-
-        this.hydrated = true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        this.promises.forEach(promise => promise.cancel());
-    }
-
-    /**
-     * Check whether the given question is open or not.
-     *
-     * @param question Question.
-     * @returns Whether the given question is open.
-     */
-    isOpen(question: Question): boolean {
-        return this.openQuestion === question.id;
-    }
-
-    /**
-     * Toggle question.
-     *
-     * @param question Question to toggle.
-     */
-    toggle(question: Question): void {
-        if (question.id === this.openQuestion) {
-            delete this.openQuestion;
-
-            return;
-        }
-
-        this.openQuestion = question.id;
-    }
-
-    /**
      * Close help modal.
      */
     close(): void {
         ModalController.dismiss();
-    }
-
-    /**
-     * Track a promise for cleanup.
-     *
-     * @param promise Cancellable promise.
-     * @returns The promise.
-     */
-    protected track<T>(promise: CoreCancellablePromise<T>): Promise<T>  {
-        const remove = () => {
-            const index = this.promises.indexOf(promise);
-
-            if (index === -1) {
-                return;
-            }
-
-            this.promises.splice(index, 1);
-        };
-
-        this.promises.push(promise);
-
-        promise.then(remove).catch(remove);
-
-        return promise;
     }
 
 }
