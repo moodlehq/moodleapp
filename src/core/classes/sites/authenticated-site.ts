@@ -775,7 +775,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 }
 
                 throw new CoreWSError(error);
-            } else if (preSets.cacheErrors && preSets.cacheErrors.indexOf(error.errorcode) != -1) {
+            } else if (preSets.cacheErrors && preSets.cacheErrors.includes(error.errorcode)) {
                 // Save the error instead of deleting the cache entry so the same content is displayed in offline.
                 this.saveToCache(method, data, error, preSets);
 
@@ -956,7 +956,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         const requests = this.requestQueue;
         this.requestQueue = [];
 
-        if (requests.length == 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
+        if (requests.length === 1 && !CoreAuthenticatedSite.REQUEST_QUEUE_FORCE_WS) {
             // Only one request, do a regular web service call.
             try {
                 const data = await CoreWS.call(requests[0].method, requests[0].data, requests[0].wsPreSets);
@@ -980,10 +980,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                     let value = request.data[key];
                     const match = /^moodlews(setting.*)$/.exec(key);
                     if (match) {
-                        if (match[1] == 'settingfilter' || match[1] == 'settingfileurl') {
+                        if (match[1] === 'settingfilter' || match[1] === 'settingfileurl') {
                             // Undo special treatment of these settings in CoreWS.convertValuesToString.
-                            value = (value == 'true' ? '1' : '0');
-                        } else if (match[1] == 'settinglang') {
+                            value = (value === 'true' ? '1' : '0');
+                        } else if (match[1] === 'settinglang') {
                             // Use the lang globally to avoid exceptions with languages not installed.
                             lang = value;
 
@@ -1615,7 +1615,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
         const position = releases.indexOf(data.major);
 
-        if (position == -1 || position == releases.length - 1) {
+        if (position === -1 || position === releases.length - 1) {
             // Major version not found or it's the last one. Use the last one.
             return MOODLE_RELEASES[releases[position]];
         }

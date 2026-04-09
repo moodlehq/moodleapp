@@ -200,7 +200,7 @@ export class CoreSiteHomeProvider {
             }
 
             // Do not add an item twice.
-            if (add && filteredItems.indexOf(FrontPageItemNames[itemNumber]) < 0) {
+            if (add && !filteredItems.includes(FrontPageItemNames[itemNumber])) {
                 filteredItems.push(FrontPageItemNames[itemNumber]);
             }
         }

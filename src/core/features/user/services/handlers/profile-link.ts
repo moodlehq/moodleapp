@@ -61,7 +61,7 @@ export class CoreUserProfileLinkHandlerService extends CoreContentLinksHandlerBa
      * @inheritdoc
      */
     async isEnabled(siteId: string, url: string): Promise<boolean> {
-        return url.indexOf('/grade/report/') === -1;
+        return !url.includes('/grade/report/');
     }
 
 }

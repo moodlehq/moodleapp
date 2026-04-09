@@ -315,7 +315,7 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
 
         const hasAccess = await CoreCourseHelper.userHasAccessToCourse(this.courseId);
         if (!hasAccess && this.guestEnrolInstances.length) {
-            if (this.guestEnrolInstances.length == 1) {
+            if (this.guestEnrolInstances.length === 1) {
                 this.validateAccessAndOpen(this.guestEnrolInstances[0], replaceCurrentPage);
 
                 return;
@@ -486,13 +486,13 @@ export default class CoreCourseSummaryPage implements OnInit, OnDestroy {
      * Open enrol action sheet.
      */
     async enrolMe(): Promise<void> {
-        if (this.selfEnrolInstances.length == 1 && !this.hasBrowserEnrolments) {
+        if (this.selfEnrolInstances.length === 1 && !this.hasBrowserEnrolments) {
             this.selfEnrolInCourse(this.selfEnrolInstances[0]);
 
             return;
         }
 
-        if (this.selfEnrolInstances.length == 0 && this.hasBrowserEnrolments) {
+        if (this.selfEnrolInstances.length === 0 && this.hasBrowserEnrolments) {
             this.browserEnrol();
 
             return;

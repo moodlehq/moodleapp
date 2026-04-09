@@ -33,7 +33,7 @@ import { DEFAULT_TEXT_FORMAT } from '@static/text';
 /**
  * Service to sync notes.
  */
-@Injectable( { providedIn: 'root' } )
+@Injectable({ providedIn: 'root' })
 export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncResult> {
 
     constructor() {
@@ -172,7 +172,7 @@ export class AddonNotesSyncProvider extends CoreSyncBaseProvider<AddonNotesSyncR
         promises.push(AddonNotes.addNotesOnline(notesToSend, siteId).then((response) => {
             // Search errors in the response.
             response.forEach((entry) => {
-                if (entry.noteid === -1 && entry.errormessage && errors.indexOf(entry.errormessage) == -1) {
+                if (entry.noteid === -1 && entry.errormessage && !errors.includes(entry.errormessage)) {
                     errors.push(entry.errormessage);
                 }
             });

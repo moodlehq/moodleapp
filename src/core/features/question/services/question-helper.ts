@@ -372,7 +372,7 @@ export class CoreQuestionHelperProvider {
             const name = element.name || '';
 
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON') {
                 return;
             }
 
@@ -401,7 +401,7 @@ export class CoreQuestionHelperProvider {
             const name = element.name || element.getAttribute('ng-reflect-name') || '';
 
             // Ignore flag and submit inputs.
-            if (!name || name.match(/_:flagged$/) || element.type == 'submit' || element.tagName == 'BUTTON') {
+            if (!name || name.match(/_:flagged$/) || element.type === 'submit' || element.tagName === 'BUTTON') {
                 return;
             }
 
@@ -411,9 +411,9 @@ export class CoreQuestionHelperProvider {
             }
 
             // Get the value.
-            if (element.type == 'checkbox') {
+            if (element.type === 'checkbox') {
                 answers[name] = !!element.checked;
-            } else if (element.type == 'radio') {
+            } else if (element.type === 'radio') {
                 if (element.checked) {
                     answers[name] = element.value;
                 }
@@ -561,12 +561,12 @@ export class CoreQuestionHelperProvider {
             return false;
         }
 
-        if (url.slice(-1) != '/') {
+        if (url.slice(-1) !== '/') {
             url = url += '/';
         }
         url += 'draftfile.php';
 
-        return html.indexOf(url) != -1;
+        return html.includes(url);
     }
 
     /**
@@ -699,7 +699,7 @@ export class CoreQuestionHelperProvider {
                 return;
             }
 
-            if (CoreUrl.isThemeImageUrl(fileUrl) && fileUrl.indexOf('flagged') > -1) {
+            if (CoreUrl.isThemeImageUrl(fileUrl) && fileUrl.includes('flagged')) {
                 // Ignore flag images.
                 return;
             }
@@ -911,13 +911,13 @@ export class CoreQuestionHelperProvider {
             const incorrectIcon = this.getIncorrectIcon();
             const partiallyCorrectIcon = this.getPartiallyCorrectIcon();
             if ('src' in icon) {
-                if ((icon as HTMLImageElement).src.indexOf('grade_partiallycorrect') >= 0) {
+                if ((icon as HTMLImageElement).src.includes('grade_partiallycorrect')) {
                     iconData = partiallyCorrectIcon;
                     color = CoreIonicColorNames.WARNING;
-                } else if ((icon as HTMLImageElement).src.indexOf('incorrect') >= 0 ) {
+                } else if ((icon as HTMLImageElement).src.includes('incorrect') ) {
                     iconData = incorrectIcon;
                     color = CoreIonicColorNames.DANGER;
-                } else if((icon as HTMLImageElement).src.indexOf('correct') >= 0) {
+                } else if((icon as HTMLImageElement).src.includes('correct')) {
                     iconData = correctIcon;
                     color = CoreIonicColorNames.SUCCESS;
                 }

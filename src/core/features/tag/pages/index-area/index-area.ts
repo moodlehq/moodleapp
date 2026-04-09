@@ -78,7 +78,7 @@ export default class CoreTagIndexAreaPage implements OnInit {
             this.canLoadMore = CoreNavigator.getRouteBooleanParam('canLoadMore') || false;
 
             try {
-                if (!this.componentName || !this.itemType || !this.items.length || this.nextPage == 0) {
+                if (!this.componentName || !this.itemType || !this.items.length || this.nextPage === 0) {
                     await this.fetchData(true);
                 }
 
@@ -120,7 +120,7 @@ export default class CoreTagIndexAreaPage implements OnInit {
                 throw Translate.instant('core.tag.errorareanotsupported');
             }
 
-            if (page == 0) {
+            if (page === 0) {
                 this.items = items;
             } else {
                 this.items.push(...items);

@@ -244,7 +244,7 @@ export default class CoreSettingsDeviceInfoPage {
         clearTimeout(this.devOptionsClickTimeout);
         this.devOptionsClickCounter++;
 
-        if (this.devOptionsClickCounter == 5) {
+        if (this.devOptionsClickCounter === 5) {
             if (!this.showDevOptions) {
                 this.showDevOptions = true;
                 await CoreConfig.set(CoreSettingsDeviceInfoPage.SHOW_DEV_OPTIONS, 1);

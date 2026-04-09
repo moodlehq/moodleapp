@@ -53,15 +53,15 @@ export class AddonModChatHelperProvider {
         formattedMessage.message = formattedMessage.message.trim();
 
         formattedMessage.showDate = this.showDate(message, prevMessage);
-        formattedMessage.beep = (message.message.substring(0, 5) == 'beep ' && message.message.substring(5).trim()) || undefined;
+        formattedMessage.beep = (message.message.substring(0, 5) === 'beep ' && message.message.substring(5).trim()) || undefined;
         if (formattedMessage.beep && !isNaN(Number(formattedMessage.beep))) {
             formattedMessage.beep = Number(formattedMessage.beep);
         }
 
-        formattedMessage.special = !!formattedMessage.beep || (<AddonModChatSessionMessage> message).issystem ||
-            (<AddonModChatMessage> message).system;
+        formattedMessage.special = !!formattedMessage.beep || (<AddonModChatSessionMessage>message).issystem ||
+            (<AddonModChatMessage>message).system;
 
-        if (formattedMessage.message.substring(0, 4) == '/me ') {
+        if (formattedMessage.message.substring(0, 4) === '/me ') {
             formattedMessage.special = true;
             formattedMessage.message = formattedMessage.message.substring(4).trim();
         }

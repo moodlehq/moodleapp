@@ -174,7 +174,7 @@ export class CoreQuestionBaseHandler implements CoreQuestionHandler {
      * @returns Whether sequencecheck is valid.
      */
     validateSequenceCheck(question: CoreQuestionQuestionParsed, offlineSequenceCheck: string): boolean {
-        return question.sequencecheck == Number(offlineSequenceCheck);
+        return question.sequencecheck === Number(offlineSequenceCheck);
     }
 
 }

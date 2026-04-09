@@ -30,7 +30,7 @@ export class AddonModScormPluginFileHandlerService implements CorePluginFileHand
      */
     getComponentRevisionRegExp(args: string[]): RegExp | undefined {
         // Check filearea.
-        if (args[2] == 'content') {
+        if (args[2] === 'content') {
             // Component + Filearea + Revision
             return new RegExp('/mod_scorm/content/([0-9]+)/');
         }

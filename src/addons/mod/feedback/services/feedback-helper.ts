@@ -286,10 +286,10 @@ export class AddonModFeedbackHelperProvider {
 
         const type = parseInt(formItem.presentation, 10);
 
-        if (type == MODE_COURSE || type == MODE_CATEGORY) {
+        if (type === MODE_COURSE || type === MODE_CATEGORY) {
             formItem.presentation = formItem.otherdata;
             formItem.value = formItem.rawValue !== undefined ? formItem.rawValue : formItem.otherdata;
-        } else if (type == MODE_RESPONSETIME) {
+        } else if (type === MODE_RESPONSETIME) {
             formItem.value = '__CURRENT__TIMESTAMP__';
 
             const rawValue = Number(formItem.rawValue);
@@ -388,13 +388,13 @@ export class AddonModFeedbackHelperProvider {
         const choices = formItem.presentation.split(ADDON_MOD_FEEDBACK_LINE_SEP) || [];
         formItem.choices = choices.map((choice, index) => {
             const weightValue = choice.split(ADDON_MOD_FEEDBACK_MULTICHOICERATED_VALUE_SEP) || [''];
-            choice = weightValue.length == 1 ? weightValue[0] : `(${weightValue[0]}) ${weightValue[1]}`;
+            choice = weightValue.length === 1 ? weightValue[0] : `(${weightValue[0]}) ${weightValue[1]}`;
 
             return { value: index + 1, label: choice };
         });
 
         if (formItem.subtype === AddonModFeedbackMultichoiceSubtype.RADIO &&
-            formItem.options.search(ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT) == -1) {
+            !formItem.options.includes(ADDON_MOD_FEEDBACK_MULTICHOICE_HIDENOSELECT)) {
             formItem.choices.unshift({ value: 0, label: Translate.instant('addon.mod_feedback.not_selected') });
             formItem.value = formItem.rawValue !== undefined ? Number(formItem.rawValue) : 0;
         } else if (formItem.subtype === AddonModFeedbackMultichoiceSubtype.DROPDOWN) {
@@ -406,7 +406,7 @@ export class AddonModFeedbackHelperProvider {
                 const values = formItem.rawValue.split(ADDON_MOD_FEEDBACK_LINE_SEP);
                 formItem.choices.forEach((choice) => {
                     for (const x in values) {
-                        if (choice.value == Number(values[x])) {
+                        if (choice.value === Number(values[x])) {
                             choice.checked = true;
 
                             return;

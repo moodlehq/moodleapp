@@ -117,19 +117,19 @@ export class CoreH5PContentValidator {
             let tags = ['div', 'span', 'p', 'br'].concat(semantics.tags);
 
             // Add related tags for table etc.
-            if (tags.indexOf('table') != -1) {
+            if (tags.includes('table')) {
                 tags = tags.concat(['tr', 'td', 'th', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'figure', 'figcaption']);
             }
-            if (tags.indexOf('b') != -1) {
+            if (tags.includes('b')) {
                 tags.push('strong');
             }
-            if (tags.indexOf('i') != -1) {
+            if (tags.includes('i')) {
                 tags.push('em');
             }
-            if (tags.indexOf('ul') != -1 || tags.indexOf('ol') != -1) {
+            if (tags.includes('ul') || tags.includes('ol')) {
                 tags.push('li');
             }
-            if (tags.indexOf('del') != -1 || tags.indexOf('strike') != -1) {
+            if (tags.includes('del') || tags.includes('strike')) {
                 tags.push('s');
             }
 
@@ -162,7 +162,7 @@ export class CoreH5PContentValidator {
             }
 
             // Allow styling of tables if they are allowed
-            if (semantics.tags?.indexOf('table') != -1) {
+            if (semantics.tags?.includes('table')) {
                 // CKEditor outputs border as width style color
                 // eslint-disable-next-line @stylistic/max-len
                 stylePatterns.push(/^border: *[0-9.]+(em|px|%|) *(none|solid|dotted|dashed|double|groove|ridge|inset|outset) *(#[a-f0-9]{3}[a-f0-9]{3}?|rgba?\([0-9, ]+\)|hsla?\([0-9,.% ]+\)) *;?$/i);
@@ -276,7 +276,7 @@ export class CoreH5PContentValidator {
 
             semantics.options.forEach((option: OptionSemantics) => {
                 // Support optgroup - just flatten options into one.
-                if (option.type == 'optgroup') {
+                if (option.type === 'optgroup') {
                     option.options?.forEach((subOption) => {
                         options[subOption.value || ''] = true;
                     });
@@ -511,7 +511,7 @@ export class CoreH5PContentValidator {
         // Groups with just one field are compressed in the editor to only output the child content.
         const isSubContent = semantics.isSubContent === true;
 
-        if (semantics.fields.length == 1 && flatten && !isSubContent) {
+        if (semantics.fields.length === 1 && flatten && !isSubContent) {
             const field = semantics.fields[0];
             const validateFunction = this[this.typeMap[field.type || '']].bind(this);
 
@@ -521,7 +521,7 @@ export class CoreH5PContentValidator {
 
             for (const key in groupObject) {
                 // If subContentId is set, keep value
-                if (isSubContent && key == 'subContentId') {
+                if (isSubContent && key === 'subContentId') {
                     continue;
                 }
 
@@ -625,7 +625,7 @@ export class CoreH5PContentValidator {
      */
     filterParams(params: Record<string, unknown>, allowlist: string[]): void {
         for (const key in params) {
-            if (allowlist.indexOf(key) == -1) {
+            if (!allowlist.includes(key)) {
                 delete params[key];
             }
         }
@@ -694,10 +694,10 @@ export class CoreH5PContentValidator {
 
         const tag = tags[0];
 
-        if (tag.substring(0, 1) != '<') {
+        if (tag.charAt(0) !== '<') {
             // We matched a lone ">" character.
             return '&gt;';
-        } else if (tag.length == 1) {
+        } else if (tag.length === 1) {
             // We matched a lone "<" character.
             return '&lt;';
         }
@@ -737,7 +737,7 @@ export class CoreH5PContentValidator {
         // Clean up attributes.
         let attr2 = this.filterXssAttributes(
             newAttrList,
-            ALLOWED_STYLEABLE_TAGS.indexOf(elem) != -1 ? this.allowedStyles : undefined,
+            ALLOWED_STYLEABLE_TAGS.includes(elem) ? this.allowedStyles : undefined,
         ).join(' ');
         attr2 = attr2.replace(/[<>]/g, '');
         attr2 = attr2.length ? ` ${attr2}` : '';
@@ -758,7 +758,7 @@ export class CoreH5PContentValidator {
         let attrName = '';
         let skip = false;
 
-        while (attr.length != 0) {
+        while (attr.length !== 0) {
             // Was the last operation successful?
             let working = 0;
             let matches: RegExpMatchArray | null = null;
@@ -770,7 +770,7 @@ export class CoreH5PContentValidator {
                     matches = attr.match(/^([-a-zA-Z]+)/);
                     if (matches && matches.length > 1) {
                         attrName = matches[1].toLowerCase();
-                        skip = attrName == 'style' || attrName.substring(0, 2) == 'on' || attrName.substring(0, 1) == '-' ||
+                        skip = attrName === 'style' || attrName.substring(0, 2) === 'on' || attrName.charAt(0) === '-' ||
                                 attrName.length > 96; // Ignore long attributes to avoid unnecessary processing overhead.
                         working = mode = 1;
                         attr = attr.replace(/^[-a-zA-Z]+/, '');
@@ -865,7 +865,7 @@ export class CoreH5PContentValidator {
                 default:
             }
 
-            if (working == 0) {
+            if (working === 0) {
                 // Not well formed; remove and try again.
                 attr = attr.replace(/^("[^"]*("|$)|'[^']*('|$)||\S)*\s*/, '');
                 mode = 0;
@@ -873,7 +873,7 @@ export class CoreH5PContentValidator {
         }
 
         // The attribute list ends with a valueless attribute like "selected".
-        if (mode == 1 && !skip) {
+        if (mode === 1 && !skip) {
             attrArray.push(attrName);
         }
 

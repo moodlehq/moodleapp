@@ -71,7 +71,7 @@ export class CoreSharedFilesHelperProvider {
         });
 
         CoreEvents.on(CoreEvents.APP_LAUNCHED_URL, (data) => {
-            if (data.url.indexOf('file://') === 0) {
+            if (data.url.startsWith('file://')) {
                 // We received a file in iOS, it's probably a shared file. Treat it.
                 lastCheck = Date.now();
                 this.searchIOSNewSharedFiles(data.url);
@@ -227,7 +227,7 @@ export class CoreSharedFilesHelperProvider {
                 CoreAlerts.showError(Translate.instant('core.sharedfiles.errorreceivefilenosites'));
 
                 return this.removeSharedFile(fileEntry, !path);
-            } else if (siteIds.length == 1) {
+            } else if (siteIds.length === 1) {
                 return this.storeSharedFileInSite(fileEntry, siteIds[0], !path);
             } else if (!this.isChoosingSite()) {
                 this.goToChooseSite(CoreFile.getFileEntryURL(fileEntry), !path);

@@ -50,10 +50,10 @@ export class CoreWSError extends CoreError {
         return !!error && (
             error.warningcode !== undefined ||
             (
-                error.errorcode !== undefined && error.errorcode != 'userdeleted' && error.errorcode != 'upgraderunning' &&
-                error.errorcode != 'forcepasswordchangenotice' && error.errorcode != 'usernotfullysetup' &&
-                error.errorcode != 'sitepolicynotagreed' && error.errorcode != 'sitemaintenance' &&
-                error.errorcode != 'wsaccessusersuspended' && error.errorcode != 'wsaccessuserdeleted' &&
+                error.errorcode !== undefined && error.errorcode !== 'userdeleted' && error.errorcode !== 'upgraderunning' &&
+                error.errorcode !== 'forcepasswordchangenotice' && error.errorcode !== 'usernotfullysetup' &&
+                error.errorcode !== 'sitepolicynotagreed' && error.errorcode !== 'sitemaintenance' &&
+                error.errorcode !== 'wsaccessusersuspended' && error.errorcode !== 'wsaccessuserdeleted' &&
                 !this.isExpiredTokenError(error)
             ) ||
             !!error.status && error.status >= 400 // CoreHttpError, assume status 400 and above are like WebService errors.

@@ -150,7 +150,7 @@ export class AddonModLessonPrefetchHandlerService extends CoreCourseActivityPref
 
         // It's downloadable if there are no prevent access reasons or there is just 1 and it's password.
         return !accessInfo.preventaccessreasons.length ||
-            (accessInfo.preventaccessreasons.length == 1 && AddonModLesson.isPasswordProtected(accessInfo));
+            (accessInfo.preventaccessreasons.length === 1 && AddonModLesson.isPasswordProtected(accessInfo));
     }
 
     /**

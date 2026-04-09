@@ -804,7 +804,7 @@ export default class AddonModQuizPlayerPage implements OnInit, OnDestroy, CanLea
                 this.offline,
             );
         } catch (error) {
-            if (!error || error.errorcode != 'submissionoutofsequencefriendlymessage') {
+            if (!error || error.errorcode !== 'submissionoutofsequencefriendlymessage') {
                 throw error;
             }
 

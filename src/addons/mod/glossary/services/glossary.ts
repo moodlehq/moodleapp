@@ -604,7 +604,7 @@ export class AddonModGlossaryProvider {
             siteId: options.siteId,
         });
 
-        const entry = result.entries.find(entry => entry.id == entryId);
+        const entry = result.entries.find(entry => entry.id === entryId);
 
         if (entry) {
             // Entry found, return it.
@@ -1011,7 +1011,7 @@ export class AddonModGlossaryProvider {
             });
 
             // Check if there's any entry with the same concept.
-            return entries.some((entry) => entry.concept == concept);
+            return entries.some((entry) => entry.concept === concept);
         } catch {
             // Error, assume not used.
             return false;

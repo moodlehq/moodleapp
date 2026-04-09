@@ -448,7 +448,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
         // Load the SCO source.
         this.src = await AddonModScorm.getScoSrc(this.scorm, sco);
 
-        if (sco.scormtype == 'asset') {
+        if (sco.scormtype === 'asset') {
             // Mark the asset as completed.
             this.markCompleted(sco);
         }
@@ -484,7 +484,7 @@ export default class AddonModScormPlayerPage implements OnInit, OnDestroy {
                 cmId: this.cmId,
             });
 
-            if (data[sco.id] && data[sco.id].userdata['cmi.core.lesson_status'] == 'completed') {
+            if (data[sco.id] && data[sco.id].userdata['cmi.core.lesson_status'] === 'completed') {
                 // Already marked as completed.
                 return;
             }
