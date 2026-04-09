@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSiteSchema } from '@services/sites';
-import { AddonCalendarEventType } from '@addons/calendar/constants';
+import { AddonCalendarEventDuration, AddonCalendarEventType } from '@addons/calendar/constants';
 
 /**
  * Database variables for AddonDatabaseOffline service.
@@ -146,7 +146,7 @@ export type AddonCalendarOfflineEventDBRecord = {
     groupid?: number;
     description?: string;
     location?: string;
-    duration?: number;
+    duration?: AddonCalendarEventDuration;
     timedurationuntil?: number;
     timedurationminutes?: number;
     repeat?: number;

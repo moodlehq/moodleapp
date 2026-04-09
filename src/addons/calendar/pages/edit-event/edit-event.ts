@@ -46,6 +46,7 @@ import {
     ADDON_CALENDAR_EDIT_EVENT_EVENT,
     ADDON_CALENDAR_NEW_EVENT_EVENT,
     ADDON_CALENDAR_SYNC_ID,
+    AddonCalendarEventDuration,
     AddonCalendarEventType,
 } from '@addons/calendar/constants';
 import { ContextLevel } from '@/core/constants';
@@ -126,7 +127,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         this.form.addControl('groupid', this.groupControl);
         this.form.addControl('description', this.descriptionControl);
         this.form.addControl('location', this.fb.control(''));
-        this.form.addControl('duration', this.fb.control(0));
+        this.form.addControl('duration', this.fb.control(AddonCalendarEventDuration.NONE));
         this.form.addControl('timedurationminutes', this.fb.control(''));
         this.form.addControl('repeat', this.fb.control(false));
         this.form.addControl('repeats', this.fb.control({ value: '1', disabled: true }));
@@ -280,7 +281,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         // Get the courses.
         let courses = await (this.showAll ? CoreCourses.getCoursesByField() : CoreCourses.getUserCourses());
 
-        if (courses.length < 0) {
+        if (courses.length <= 0) {
             this.courses = [];
 
             return;
@@ -367,13 +368,13 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             // Online event, we'll have to calculate the data.
 
             if (onlineEvent.timeduration > 0) {
-                this.form.controls.duration.setValue(1);
+                this.form.controls.duration.setValue(AddonCalendarEventDuration.UNTIL);
                 this.form.controls.timedurationuntil.setValue(CoreTime.toDatetimeFormat(
                     (onlineEvent.timestart + onlineEvent.timeduration) * 1000,
                 ));
             } else {
                 // No duration.
-                this.form.controls.duration.setValue(0);
+                this.form.controls.duration.setValue(AddonCalendarEventDuration.NONE);
                 this.form.controls.timedurationuntil.setValue(CoreTime.toDatetimeFormat());
             }
 
@@ -457,10 +458,6 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         }
     }
 
-    selectDuration(duration: string): void {
-        this.form.controls.duration.setValue(duration);
-    }
-
     /**
      * Create the event.
      */
@@ -480,9 +477,10 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             error = 'core.selectagroup';
         } else if (formData.eventtype === AddonCalendarEventType.CATEGORY && !formData.categoryid) {
             error = 'core.selectacategory';
-        } else if (formData.duration === 1 && timeStartDate > timeUntilDate) {
+        } else if (formData.duration === AddonCalendarEventDuration.UNTIL && timeStartDate > timeUntilDate) {
             error = 'addon.calendar.invalidtimedurationuntil';
-        } else if (formData.duration === 2 && (isNaN(timeDurationMinutes) || timeDurationMinutes < 1)) {
+        } else if (formData.duration === AddonCalendarEventDuration.MINUTES &&
+            (isNaN(timeDurationMinutes) || timeDurationMinutes < 1)) {
             error = 'addon.calendar.invalidtimedurationminutes';
         }
 
@@ -517,9 +515,9 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
             data.categoryid = formData.categoryid;
         }
 
-        if (formData.duration == 1) {
+        if (formData.duration === AddonCalendarEventDuration.UNTIL) {
             data.timedurationuntil = timeUntilDate;
-        } else if (formData.duration == 2) {
+        } else if (formData.duration === AddonCalendarEventDuration.MINUTES) {
             data.timedurationminutes = formData.timedurationminutes;
         }
 

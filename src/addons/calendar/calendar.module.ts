@@ -74,7 +74,9 @@ const mainMenuChildrenRoutes: Routes = [
 
             await AddonCalendar.initialize();
 
-            AddonCalendar.updateAllSitesEventReminders();
+            AddonCalendar.updateAllSitesEventReminders().catch(() => {
+                // Ignore errors.
+            });
         }),
     ],
 })
