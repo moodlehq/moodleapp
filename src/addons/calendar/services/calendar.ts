@@ -1369,7 +1369,7 @@ export class AddonCalendarProvider {
 
         const siteIds = await CoreSites.getSitesIds();
 
-        await Promise.all(siteIds.map(siteId => this.pruneAndUpdateSiteEventReminders(siteId)));
+        await CorePromiseUtils.allPromisesIgnoringErrors(siteIds.map(siteId => this.pruneAndUpdateSiteEventReminders(siteId)));
     }
 
     /**

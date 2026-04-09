@@ -487,27 +487,27 @@ export class AddonCalendarHelperProvider {
         }
 
         // Check the fields that don't depend on any other.
-        if (data.name != original.name || data.timestart != original.timestart || data.eventtype != original.eventtype ||
-                data.description != original.description || data.location != original.location ||
-                data.duration != original.duration || data.repeat != original.repeat) {
+        if (data.name !== original.name || data.timestart !== original.timestart || data.eventtype !== original.eventtype ||
+                data.description !== original.description || data.location !== original.location ||
+                data.duration !== original.duration || data.repeat !== original.repeat) {
             return true;
         }
 
         // Check data that depends on eventtype.
-        if ((data.eventtype == AddonCalendarEventType.CATEGORY && data.categoryid != original.categoryid) ||
-                (data.eventtype == AddonCalendarEventType.COURSE && data.courseid != original.courseid) ||
-                (data.eventtype == AddonCalendarEventType.GROUP && data.groupcourseid != original.groupcourseid &&
-                    data.groupid != original.groupid)) {
+        if ((data.eventtype === AddonCalendarEventType.CATEGORY && data.categoryid !== original.categoryid) ||
+                (data.eventtype === AddonCalendarEventType.COURSE && data.courseid !== original.courseid) ||
+                (data.eventtype === AddonCalendarEventType.GROUP && (data.groupcourseid !== original.groupcourseid ||
+                    data.groupid !== original.groupid))) {
             return true;
         }
 
         // Check data that depends on duration.
-        if ((data.duration == 1 && data.timedurationuntil != original.timedurationuntil) ||
-                (data.duration == 2 && data.timedurationminutes != original.timedurationminutes)) {
+        if ((data.duration === 1 && data.timedurationuntil !== original.timedurationuntil) ||
+                (data.duration === 2 && data.timedurationminutes !== original.timedurationminutes)) {
             return true;
         }
 
-        if (data.repeat && data.repeats != original.repeats) {
+        if (data.repeat && data.repeats !== original.repeats) {
             return true;
         }
 

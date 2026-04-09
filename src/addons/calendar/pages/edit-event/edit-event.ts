@@ -280,7 +280,7 @@ export default class AddonCalendarEditEventPage implements OnInit, OnDestroy, Ca
         // Get the courses.
         let courses = await (this.showAll ? CoreCourses.getCoursesByField() : CoreCourses.getUserCourses());
 
-        if (courses.length < 0) {
+        if (courses.length <= 0) {
             this.courses = [];
 
             return;
