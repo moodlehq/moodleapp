@@ -42,6 +42,7 @@ import {
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '@features/mainmenu/components/user-menu-button/user-menu-button';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays the calendar events.
@@ -74,6 +75,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
     protected manualSyncObserver?: CoreEventObserver;
     protected filterChangedObserver?: CoreEventObserver;
     protected route = inject(ActivatedRoute);
+    protected routeSubscription?: Subscription;
 
     year?: number;
     month?: number;
@@ -172,7 +174,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.loadUpcoming = !!CoreNavigator.getRouteBooleanParam('upcoming');
         this.showCalendar = !this.loadUpcoming;
 
-        this.route.queryParams.subscribe(async () => {
+        this.routeSubscription = this.route.queryParams.subscribe(() => {
             this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
             this.year = CoreNavigator.getRouteNumberParam('year');
             this.month = CoreNavigator.getRouteNumberParam('month');
@@ -412,6 +414,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
         this.syncObserver?.off();
         this.manualSyncObserver?.off();
         this.filterChangedObserver?.off();
+        this.routeSubscription?.unsubscribe();
     }
 
 }

@@ -128,6 +128,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
     protected updateConversationListObserver: CoreEventObserver;
     protected contactRequestsCountObserver: CoreEventObserver;
     protected memberInfoObserver: CoreEventObserver;
+    protected routeSubscription?: Subscription;
     protected firstExpand = false;
     protected route = inject(ActivatedRoute);
 
@@ -314,7 +315,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.route.queryParams.subscribe(async () => {
+        this.routeSubscription = this.route.queryParams.subscribe(() => {
             // When a child page loads this callback is triggered too.
             const conversationId = CoreNavigator.getRouteNumberParam('conversationId');
             const userId = CoreNavigator.getRouteNumberParam('userId');
@@ -847,6 +848,7 @@ export default class AddonMessagesGroupConversationsPage implements OnInit, OnDe
         this.updateConversationListObserver?.off();
         this.contactRequestsCountObserver?.off();
         this.memberInfoObserver?.off();
+        this.routeSubscription?.unsubscribe();
     }
 
 }

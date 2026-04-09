@@ -70,6 +70,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
     protected updateSiteObserver: CoreEventObserver;
     protected blockSubscription: Subscription;
+    protected routeSubscription?: Subscription;
     protected logView: () => void;
     protected route = inject(ActivatedRoute);
 
@@ -118,7 +119,9 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
 
         this.openFocusedInstance();
 
-        this.route.queryParams.subscribe(() => this.openFocusedInstance());
+        this.routeSubscription = this.route.queryParams.subscribe(() => {
+            CorePromiseUtils.ignoreErrors(this.openFocusedInstance());
+        });
     }
 
     /**
@@ -249,6 +252,7 @@ export default class CoreSiteHomeIndexPage implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.updateSiteObserver.off();
         this.blockSubscription.unsubscribe();
+        this.routeSubscription?.unsubscribe();
     }
 
     /**
