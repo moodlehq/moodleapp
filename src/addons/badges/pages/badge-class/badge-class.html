@@ -74,12 +74,13 @@
                             <h2>{{ 'addon.badges.alignment' | translate}}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item class="ion-text-wrap" *ngFor="let alignment of badgeToShow.alignment" [href]="alignment.targetUrl" core-link
-                        [autoLogin]="false">
-                        <ion-label>
-                            <p class="item-heading">{{ alignment.targetName }}</p>
-                        </ion-label>
-                    </ion-item>
+                    @for (alignment of badgeToShow.alignment; track alignment.targetUrl) {
+                        <ion-item class="ion-text-wrap" [href]="alignment.targetUrl" core-link [autoLogin]="false">
+                            <ion-label>
+                                <p class="item-heading">{{ alignment.targetName }}</p>
+                            </ion-label>
+                        </ion-item>
+                    }
                 </ion-item-group>
             }
         }

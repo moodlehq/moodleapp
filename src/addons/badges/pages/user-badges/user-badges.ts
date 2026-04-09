@@ -58,7 +58,7 @@ export default class AddonBadgesUserBadgesPage implements AfterViewInit, OnDestr
         }
 
         this.badges = signal(new CoreListItemsManager(
-            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.   userId]),
+            CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(AddonBadgesUserBadgesSource, [this.courseId, this.userId]),
             AddonBadgesUserBadgesPage,
         ));
 
