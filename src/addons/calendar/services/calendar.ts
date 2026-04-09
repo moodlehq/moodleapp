@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreSites, CoreSitesCommonWSOptions, CoreSitesWSOptionsWithFilter } from '@services/sites';
+import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreNetwork } from '@services/network';
 import { CoreText, CoreTextFormat } from '@static/text';
@@ -872,17 +872,14 @@ export class AddonCalendarProvider {
     }
 
     /**
-     * Get the events in a certain period. The period is calculated like this:
-     *     start time: now + daysToStart
-     *     end time: start time + daysInterval
-     * E.g. using provider.getEventsList(undefined, 30, 30) is going to get the events starting after 30 days from now
-     * and ending before 60 days from now.
+     * Get the events in a certain interval.
      *
      * @param initialTime Timestamp when the first fetch was done. If not defined, current time.
      * @param daysToStart Number of days from now to start getting events.
      * @param daysInterval Number of days between timestart and timeend.
      * @param siteId Site to get the events from. If not defined, use current site.
-     * @returns Promise to be resolved when the events are retrieved.
+     * @returns The events retrieved.
+     * @deprecated since 5.2. Use the getEventsListInterval function instead.
      */
     async getEventsList(
         initialTime?: number,
@@ -890,11 +887,37 @@ export class AddonCalendarProvider {
         daysInterval: number = ADDON_CALENDAR_DAYS_INTERVAL,
         siteId?: string,
     ): Promise<AddonCalendarGetEventsEvent[]> {
+        return this.getEventsListInterval({ initialTime, daysToStart, daysInterval }, { siteId });
+    }
 
-        initialTime = initialTime || CoreTime.timestamp();
+    /**
+     * Get the events in a certain interval. The interval is calculated like this:
+     *     start time: now + daysToStart
+     *     end time: start time + daysInterval
+     * E.g. using initialTime undefined, daysToStart 30, daysInterval 30 is going to get the events starting after 30 days from now
+     * and ending before 60 days from now.
+     *
+     * @param options Options for the function with WS common options.
+     * @param options.initialTime Timestamp when the first fetch was done. If not defined, current time.
+     * @param options.daysToStart Number of days from now to start getting events.
+     * @param options.daysInterval Number of days between timestart and timeend.
+     * @param options.siteId Site to get the events from. If not defined, use current site.
+     * @param options.readingStrategy Reading strategy to use when retrieving data.
+     * @returns The events retrieved.
+     */
+    async getEventsListInterval(
+        options: {
+            initialTime?: number;
+            daysToStart?: number;
+            daysInterval?: number;
+        } & CoreSitesCommonWSOptions = {},
+    ): Promise<AddonCalendarGetEventsEvent[]> {
+        const initialTime = options.initialTime ?? CoreTime.timestamp();
+        const daysToStart = options.daysToStart ?? 0;
+        const daysInterval = options.daysInterval ?? ADDON_CALENDAR_DAYS_INTERVAL;
 
-        const site = await CoreSites.getSite(siteId);
-        siteId = site.getId();
+        const site = await CoreSites.getSite(options.siteId);
+        const siteId = site.getId();
 
         const start = initialTime + (CoreTimeConstants.SECONDS_DAY * daysToStart);
         const end = start + (CoreTimeConstants.SECONDS_DAY * daysInterval) - 1;
@@ -910,7 +933,7 @@ export class AddonCalendarProvider {
                 timestart: start,
                 timeend: end,
             },
-            events: events,
+            events,
         };
 
         const promises: Promise<void>[] = [];
@@ -936,6 +959,7 @@ export class AddonCalendarProvider {
             getCacheUsingCacheKey: true,
             uniqueCacheKey: true,
             updateFrequency: CoreCacheUpdateFrequency.SOMETIMES,
+            ...CoreSites.getReadingStrategyPreSets(options.readingStrategy),
         };
         const response =
             await site.read<AddonCalendarGetCalendarEventsWSResponse>('core_calendar_get_calendar_events', params, preSets);
@@ -1414,29 +1438,34 @@ export class AddonCalendarProvider {
         }
 
         // Get events that may be stored (from now to 30 days ahead).
-        const events = await this.getEventsList(undefined, undefined, undefined, siteId);
+        const eventsOptions: CoreSitesCommonWSOptions = { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK };
+        try {
+            const events = await this.getEventsListInterval(undefined, eventsOptions);
 
-        // Get stored events that are not in the new list to remove them later.
-        const eventsToCheck = storedEvents.filter((storedEvent) => !events.some((event) => event.id === storedEvent.id));
-        if (!eventsToCheck.length) {
-            return;
-        }
-
-        await Promise.all(eventsToCheck.map(async (storedEvent) => {
-            try {
-                // Usually deleted online events, check if they exist and update information if they do.
-                // If they don't exist, delete them.
-                const onlineEvent = await this.getEventOnline(storedEvent.id, siteId);
-
-                if (onlineEvent) {
-                    await this.storeEventInLocalDb(onlineEvent, { siteId });
-                } else {
-                    await this.deleteLocalEvent(storedEvent.id, siteId);
-                }
-            } catch {
-                // If there was an error retrieving the event, keep it in local to avoid data loss.
+            // Get stored events that are not in the new list to remove them later.
+            const eventsToCheck = storedEvents.filter((storedEvent) => !events.some((event) => event.id === storedEvent.id));
+            if (!eventsToCheck.length) {
+                return;
             }
-        }));
+
+            await Promise.all(eventsToCheck.map(async (storedEvent) => {
+                try {
+                    // Usually deleted online events, check if they exist and update information if they do.
+                    // If they don't exist, delete them.
+                    const onlineEvent = await this.getEventOnline(storedEvent.id, siteId);
+
+                    if (onlineEvent) {
+                        await this.storeEventInLocalDb(onlineEvent, { siteId });
+                    } else {
+                        await this.deleteLocalEvent(storedEvent.id, siteId);
+                    }
+                } catch {
+                    // If there was an error retrieving the event, keep it in local to avoid data loss.
+                }
+            }));
+        } catch {
+            // If there was an error retrieving the events, keep stored events in local to avoid data loss.
+        }
     }
 
     /**
