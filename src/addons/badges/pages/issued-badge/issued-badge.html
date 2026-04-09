@@ -25,11 +25,12 @@
                     @if (badgeToShow.badgeurl) {
                         <div class="badge-image-container">
                             <img [url]="badgeToShow.badgeurl" core-external-content [alt]="badgeToShow.name" class="badge-image" />
+
                             @if (badgeToShow.dateexpire && currentTime() >= badgeToShow.dateexpire) {
-                                <span class="expireimage">
-                                    <img src="assets/img/expired.svg" alt="{{ 'addon.badges.expireddate' | translate:
-                                        {$a: (badgeToShow.dateexpire * 1000 | coreFormatDate)} }}" />
-                                </span>
+                                <ion-icon name="fas-circle-exclamation" class="expireimage" color="warning"
+                                    [title]="'addon.badges.expireddate' | translate: {$a: (badgeToShow.dateexpire * 1000 | coreFormatDate)}"
+                                    [attr.aria-label]="'addon.badges.expireddate' | translate:
+                                    {$a: (badgeToShow.dateexpire * 1000 | coreFormatDate)}" />
                             }
                         </div>
                     }

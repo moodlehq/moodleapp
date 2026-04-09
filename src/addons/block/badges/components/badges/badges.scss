@@ -25,17 +25,20 @@
                 }
 
                 .expireimage {
-                    content: 'expired';
-                    background-image: url('/assets/img/expired.svg');
-                    background-repeat: no-repeat;
-                    background-size: var(--badge-size) var(--badge-size);
-                    width: var(--badge-size);
-                    height: var(--badge-size);
                     left: calc((var(--badge-container-size) - var(--badge-size)) /2);
                     top: 0;
                     position: absolute;
-                    z-index: 2;
+                    z-index: 10;
                     opacity: .85;
+
+                    &:not(.icon) {
+                        content: 'expired';
+                        background-image: url('/assets/img/expired.svg');
+                        background-repeat: no-repeat;
+                        background-size: var(--badge-size) var(--badge-size);
+                        width: var(--badge-size);
+                        height: var(--badge-size);
+                    }
                 }
             }
         }
