@@ -70,3 +70,12 @@ export enum AddonCalendarEventType {
     GROUP = 'group',
     USER = 'user',
 }
+
+/**
+ * Event duration types enumeration.
+ */
+export enum AddonCalendarEventDuration {
+    NONE = 0,
+    UNTIL = 1,
+    MINUTES = 2,
+}

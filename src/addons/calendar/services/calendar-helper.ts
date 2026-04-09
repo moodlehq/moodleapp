@@ -38,6 +38,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import {
     ADDON_CALENDAR_COMPONENT,
     ADDON_CALENDAR_STARTING_WEEK_DAY,
+    AddonCalendarEventDuration,
     AddonCalendarEventIcons,
     AddonCalendarEventType,
 } from '../constants';
@@ -258,9 +259,9 @@ export class AddonCalendarHelperProvider {
         const courseId = event.courseid || event.groupcourseid;
         this.formatEventContext(eventFormatted, courseId, categoryId);
 
-        if (eventFormatted.duration == 1) {
+        if (eventFormatted.duration === AddonCalendarEventDuration.UNTIL) {
             eventFormatted.timeduration = (event.timedurationuntil || 0) - event.timestart;
-        } else if (eventFormatted.duration == 2) {
+        } else if (eventFormatted.duration === AddonCalendarEventDuration.MINUTES) {
             eventFormatted.timeduration = (event.timedurationminutes || 0) * CoreTimeConstants.SECONDS_MINUTE;
         } else {
             eventFormatted.timeduration = 0;
@@ -502,8 +503,8 @@ export class AddonCalendarHelperProvider {
         }
 
         // Check data that depends on duration.
-        if ((data.duration === 1 && data.timedurationuntil !== original.timedurationuntil) ||
-                (data.duration === 2 && data.timedurationminutes !== original.timedurationminutes)) {
+        if ((data.duration === AddonCalendarEventDuration.UNTIL && data.timedurationuntil !== original.timedurationuntil) ||
+            (data.duration === AddonCalendarEventDuration.MINUTES && data.timedurationminutes !== original.timedurationminutes)) {
             return true;
         }
 

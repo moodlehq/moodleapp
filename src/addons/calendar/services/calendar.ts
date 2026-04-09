@@ -54,6 +54,7 @@ import {
     ADDON_CALENDAR_PAGE_NAME,
     ADDON_CALENDAR_STARTING_WEEK_DAY,
     ADDON_CALENDAR_UNDELETED_EVENT_EVENT,
+    AddonCalendarEventDuration,
     AddonCalendarEventType,
     ADDONS_CALENDAR_MENU_FEATURE_NAME,
 } from '../constants';
@@ -887,7 +888,7 @@ export class AddonCalendarProvider {
         daysInterval: number = ADDON_CALENDAR_DAYS_INTERVAL,
         siteId?: string,
     ): Promise<AddonCalendarGetEventsEvent[]> {
-        return this.getEventsListInterval({ initialTime, daysToStart, daysInterval }, { siteId });
+        return this.getEventsListInterval({ initialTime, daysToStart, daysInterval, siteId });
     }
 
     /**
@@ -1440,7 +1441,7 @@ export class AddonCalendarProvider {
         // Get events that may be stored (from now to 30 days ahead).
         const eventsOptions: CoreSitesCommonWSOptions = { siteId, readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK };
         try {
-            const events = await this.getEventsListInterval(undefined, eventsOptions);
+            const events = await this.getEventsListInterval(eventsOptions);
 
             // Get stored events that are not in the new list to remove them later.
             const eventsToCheck = storedEvents.filter((storedEvent) => !events.some((event) => event.id === storedEvent.id));
@@ -2188,7 +2189,7 @@ export type AddonCalendarEventToDisplay = Partial<AddonCalendarCalendarEvent> & 
     iconTitle?: string;
     moduleIcon?: string; // Calculated in the app. Module icon.
     formattedType: string; // Calculated in the app. Formatted type.
-    duration?: number; // Calculated in the app. Duration of offline event.
+    duration?: AddonCalendarEventDuration; // Calculated in the app. Duration of offline event.
     format?: CoreTextFormat; // Calculated in the app. Format of offline event.
     timedurationuntil?: number; // Calculated in the app. Time duration until of offline event.
     timedurationminutes?: number; // Calculated in the app. Time duration in minutes of offline event.
