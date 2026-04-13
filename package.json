@@ -88,7 +88,6 @@
         "@moodlehq/phonegap-plugin-push": "4.0.0-moodle.13",
         "@ngx-translate/core": "17.0.0",
         "@ngx-translate/http-loader": "17.0.0",
-        "@sqlite.org/sqlite-wasm": "3.45.0-build1",
         "@stylistic/eslint-plugin": "5.10.0",
         "@types/cordova": "11.0.3",
         "@types/dom-mediacapture-record": "1.0.22",
@@ -125,6 +124,7 @@
         "ts-md5": "2.0.1",
         "tslib": "2.8.1",
         "video.js": "8.23.4",
+        "wa-sqlite": "1.0.0",
         "zone.js": "0.15.1"
     },
     "devDependencies": {

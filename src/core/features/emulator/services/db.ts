@@ -14,7 +14,7 @@
 
 import { asyncInstance } from '@/core/utils/async-instance';
 import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
-import { WasmSQLiteObject } from '@features/emulator/classes/wasm-sqlite-object';
+import { WaSQLiteObject } from '@features/emulator/classes/wa-sqlite-object';
 import { CoreDbProvider } from '@services/db';
 
 /**
@@ -27,7 +27,7 @@ export class CoreDbProviderMock extends CoreDbProvider {
      */
     protected createDatabase(name: string): SQLiteObject {
         return asyncInstance(async () => {
-            const db = new WasmSQLiteObject(name);
+            const db = new WaSQLiteObject(name);
 
             await db.open();
 
@@ -39,7 +39,7 @@ export class CoreDbProviderMock extends CoreDbProvider {
      * @inheritdoc
      */
     protected async deleteDatabase(name: string): Promise<void> {
-        const db = new WasmSQLiteObject(name);
+        const db = new WaSQLiteObject(name);
 
         await db.delete();
     }

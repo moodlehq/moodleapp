@@ -28,8 +28,7 @@ const ASSETS = {
     '/src/core/features/h5p/assets': '/lib/h5p',
     '/node_modules/ogv/dist': '/lib/ogv',
     '/node_modules/video.js/dist/video-js.min.css': '/lib/video.js/video-js.min.css',
-    '/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3.wasm': '/lib/sqlite3/sqlite3.wasm',
-    '/node_modules/@sqlite.org/sqlite-wasm/sqlite-wasm/jswasm/sqlite3-opfs-async-proxy.js': '/lib/sqlite3/sqlite3-opfs-async-proxy.js',
+    '/node_modules/wa-sqlite/dist/wa-sqlite-async.wasm': '/lib/wa-sqlite/wa-sqlite-async.wasm',
 };
 
 module.exports = function(ctx) {
