@@ -115,7 +115,7 @@
 
         &.ion-focused {
             border-color: var(--ion-background-color);
-            box-shadow: inset 0 0 0 calc(2px - var(--core-combobox-border-widthh, 0px)) var(--ion-background-color);
+            box-shadow: inset 0 0 0 calc(2px - var(--core-combobox-border-width, 0px)) var(--ion-background-color);
             outline: var(--a11y-shadow-focus-outline);
             z-index: 1;
         }
