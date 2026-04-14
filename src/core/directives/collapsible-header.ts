@@ -40,6 +40,7 @@ import { CoreWait } from '@static/wait';
 import { toBoolean } from '../transforms/boolean';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreSplitViewComponent, CoreSplitViewMode } from '@components/split-view/split-view';
+import { CoreCollapsibleFooterDirective } from './collapsible-footer';
 
 declare module '@static/events' {
 
@@ -98,6 +99,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected readonly content = signal<HTMLIonContentElement|undefined>(undefined);
     protected contentScrollListener?: EventListener;
     protected endContentScrollListener?: EventListener;
+    protected collapsibleFooter?: CoreCollapsibleFooterDirective;
 
     protected readonly forceDisabled = computed(() =>
         this.splitViewMode() === CoreSplitViewMode.MENU_AND_CONTENT ||
@@ -172,6 +174,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
         await this.initializeFloatingTitle();
         await this.initializeContent();
+        await this.initializeCollapsibleFooter();
 
         this.onReadyPromise.resolve();
     }
@@ -508,6 +511,17 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     }
 
     /**
+     * Initialize the collapsible footer directive if it exists, and wait until it's ready.
+     */
+    protected async initializeCollapsibleFooter(): Promise<void> {
+        const collapsibleElement = this.page?.querySelector('[collapsible-footer]');
+        this.collapsibleFooter = CoreDirectivesRegistry.resolve(collapsibleElement, CoreCollapsibleFooterDirective) ?? undefined;
+        if (this.collapsibleFooter) {
+            await this.collapsibleFooter.ready();
+        }
+    }
+
+    /**
      * Update content element whos scroll is being tracked.
      *
      * @param content Content element.
@@ -656,16 +670,19 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * @returns Whether the header is frozen or not.
      */
     protected isFrozen(contentScroll: HTMLElement): boolean {
-        const scrollingHeight = this.scrollingHeight ?? 0;
-        const expandedHeaderClientHeight = this.expandedHeader?.clientHeight ?? 0;
-        const expandedHeaderHeight = this.expandedHeaderHeight ?? 0;
         const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
 
         let frozen = false;
         if (this.isWithinContent) {
-            frozen = scrollableHeight <= scrollingHeight;
+            const scrollingHeight = this.scrollingHeight ?? 0;
+            const collapsibleFooterHeight = this.collapsibleFooter?.getExpandedHeight() ?? 0;
+
+            frozen = scrollableHeight - collapsibleFooterHeight <= scrollingHeight;
         } else {
+            const expandedHeaderClientHeight = this.expandedHeader?.clientHeight ?? 0;
+            const expandedHeaderHeight = this.expandedHeaderHeight ?? 0;
             const collapsedHeight = expandedHeaderHeight - (expandedHeaderClientHeight);
+
             frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
         }
 
