@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export {};
+// IDBBatchAtomicVFS ships as an untyped JS example in wa-sqlite.
+// The class implements SQLiteVFS at runtime via its base class chain;
+// we only type the static factory used in our code.
 
-declare module '@sqlite.org/sqlite-wasm' {
+declare module 'wa-sqlite/src/examples/IDBBatchAtomicVFS.js' {
 
-    export interface SqliteRowData {
-        rowId?: number;
+    export class IDBBatchAtomicVFS {
+
+        name: string;
+        constructor(idbDatabaseName?: string, options?: unknown);
+
     }
 
 }
