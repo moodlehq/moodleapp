@@ -3,7 +3,7 @@
         <h2>{{ 'addon.block_recentlyaccesseditems.pluginname' | translate }}</h2>
     </ion-label>
 </ion-item-divider>
-<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="66px" [placeholderLimit]="4">
+<core-loading [hideUntil]="loaded" placeholderType="column" placeholderHeight="66px" [placeholderLimit]="2">
     @for (item of items; track item.cmid) {
         <ion-card>
             <ion-item class="core-course-module-handler ion-text-wrap" [detail]="false" (click)="action($event, item)" button>

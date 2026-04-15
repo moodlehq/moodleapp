@@ -1,14 +1,8 @@
 @use "theme/globals" as *;
 
 :host {
-    ion-card {
-        height: auto;
-    }
-
-    .ion-text-wrap ion-label {
-        .item-heading, h2, p {
-            @include ellipsis();
-        }
+    .ion-text-wrap ion-label p {
+        @include ellipsis();
     }
 
     .core-course-module-handler {
