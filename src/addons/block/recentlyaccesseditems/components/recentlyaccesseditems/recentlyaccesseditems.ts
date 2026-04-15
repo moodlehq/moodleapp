@@ -20,7 +20,6 @@ import {
 } from '../../services/recentlyaccesseditems';
 import { CoreText } from '@static/text';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreUtils } from '@static/utils';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 
@@ -38,21 +37,8 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 export class AddonBlockRecentlyAccessedItemsComponent extends CoreBlockBaseComponent implements OnInit {
 
     items: AddonBlockRecentlyAccessedItemsItemCalculatedData[] = [];
-    scrollElementId!: string;
 
     protected fetchContentDefaultError = 'Error getting recently accessed items data.';
-
-    /**
-     * @inheritdoc
-     */
-    async ngOnInit(): Promise<void> {
-        // Generate unique id for scroll element.
-        const scrollId = CoreUtils.getUniqueId('AddonBlockRecentlyAccessedItemsComponent-Scroll');
-
-        this.scrollElementId = `addon-block-recentlyaccesseditems-scroll-${scrollId}`;
-
-        super.ngOnInit();
-    }
 
     /**
      * Perform the invalidate content function.
