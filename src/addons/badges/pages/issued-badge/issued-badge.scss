@@ -28,21 +28,11 @@
         }
 
         .expireimage {
-            content: 'expired';
-            position: absolute;
-            z-index: 2;
-            opacity: .85;
-            position: absolute;
             left: 0;
             top: 0;
-            right: 0;
-            bottom: 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: auto;
-
+            position: absolute;
+            z-index: 10;
+            opacity: .85;
         }
     }
 }

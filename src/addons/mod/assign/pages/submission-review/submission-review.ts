@@ -27,6 +27,7 @@ import { Translate } from '@singletons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ADDON_MOD_ASSIGN_MODNAME, AddonModAssignListFilterName } from '../../constants';
+import { Subscription } from 'rxjs';
 
 /**
  * Page that displays a submission.
@@ -55,6 +56,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
     protected assign?: AddonModAssignAssign; // The assignment the submission belongs to.
     protected blindMarking = false; // Whether it uses blind marking.
     protected forceLeave = false; // To allow leaving the page without checking for changes.
+    protected routeSubscription?: Subscription;
     protected logView: () => void;
     protected route = inject(ActivatedRoute);
 
@@ -84,7 +86,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
      * @inheritdoc
      */
     ngOnInit(): void {
-        this.route.queryParams.subscribe(() => {
+        this.routeSubscription = this.route.queryParams.subscribe(() => {
             try {
                 this.moduleId = CoreNavigator.getRequiredRouteNumberParam('cmId');
                 this.courseId = CoreNavigator.getRequiredRouteNumberParam('courseId');
@@ -122,6 +124,7 @@ export default class AddonModAssignSubmissionReviewPage implements OnInit, OnDes
      */
     ngOnDestroy(): void {
         this.submissions?.destroy();
+        this.routeSubscription?.unsubscribe();
     }
 
     /**

@@ -151,7 +151,7 @@ export class CoreTimerComponent implements OnInit, OnDestroy {
 
         const timerHiddenPreferenceName = this.timerHiddenPreferenceName();
         if (timerHiddenPreferenceName) {
-            CoreUserPreferences.setPreference(timerHiddenPreferenceName, this.hiddenByUser() ? '0' : '1');
+            CoreUserPreferences.setPreference(timerHiddenPreferenceName, this.hiddenByUser() ? '1' : '0');
         }
     }
 

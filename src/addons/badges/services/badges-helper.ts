@@ -32,7 +32,8 @@ export class AddonBadgesHelperProvider {
      * @returns Whether the badge can be opened in the app.
      */
     async canOpenBadge(badgeHash: string, siteId?: string): Promise<boolean> {
-        if (!AddonBadges.isPluginEnabled(siteId)) {
+        const isEnabled = await AddonBadges.isPluginEnabled(siteId);
+        if (!isEnabled) {
             return false;
         }
 

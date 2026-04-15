@@ -57,7 +57,7 @@ export class CoreContextMenuPopoverComponent {
         if (item.iconAction() === 'toggle' && !event.defaultPrevented) {
             event.preventDefault();
             event.stopPropagation();
-            item.toggle.set(!item.toggle);
+            item.toggle.set(!item.toggle());
         }
 
         if (item.actionEmitter.observed) {
