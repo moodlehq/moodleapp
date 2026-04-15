@@ -1,5 +1,3 @@
-@import "../globals";
-
 ion-tab-button.ion-focused::part(native) {
     @include core-focus-inset-outline-internal();
 }
