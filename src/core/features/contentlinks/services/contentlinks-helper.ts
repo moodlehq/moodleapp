@@ -152,10 +152,10 @@ export class CoreContentLinksHelperProvider {
 
             if (!CoreSites.isLoggedIn()) {
                 // No current site. Perform the action if only 1 site found, choose the site otherwise.
-                if (action.sites?.length == 1) {
+                if (action.sites?.length === 1) {
                     await action.action(action.sites[0]);
                 } else {
-                    this.goToChooseSite(url);
+                    void this.goToChooseSite(url);
                 }
             } else if (action.sites?.length === 1 && action.sites[0] === CoreSites.getCurrentSiteId()) {
                 // Current site.
@@ -167,7 +167,7 @@ export class CoreContentLinksHelperProvider {
                     if (action.sites?.length === 1) {
                         await action.action(action.sites[0]);
                     } else {
-                        this.goToChooseSite(url);
+                        void this.goToChooseSite(url);
                     }
                 } catch {
                     // User canceled.
@@ -199,6 +199,11 @@ export class CoreContentLinksHelperProvider {
                 await site.openInBrowserWithAutoLogin(site.getURL());
             }
 
+            return;
+        }
+
+        const canChange = await this.confirmSiteChange(site.getId());
+        if (!canChange) {
             return;
         }
 
@@ -237,6 +242,30 @@ export class CoreContentLinksHelperProvider {
             : CoreSites.getCurrentSite();
 
         await site?.openInBrowserWithAutoLogin(url);
+    }
+
+    /**
+     * Confirm the user wants to change site if needed.
+     *
+     * @param siteId Site ID to change to. If not defined, it will be assumed the site changes (when multiple sites have been found)
+     * @returns Promise resolved with boolean: whether the user confirmed or not.
+     */
+    async confirmSiteChange(siteId?: string): Promise<boolean> {
+        if (!CoreSites.isLoggedIn()) {
+            return true;
+        }
+        if (siteId && CoreSites.getCurrentSiteId() === siteId) {
+            return true;
+        }
+
+        try {
+            // Ask the user before changing site.
+            await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
 }

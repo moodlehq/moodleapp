@@ -153,7 +153,7 @@ export class CoreCustomURLSchemesProvider {
                 data = await this.getCustomURLData(url);
             }
         } catch (error) {
-            modal.dismiss();
+            await modal.dismiss();
 
             throw error;
         }
@@ -175,7 +175,7 @@ export class CoreCustomURLSchemesProvider {
 
             if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
                 // Site created and authenticated, open the page to go.
-                CoreNavigator.navigateToSiteHome({
+                void CoreNavigator.navigateToSiteHome({
                     params: <CoreRedirectPayload> {
                         redirectPath: data.redirectPath,
                         redirectOptions: data.redirectOptions,
@@ -204,10 +204,19 @@ export class CoreCustomURLSchemesProvider {
 
             if (siteIds.length > 1) {
                 // More than one site to treat the URL, let the user choose.
-                CoreContentLinksHelper.goToChooseSite(data.redirect || data.siteUrl);
 
+                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+
+                // Ask the user before changing site.
+                const canChange = await CoreContentLinksHelper.confirmSiteChange();
+                if (!canChange) {
+                    return;
+                }
+
+                void CoreContentLinksHelper.goToChooseSite(data.redirect || data.siteUrl);
             } else if (siteIds.length === 1) {
                 // Only one site, handle the link.
+                // No need to confirm site change here: handleLink and handleRootURL will do it if needed.
                 const site = await CoreSites.getSite(siteIds[0]);
 
                 if (!data.redirect) {
@@ -215,7 +224,7 @@ export class CoreCustomURLSchemesProvider {
                     await CoreContentLinksHelper.handleRootURL(site, false, true);
                 } else {
                     // Handle the redirect link.
-                    modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+                    await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
 
                     /* Always use the username from the site in this case. If the link has a username and a token,
                        this will make sure that the link is opened with the user the token belongs to. */
@@ -233,7 +242,12 @@ export class CoreCustomURLSchemesProvider {
                 const result = await CoreSites.checkSite(data.siteUrl, undefined, `URL scheme redirect: ${url}`);
 
                 // Site exists. We'll allow to add it.
-                modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
+                // Ask the user before changing site.
+                const canChange = await CoreContentLinksHelper.confirmSiteChange();
+                if (!canChange) {
+                    return;
+                }
 
                 await this.goToAddSite(data, result);
             }
@@ -246,7 +260,7 @@ export class CoreCustomURLSchemesProvider {
                 throw new CoreCustomURLSchemesHandleError(error, data);
             }
         } finally {
-            modal.dismiss();
+            await modal.dismiss();
 
             if (data.isSSOToken) {
                 CoreSSO.finishSSOAuthentication();
@@ -435,9 +449,6 @@ export class CoreCustomURLSchemesProvider {
         };
 
         if (CoreSites.isLoggedIn()) {
-            // Ask the user before changing site.
-            await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
-
             await CoreSites.logout({
                 siteId: NO_SITE_ID,
                 redirectPath: '/login/credentials',
