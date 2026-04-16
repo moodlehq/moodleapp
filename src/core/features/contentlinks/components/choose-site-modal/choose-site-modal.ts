@@ -134,13 +134,6 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
         };
 
         if (CoreSites.isLoggedIn()) {
-            // Ask the user before changing site.
-            try {
-                await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
-            } catch {
-                return; // User canceled.
-            }
-
             this.closeModal();
 
             await CoreSites.logout({
