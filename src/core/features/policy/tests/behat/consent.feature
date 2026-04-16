@@ -28,9 +28,7 @@ Feature: Test accepting pending policies on signup
     When I close the browser tab opened by the app
     And I press "I have read and agree to the Site policy agreement" in the app
     And I press "Continue" in the app
-    Then I should be able to press "User account" in the app
-
-    When I press "User account" in the app
+    And I press the user menu button in the app
     Then I should not find "Policies and agreements" in the app
 
   Scenario: Accept policy using tool_policy
@@ -116,7 +114,7 @@ Feature: Test accepting pending policies on signup
     # This is currently not possible with the current step to create policies.
 
     # View policies and agreements. Do it in this Scenario because there is no generator to set acceptances.
-    When I press "User account" in the app
+    When I press the user menu button in the app
     And I press "Policies and agreements" in the app
     Then I should find "Mandatory policy own page" in the app
     And I should find "Optional policy own page" in the app
@@ -155,7 +153,7 @@ Feature: Test accepting pending policies on signup
     # Test tablet view now.
     When I go back in the app
     And I change viewport size to "1200x640" in the app
-    And I press "User account" in the app
+    And I press the user menu button in the app
     And I press "Policies and agreements" in the app
     Then I should find "Mandatory policy own page" in the app
     And I should find "Optional policy own page" in the app
