@@ -132,7 +132,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
             return;
         }
 
-        await firstValueFrom(Translate.reloadLang(langToReload));
+        await this.reloadLanguage(langToReload);
     }
 
     /**
@@ -147,7 +147,8 @@ export class MoodleTranslateLoader implements TranslateLoader {
             return;
         }
 
-        await firstValueFrom(Translate.reloadLang(langToReload));
+        await this.reloadLanguage(langToReload);
+
     }
 
     /**
@@ -159,12 +160,11 @@ export class MoodleTranslateLoader implements TranslateLoader {
     async setCustomStrings(strings: { [lang: string]: TranslationObject }, currentLang?: string): Promise<void> {
         this.customStrings = strings;
 
-        if (!currentLang || !strings[currentLang]) {
+        if (!currentLang) {
             return;
         }
 
-        // Load them in the current translations.
-        await firstValueFrom(Translate.reloadLang(currentLang));
+        await this.reloadLanguage(currentLang, strings);
     }
 
     /**
@@ -182,12 +182,11 @@ export class MoodleTranslateLoader implements TranslateLoader {
             this.sitePluginsStrings[lang] = mergeDeep(this.sitePluginsStrings[lang], strings[lang]);
         });
 
-        if (!currentLang || !strings[currentLang]) {
+        if (!currentLang) {
             return;
         }
 
-        // Load them in the current translations.
-        await firstValueFrom(Translate.reloadLang(currentLang));
+        await this.reloadLanguage(currentLang, strings);
     }
 
     /**
@@ -216,6 +215,26 @@ export class MoodleTranslateLoader implements TranslateLoader {
         }
 
         return translation;
+    }
+
+    /**
+     * Reload a language to ensure the new strings are applied.
+     *
+     * @param currentLang Current language.
+     * @param strings If defined, only reloads the language if it has strings for the current language.
+     *  If not defined, the language will be reloaded.
+     */
+    protected async reloadLanguage(currentLang: string, strings?: { [lang: string]: TranslationObject }): Promise<void> {
+        const parentLang = this.getParentLanguage(currentLang);
+        if (parentLang && (!strings || strings[parentLang])) {
+            // Load parent language if needed.
+            await firstValueFrom(Translate.reloadLang(parentLang));
+        }
+
+        if (!strings || strings[currentLang]) {
+            // Load current language to merge the new site plugins strings.
+            await firstValueFrom(Translate.reloadLang(currentLang));
+        }
     }
 
 }
