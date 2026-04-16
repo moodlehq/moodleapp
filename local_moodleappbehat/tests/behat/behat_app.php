@@ -1352,6 +1352,9 @@ class behat_app extends behat_app_helper {
      */
     public function i_change_viewport_size_in_the_app(int $width, int $height) {
         $this->resize_app_window($width, $height);
+
+        // Some Scenarios are failing in CI after changing viewport size. Add a 400ms wait to see if it helps.
+        usleep(400000);
     }
 
     /**
