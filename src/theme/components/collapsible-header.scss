@@ -53,9 +53,11 @@ body:not(.core-iframe-fullscreen):not(.core-reading-mode-enabled) .collapsible-h
     }
 
     &.collapsible-header-page-is-active {
+        &.collapsible-header-page-is-not-within-content .collapsible-header-expanded {
+            height: calc(var(--collapsible-header-expanded-height) * (1 - var(--collapsible-header-progress)));
+        }
 
         .collapsible-header-expanded {
-            height: calc(var(--collapsible-header-expanded-height) * (1 - var(--collapsible-header-progress)));
             transform: translateY(calc(var(--collapsible-header-expanded-y-delta) * var(--collapsible-header-progress)));
             overflow: visible;
 

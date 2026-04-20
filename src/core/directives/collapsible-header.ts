@@ -101,6 +101,9 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected endContentScrollListener?: EventListener;
     protected collapsibleFooter?: CoreCollapsibleFooterDirective;
 
+    // Whether the expanded header is within the content or not, which changes some logic.
+    protected readonly isWithinContent = signal(false);
+
     protected readonly forceDisabled = computed(() =>
         this.splitViewMode() === CoreSplitViewMode.MENU_AND_CONTENT ||
         this.splitViewMode() === CoreSplitViewMode.CONTENT_ONLY ||
@@ -126,7 +129,6 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      */
     protected titleCollapseScrollDistance = 0;
     protected subscriptions: Subscription[] = [];
-    protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
     protected mutationObserver?: MutationObserver;
     protected isFloatingTitleLoading = false;
@@ -153,6 +155,17 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         effect(() => {
             this.calculateContentWidth(this.content(), this.splitViewMode());
         });
+
+        effect(() => {
+            const isWithinContent = this.isWithinContent();
+            if (!this.page) {
+                return;
+            }
+
+            this.page.classList.toggle('collapsible-header-page-is-within-content', isWithinContent);
+            this.page.classList.toggle('collapsible-header-page-is-not-within-content', !isWithinContent);
+        });
+
     }
 
     /**
@@ -605,8 +618,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
             throw new Error('[collapsible-header] Couldn\'t set up scrolling');
         }
 
-        this.isWithinContent = content.contains(expandedHeader);
-        page.classList.toggle('collapsible-header-page-is-within-content', this.isWithinContent);
+        this.isWithinContent.set(content.contains(expandedHeader));
         this.setEnabled();
 
         Object
@@ -684,7 +696,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         const maxScrollTop = contentScroll.scrollHeight - contentScroll.clientHeight;
 
         let frozen = false;
-        if (this.isWithinContent) {
+        if (this.isWithinContent()) {
             const titleCollapseScrollDistance = this.titleCollapseScrollDistance ?? 0;
             const collapsibleFooterHeight = this.collapsibleFooter?.getExpandedHeight() ?? 0;
             frozen = maxScrollTop - collapsibleFooterHeight <= titleCollapseScrollDistance;
