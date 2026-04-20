@@ -7,6 +7,7 @@ Feature: Forced course language is applied in the app
 
   Background:
     Given the Moodle site is compatible with this feature
+    And remote langimport tests are enabled
     And the following config values are set as admin:
       | enablemycourses | 1 |
     And the following "courses" exist:

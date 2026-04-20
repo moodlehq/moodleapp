@@ -7,6 +7,7 @@ Feature: Forced activity language is applied in the app
 
   Background:
     Given the Moodle site is compatible with this feature
+    And remote langimport tests are enabled
     And I enable "bigbluebuttonbn" "mod" plugin
     Given the following "courses" exist:
       | fullname   | shortname | lang |
