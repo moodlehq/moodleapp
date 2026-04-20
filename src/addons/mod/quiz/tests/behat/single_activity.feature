@@ -6,7 +6,8 @@ Feature: Test single activity of quiz type in app
   I need single activity of quiz type functionality to work
 
   Background:
-    Given the following "users" exist:
+    Given remote langimport tests are enabled
+    And the following "users" exist:
       | username | firstname | lastname |
       | student1 | First     | Student  |
     And the following "courses" exist:
