@@ -121,7 +121,10 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected pageDidEnterListener?: EventListener;
     protected resizeListener?: CoreEventObserver;
     protected floatingTitle?: HTMLHeadingElement;
-    protected scrollingHeight = 0;
+    /**
+     * Vertical distance between the expanded title position and the collapsed title position.
+     */
+    protected titleCollapseScrollDistance = 0;
     protected subscriptions: Subscription[] = [];
     protected isWithinContent = false;
     protected enteredPromise = new CorePromisedValue<void>();
@@ -477,7 +480,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         this.page.classList.add('collapsible-header-page-is-active');
 
         this.floatingTitle = floatingTitle;
-        this.scrollingHeight = originalTitleBoundingBox.top - collapsedHeaderTitleBoundingBox.top;
+        this.titleCollapseScrollDistance = originalTitleBoundingBox.top - collapsedHeaderTitleBoundingBox.top;
         this.collapsedFontStyles = collapsedFontStyles;
         this.expandedFontStyles = expandedFontStyles;
         this.expandedHeaderHeight = expandedHeaderHeight;
@@ -614,7 +617,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         content.addEventListener(
             'ionScroll',
             this.contentScrollListener = (({ target }: CustomEvent<ScrollDetail>): void => {
-                if (target !== content || !this.enabled || !this.scrollingHeight) {
+                if (target !== content || !this.enabled || !this.titleCollapseScrollDistance) {
                     return;
                 }
 
@@ -622,7 +625,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
                 const progress = frozen
                     ? 0
-                    : CoreMath.clamp(contentScroll.scrollTop / this.scrollingHeight, 0, 1);
+                    : CoreMath.clamp(contentScroll.scrollTop / this.titleCollapseScrollDistance, 0, 1);
 
                 this.setCollapsed(progress === 1);
                 page.style.setProperty('--collapsible-header-progress', `${progress}`);
@@ -659,11 +662,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
                 this.setCollapsed(collapse);
                 page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
 
-                if (collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop < this.scrollingHeight) {
-                    content.scrollToPoint(null, this.scrollingHeight);
+                if (collapse && this.titleCollapseScrollDistance > 0 && scrollTop < this.titleCollapseScrollDistance) {
+                    content.scrollToPoint(null, this.titleCollapseScrollDistance);
                 }
 
-                if (!collapse && this.scrollingHeight && this.scrollingHeight > 0 && scrollTop > 0) {
+                if (!collapse && this.titleCollapseScrollDistance > 0 && scrollTop > 0) {
                     content.scrollToPoint(null, 0);
                 }
             }) as EventListener,
@@ -677,20 +680,20 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * @returns Whether the header is frozen or not.
      */
     protected isFrozen(contentScroll: HTMLElement): boolean {
-        const scrollableHeight = contentScroll.scrollHeight - contentScroll.clientHeight;
+        // Maximum scrollable distance of the content.
+        const maxScrollTop = contentScroll.scrollHeight - contentScroll.clientHeight;
 
         let frozen = false;
         if (this.isWithinContent) {
-            const scrollingHeight = this.scrollingHeight ?? 0;
+            const titleCollapseScrollDistance = this.titleCollapseScrollDistance ?? 0;
             const collapsibleFooterHeight = this.collapsibleFooter?.getExpandedHeight() ?? 0;
-
-            frozen = scrollableHeight - collapsibleFooterHeight <= scrollingHeight;
+            frozen = maxScrollTop - collapsibleFooterHeight <= titleCollapseScrollDistance;
         } else {
             const expandedHeaderClientHeight = this.expandedHeader?.clientHeight ?? 0;
             const expandedHeaderHeight = this.expandedHeaderHeight ?? 0;
             const collapsedHeight = expandedHeaderHeight - (expandedHeaderClientHeight);
 
-            frozen = scrollableHeight + collapsedHeight <= 2 * expandedHeaderHeight;
+            frozen = maxScrollTop + collapsedHeight <= 2 * expandedHeaderHeight;
         }
 
         return frozen;
