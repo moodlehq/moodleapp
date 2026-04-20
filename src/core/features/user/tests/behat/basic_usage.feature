@@ -62,7 +62,8 @@ Feature: Test basic usage of user features
       | datatype | shortname  | name           | required | param1 |
       | text     | food       | Favourite food | 1        |        |
       | social   | website    | url            | 1        | url    |
-    And I entered the app as "student1"
+    When I enter the app
+    And I log in as "student1"
     And I press "Complete profile" in the app
     And I switch to the browser tab opened by the app
     And I set the field "username" to "student1"
