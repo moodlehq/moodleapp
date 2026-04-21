@@ -140,6 +140,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
     protected readonly manuallyDisabled = signal(false);
 
+    /**
+     * Whether the collapsible header is enabled or not.
+     *
+     * @returns True if enabled, false if not.
+     * @deprecated since  5.2.0. Use isEnabled() instead.
+     */
     get enabled(): boolean {
         return this.isEnabled();
     }
@@ -587,7 +593,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
             return;
         }
 
-        const enable = this.enabled;
+        const enable = this.isEnabled();
 
         const content = this.content();
         if (enable && content) {
@@ -653,7 +659,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         content.addEventListener(
             'ionScroll',
             this.contentScrollListener = (({ target }: CustomEvent<ScrollDetail>): void => {
-                if (target !== content || !this.enabled || !this.titleCollapseScrollDistance) {
+                if (target !== content || !this.isEnabled() || !this.titleCollapseScrollDistance) {
                     return;
                 }
 
@@ -676,7 +682,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         content.addEventListener(
             'ionScrollEnd',
             this.endContentScrollListener = (({ target }: CustomEvent<ScrollDetail>): void => {
-                if (target !== content || !this.enabled) {
+                if (target !== content || !this.isEnabled()) {
                     return;
                 }
 
