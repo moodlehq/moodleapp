@@ -135,6 +135,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected visiblePromise?: CoreCancellablePromise<void>;
     protected onReadyPromise = new CorePromisedValue<void>();
 
+    // --- Status ---
+    protected readonly isFrozen = signal(false);
+    protected readonly progress = signal(0);
+    protected readonly isCollapsed = computed(() => this.progress() === 1);
+
     protected readonly isEnabled = computed(() =>
         this.collapsible() && !this.forceDisabled() && !this.manuallyDisabled());
 
@@ -175,6 +180,28 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             this.page.classList.toggle('collapsible-header-page-is-within-content', isWithinContent);
             this.page.classList.toggle('collapsible-header-page-is-not-within-content', !isWithinContent);
+        });
+
+        effect(() => {
+            const frozen = this.isFrozen();
+            this.page?.classList.toggle('collapsible-header-page-is-frozen', frozen);
+        });
+
+        effect(() => {
+            const progress = this.progress();
+            this.page?.style.setProperty('--collapsible-header-progress', `${progress}`);
+        });
+
+        // Update the collapsed/expanded visual state and emit an event on change.
+        effect(() => {
+            const collapsed = this.isCollapsed();
+            if (!this.page) {
+                return;
+            }
+
+            this.page.classList.toggle('collapsible-header-page-is-collapsed', collapsed);
+
+            CoreEvents.trigger(COLLAPSIBLE_HEADER_UPDATED, { collapsed });
         });
 
         effect(() => {
@@ -260,27 +287,6 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
             delete this.pageDidEnterListener;
         }
-    }
-
-    /**
-     * Update collapsed status of the header.
-     *
-     * @param collapsed Whether header is collapsed or not.
-     */
-    protected setCollapsed(collapsed: boolean): void {
-        if (!this.page) {
-            return;
-        }
-
-        const isCollapsed = this.page.classList.contains('collapsible-header-page-is-collapsed');
-
-        if (isCollapsed === collapsed) {
-            return;
-        }
-
-        this.page.classList.toggle('collapsible-header-page-is-collapsed', collapsed);
-
-        CoreEvents.trigger(COLLAPSIBLE_HEADER_UPDATED, { collapsed });
     }
 
     /**
@@ -663,15 +669,13 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
                     return;
                 }
 
-                const frozen = this.checkIsFrozen(contentScroll);
+                const frozen = this.updateFrozenStatus(contentScroll);
 
                 const progress = frozen
                     ? 0
                     : CoreMath.clamp(contentScroll.scrollTop / this.titleCollapseScrollDistance, 0, 1);
 
-                this.setCollapsed(progress === 1);
-                page.style.setProperty('--collapsible-header-progress', `${progress}`);
-                page.classList.toggle('collapsible-header-page-is-frozen', frozen);
+                this.progress.set(progress);
 
                 Object
                     .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
@@ -686,23 +690,19 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
                     return;
                 }
 
-                if (page.classList.contains('collapsible-header-page-is-frozen')) {
+                if (this.isFrozen()) {
                     // Check it has to be frozen.
-                    const frozen = this.checkIsFrozen(contentScroll);
+                    const frozen = this.updateFrozenStatus(contentScroll);
 
                     if (frozen) {
                         return;
                     }
-
-                    page.classList.toggle('collapsible-header-page-is-frozen', frozen);
                 }
 
-                const progress = parseFloat(page.style.getPropertyValue('--collapsible-header-progress'));
                 const scrollTop = contentScroll.scrollTop;
-                const collapse = progress > 0.5;
+                const collapse = this.progress() > 0.5;
 
-                this.setCollapsed(collapse);
-                page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
+                this.progress.set(collapse ? 1 : 0);
 
                 if (collapse && this.titleCollapseScrollDistance > 0 && scrollTop < this.titleCollapseScrollDistance) {
                     content.scrollToPoint(null, this.titleCollapseScrollDistance);
@@ -716,12 +716,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     }
 
     /**
-     * Check if the header is frozen.
+     * Update the frozen status of the header.
      *
      * @param contentScroll Content scroll element.
      * @returns Whether the header is frozen or not.
      */
-    protected checkIsFrozen(contentScroll: HTMLElement): boolean {
+    protected updateFrozenStatus(contentScroll: HTMLElement): boolean {
         // Maximum scrollable distance of the content.
         const maxScrollTop = contentScroll.scrollHeight - contentScroll.clientHeight;
 
@@ -737,6 +737,8 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             frozen = maxScrollTop + collapsedHeight <= 2 * expandedHeaderHeight;
         }
+
+        this.isFrozen.set(frozen);
 
         return frozen;
     }
