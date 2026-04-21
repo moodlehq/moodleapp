@@ -135,8 +135,13 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected visiblePromise?: CoreCancellablePromise<void>;
     protected onReadyPromise = new CorePromisedValue<void>();
 
+    protected readonly isEnabled = computed(() =>
+        this.collapsible() && !this.forceDisabled() && !this.manuallyDisabled());
+
+    protected readonly manuallyDisabled = signal(false);
+
     get enabled(): boolean {
-        return !!this.expandedHeader && this.collapsible() && !this.forceDisabled();
+        return this.isEnabled();
     }
 
     constructor() {
@@ -148,7 +153,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             untracked(() => {
                 this.init();
-                this.setEnabled();
+                this.checkEnabled();
             });
         });
 
@@ -164,6 +169,19 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             this.page.classList.toggle('collapsible-header-page-is-within-content', isWithinContent);
             this.page.classList.toggle('collapsible-header-page-is-not-within-content', !isWithinContent);
+        });
+
+        effect(() => {
+            const enabled = this.isEnabled();
+            if (!this.page) {
+                return;
+            }
+
+            this.page.classList.toggle('collapsible-header-page-is-disabled', !enabled);
+
+            untracked(() => {
+                this.checkEnabled();
+            });
         });
 
     }
@@ -562,16 +580,14 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     }
 
     /**
-     * Set collapsed/expanded based on properties.
-     *
-     * @param enable True to enable, false to disabled and undefined to use the current state.
+     * Set collapsed/expanded based on enabled status.
      */
-    async setEnabled(enable?: boolean): Promise<void> {
+    protected async checkEnabled(): Promise<void> {
         if (!this.page) {
             return;
         }
 
-        enable = enable ?? this.enabled;
+        const enable = this.enabled;
 
         const content = this.content();
         if (enable && content) {
@@ -583,8 +599,16 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
             }
         }
 
-        this.setCollapsed(!enable);
-        this.page.style.setProperty('--collapsible-header-progress', enable ? '0' : '1');
+        this.progress.set(enable ? 0 : 1);
+    }
+
+    /**
+     * Manually enable or disable the collapsible header.
+     *
+     * @param enable True to enable, false to disabled.
+     */
+    async setEnabled(enable: boolean): Promise<void> {
+        this.manuallyDisabled.set(!enable);
     }
 
     /**
@@ -619,7 +643,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         }
 
         this.isWithinContent.set(content.contains(expandedHeader));
-        this.setEnabled();
+        this.checkEnabled();
 
         Object
             .entries(expandedFontStyles)
@@ -633,7 +657,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
                     return;
                 }
 
-                const frozen = this.isFrozen(contentScroll);
+                const frozen = this.checkIsFrozen(contentScroll);
 
                 const progress = frozen
                     ? 0
@@ -658,7 +682,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
                 if (page.classList.contains('collapsible-header-page-is-frozen')) {
                     // Check it has to be frozen.
-                    const frozen = this.isFrozen(contentScroll);
+                    const frozen = this.checkIsFrozen(contentScroll);
 
                     if (frozen) {
                         return;
@@ -691,7 +715,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * @param contentScroll Content scroll element.
      * @returns Whether the header is frozen or not.
      */
-    protected isFrozen(contentScroll: HTMLElement): boolean {
+    protected checkIsFrozen(contentScroll: HTMLElement): boolean {
         // Maximum scrollable distance of the content.
         const maxScrollTop = contentScroll.scrollHeight - contentScroll.clientHeight;
 
