@@ -1112,6 +1112,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
             return;
         } else if (site && (iframe.dataset[DATASET_APP_SITE_REFERER] === 'true' || CoreUrl.urlNeedsReferer(src))) {
+            iframe.dataset[DATASET_APP_SITE_REFERER] = 'false'; // Avoid doing this multiple times if treated more than once.
             src = site.fixRefererForUrl(src);
         }
 

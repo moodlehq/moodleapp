@@ -727,7 +727,11 @@ export class CoreIframe {
                 return;
             }
 
-            iframe.src = currentSite.fixRefererForUrl(iframe.src);
+            iframe.dataset[DATASET_APP_SITE_REFERER] = 'false'; // Avoid doing this multiple times if treated more than once.
+            const src = currentSite.fixRefererForUrl(iframe.src);
+            if (iframe.src !== src) {
+                iframe.src = src;
+            }
         });
     }
 
