@@ -38,7 +38,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreDom } from '@static/dom';
-import { DATA_OPEN_EXTERNAL } from '../constants';
+import { DATA_OPEN_EXTERNAL, DATASET_APP_SITE_REFERER } from '../constants';
 
 /**
  * Static class with helper functions for iframes, embed and similar.
@@ -49,6 +49,8 @@ export class CoreIframe {
      * List of tags that can contain an iframe.
      */
     static readonly FRAME_TAGS = ['iframe', 'object', 'embed'];
+
+    protected static readonly DOCUMENTS_ALREADY_OBSERVED = new WeakMap<Document, boolean>();
 
     protected static logger = CoreLogger.getInstance('CoreIframe');
     protected static waitAutoLoginDefer?: CorePromisedValue<void>;
@@ -360,9 +362,9 @@ export class CoreIframe {
                 CoreIframe.redefineWindowOpen(element, window, document);
             }
 
-            // Treat links.
             if (document) {
                 CoreIframe.treatFrameLinks(document);
+                CoreIframe.fixSubIframesReferers(document);
             }
 
             // Iframe content has been loaded.
@@ -660,6 +662,77 @@ export class CoreIframe {
         } finally {
             modal.dismiss();
         }
+    }
+
+    /**
+     * Given an iframe's document, fix the referer for sub iframes if needed.
+     * This code only runs for local iframes, as we cannot access online iframes due to CORS.
+     * Referer should work fine in online iframes.
+     *
+     * @param document Iframe's document.
+     */
+    protected static fixSubIframesReferers(document: Document): void {
+        if (!CoreSites.isLoggedIn() || CoreIframe.DOCUMENTS_ALREADY_OBSERVED.get(document)) {
+            return;
+        }
+
+        CoreIframe.DOCUMENTS_ALREADY_OBSERVED.set(document, true);
+
+        // Fix current iframes.
+        CoreIframe.fixRefererForIframes(Array.from(document.querySelectorAll<HTMLIFrameElement>('iframe')));
+
+        // Use MutationObserver to check for iframes added dynamically.
+        // Observe document instead of document.body so this works even if body isn't ready yet.
+        const observer = new MutationObserver((mutations) => {
+            const addedIframes = mutations.flatMap(mutation =>
+                Array.from(mutation.addedNodes).flatMap(node => {
+                    const iframes: HTMLIFrameElement[] = [];
+                    if (node.nodeName.toLowerCase() === 'iframe') {
+                        iframes.push(node as HTMLIFrameElement);
+                    }
+                    if (node instanceof Element) {
+                        iframes.push(...Array.from(node.querySelectorAll<HTMLIFrameElement>('iframe')));
+                    }
+
+                    return iframes;
+                }));
+
+            if (addedIframes.length) {
+                CoreIframe.fixRefererForIframes(addedIframes);
+            }
+        });
+
+        observer.observe(document, {
+            childList: true,
+            subtree: true,
+        });
+
+        // Disconnect the observer when the iframe is unloaded to avoid retaining the document in memory.
+        document.defaultView?.addEventListener('pagehide', () => observer.disconnect(), { once: true });
+    }
+
+    /**
+     * Fix referer for iframes if needed.
+     *
+     * @param iframes The iframes to fix the referer for.
+     */
+    protected static fixRefererForIframes(iframes: HTMLIFrameElement[]): void {
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return;
+        }
+
+        iframes.forEach((iframe) => {
+            if (iframe.dataset[DATASET_APP_SITE_REFERER] !== 'true' && !CoreUrl.urlNeedsReferer(iframe.src)) {
+                return;
+            }
+
+            iframe.dataset[DATASET_APP_SITE_REFERER] = 'false'; // Avoid doing this multiple times if treated more than once.
+            const src = currentSite.fixRefererForUrl(iframe.src);
+            if (iframe.src !== src) {
+                iframe.src = src;
+            }
+        });
     }
 
 }
