@@ -14,7 +14,7 @@ on:
                 required: true
                 default: "https://github.com/moodle/moodle.git"
     pull_request:
-        branches: [main, v*.x]
+        branches: [ main, v*.x ]
 
 concurrency:
     group: acceptance-${{ github.ref }}
@@ -25,15 +25,22 @@ jobs:
         runs-on: ubuntu-latest
         outputs:
             tags: ${{ steps.set-tags.outputs.tags }}
+            node-version: ${{ steps.node-version.outputs.version }}
 
         steps:
             - uses: actions/checkout@v4
               with:
                   path: app
 
+            - name: Read Node version
+              id: node-version
+              run: echo "version=$(cat app/.nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
+
             - uses: actions/setup-node@v4
               with:
                   node-version-file: "app/.nvmrc"
+                  cache: "npm"
+                  cache-dependency-path: "app/package-lock.json"
 
             - name: Install npm dependencies
               working-directory: app
@@ -94,8 +101,8 @@ jobs:
                   key: build-${{ github.sha }}
                   path: |
                       app/ssl/**/*
-                      app/node_modules/**/*
                       app/www/**/*
+                      app/nginx.conf
                       plugin/**/*
 
     behat:
@@ -118,13 +125,9 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
         steps:
-            - uses: actions/checkout@v4
-              with:
-                  path: app
-
             - uses: actions/setup-node@v4
               with:
-                  node-version-file: "app/.nvmrc"
+                  node-version: ${{ needs.build.outputs.node-version }}
 
             - uses: shivammathur/setup-php@v2
               with:
@@ -137,9 +140,27 @@ jobs:
                   key: build-${{ github.sha }}
                   path: |
                       app/ssl/**/*
-                      app/node_modules/**/*
                       app/www/**/*
+                      app/nginx.conf
                       plugin/**/*
+
+            - name: Setup environment
+              uses: nick-fields/retry@v4
+              with:
+                  max_attempts: 3
+                  retry_wait_seconds: 10
+                  timeout_minutes: 5
+                  command: |
+                      docker pull nginx:alpine &
+                      docker pull moodlehq/bigbluebutton_mock:latest &
+                      sudo locale-gen en_AU.UTF-8 &
+
+                      rm -rf ci
+                      composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4.5
+                      echo $(cd ci/bin; pwd) >> $GITHUB_PATH
+                      echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
+
+                      wait
 
             - name: Launch Docker images
               working-directory: app
@@ -153,13 +174,6 @@ jobs:
                       -v ./ssl/certificate.key:/etc/ssl/certificate.key \
                       nginx:alpine
                   docker run -d --rm -p 8002:80 --name bigbluebutton moodlehq/bigbluebutton_mock:latest
-
-            - name: Initialise moodle-plugin-ci
-              run: |
-                  composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^4.5
-                  echo $(cd ci/bin; pwd) >> $GITHUB_PATH
-                  echo $(cd ci/vendor/bin; pwd) >> $GITHUB_PATH
-                  sudo locale-gen en_AU.UTF-8
 
             - name: Install Behat Snapshots plugin
               run: moodle-plugin-ci add-plugin moodlemobile/moodle-local_behatsnapshots

@@ -90,7 +90,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
     readonly collapsible = input(true, { transform: toBoolean });
 
-    protected page?: HTMLElement;
+    protected readonly page = signal<HTMLElement|undefined>(undefined);
     protected collapsedHeader: HTMLIonHeaderElement = inject(ElementRef).nativeElement;
     protected collapsedFontStyles?: Partial<CSSStyleDeclaration>;
     protected expandedHeader?: HTMLIonItemElement;
@@ -135,8 +135,24 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     protected visiblePromise?: CoreCancellablePromise<void>;
     protected onReadyPromise = new CorePromisedValue<void>();
 
+    // --- Status ---
+    protected readonly isFrozen = signal(false);
+    protected readonly progress = signal(0);
+    protected readonly isCollapsed = computed(() => this.progress() === 1);
+
+    protected readonly isEnabled = computed(() =>
+        this.collapsible() && !this.forceDisabled() && !this.manuallyDisabled());
+
+    protected readonly manuallyDisabled = signal(false);
+
+    /**
+     * Whether the collapsible header is enabled or not.
+     *
+     * @returns True if enabled, false if not.
+     * @deprecated since  5.2.0. Use isEnabled() instead.
+     */
     get enabled(): boolean {
-        return !!this.expandedHeader && this.collapsible() && !this.forceDisabled();
+        return this.isEnabled();
     }
 
     constructor() {
@@ -148,7 +164,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             untracked(() => {
                 this.init();
-                this.setEnabled();
+                this.checkEnabled();
             });
         });
 
@@ -158,12 +174,48 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
         effect(() => {
             const isWithinContent = this.isWithinContent();
-            if (!this.page) {
+            const page = this.page();
+
+            page?.classList.toggle('collapsible-header-page-is-within-content', isWithinContent);
+            page?.classList.toggle('collapsible-header-page-is-not-within-content', !isWithinContent);
+        });
+
+        effect(() => {
+            const frozen = this.isFrozen();
+            const page = this.page();
+
+            page?.classList.toggle('collapsible-header-page-is-frozen', frozen);
+        });
+
+        effect(() => {
+            const progress = this.progress();
+            const page = this.page();
+
+            page?.style.setProperty('--collapsible-header-progress', `${progress}`);
+        });
+
+        // Update the collapsed/expanded visual state and emit an event on change.
+        effect(() => {
+            const collapsed = this.isCollapsed();
+            const page = this.page();
+            if (!page) {
                 return;
             }
 
-            this.page.classList.toggle('collapsible-header-page-is-within-content', isWithinContent);
-            this.page.classList.toggle('collapsible-header-page-is-not-within-content', !isWithinContent);
+            page.classList.toggle('collapsible-header-page-is-collapsed', collapsed);
+
+            CoreEvents.trigger(COLLAPSIBLE_HEADER_UPDATED, { collapsed });
+        });
+
+        effect(() => {
+            const enabled = this.isEnabled();
+            const page = this.page();
+
+            page?.classList.toggle('collapsible-header-page-is-disabled', !enabled);
+
+            untracked(() => {
+                this.checkEnabled();
+            });
         });
 
     }
@@ -232,31 +284,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * Remove listeners from page.
      */
     protected removePageEventListeners(): void {
-        if (this.page && this.pageDidEnterListener) {
-            this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
+        const page = this.page();
+        if (page && this.pageDidEnterListener) {
+            page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
             delete this.pageDidEnterListener;
         }
-    }
-
-    /**
-     * Update collapsed status of the header.
-     *
-     * @param collapsed Whether header is collapsed or not.
-     */
-    protected setCollapsed(collapsed: boolean): void {
-        if (!this.page) {
-            return;
-        }
-
-        const isCollapsed = this.page.classList.contains('collapsible-header-page-is-collapsed');
-
-        if (isCollapsed === collapsed) {
-            return;
-        }
-
-        this.page.classList.toggle('collapsible-header-page-is-collapsed', collapsed);
-
-        CoreEvents.trigger(COLLAPSIBLE_HEADER_UPDATED, { collapsed });
     }
 
     /**
@@ -307,10 +339,11 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         }
 
         // Find element and prepare classes.
-        this.page = this.collapsedHeader.parentElement;
-        this.page.classList.add('collapsible-header-page');
+        const page = this.collapsedHeader.parentElement;
+        this.page.set(page);
+        page.classList.add('collapsible-header-page');
 
-        this.page.addEventListener(
+        page.addEventListener(
             'ionViewDidEnter',
             this.pageDidEnterListener = () => {
                 clearTimeout(timeout);
@@ -339,8 +372,9 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      */
     protected async initializeExpandedHeader(): Promise<void> {
         await this.waitLoadingsDone();
+        const page = this.page();
 
-        this.expandedHeader = this.page?.querySelector('ion-item[collapsible]') ?? undefined;
+        this.expandedHeader = page?.querySelector('ion-item[collapsible]') ?? undefined;
 
         if (!this.expandedHeader) {
             this.setEnabled(false);
@@ -357,12 +391,13 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * Search the page content, initialize it, and wait until it's ready for the transition to trigger on scroll.
      */
     protected async initializeContent(): Promise<void> {
-        if (!this.page) {
+        const page = this.page();
+        if (!page) {
             return;
         }
 
         // Initialize from tabs.
-        const tabs = CoreDirectivesRegistry.resolve(this.page.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
+        const tabs = CoreDirectivesRegistry.resolve(page.querySelector('core-tabs-outlet'), CoreTabsOutletComponent);
 
         if (tabs) {
             const outlet = tabs.getOutlet();
@@ -380,7 +415,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         }
 
         // Initialize from page content.
-        const content = this.page.querySelector<HTMLIonContentElement>('ion-content:not(.disable-scroll-y)');
+        const content = page.querySelector<HTMLIonContentElement>('ion-content:not(.disable-scroll-y)');
 
         if (!content) {
             throw new Error('[collapsible-header] Couldn\'t get content');
@@ -396,10 +431,15 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * @param splitViewMode Current split view mode.
      */
     protected calculateContentWidth(content?: HTMLIonContentElement, splitViewMode?: CoreSplitViewMode): void {
+        const page = this.page();
+        if (!page) {
+            return;
+        }
+
         if (content && splitViewMode === CoreSplitViewMode.MENU_AND_CONTENT) {
-            this.page?.style.setProperty('--collapsible-header-content-width', `${content.offsetWidth}px`);
+            page.style.setProperty('--collapsible-header-content-width', `${content.offsetWidth}px`);
         } else {
-            this.page?.style.removeProperty('--collapsible-header-content-width');
+            page.style.removeProperty('--collapsible-header-content-width');
         }
     }
 
@@ -407,7 +447,8 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * Initialize a floating title to mimic transitioning the title from one state to the other.
      */
     protected async initializeFloatingTitle(): Promise<void> {
-        if (!this.page || !this.expandedHeader) {
+        const page = this.page();
+        if (!page || !this.expandedHeader) {
             return;
         }
 
@@ -420,7 +461,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         this.visiblePromise = CoreDom.waitToBeVisible(this.expandedHeader);
         await this.visiblePromise;
 
-        this.page.classList.remove('collapsible-header-page-is-active');
+        page.classList.remove('collapsible-header-page-is-active');
         await CoreWait.nextTick();
 
         // Add floating title and measure initial position.
@@ -483,14 +524,14 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
         Object
             .entries(cssVariables)
-            .forEach(([property, value]) => this.page?.style.setProperty(property, value));
+            .forEach(([property, value]) => page.style.setProperty(property, value));
 
         Object
             .entries(expandedFontStyles)
             .forEach(([property, value]) => floatingTitle.style.setProperty(property, value));
 
         // Activate styles.
-        this.page.classList.add('collapsible-header-page-is-active');
+        page.classList.add('collapsible-header-page-is-active');
 
         this.floatingTitle = floatingTitle;
         this.titleCollapseScrollDistance = originalTitleBoundingBox.top - collapsedHeaderTitleBoundingBox.top;
@@ -505,7 +546,8 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * Wait until all <core-loading> children inside the page.
      */
     protected async waitLoadingsDone(): Promise<void> {
-        if (!this.page) {
+        const page = this.page();
+        if (!page) {
             return;
         }
 
@@ -513,7 +555,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         await CoreWait.nextTick();
 
         // Wait all loadings and tabs to finish loading.
-        await CoreDirectivesRegistry.waitMultipleDirectivesReady(this.page, [
+        await CoreDirectivesRegistry.waitMultipleDirectivesReady(page, [
             { selector: 'core-loading', class: CoreLoadingComponent },
             { selector: 'core-tabs', class: CoreTabsComponent },
             { selector: 'core-tabs-outlet', class: CoreTabsOutletComponent },
@@ -534,7 +576,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
      * Initialize the collapsible footer directive if it exists, and wait until it's ready.
      */
     protected async initializeCollapsibleFooter(): Promise<void> {
-        const collapsibleElement = this.page?.querySelector('[collapsible-footer]');
+        const page = this.page();
+        if (!page) {
+            return;
+        }
+
+        const collapsibleElement = page.querySelector('[collapsible-footer]');
         this.collapsibleFooter = CoreDirectivesRegistry.resolve(collapsibleElement, CoreCollapsibleFooterDirective) ?? undefined;
         if (this.collapsibleFooter) {
             await this.collapsibleFooter.ready();
@@ -562,16 +609,10 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     }
 
     /**
-     * Set collapsed/expanded based on properties.
-     *
-     * @param enable True to enable, false to disabled and undefined to use the current state.
+     * Set collapsed/expanded based on enabled status.
      */
-    async setEnabled(enable?: boolean): Promise<void> {
-        if (!this.page) {
-            return;
-        }
-
-        enable = enable ?? this.enabled;
+    protected async checkEnabled(): Promise<void> {
+        const enable = this.isEnabled();
 
         const content = this.content();
         if (enable && content) {
@@ -583,8 +624,16 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
             }
         }
 
-        this.setCollapsed(!enable);
-        this.page.style.setProperty('--collapsible-header-progress', enable ? '0' : '1');
+        this.progress.set(enable ? 0 : 1);
+    }
+
+    /**
+     * Manually enable or disable the collapsible header.
+     *
+     * @param enable True to enable, false to disabled.
+     */
+    async setEnabled(enable: boolean): Promise<void> {
+        this.manuallyDisabled.set(!enable);
     }
 
     /**
@@ -600,7 +649,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
         this.content.set(content);
 
-        const page = this.page;
+        const page = this.page();
         const expandedHeader = this.expandedHeader;
         const expandedFontStyles = this.expandedFontStyles;
         const collapsedFontStyles = this.collapsedFontStyles;
@@ -619,7 +668,7 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         }
 
         this.isWithinContent.set(content.contains(expandedHeader));
-        this.setEnabled();
+        this.checkEnabled();
 
         Object
             .entries(expandedFontStyles)
@@ -629,19 +678,17 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         content.addEventListener(
             'ionScroll',
             this.contentScrollListener = (({ target }: CustomEvent<ScrollDetail>): void => {
-                if (target !== content || !this.enabled || !this.titleCollapseScrollDistance) {
+                if (target !== content || !this.isEnabled() || !this.titleCollapseScrollDistance) {
                     return;
                 }
 
-                const frozen = this.isFrozen(contentScroll);
+                const frozen = this.updateFrozenStatus(contentScroll);
 
                 const progress = frozen
                     ? 0
                     : CoreMath.clamp(contentScroll.scrollTop / this.titleCollapseScrollDistance, 0, 1);
 
-                this.setCollapsed(progress === 1);
-                page.style.setProperty('--collapsible-header-progress', `${progress}`);
-                page.classList.toggle('collapsible-header-page-is-frozen', frozen);
+                this.progress.set(progress);
 
                 Object
                     .entries(progress > .5 ? collapsedFontStyles : expandedFontStyles)
@@ -652,27 +699,23 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
         content.addEventListener(
             'ionScrollEnd',
             this.endContentScrollListener = (({ target }: CustomEvent<ScrollDetail>): void => {
-                if (target !== content || !this.enabled) {
+                if (target !== content || !this.isEnabled()) {
                     return;
                 }
 
-                if (page.classList.contains('collapsible-header-page-is-frozen')) {
+                if (this.isFrozen()) {
                     // Check it has to be frozen.
-                    const frozen = this.isFrozen(contentScroll);
+                    const frozen = this.updateFrozenStatus(contentScroll);
 
                     if (frozen) {
                         return;
                     }
-
-                    page.classList.toggle('collapsible-header-page-is-frozen', frozen);
                 }
 
-                const progress = parseFloat(page.style.getPropertyValue('--collapsible-header-progress'));
                 const scrollTop = contentScroll.scrollTop;
-                const collapse = progress > 0.5;
+                const collapse = this.progress() > 0.5;
 
-                this.setCollapsed(collapse);
-                page.style.setProperty('--collapsible-header-progress', collapse ? '1' : '0');
+                this.progress.set(collapse ? 1 : 0);
 
                 if (collapse && this.titleCollapseScrollDistance > 0 && scrollTop < this.titleCollapseScrollDistance) {
                     content.scrollToPoint(null, this.titleCollapseScrollDistance);
@@ -686,12 +729,12 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
     }
 
     /**
-     * Check if the header is frozen.
+     * Update the frozen status of the header.
      *
      * @param contentScroll Content scroll element.
      * @returns Whether the header is frozen or not.
      */
-    protected isFrozen(contentScroll: HTMLElement): boolean {
+    protected updateFrozenStatus(contentScroll: HTMLElement): boolean {
         // Maximum scrollable distance of the content.
         const maxScrollTop = contentScroll.scrollHeight - contentScroll.clientHeight;
 
@@ -707,6 +750,8 @@ export class CoreCollapsibleHeaderDirective implements OnDestroy, AsyncDirective
 
             frozen = maxScrollTop + collapsedHeight <= 2 * expandedHeaderHeight;
         }
+
+        this.isFrozen.set(frozen);
 
         return frozen;
     }
