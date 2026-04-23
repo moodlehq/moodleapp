@@ -139,7 +139,7 @@ export default class AddonCalendarIndexPage implements OnInit, OnDestroy {
 
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.manualSyncObserver = CoreEvents.on(ADDON_CALENDAR_MANUAL_SYNCED, (data) => {
-            if (data && data.source != 'index') {
+            if (data && data.source !== 'index') {
                 this.loaded = false;
                 this.refreshData(false, false, true);
             }

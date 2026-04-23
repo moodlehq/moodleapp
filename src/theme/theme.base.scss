@@ -389,14 +389,14 @@ ion-grid.core-no-grid > ion-row {
         @include core-transition(all, 200ms);
 
         &.footer-collapsed {
-            --core-collapsible-footer-height: 0;
+            --core-collapsible-footer-height: 0px;
             opacity: 0;
         }
         &.has-module-nav.footer-collapsed {
             --core-collapsible-footer-height: auto;
             opacity: 1;
             core-course-module-navigation {
-                height: 0;
+                height: 0px;
                 opacity: 0;
                 @include core-transition(all, 200ms);
             }
@@ -405,13 +405,6 @@ ion-grid.core-no-grid > ion-row {
         &.footer-expanded {
             --core-collapsible-footer-height: auto;
         }
-    }
-}
-
-.keyboard-is-open ion-content {
-    --core-collapsible-footer-height: 0px !important;
-    [collapsible-footer] {
-        height: 0;
     }
 }
 

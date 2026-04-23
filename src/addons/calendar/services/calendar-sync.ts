@@ -152,6 +152,7 @@ export class AddonCalendarSyncProvider extends CoreSyncBaseProvider<AddonCalenda
                 // Data has been sent to server. Now invalidate the WS calls.
                 const promises = [
                     AddonCalendar.invalidateEventsList(siteId),
+                    AddonCalendar.invalidateAllDayEvents(siteId),
                     AddonCalendarHelper.refreshAfterChangeEvents(result.toinvalidate, siteId),
                 ];
 
