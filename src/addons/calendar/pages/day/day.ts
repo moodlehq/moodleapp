@@ -142,7 +142,7 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
         // Refresh data if calendar events are synchronized manually but not by this page.
         this.eventObservers.push(CoreEvents.on(ADDON_CALENDAR_MANUAL_SYNCED, (data) => {
             const selectedDay = this.manager?.getSelectedItem();
-            if (data && (data.source != 'day' || !selectedDay || !data.dayJS || !selectedDay.dayJS.isSame(data.dayJS, 'day'))) {
+            if (data && (data.source !== 'day' || !selectedDay || !data.dayJS || !selectedDay.dayJS.isSame(data.dayJS, 'day'))) {
                 this.manager?.getSource().markAllItemsUnloaded();
                 this.refreshData(false, true);
             }
