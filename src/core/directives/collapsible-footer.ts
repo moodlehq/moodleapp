@@ -233,7 +233,7 @@ export class CoreCollapsibleFooterDirective implements OnInit, OnDestroy, AsyncD
      * @param scrollElement Scroll element to calculate maxScroll.
      */
     protected onScroll(scrollDetail: ScrollDetail, scrollElement: HTMLElement): void {
-        const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight;
+        const maxScroll = scrollElement.scrollHeight - scrollElement.offsetHeight - 12;
         const footerHasFocus = this.moduleNav?.contains(document.activeElement);
         if (scrollDetail.scrollTop <= 0 || (this.appearOnBottom() && scrollDetail.scrollTop >= maxScroll) || footerHasFocus) {
             // Reset.
