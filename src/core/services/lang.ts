@@ -456,6 +456,8 @@ export class CoreLangProvider {
      * @returns Whether the language is supported.
      */
     protected isLanguageSupported(lang: string): boolean {
+        lang = this.formatLanguage(lang, CoreLangFormat.App);
+
         return CoreConstants.CONFIG.languages[lang] !== undefined;
     }
 

@@ -11,9 +11,10 @@ Feature: Forced course language is applied in the app
     And the following config values are set as admin:
       | enablemycourses | 1 |
     And the following "courses" exist:
-      | fullname         | shortname | lang |
-      | English Course   | ENGC      | en   |
-      | Spanish Course   | ESPC      | es   |
+      | fullname         | shortname | lang  |
+      | English Course   | ENGC      | en    |
+      | Spanish Course   | ESPC      | es    |
+      | Mexican Course   | MEXC      | es_mx |
     And the following "activities" exist:
       | activity        | name                   | intro | course   | lang |
       | page            | Test page name ca      | -     | ESPC     | ca   |
@@ -25,6 +26,7 @@ Feature: Forced course language is applied in the app
       | user    | course   | role           |
       | student | ENGC     | student        |
       | student | ESPC     | student        |
+      | student | MEXC     | student        |
     And I log in as "admin"
     And I navigate to "General > Mobile app > Premium features" in site administration
     And I set the field "Custom language strings" to multiline:
@@ -34,7 +36,7 @@ Feature: Forced course language is applied in the app
     """
     And I press "Save changes"
     And the following "language pack" exists:
-      | language | es | ca |
+      | language | es | ca | es_mx |
 
   Scenario: Forced course and module language is applied when entering a course or activity
     Given I entered the app as "student"
@@ -58,6 +60,13 @@ Feature: Forced course language is applied in the app
 
     When I press "Test page name es" in the app
     Then I should find "Última modificación" in the app
+
+    When I go back to the root page in the app
+    Then I should find "My courses" in the app
+
+    When I press "Mexican Course" in the app
+    Then I should find "Curso" in the app
+    And I should find "Alumnos" in the app
 
     When I go back to the root page in the app
     Then I should find "My courses" in the app
