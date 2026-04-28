@@ -1,0 +1,24 @@
+name: Create base branch
+
+on:
+    workflow_dispatch:
+
+jobs:
+    release:
+        if: github.repository == 'moodlemobile/moodleapp'
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  persist-credentials: false
+                  fetch-depth: 0
+            - uses: actions/setup-node@v6
+              with:
+                  node-version-file: ".nvmrc"
+            - name: Install npm packages
+              run: npm ci --no-audit
+            - name: Create base branch
+              env:
+                  GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+              run: ./.github/scripts/create_base_branch.sh
