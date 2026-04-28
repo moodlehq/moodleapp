@@ -39,6 +39,7 @@ import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
+import { CoreUrl } from '@static/url';
 
 /**
  * Component that displays a Big Blue Button activity.
@@ -492,7 +493,12 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         event.preventDefault();
         event.stopPropagation();
 
-        CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(playback.url);
+        let url = playback.url;
+        if (!url.match(/[&?]group=/)) {
+            url = CoreUrl.addParamsToUrl(url, { group: String(this.groupId()) });
+        }
+
+        CoreSites.getCurrentSite()?.openInBrowserWithAutoLogin(url);
     }
 
 }
