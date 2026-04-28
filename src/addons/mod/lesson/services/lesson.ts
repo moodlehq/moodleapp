@@ -302,7 +302,10 @@ export class AddonModLessonProvider {
         }
 
         // Progress calculation as a percent.
-        return CoreText.roundToDecimals(viewedPagesIds.length / Object.keys(validPages).length, 2) * 100;
+        const progress = CoreText.roundToDecimals(viewedPagesIds.length / Object.keys(validPages).length, 2) * 100;
+
+        // Round the value to avoid floating-point precision issues (e.g. 7.0000000000001).
+        return Math.round(progress);
     }
 
     /**
