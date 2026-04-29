@@ -6,6 +6,11 @@ on:
 jobs:
     audit-fix:
         runs-on: ubuntu-latest
+        outputs:
+            audit: ${{ steps.audit.outputs.audit }}
+        permissions:
+            contents: write
+            pull-requests: write
 
         steps:
             - uses: actions/checkout@v6
@@ -15,18 +20,23 @@ jobs:
                   node-version-file: ".nvmrc"
 
             - name: Run npm audit fix
+              id: audit
               run: |
                   npm install --no-audit --ignore-scripts
-                  npm audit fix --ignore-scripts || echo "npm audit fix encountered more vulnerabilities."
+                  audit=$(npm audit fix --ignore-scripts) || echo "npm audit fix encountered more vulnerabilities."
 
-            - name: Commit and push changes
-              run: |
-                  git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-                  git config --local user.name "github-actions[bot]"
-                  if git diff --quiet package.json package-lock.json; then
-                      echo "No changes to commit."
-                  else
-                      git add package.json package-lock.json
-                      git commit -m "[auto-generated]: npm audit fix"
-                      git push
-                  fi
+            - name: Create Pull Request
+              id: cpr
+              uses: peter-evans/create-pull-request@v8
+              with:
+                  token: ${{ secrets.GIT_TOKEN }}
+                  commit-message: "[auto-generated]: npm audit fix"
+                  branch: audit-fix-${{ github.run_id }}
+                  delete-branch: true
+                  title: "[auto-generated]: npm audit fix"
+                  body: |
+                      ${AUDIT}
+                  labels: |
+                      automated
+              env:
+                  AUDIT: ${{ steps.audit.outputs.audit }}
