@@ -23,7 +23,25 @@ jobs:
               id: audit
               run: |
                   npm install --no-audit --ignore-scripts
-                  audit=$(npm audit fix --ignore-scripts) || echo "npm audit fix encountered more vulnerabilities."
+                  auditBefore=$(npm audit --json | jq .metadata.vulnerabilities.total)
+                  audit=$(npm audit fix --ignore-scripts --json) || echo "npm audit fix encountered more vulnerabilities."
+                  auditAfter=$(echo "$audit" | jq .audit.metadata.vulnerabilities.total)
+                  if [ "$auditBefore" -gt "$auditAfter" ]; then
+                      echo "ADDED $(echo "$audit" | jq .add)" >> $GITHUB_STEP_SUMMARY
+                      echo "ADDED=$(echo "$audit" | jq .add)" >> $GITHUB_OUTPUT
+                      echo "REMOVED $(echo "$audit" | jq .remove)" >> $GITHUB_STEP_SUMMARY
+                      echo "REMOVED=$(echo "$audit" | jq .remove)" >> $GITHUB_OUTPUT
+                      echo "CHANGED $(echo "$audit" | jq .change)" >> $GITHUB_STEP_SUMMARY
+                      echo "CHANGED=$(echo "$audit" | jq .change)" >> $GITHUB_OUTPUT
+                      echo "PREVIOUS VULNERABILITIES $(echo "$auditBefore")" >> $GITHUB_STEP_SUMMARY
+                      echo "PREVIOUS_VULNERABILITIES=$auditBefore" >> $GITHUB_OUTPUT
+                      echo "CURRENT VULNERABILITIES $(echo "$auditAfter")" >> $GITHUB_STEP_SUMMARY
+                      echo "CURRENT_VULNERABILITIES=$auditAfter" >> $GITHUB_OUTPUT
+                  else
+                      echo "No vulnerabilities fixed."
+                      echo "No vulnerabilities fixed." >> $GITHUB_STEP_SUMMARY
+                      exit 1
+                  fi
 
             - name: Create Pull Request
               id: cpr
@@ -35,8 +53,9 @@ jobs:
                   delete-branch: true
                   title: "[auto-generated]: npm audit fix"
                   body: |
-                      ${AUDIT}
-                  labels: |
-                      automated
-              env:
-                  AUDIT: ${{ steps.audit.outputs.audit }}
+                      Added ${{ steps.audit.outputs.ADDED }}
+                      Removed ${{ steps.audit.outputs.REMOVED }}
+                      Changed ${{ steps.audit.outputs.CHANGED }}
+                      Previous Vulnerabilities ${{ steps.audit.outputs.PREVIOUS_VULNERABILITIES }}
+                      Current Vulnerabilities ${{ steps.audit.outputs.CURRENT_VULNERABILITIES }}
+                  labels: automated
