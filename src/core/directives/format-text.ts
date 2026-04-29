@@ -679,7 +679,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                         newScript.setAttribute(attr.name, attr.value);
                     }
                 });
-                newScript.src = url;
+                newScript.src = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
 
                 script.replaceWith(newScript);
             } else {

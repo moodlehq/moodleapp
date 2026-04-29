@@ -325,6 +325,24 @@ export class CoreUrl {
     }
 
     /**
+     * Given a URL, add a protocol to it if it starts with // (protocol-relative URL).
+     * The protocol is taken from the base URL if provided, otherwise defaults to https.
+     *
+     * @param url The URL to resolve.
+     * @param baseUrl Optional base URL to extract the protocol from.
+     * @returns URL with protocol.
+     */
+    static resolveProtocolRelativeUrl(url: string, baseUrl?: string): string {
+        if (!url.startsWith('//')) {
+            return url;
+        }
+
+        const protocol = (baseUrl && CoreUrl.parse(baseUrl)?.protocol) || 'https';
+
+        return `${protocol}:${url}`;
+    }
+
+    /**
      * Convert a URL to an absolute URL (if it isn't already).
      *
      * @param parentUrl The parent URL.
