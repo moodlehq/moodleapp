@@ -1,0 +1,32 @@
+name: NPM Audit Fix
+
+on:
+    workflow_dispatch:
+
+jobs:
+    audit-fix:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - uses: actions/setup-node@v6
+              with:
+                  node-version-file: ".nvmrc"
+
+            - name: Run npm audit fix
+              run: |
+                  npm install --no-audit --ignore-scripts
+                  npm audit fix --ignore-scripts || echo "npm audit fix encountered more vulnerabilities."
+
+            - name: Commit and push changes
+              run: |
+                  git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  git config --local user.name "github-actions[bot]"
+                  if git diff --quiet package.json package-lock.json; then
+                      echo "No changes to commit."
+                  else
+                      git add package.json package-lock.json
+                      git commit -m "[auto-generated]: npm audit fix"
+                      git push
+                  fi
