@@ -66,7 +66,7 @@ Feature: Forced course language is applied in the app
 
     When I press "Mexican Course" in the app
     Then I should find "Curso" in the app
-    And I should find "Alumnos" in the app
+    And I should find "Participantes" in the app
 
     When I go back to the root page in the app
     Then I should find "My courses" in the app

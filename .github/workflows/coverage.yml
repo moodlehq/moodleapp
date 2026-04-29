@@ -212,6 +212,10 @@ jobs:
                   moodle-plugin-ci add-config "\$CFG->forced_plugin_settings = ['local_moodleappbehat' => ['coverage_path' => '$GITHUB_WORKSPACE/moodle/coverage/']];"
                   moodle-plugin-ci add-config 'define("TEST_MOD_BIGBLUEBUTTONBN_MOCK_SERVER", "http://localhost:8002/hash" . sha1($CFG->wwwroot));'
 
+            # During Moodle onsync period, this value should be false to avoid lang tests to fail due to missing langpacks.
+            - name: Run or skip lang tests
+              run: moodle-plugin-ci add-config 'define("TOOL_LANGIMPORT_REMOTE_TESTS", true);'
+
             - name: Run Behat tests
               run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
               env:
