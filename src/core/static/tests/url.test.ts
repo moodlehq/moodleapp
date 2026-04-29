@@ -266,6 +266,28 @@ describe('CoreUrl', () => {
         )).toEqual(undefined);
     });
 
+    it('resolves protocol-relative URLs', () => {
+        // URL doesn't start with //, leave it as is.
+        expect(CoreUrl.resolveProtocolRelativeUrl('https://school.edu')).toBe('https://school.edu');
+        expect(CoreUrl.resolveProtocolRelativeUrl('http://school.edu/path')).toBe('http://school.edu/path');
+        expect(CoreUrl.resolveProtocolRelativeUrl('school.edu')).toBe('school.edu');
+
+        // URL starts with //, add https by default.
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu')).toBe('https://school.edu');
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu/path')).toBe('https://school.edu/path');
+
+        // URL starts with //, use protocol from base URL.
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu', 'https://base.com')).toBe('https://school.edu');
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu', 'http://base.com')).toBe('http://school.edu');
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu', 'ftp://base.com')).toBe('ftp://school.edu');
+
+        // URL starts with //, base URL has no protocol, fall back to https.
+        expect(CoreUrl.resolveProtocolRelativeUrl('//school.edu', 'base.com')).toBe('https://school.edu');
+
+        // URL doesn't start with //, base URL is ignored.
+        expect(CoreUrl.resolveProtocolRelativeUrl('https://school.edu', 'http://base.com')).toBe('https://school.edu');
+    });
+
     it('converts to absolute URLs', () => {
         expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', 'https://mysite.edu')).toBe('https://mysite.edu');
         expect(CoreUrl.toAbsoluteURL('https://school.edu/foo/bar', '//mysite.edu')).toBe('https://mysite.edu');
