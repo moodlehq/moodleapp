@@ -169,7 +169,7 @@
 
     @if (!showLoading) {
         <div collapsible-footer slot="fixed">
-            @if (showRoom() && info && info.usermustwaittojoin === true && !info.canjoin) {
+            @if (showRoom() && info && info.usermustwaittojoin === true && !info.canjoin && !userLimitReached()) {
                 <div class="list-item-limited-width adaptable-buttons-row">
                     @if (isRefreshingMeetingInfo()) {
                         <ion-button fill="outline" class="ion-margin ion-text-wrap" expand="block" [disabled]="true"

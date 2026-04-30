@@ -79,6 +79,13 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
         return !!meetingInfo && (!meetingInfo.features || !!meetingInfo.features.showrecordings);
     });
 
+    readonly userLimitReached = computed(() => {
+        const meetingInfo = this.meetingInfo();
+
+        return !!meetingInfo && !!meetingInfo.statusrunning && meetingInfo.userlimit > 0 &&
+            ((meetingInfo.participantcount || 0) + (meetingInfo.moderatorcount || 0)) >= meetingInfo.userlimit;
+    });
+
     /**
      * @inheritdoc
      */
@@ -183,13 +190,10 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
      */
     protected setStatusMessage(meetingInfo: AddonModBBBMeetingInfo): void {
         // User limit wasn't calculated properly before MDL-76303 (4.0.8, 4.1.3).
-        if (meetingInfo.statusrunning && meetingInfo.userlimit > 0) {
-            const count = (meetingInfo.participantcount || 0) + (meetingInfo.moderatorcount || 0);
-            if (count === meetingInfo.userlimit) {
-                meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
+        if (this.userLimitReached()) {
+            meetingInfo.statusmessage = Translate.instant('addon.mod_bigbluebuttonbn.userlimitreached');
 
-                return;
-            }
+            return;
         }
 
         // Wait for moderator has more priority than open/close dates, when it shouldn't. See MDL-88273.
@@ -354,7 +358,12 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
             await AddonModBBB.invalidateAllGroupsMeetingInfo(bbb.id);
             await this.fetchMeetingInfo(false);
 
-            if (this.meetingInfo()?.canjoin) {
+            const meetingInfo = this.meetingInfo();
+            if (!meetingInfo) {
+                return;
+            }
+
+            if (meetingInfo.canjoin) {
                 await CoreToasts.show({
                     message: 'addon.mod_bigbluebuttonbn.moderatorhasjoinedshort',
                     translateMessage: true,
@@ -362,7 +371,7 @@ export class AddonModBBBIndexComponent extends CoreCourseModuleMainActivityCompo
                 });
 
                 this.moderatorHasJoined.set(true);
-            } else {
+            } else if (!this.userLimitReached()){
                 await CoreToasts.show({
                     message: 'addon.mod_bigbluebuttonbn.stillwaitingformoderator',
                     translateMessage: true,
