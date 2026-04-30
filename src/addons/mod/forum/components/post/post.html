@@ -142,9 +142,9 @@
                     [component]="component" [componentId]="componentId" [autoSave]="true" [contextInstanceId]="forum && forum.cmid"
                     [draftExtraParams]="{reply: post.id}" (contentChanged)="onMessageChange($event)" />
             </ion-item>
-            @if (accessInfo.canpostprivatereply) {
+            @if (accessInfo.canpostprivatereply && post.parentid) {
                 <ion-item class="ion-text-wrap">
-                    <ion-checkbox [(ngModel)]="formData.isprivatereply" name="isprivatereply">
+                    <ion-checkbox [(ngModel)]="formData.isprivatereply" name="isprivatereply" [disabled]="formData.isEditing">
                         {{ 'addon.mod_forum.privatereply' | translate }}
                     </ion-checkbox>
                 </ion-item>
