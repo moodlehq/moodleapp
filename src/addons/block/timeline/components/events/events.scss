@@ -20,15 +20,19 @@ h4 {
     core-mod-icon {
         --module-legacy-icon-padding: 8px;
         --margin-end: 0.5rem;
-        --margin-vertical: 0;
+        --margin-vertical: 0px;
     }
 
     ion-label {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
 
         .addon-block-timeline-activity-action {
+            align-self: flex-end;
             display: flex;
+            flex-grow: 1;
             justify-content: flex-end;
         }
     }
