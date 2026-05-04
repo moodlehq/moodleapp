@@ -16,6 +16,15 @@
     --padding-bottom: 10px;
 }
 
+.core-usermenu-admin-restrictions {
+    --background: #CFE2F2;
+
+    ion-icon {
+        font-size: 14px;
+        margin: 0.5rem;
+    }
+}
+
 @if ($core-user-hide-siteinfo) {
     .core-usermenu-siteinfo {
         display: none;

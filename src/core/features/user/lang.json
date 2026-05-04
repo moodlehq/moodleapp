@@ -1,5 +1,6 @@
 {
     "address": "Address",
+    "adminrestrictions": "Restrictions for admin accounts",
     "cannotviewprofile": "You cannot view the profile of this user",
     "city": "City/town",
     "completeprofile": "Complete profile",
@@ -9,6 +10,7 @@
     "completeprofilesupportsubject": "Need help completing my profile",
     "completeyourprofile": "Complete your profile",
     "contact": "Contact",
+    "contentrestrictedforadmins": "This content is restricted for admin accounts. Use a teacher or student account to view it.",
     "country": "Country",
     "department": "Department",
     "description": "Description",
@@ -24,6 +26,7 @@
     "interests": "Interests",
     "lastcourseaccess": "Last access to course",
     "lastname": "Last name",
+    "learnmore": "Learn more",
     "limitedprofile": "This profile is limited",
     "manager": "Manager",
     "newpicture": "New picture",
@@ -35,11 +38,14 @@
     "profile": "Profile",
     "roles": "Roles",
     "sendemail": "Email",
+    "signedinasadmin": "You are signed in with an administrator account. For security reasons, some content and links may not open in the app.",
+    "somefeaturesrestricted": "Some features are restricted for admin accounts.",
     "student": "Student",
     "support": "Contact site support",
     "supportmessagesent": "Your message has been sent.",
     "supportsubject": "[App] {{subject}}",
     "teacher": "Non-editing teacher",
+    "useappwithoutlimits": "To use the app without these limitations, sign in with a teacher or student account.",
     "useraccount": "User account",
     "userwithid": "User with ID {{id}}"
 }
