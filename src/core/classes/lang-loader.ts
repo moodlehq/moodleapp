@@ -22,6 +22,7 @@ import { firstValueFrom, from, Observable, of } from 'rxjs';
 export class MoodleTranslateLoader implements TranslateLoader {
 
     protected translations: { [lang: string]: TranslationObject } = {};
+    protected translationFiles: { [lang: string]: TranslationObject } = {};
 
     protected customStrings: { [lang: string]: TranslationObject } = {}; // Strings defined using the admin tool.
     protected sitePluginsStrings: { [lang: string]: TranslationObject } = {}; // Strings defined by site plugins.
@@ -66,8 +67,6 @@ export class MoodleTranslateLoader implements TranslateLoader {
         // Return the imported translations for the requested language.
         let translation = await this.fetchLanguageFile(lang);
 
-        this.translations[lang] = translation;
-
         // Check if it has a parent language.
         const parentLang = this.getParentLanguage(lang);
         if (parentLang) {
@@ -96,10 +95,17 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Promise resolved with the translations object.
      */
     protected async fetchLanguageFile(lang: string): Promise<TranslationObject> {
+        if (this.translationFiles[lang]) {
+            return this.translationFiles[lang];
+        }
+        this.logger.debug('Fetching language file', lang);
+
         try {
             const request = Http.get(`/assets/lang/${lang}.json`) as Observable<TranslationObject>;
 
-            return await firstValueFrom(request);
+            this.translationFiles[lang] = await firstValueFrom(request);
+
+            return this.translationFiles[lang];
         } catch (error) {
             this.logger.error('Error fetching language file', lang, error);
 
@@ -115,7 +121,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Parent language code or undefined if not found.
      */
     getParentLanguage(lang: string): string | undefined {
-        const parentLang = this.translations[lang]?.[MoodleTranslateLoader.PARENT_LANG_KEY] as string | undefined;
+        const parentLang = this.translationFiles[lang]?.[MoodleTranslateLoader.PARENT_LANG_KEY] as string | undefined;
         if (parentLang && parentLang !== MoodleTranslateLoader.PARENT_LANG_KEY && parentLang !== lang) {
             return parentLang;
         }
@@ -196,7 +202,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns The merged translations object.
      */
     protected applySiteStrings(lang: string): TranslationObject {
-        let translation = this.translations[lang] || {};
+        let translation = this.translationFiles[lang] || {};
 
         const sitePluginsStrings = this.sitePluginsStrings[lang] || {};
         const customStrings = this.customStrings[lang] || {};
@@ -231,7 +237,7 @@ export class MoodleTranslateLoader implements TranslateLoader {
             await firstValueFrom(Translate.reloadLang(parentLang));
         }
 
-        if (!strings || strings[currentLang]) {
+        if (!strings || strings[currentLang] || (parentLang && strings[parentLang])) {
             // Load current language to merge the new site plugins strings.
             await firstValueFrom(Translate.reloadLang(currentLang));
         }
