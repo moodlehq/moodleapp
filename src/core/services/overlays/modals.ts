@@ -152,6 +152,15 @@ export class CoreModalsService {
             await modal.present();
         }
 
+        // Ensure the modal is accessible to screen readers by focusing the element with aria-modal="true".
+        // Since the surrounding app content is hidden (aria-hidden="true"), the modal must have focus
+        // to be accessible. We focus this wrapper element since the first input field may not exist yet.
+        const ariaModal = modal.shadowRoot?.querySelector<HTMLElement>('[part=content]');
+        if (ariaModal) {
+            ariaModal.tabIndex = -1;
+            ariaModal.focus();
+        }
+
         if (!alreadyDisplayed) {
             fixOverlayAriaHidden(modal);
         }
