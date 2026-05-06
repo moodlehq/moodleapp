@@ -261,7 +261,7 @@ export class AddonModH5PActivityProvider {
         const params: AddonModH5pactivityGetUserAttemptsWSParams = {
             h5pactivityid: id,
             page: options.page,
-            perpage: options.perPage === 0 ? 0 : options.perPage + 1, // Get 1 more to be able to know if there are more to load.
+            perpage: options.perPage,
             sortorder: options.sortOrder,
             firstinitial: options.firstInitial,
             lastinitial: options.lastInitial,
@@ -284,14 +284,11 @@ export class AddonModH5PActivityProvider {
             throw new CoreWSError(response.warnings[0]);
         }
 
-        let canLoadMore = false;
-        if (options.perPage > 0) {
-            canLoadMore = response.usersattempts.length > options.perPage;
-            response.usersattempts = response.usersattempts.slice(0, options.perPage);
-        }
-
+        // We cannot use the strategy to obtain 1 more user to know if there are more to load because the WS only accepts
+        // page+perpage, not the position to start from (e.g. start from position 20). So if we get page=1 and perpage=21, we obtain
+        // from user 22, not from user 21, so the user 21 is "lost". If length>=perPage users, assume there can be more.
         return {
-            canLoadMore: canLoadMore,
+            canLoadMore: options.perPage > 0 && response.usersattempts.length >= options.perPage,
             users: response.usersattempts.map(userAttempts => this.formatUserAttempts(userAttempts)),
             totalAttempts: response.totalattempts,
         };

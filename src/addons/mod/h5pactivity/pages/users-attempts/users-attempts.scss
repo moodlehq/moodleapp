@@ -54,4 +54,9 @@
             z-index: 1;
         }
     }
+
+    core-loading {
+        // Change display to block to avoid the "Load more" button to appear at the top in iOS.
+        --contents-display: block;
+    }
 }
