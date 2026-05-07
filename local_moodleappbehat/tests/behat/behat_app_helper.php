@@ -433,7 +433,7 @@ class behat_app_helper extends behat_base {
         $usertoken = $DB->get_record('external_tokens', $token_params);
         if (!$usertoken) {
             $context = context_system::instance();
-            $token = external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, $context);
+            $token = \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, $service, $userid, $context);
             $token_params['token'] = $token;
             $privatetoken = $DB->get_field('external_tokens', 'privatetoken', $token_params);
         } else {
