@@ -227,19 +227,30 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * Reload a language to ensure the new strings are applied.
      *
      * @param currentLang Current language.
-     * @param strings If defined, only reloads the language if it has strings for the current language.
-     *  If not defined, the language will be reloaded.
+     * @param strings If defined, only reloads each language involved in the process when the map contains strings
+     *  for that language. This check is applied to the fallback, parent, and current languages as needed. If not
+     *  defined, the relevant languages will be reloaded.
+     *
+     * @todo Create a debounce function to avoid reloading the language multiple times.
      */
     protected async reloadLanguage(currentLang: string, strings?: { [lang: string]: TranslationObject }): Promise<void> {
+        const fallbackLang = Translate.getFallbackLang();
+        if (fallbackLang && (!strings || strings[fallbackLang])) {
+            // Reload fallback language if needed.
+            await firstValueFrom(Translate.reloadLang(fallbackLang));
+        }
+
         const parentLang = this.getParentLanguage(currentLang);
-        if (parentLang && (!strings || strings[parentLang])) {
-            // Load parent language if needed.
+        if (parentLang && parentLang !== fallbackLang && (!strings || strings[parentLang])) {
+            // Reload parent language if needed.
             await firstValueFrom(Translate.reloadLang(parentLang));
         }
 
-        if (!strings || strings[currentLang] || (parentLang && strings[parentLang])) {
-            // Load current language to merge the new site plugins strings.
-            await firstValueFrom(Translate.reloadLang(currentLang));
+        if (currentLang !== fallbackLang && currentLang !== parentLang) {
+            if (!strings || strings[currentLang] || (parentLang && strings[parentLang])) {
+                // Reload current language to merge the new site plugins strings.
+                await firstValueFrom(Translate.reloadLang(currentLang));
+            }
         }
     }
 
