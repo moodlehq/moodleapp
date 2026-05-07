@@ -72,22 +72,34 @@
 
     .userinitials {
         background-color: var(--gray-200);
-        vertical-align: middle;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--core-avatar-radius);
         color: var(--gray-800);
         font-weight: normal;
+        font-size: calc(var(--core-avatar-size) * 0.3);
+
+        display: inline-flex;
+        vertical-align: middle;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+
+        border-radius: var(--core-avatar-radius);
+        margin: var(--userpicture-padding);
+
         width: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
         height: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
         min-width: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
         min-height: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
-        font-size: calc(var(--core-avatar-size)*0.3);
-        margin: var(--userpicture-padding);
 
         &::after {
             content: attr(data-initials);
+            overflow: hidden;
+
+            width: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
+            height: calc(var(--core-avatar-size) - var(--userpicture-padding) - var(--userpicture-padding));
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--core-avatar-radius);
         }
     }
 
