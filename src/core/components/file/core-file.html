@@ -30,7 +30,9 @@
                     <ion-button fill="clear" (click)="openFile($event, true)" [title]="openButtonLabel | translate">
                         <ion-icon slot="icon-only" [name]="openButtonIcon" aria-hidden="true" />
                     </ion-button>
-                } @else if (!isDownloading && canDelete) {
+                }
+
+                @if (!isDownloading && canDelete) {
                     <ion-button fill="clear" (click)="delete($event)" [ariaLabel]="'core.delete' | translate" color="danger">
                         <ion-icon slot="icon-only" name="fas-trash" aria-hidden="true" />
                     </ion-button>
