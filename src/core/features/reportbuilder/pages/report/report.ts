@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -27,16 +27,13 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
         CoreReportBuilderReportDetailComponent,
     ],
 })
-export default class CoreReportBuilderReportPage implements OnInit {
+export default class CoreReportBuilderReportPage {
 
-    reportId!: string;
-    reportDetail?: CoreReportBuilderReportDetail;
+    readonly reportId = signal<string>('');
+    readonly reportDetail = signal<CoreReportBuilderReportDetail | undefined>(undefined);
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.reportId = CoreNavigator.getRequiredRouteParam('id');
+    constructor() {
+        this.reportId.set(CoreNavigator.getRequiredRouteParam('id'));
     }
 
     /**
@@ -45,7 +42,7 @@ export default class CoreReportBuilderReportPage implements OnInit {
      * @param reportDetail it contents the detail of the report.
      */
     loadReportDetail(reportDetail: CoreReportBuilderReportDetail): void {
-        this.reportDetail = reportDetail;
+        this.reportDetail.set(reportDetail);
     }
 
     /**
@@ -57,7 +54,7 @@ export default class CoreReportBuilderReportPage implements OnInit {
 
         CoreModals.openSideModal<void>({
             component: CoreReportBuilderReportSummaryComponent,
-            componentProps: { reportDetail: this.reportDetail },
+            componentProps: { reportDetail: this.reportDetail() },
         });
     }
 

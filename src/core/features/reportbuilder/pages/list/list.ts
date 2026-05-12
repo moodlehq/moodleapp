@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreReportBuilderReportsSource } from '@features/reportbuilder/classes/reports-source';
@@ -22,7 +22,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
-import { BehaviorSubject } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -38,7 +37,7 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
 
     reports!: CoreListItemsManager<CoreReportBuilderReport, CoreReportBuilderReportsSource>;
 
-    state$: Readonly<BehaviorSubject<CoreReportBuilderListState>> = new BehaviorSubject<CoreReportBuilderListState>({
+    readonly state = signal<CoreReportBuilderListState>({
         page: 1,
         perpage: REPORTS_LIST_LIMIT,
         loaded: false,
@@ -91,13 +90,12 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
     }
 
     /**
-     * Properties of the state to update.
+     * Update the state of the component.
      *
-     * @param state Object to update.
+     * @param state Properties of the state to update.
      */
-    updateState(state: Partial<CoreReportBuilderListState>): void {
-        const previousState = this.state$.getValue();
-        this.state$.next({ ...previousState, ...state });
+    protected updateState(state: Partial<CoreReportBuilderListState>): void {
+        this.state.update((previousState) => ({ ...previousState, ...state }));
     }
 
     /**

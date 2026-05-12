@@ -8,17 +8,18 @@
                 <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true" />
             </ion-button>
         </ion-buttons>
-        @if (reportDetail) {
+        @let details = reportDetail();
+        @if (details) {
             <ion-title>
                 <h1>
-                    <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false" />
+                    <core-format-text [clean]="true" [text]="details.name" [filter]="false" />
                 </h1>
-                <p class="subheading"> {{ reportDetail.sourcename }} </p>
+                <p class="subheading"> {{ details.sourcename }} </p>
             </ion-title>
         }
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <core-report-builder-report-detail [isBlock]="false" [reportId]="reportId" (onReportLoaded)="loadReportDetail($event)" />
+    <core-report-builder-report-detail [isBlock]="false" [reportId]="reportId()" (onReportLoaded)="loadReportDetail($event)" />
 </ion-content>

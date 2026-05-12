@@ -1,76 +1,72 @@
-@if (state$ | async; as state) {
+@let reportState = state();
+<core-loading [hideUntil]="reportState.loaded">
 
+    <ion-refresher slot="fixed" [disabled]="!reportState.loaded" (ionRefresh)="refreshReport($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
 
-    <core-loading [hideUntil]="state.loaded">
+    @if (reportState.report && reportState.report?.data?.rows?.length && reportState.report?.data?.headers && reportState.report?.details) {
 
-        <ion-refresher slot="fixed" [disabled]="!state.loaded" (ionRefresh)="refreshReport($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
-        </ion-refresher>
-
-        @if (state.report && state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details) {
-
-            @if (isCardLayout) {
-                @for (row of state.report.data.rows; track rowIndex; let rowIndex = $index) {
-                    <ion-card>
-                        <ion-list class="ion-text-wrap">
-                            @for (column of row.columns | slice:0:row.isExpanded ?
-                                row.columns.length : state.cardVisibleColumns; track columnIndex; let columnIndex = $index) {
-                                <core-report-builder-report-column [columnIndex]="columnIndex" [rowIndex]="rowIndex"
-                                    [isExpandable]="columnIndex === 0 && row.columns.length > state.cardVisibleColumns"
-                                    [isExpanded]="row.isExpanded" [showFirstTitle]="state.cardviewShowFirstTitle" [source]="source$ | async"
-                                    [contextId]="state.report.details.contextid" [header]="state.report.data.headers[columnIndex]"
-                                    [column]="column" (onToggleRow)="toggleRow(rowIndex)" />
+        @if (isCardLayout()) {
+            @for (row of reportState.report.data.rows; track rowIndex; let rowIndex = $index) {
+                <ion-card>
+                    <ion-list class="ion-text-wrap">
+                        @for (column of row.columns | slice:0:row.isExpanded ?
+                            row.columns.length : reportState.cardVisibleColumns; track columnIndex; let columnIndex = $index) {
+                            <core-report-builder-report-column [columnIndex]="columnIndex" [rowIndex]="rowIndex"
+                                [isExpandable]="columnIndex === 0 && row.columns.length > reportState.cardVisibleColumns"
+                                [isExpanded]="row.isExpanded" [showFirstTitle]="reportState.cardviewShowFirstTitle" [source]="source()"
+                                [contextId]="reportState.report.details.contextid" [header]="reportState.report.data.headers[columnIndex]"
+                                [column]="column" (onToggleRow)="toggleRow(rowIndex)" />
+                        }
+                    </ion-list>
+                </ion-card>
+            }
+        } @else {
+            <div class="x-scrollable">
+                <table class="core-table">
+                    <thead>
+                        <tr>
+                            @for (header of reportState.report.data.headers; track $index) {
+                                <th>
+                                    {{ header }}
+                                </th>
                             }
-                        </ion-list>
-                    </ion-card>
-                }
-            } @else {
-                <div class="x-scrollable">
-                    <table class="core-table">
-                        <thead>
+                        </tr>
+                    </thead>
+                    <tbody class="auto-striped">
+                        @for (row of reportState.report.data.rows; track $index) {
                             <tr>
-                                @for (header of state.report.data.headers; track $index) {
-                                    <th>
-                                        {{ header }}
-                                    </th>
+                                @for (column of row.columns; track $index) {
+                                    <td>
+                                        @if (isString(column)) {
+                                            <core-format-text [text]="column" [contextLevel]="source()"
+                                                [contextInstanceId]="reportState.report.details.contextid" />
+                                        } @else {
+                                            {{ column }}
+                                        }
+
+                                    </td>
                                 }
                             </tr>
-                        </thead>
-                        <tbody class="auto-striped">
-                            @for (row of state.report.data.rows; track $index) {
-                                <tr>
-                                    @for (column of row.columns; track $index) {
-                                        <td>
-                                            @if (isString(column)) {
-                                                <core-format-text [text]="column" [contextLevel]="source$ | async"
-                                                    [contextInstanceId]="state.report.details.contextid" />
-                                            } @else {
-                                                {{ column }}
-                                            }
-
-                                        </td>
-                                    }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-
-
-        } @else {
-
-            <core-empty-box icon="fas-rectangle-list">
-                <p> {{ 'core.course.nocontentavailable' | translate }} </p>
-            </core-empty-box>
-
+                        }
+                    </tbody>
+                </table>
+            </div>
         }
 
-        @if (!isBlock && state.report?.data?.rows?.length && state.report?.data?.headers && state.report?.details) {
-            <core-infinite-loading [enabled]="state.canLoadMoreRows" (action)="fetchMoreInfo($event)" [error]="state.errorLoadingRows" />
-        }
 
-    </core-loading>
+    } @else {
 
+        <core-empty-box icon="fas-rectangle-list">
+            <p> {{ 'core.course.nocontentavailable' | translate }} </p>
+        </core-empty-box>
 
-}
+    }
+
+    @if (!isBlock() && reportState.report?.data?.rows?.length && reportState.report?.data?.headers && reportState.report?.details) {
+        <core-infinite-loading [enabled]="reportState.canLoadMoreRows" (action)="fetchMoreInfo($event)"
+            [error]="reportState.errorLoadingRows" />
+    }
+
+</core-loading>
