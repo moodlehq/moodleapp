@@ -977,12 +977,12 @@ export class AddonModAssignProvider {
             isBlind: !!submission.blindid,
         });
 
-        if (!response.feedback || !response.feedback.gradeddate) {
+        if (!response.feedback?.grade?.timemodified) {
             // Not graded.
             return true;
         }
 
-        return response.feedback.gradeddate < submission.timemodified;
+        return response.feedback.grade.timemodified < submission.timemodified;
     }
 
     /**
