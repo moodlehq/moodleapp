@@ -133,6 +133,15 @@ export class CoreFileUploaderProvider {
     }
 
     /**
+     * Check whether the in-app audio recorder can be used.
+     *
+     * @returns Whether the in-app audio recorder can be used.
+     */
+    canUseInAppAudioRecorder(): boolean {
+        return CorePlatform.supportsMediaCapture() && CorePlatform.supportsWebAssembly();
+    }
+
+    /**
      * Start the audio recorder application and return information about captured audio clip files.
      *
      * @returns Promise resolved with the result.
@@ -141,7 +150,7 @@ export class CoreFileUploaderProvider {
         this.onAudioCapture.next(true);
 
         try {
-            if (!CorePlatform.supportsMediaCapture() || !CorePlatform.supportsWebAssembly()) {
+            if (!this.canUseInAppAudioRecorder()) {
                 const media = await MediaCapture.captureAudio({ limit: 1 });
 
                 return media;
