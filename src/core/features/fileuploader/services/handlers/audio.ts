@@ -20,6 +20,7 @@ import { CoreArray } from '@static/array';
 import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
+import { CoreFileUploader } from '../fileuploader';
 
 /**
  * Handler to record an audio to upload it.
@@ -41,24 +42,13 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
      * @inheritdoc
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CorePlatform.isIOS()) {
-            // In iOS it's recorded as WAV.
-            return CoreArray.filterByRegexp(mimetypes, /^audio\/wav$/);
-        } else if (CorePlatform.isAndroid()) {
-            // In Android we don't know the format the audio will be recorded, so accept any audio mimetype.
-            return CoreArray.filterByRegexp(mimetypes, /^audio\//);
-        } else {
-            // In browser, support audio formats that are supported by MediaRecorder.
-            if (MediaRecorder) {
-                return mimetypes.filter((type) => {
-                    const matches = type.match(/^audio\//);
-
-                    return matches && matches.length && MediaRecorder.isTypeSupported(type);
-                });
-            }
+        if (CoreFileUploader.canUseInAppAudioRecorder()) {
+            // The in-app audio recorder uses mp3.
+            // Only accept mp3 mimetype to avoid displaying the handler if other audio types are accepted but mp3 is not.
+            return CoreArray.filterByRegexp(mimetypes, /^audio\/mp3$/);
         }
 
-        return [];
+        return CoreArray.filterByRegexp(mimetypes, /^audio\//);
     }
 
     /**
