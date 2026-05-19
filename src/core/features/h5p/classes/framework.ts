@@ -656,7 +656,9 @@ export class CoreH5PFramework {
                         'l1.minorversion < l2.minorversion)) ' +
                     'WHERE l1.addto IS NOT NULL AND l2.machinename IS NULL';
 
-        return await db.getRecordsSql<CoreH5PLibraryAddonData>(query);
+        const addons = await db.getRecordsSql<LibraryAddonDBData>(query);
+
+        return addons.map((addon) => this.parseLibAddonData(addon));
     }
 
     /**
