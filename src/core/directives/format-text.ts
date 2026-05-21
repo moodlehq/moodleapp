@@ -1111,6 +1111,12 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         } else if (site && (iframe.dataset[DATASET_APP_SITE_REFERER] === 'true' || CoreUrl.urlNeedsReferer(src))) {
             iframe.dataset[DATASET_APP_SITE_REFERER] = 'false'; // Avoid doing this multiple times if treated more than once.
             src = site.fixRefererForUrl(src);
+
+            if (src !== iframe.src) {
+                // Empty iframe src before any async code to prevent loading the original url due to a race condition.
+                // In iOS 18-, changing the src of the iframe while it's being loaded doesn't seem to properly load the new page.
+                iframe.src = '';
+            }
         }
 
         await CoreIframe.fixIframeCookies(src);
