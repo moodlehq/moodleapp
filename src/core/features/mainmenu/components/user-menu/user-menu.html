@@ -44,6 +44,16 @@
                         <p class="item-heading">{{ user?.fullname ?? siteInfo.fullname }}</p>
                     </ion-label>
                 </ion-item>
+
+                @if (isAdmin()) {
+                    <ion-item class="core-usermenu-admin-restrictions">
+                        <ion-icon name="fas-circle-info" slot="start" />
+                        <p>
+                            {{ 'core.user.somefeaturesrestricted' | translate }}
+                            <a (click)="openFeaturesRestrictionsInfoModal()">{{ 'core.user.learnmore' | translate }}</a>
+                        </p>
+                    </ion-item>
+                }
             }
 
             @for (handler of handlers; track handler.name) {

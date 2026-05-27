@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnDestroy, OnInit, Type, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, Type, viewChildren } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
@@ -71,6 +71,7 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
     displaySwitchAccount = true;
     displayContactSupport = false;
     removeAccountOnLogout = false;
+    readonly isAdmin = signal(false);
 
     protected siteId?: string;
     protected siteName?: string;
@@ -95,6 +96,8 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.loadCustomMenuItems();
 
         await this.loadData();
+
+        this.isAdmin.set(currentSite.isAdmin());
     }
 
     /**
@@ -310,6 +313,20 @@ export class CoreMainMenuUserMenuComponent implements OnInit, OnDestroy {
         await this.close(event);
 
         await CoreLoginHelper.goToAddSite(true, true);
+    }
+
+    /**
+     * Open features restrictions info modal.
+     */
+    async openFeaturesRestrictionsInfoModal(): Promise<void> {
+        const message = `<p>${Translate.instant('core.user.signedinasadmin')}</p>
+        <p>${Translate.instant('core.user.useappwithoutlimits')}</p>`;
+
+        await CoreAlerts.show({
+            header: Translate.instant('core.user.adminrestrictions'),
+            message: message,
+            buttons: [Translate.instant('core.ok')],
+        });
     }
 
     /**

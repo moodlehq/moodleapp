@@ -79,6 +79,16 @@
         </ion-list>
     }
 
+    @if (isAdmin()) {
+        <div class="addon-mod-h5pactivity-admin-restrictions">
+            <ion-icon name="fas-circle-info" slot="start" />
+            <p>
+                {{ 'core.user.contentrestrictedforadmins' | translate }}
+                <a (click)="openFeaturesRestrictionsInfoModal()">{{ 'core.user.learnmore' | translate }}</a>
+            </p>
+        </div>
+    }
+
     @if (playing) {
         <core-h5p-iframe [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
             [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
