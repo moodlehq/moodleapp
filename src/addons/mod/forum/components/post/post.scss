@@ -51,15 +51,23 @@
 
         .addon-mod-forum-post-info {
             margin-top: 8px;
+            align-items: start;
         }
 
         .addon-mod-forum-post-title + .addon-mod-forum-post-info {
             margin-top: 0px;
         }
 
-        .addon-mod-forum-post-title .item-heading,
         .addon-mod-forum-post-info .addon-mod-forum-post-author {
             flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .addon-mod-forum-post-title-options {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-direction: column;
         }
 
     }
