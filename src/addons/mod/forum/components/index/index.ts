@@ -90,7 +90,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
 
     component = ADDON_MOD_FORUM_COMPONENT_LEGACY;
     pluginName = 'forum';
-    descriptionNote?: string;
     promisedDiscussions = new CorePromisedValue<AddonModForumDiscussionsManager>();
     discussionsItems: (AddonModForumDiscussion | AddonModForumOfflineDiscussion)[] = [];
     fetchFailed = false;
@@ -408,9 +407,6 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         const showDueDateMessage = !CoreSites.getCurrentSite()?.isVersionGreaterEqualThan('3.11');
         this.description = forum.intro || this.description;
         this.availabilityMessage = AddonModForumHelper.getAvailabilityMessage(forum, showDueDateMessage);
-        this.descriptionNote = Translate.instant('addon.mod_forum.numdiscussions', {
-            numdiscussions: forum.numdiscussions,
-        });
 
         this.dataRetrieved.emit(forum);
 
