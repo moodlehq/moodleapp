@@ -209,13 +209,19 @@ export class CorePushNotificationsProvider {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const database = CoreAppDB.getDB();
-        const badgesTable = new CoreDatabaseTableProxy<CorePushNotificationsBadgeDBRecord, CorePushNotificationsBadgeDBPrimaryKeys>(
+        const badgesTable = CoreDatabaseTableProxy.createInstance<
+            CorePushNotificationsBadgeDBRecord,
+            CorePushNotificationsBadgeDBPrimaryKeys
+        >(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             database,
             BADGE_TABLE_NAME,
             [...BADGE_TABLE_PRIMARY_KEYS],
         );
-        const pendingUnregistersTable = new CoreDatabaseTableProxy<CorePushNotificationsPendingUnregisterDBRecord, 'siteid'>(
+        const pendingUnregistersTable = CoreDatabaseTableProxy.createInstance<
+            CorePushNotificationsPendingUnregisterDBRecord,
+            'siteid'
+        >(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             database,
             PENDING_UNREGISTER_TABLE_NAME,

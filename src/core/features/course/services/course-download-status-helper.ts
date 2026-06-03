@@ -18,7 +18,7 @@ import { CoreSites } from '@services/sites';
 import { makeSingleton } from '@singletons';
 import { lazyMap, LazyMap } from '@/core/utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '@/core/utils/async-instance';
-import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreEagerDatabaseTable } from '@classes/database/eager-database-table';
 import { CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { CoreCourseStatusDBRecord, COURSE_STATUS_TABLE } from './database/course';
 import { CoreLogger } from '@static/logger';
@@ -46,7 +46,7 @@ declare module '@static/events' {
 @Injectable({ providedIn: 'root' })
 export class CoreCourseDownloadStatusHelperService {
 
-    protected tables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreCourseStatusDBRecord>>>;
+    protected tables: LazyMap<AsyncInstance<CoreEagerDatabaseTable<CoreCourseStatusDBRecord>>>;
 
     protected logger = CoreLogger.getInstance('CoreCourseStatusHelper');
 

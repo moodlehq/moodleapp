@@ -50,7 +50,7 @@ import {
     QUEUE_TABLE_PRIMARY_KEYS,
 } from '@services/database/filepool';
 import { CoreFileHelper } from './file-helper';
-import { CoreDatabaseTable } from '@classes/database/database-table';
+import { CoreLazyDatabaseTable } from '@classes/database/lazy-database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { lazyMap, LazyMap } from '../utils/lazy-map';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
@@ -66,7 +66,7 @@ import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
  */
 class CoreFilepoolQueue {
 
-    protected table = asyncInstance<CoreDatabaseTable<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>>();
+    protected table = asyncInstance<CoreLazyDatabaseTable<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>>();
     protected deferreds: { [s: string]: { [s: string]: CoreFilepoolPromisedValue } } = {};
     protected running = false;
     protected logger = CoreLogger.getInstance('CoreFilepoolQueue');
@@ -88,7 +88,7 @@ class CoreFilepoolQueue {
     async initializeDatabase(): Promise<void> {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const queueTable = new CoreDatabaseTableProxy<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>(
+        const queueTable = CoreDatabaseTableProxy.createInstance<CoreFilepoolQueueDBRecord, CoreFilepoolQueueDBPrimaryKeys>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
             CoreAppDB.getDB(),
             QUEUE_TABLE_NAME,
@@ -427,12 +427,12 @@ export class CoreFilepoolProvider {
     // Variables to prevent downloading packages/files twice at the same time.
     protected packagesPromises: { [s: string]: { [s: string]: Promise<void> } } = {};
     protected filePromises: { [s: string]: { [s: string]: Promise<string> } } = {};
-    protected filesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolFileEntry, 'fileId', never>>>;
+    protected filesTables: LazyMap<AsyncInstance<CoreLazyDatabaseTable<CoreFilepoolFileEntry, 'fileId', never>>>;
     protected linksTables: LazyMap<
-        AsyncInstance<CoreDatabaseTable<CoreFilepoolLinksDBRecord, CoreFilepoolLinksDBPrimaryKeys, never>>
+        AsyncInstance<CoreLazyDatabaseTable<CoreFilepoolLinksDBRecord, CoreFilepoolLinksDBPrimaryKeys, never>>
     >;
 
-    protected packagesTables: LazyMap<AsyncInstance<CoreDatabaseTable<CoreFilepoolPackageEntry>>>;
+    protected packagesTables: LazyMap<AsyncInstance<CoreLazyDatabaseTable<CoreFilepoolPackageEntry>>>;
 
     // To avoid fixing the same file ID twice at the same time. @deprecated since 4.5
     protected fixFileIdPromises: Record<string, Record<string, Promise<void>>> = {};

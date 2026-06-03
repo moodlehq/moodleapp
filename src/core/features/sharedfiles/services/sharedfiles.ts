@@ -53,7 +53,7 @@ export class CoreSharedFilesProvider {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const database = CoreAppDB.getDB();
-        const sharedFilesTable = new CoreDatabaseTableProxy<CoreSharedFilesDBRecord>(
+        const sharedFilesTable = CoreDatabaseTableProxy.createInstance<CoreSharedFilesDBRecord>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             SHARED_FILES_TABLE_NAME,

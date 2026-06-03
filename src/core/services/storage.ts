@@ -206,7 +206,7 @@ function getStorageTable(database: SQLiteDB): Promise<CoreStorageTable> {
     }
 
     const table = new Promise<CoreStorageTable>((resolve, reject) => {
-        const tableProxy = new CoreDatabaseTableProxy<CoreStorageRecord, 'key'>(
+        const tableProxy = CoreDatabaseTableProxy.createInstance<CoreStorageRecord, 'key'>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             database,
             TABLE_NAME,

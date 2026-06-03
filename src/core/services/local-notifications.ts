@@ -188,21 +188,21 @@ export class CoreLocalNotificationsProvider {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         const database = CoreAppDB.getDB();
-        const sitesTable = new CoreDatabaseTableProxy<CoreLocalNotificationsSitesDBRecord, 'id', never>(
+        const sitesTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsSitesDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             LOCAL_NOTIFICATIONS_SITES_TABLE_NAME,
             ['id'],
             null,
         );
-        const componentsTable = new CoreDatabaseTableProxy<CoreLocalNotificationsComponentsDBRecord, 'id', never>(
+        const componentsTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsComponentsDBRecord, 'id', never>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             COMPONENTS_TABLE_NAME,
             ['id'],
             null,
         );
-        const triggeredTable = new CoreDatabaseTableProxy<CoreLocalNotificationsTriggeredDBRecord>(
+        const triggeredTable = CoreDatabaseTableProxy.createInstance<CoreLocalNotificationsTriggeredDBRecord>(
             { cachingStrategy: CoreDatabaseCachingStrategy.None },
             database,
             TRIGGERED_TABLE_NAME,

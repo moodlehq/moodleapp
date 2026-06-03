@@ -46,7 +46,7 @@ export class CoreUserToursService {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
         this.table.setLazyConstructor(async () => {
-            const table = new CoreDatabaseTableProxy<CoreUserToursDBEntry>(
+            const table = CoreDatabaseTableProxy.createInstance<CoreUserToursDBEntry>(
                 { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
                 CoreAppDB.getDB(),
                 USER_TOURS_TABLE_NAME,

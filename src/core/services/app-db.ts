@@ -54,7 +54,7 @@ export class CoreAppDBService {
 
         await database.createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA);
 
-        const schemaVersionsTable = new CoreDatabaseTableProxy<SchemaVersionsDBEntry, 'name'>(
+        const schemaVersionsTable = CoreDatabaseTableProxy.createInstance<SchemaVersionsDBEntry, 'name'>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             database,
             SCHEMA_VERSIONS_TABLE_NAME,
