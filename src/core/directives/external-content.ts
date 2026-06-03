@@ -69,14 +69,6 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
      * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
      */
     @Input() src?: string;
-    /**
-     * @deprecated since 4.4. Use url instead. Keeping it a bit more time for backward compatibility.
-     */
-    @Input() href?: string;
-    /**
-     * @deprecated since 4.4. Use posterUrl instead. Keeping it a bit more time for backward compatibility.
-     */
-    @Input() poster?: string;
 
     /**
      * Event emitted when the content is loaded. Only for images.
@@ -159,7 +151,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
 
         if (tagName === 'A' || tagName === 'IMAGE') {
             targetAttr = 'href';
-            url = this.url ?? this.href ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
+            url = this.url ?? '';
 
         } else if (tagName === 'IMG') {
             targetAttr = 'src';
@@ -169,10 +161,10 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             targetAttr = 'src';
             url = this.url ?? this.src ?? ''; // eslint-disable-line @typescript-eslint/no-deprecated
 
-            if (tagName === 'VIDEO' && (this.posterUrl || this.poster)) { // eslint-disable-line @typescript-eslint/no-deprecated
+            if (tagName === 'VIDEO' && this.posterUrl) {
                 // Handle poster.
-                // eslint-disable-next-line @typescript-eslint/no-deprecated
-                this.handleExternalContent('poster', this.posterUrl ?? this.poster ?? '').catch(() => {
+
+                this.handleExternalContent('poster', this.posterUrl ?? '').catch(() => {
                     // Ignore errors.
                 });
             }
@@ -263,9 +255,9 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
         } else {
             this.element.setAttribute(targetAttr, url);
 
-            const originalUrl = targetAttr === 'poster' ?
-                (this.posterUrl ?? this.poster) : // eslint-disable-line @typescript-eslint/no-deprecated
-                (this.url ?? this.src ?? this.href); // eslint-disable-line @typescript-eslint/no-deprecated
+            const originalUrl = targetAttr === 'poster'
+                ? this.posterUrl
+                : (this.url ?? this.src); // eslint-disable-line @typescript-eslint/no-deprecated
             if (originalUrl && originalUrl !== url) {
                 this.element.setAttribute(`data-original-${targetAttr}`, originalUrl);
             }
