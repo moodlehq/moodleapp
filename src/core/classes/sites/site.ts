@@ -253,13 +253,10 @@ export class CoreSite extends CoreAuthenticatedSite {
         return this.cacheTable.reduce(
             {
                 sql: 'SUM(length(data))',
-                js: (size, record) => size + record.data.length,
-                jsInitialValue: 0,
             },
             {
                 sql: `WHERE component = ?${extraClause}`,
                 sqlParams: params,
-                js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
         );
     }
@@ -357,7 +354,6 @@ export class CoreSite extends CoreAuthenticatedSite {
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
             sqlParams: [`${key}%`],
-            js: record => !!record.key?.startsWith(key),
         });
     }
 
@@ -435,8 +431,6 @@ export class CoreSite extends CoreAuthenticatedSite {
     async getCacheUsage(): Promise<number> {
         return this.cacheTable.reduce({
             sql: 'SUM(length(data))',
-            js: (size, record) => size + record.data.length,
-            jsInitialValue: 0,
         });
     }
 

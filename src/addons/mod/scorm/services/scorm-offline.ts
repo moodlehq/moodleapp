@@ -24,7 +24,6 @@ import { CoreLogger } from '@static/logger';
 import {
     AddonModScormAttemptDBPrimaryKeys,
     AddonModScormAttemptDBRecord,
-    AddonModScormOfflineDBCommonData,
     AddonModScormTrackDBPrimaryKeys,
     AddonModScormTrackDBRecord,
     ATTEMPTS_TABLE_NAME,
@@ -127,10 +126,6 @@ export class AddonModScormOfflineProvider {
             const currentAttemptConditions = {
                 sql: 'scormid = ? AND userid = ? AND attempt = ?',
                 sqlParams: [scormId, userId, attempt],
-                js: (record: AddonModScormOfflineDBCommonData) =>
-                    record.scormid === scormId &&
-                    record.userid === userId &&
-                    record.attempt === attempt,
             };
 
             await this.attemptsTables[site.id].updateWhere(
@@ -151,10 +146,6 @@ export class AddonModScormOfflineProvider {
                     {
                         sql: 'scormid = ? AND userid = ? AND attempt = ?',
                         sqlParams: [scormId, userId, newAttempt],
-                        js: (attempt) =>
-                            attempt.scormid === scormId &&
-                            attempt.userid === userId &&
-                            attempt.attempt === newAttempt,
                     },
                 );
 
@@ -987,10 +978,6 @@ export class AddonModScormOfflineProvider {
         await this.attemptsTables[site.id].updateWhere(newData, {
             sql: 'scormid = ? AND userid = ? AND attempt = ?',
             sqlParams: [scormId, userId, attempt],
-            js: (record: AddonModScormOfflineDBCommonData) =>
-                record.scormid === scormId &&
-                record.userid === userId &&
-                record.attempt === attempt,
         });
     }
 

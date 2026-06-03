@@ -177,7 +177,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
+    getManyWhere(conditions: CoreDatabaseConditions): Promise<DBRecord[]>  {
         return this.target.getManyWhere(conditions);
     }
 
@@ -201,7 +201,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
+    async reduce<T>(reducer: CoreDatabaseReducer, conditions?: CoreDatabaseConditions): Promise<T> {
         return this.target.reduce<T>(reducer, conditions);
     }
 
@@ -250,7 +250,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions): Promise<void> {
         return this.target.updateWhere(updates, conditions);
     }
 
@@ -264,7 +264,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreDatabaseConditions): Promise<void> {
         return this.target.deleteWhere(conditions);
     }
 

@@ -14,11 +14,9 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
+import { CoreInMemoryDatabaseConditions, CoreInMemoryDatabaseReducer, CoreInMemoryDatabaseTable } from './inmemory-database-table';
 import {
-    CoreDatabaseConditions,
     GetDBRecordPrimaryKey,
-    CoreDatabaseReducer,
     CoreDatabaseQueryOptions,
 } from './database-table';
 import { SubPartial } from '@/core/utils/types';
@@ -74,7 +72,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
+    async getManyWhere(conditions: CoreInMemoryDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
         return Object.values(this.records).filter(record => conditions.js(record));
     }
 
@@ -118,7 +116,10 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
+    async reduce<T>(
+        reducer: CoreInMemoryDatabaseReducer<DBRecord, T>,
+        conditions?: CoreInMemoryDatabaseConditions<DBRecord>,
+    ): Promise<T> {
         return Object
             .values(this.records)
             .reduce(
@@ -179,7 +180,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async updateWhere(updates: Partial<DBRecord>, conditions: CoreInMemoryDatabaseConditions<DBRecord>): Promise<void> {
         await super.updateWhere(updates, conditions);
 
         for (const record of Object.values(this.records)) {
@@ -215,7 +216,7 @@ export class CoreEagerDatabaseTable<
     /**
      * @inheritdoc
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreInMemoryDatabaseConditions<DBRecord>): Promise<void> {
         await super.deleteWhere(conditions);
 
         Object.entries(this.records).forEach(([primaryKey, record]) => {

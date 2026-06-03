@@ -69,11 +69,9 @@ describe('CoreH5PFramework', () => {
                     },
                     deleteWhere: (conditions) => {
                         Object.entries(cachedAssetsRecords).forEach(([primaryKey, record]) => {
-                            if (!conditions.js(record)) {
-                                return;
+                            if (conditions?.sqlParams?.includes(record.hash)) {
+                                delete cachedAssetsRecords[Number(primaryKey)];
                             }
-
-                            delete cachedAssetsRecords[primaryKey];
                         });
                     },
                 },

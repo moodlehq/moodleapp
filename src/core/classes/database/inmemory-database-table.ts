@@ -15,7 +15,7 @@
 import { CoreConstants } from '@/core/constants';
 import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreLogger } from '@static/logger';
-import { CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
+import { CoreDatabaseConditions, CoreDatabaseReducer, CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
 import { SubPartial } from '@/core/utils/types';
 
 /**
@@ -117,3 +117,22 @@ export abstract class CoreInMemoryDatabaseTable<
     }
 
 }
+
+/**
+ * Reducer used to accumulate a value from multiple records in SQL and JavaScript.
+ *
+ * Both operations should be equivalent.
+ */
+export type CoreInMemoryDatabaseReducer<DBRecord, T> = CoreDatabaseReducer & {
+    js: (previousValue: T, record: DBRecord) => T;
+    jsInitialValue: T;
+};
+
+/**
+ * Conditions to match database records in SQL and JavaScript.
+ *
+ * Both conditions should be equivalent.
+ */
+export type CoreInMemoryDatabaseConditions<DBRecord> = CoreDatabaseConditions & {
+    js: (record: DBRecord) => boolean;
+};

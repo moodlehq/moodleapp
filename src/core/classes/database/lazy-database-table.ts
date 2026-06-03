@@ -14,10 +14,9 @@
 
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreInMemoryDatabaseTable } from './inmemory-database-table';
+import { CoreInMemoryDatabaseConditions, CoreInMemoryDatabaseTable } from './inmemory-database-table';
 import {
     CoreDatabaseConfiguration,
-    CoreDatabaseConditions,
     GetDBRecordPrimaryKey,
     CoreDatabaseQueryOptions,
 } from './database-table';
@@ -167,7 +166,7 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async updateWhere(updates: Partial<DBRecord>, conditions: CoreInMemoryDatabaseConditions<DBRecord>): Promise<void> {
         await super.updateWhere(updates, conditions);
 
         for (const record of Object.values(this.records)) {
@@ -197,7 +196,7 @@ export class CoreLazyDatabaseTable<
     /**
      * @inheritdoc
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreInMemoryDatabaseConditions<DBRecord>): Promise<void> {
         await super.deleteWhere(conditions);
 
         Object.entries(this.records).forEach(([primaryKey, record]) => {
