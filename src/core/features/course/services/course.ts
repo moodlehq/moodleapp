@@ -868,8 +868,7 @@ export class CoreCourseProvider {
                     const formattedSections: CoreCourseWSSection[] = sections.map((section) => ({
                         ...section,
                         availabilityinfo: this.treatAvailablityInfo(section.availabilityinfo),
-                        modules: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
-                        contents: [],
+                        contents: section.modules.map((module) => this.addAdditionalModuleData(module, courseId, section.id)),
                     }));
 
                     // Only return the root sections, subsections are included in section contents.
@@ -934,8 +933,11 @@ export class CoreCourseProvider {
         const subsectionsComponents = CoreArray.unique(subsections.map(section => (section.component ?? '').replace('mod_', '')));
 
         sections.forEach(section => {
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
-            section.contents = section.modules.map(module => {
+
+            section.contents = section.contents.map(module => {
+                if (!('modname' in module)) {
+                    return;
+                }
                 if (!subsectionsComponents.includes(module.modname)) {
                     return module;
                 }
@@ -1711,13 +1713,6 @@ export type CoreCourseGetContentsWSModule = {
  */
 export type CoreCourseWSSection = Omit<CoreCourseGetContentsWSSection, 'modules'> & {
     contents: CoreCourseModuleOrSection[]; // List of modules and subsections.
-
-    /**
-     * List of modules
-     *
-     * @deprecated since 4.5. Use contents instead.
-     */
-    modules: CoreCourseModuleData[];
 };
 
 /**
