@@ -21,9 +21,9 @@ import {
     CoreReportbuilderCanViewSystemReportWSResponse,
     CoreReportBuilderReportWSResponse,
     CoreReportBuilderRetrieveReportWSResponse,
-    CoreReportbuilderRetrieveSystemReportWSResponse,
     CoreReportBuilderWS,
 } from './reportbuilder-ws';
+import { ContextLevel } from '@/core/constants';
 
 export const REPORTS_LIST_LIMIT = 20;
 export const REPORT_ROWS_LIMIT = 20;
@@ -146,18 +146,28 @@ export class CoreReportBuilderService {
     /**
      * Get the detail of a system report.
      *
-     * @param params Report parameters.
+     * @param reportParams Report parameters.
      * @param page Current page.
      * @param perpage Rows obtained per page.
      * @returns Detail of the report.
      */
     async getSystemReport(
-        params: CoreReportbuilderCanViewSystemReportWSParams,
+        reportParams: CoreReportbuilderSystemReportParams,
         page?: number,
         perpage?: number,
-    ): Promise<CoreReportbuilderRetrieveSystemReportWSResponse> {
-        const report = await CoreReportBuilderWS.getSystemReport(params, { page, perpage });
+    ): Promise<CoreReportBuilderRetrieveReportMapped> {
+        const { name, context, ...rest } = reportParams;
+        void name; // Avoid unused variable error.
 
+        const params: CoreReportbuilderCanViewSystemReportWSParams = {
+            ...rest,
+            context: context ?? {
+                instanceid: 0,
+                contextlevel: ContextLevel.SYSTEM,
+            },
+        };
+
+        const report = await CoreReportBuilderWS.getSystemReport(params, { page, perpage });
         if (!report) {
             throw new CoreError('An error ocurred.');
         }
@@ -188,7 +198,7 @@ export class CoreReportBuilderService {
 export const CoreReportBuilder = makeSingleton(CoreReportBuilderService);
 
 export type CoreReportBuilderRetrieveReportMapped = Omit<CoreReportBuilderRetrieveReportWSResponse, 'details'> & {
-    details: CoreReportBuilderReportDetail;
+    details?: CoreReportBuilderReportDetail;
 };
 
 export type CoreReportBuilderReportDetail = Omit<CoreReportBuilderReportWSResponse, 'settingsdata'> & {
@@ -202,6 +212,7 @@ export type CoreReportBuilderReportDetailSettingsData = {
 
 export type CoreReportBuilderReport = CoreReportBuilderReportWSResponse;
 
-export type CoreReportbuilderSystemReportParams = {
+export type CoreReportbuilderSystemReportParams = Omit<Partial<CoreReportbuilderCanViewSystemReportWSParams>, 'source'> & {
     source: string;
+    name: string;
 };

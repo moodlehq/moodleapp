@@ -9,14 +9,14 @@
         @if (columnIndex() === 0) {
             <h2>
                 @if (columnIsString()) {
-                    <core-format-text [text]="columnData" [contextLevel]="source()" [contextInstanceId]="contextId()" />
+                    <core-format-text [text]="columnData" [contextLevel]="contextLevel()" [contextInstanceId]="contextInstanceId()" />
                 } @else {
                     {{ columnData }}
                 }
             </h2>
         } @else {
             @if (columnIsString()) {
-                <core-format-text [text]="columnData" [contextLevel]="source()" [contextInstanceId]="contextId()" />
+                <core-format-text [text]="columnData" [contextLevel]="contextLevel()" [contextInstanceId]="contextInstanceId()" />
             } @else {
                 {{ columnData }}
             }
