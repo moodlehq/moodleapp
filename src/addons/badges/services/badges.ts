@@ -18,6 +18,7 @@ import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { CoreCacheUpdateFrequency } from '@/core/constants';
+import { BadgeReportType } from '../constants';
 
 /**
  * Service to handle badges.
@@ -281,7 +282,7 @@ export type AddonBadgesUserBadge = {
     issuercontact: string; // Issuer contact.
     expiredate?: number; // Expire date.
     expireperiod?: number; // Expire period.
-    type?: number; // Type.
+    type?: BadgeReportType; // Type.
     courseid?: number; // Course id.
     coursefullname?: string; // Full name of the course.
     message?: string; // Message.
@@ -338,7 +339,7 @@ export type AddonBadgesUserBadge = {
         name: string; // Badge name.
         version?: string; // Version.
         language?: string; // Language.
-        type?: number; // Type.
+        type?: BadgeReportType; // Type.
     }[];
 };
 

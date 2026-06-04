@@ -6,6 +6,7 @@
     "bendorsement": "Endorsement",
     "claimcomment": "Endorsement comment",
     "claimid": "Claim URL",
+    "coursebadges": "Badges",
     "contact": "Email",
     "course": "Course: {{$a}}",
     "dateawarded": "Date issued",
@@ -23,5 +24,6 @@
     "moredetails": "More details",
     "nobadges": "There are currently no badges available for users to earn.",
     "relatedbages": "Related badges",
+    "sitebadges": "Site badges",
     "version": "Version"
 }
