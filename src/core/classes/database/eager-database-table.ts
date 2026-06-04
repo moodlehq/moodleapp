@@ -86,7 +86,7 @@ export class CoreEagerDatabaseTable<
         let record: DBRecord | undefined;
 
         if (options?.sorting) {
-            record = this.getMany(conditions, { ...options, limit: 1 })[0];
+            record = (await this.getMany(conditions, { ...options, limit: 1 }))[0];
         } else if (conditions) {
             record = Object.values(this.records).find(record => this.recordMatches(record, conditions));
         } else {
@@ -224,7 +224,7 @@ export class CoreEagerDatabaseTable<
                 return;
             }
 
-            delete record[primaryKey];
+            delete this.records[primaryKey];
         });
     }
 
