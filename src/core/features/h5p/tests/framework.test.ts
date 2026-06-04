@@ -12,13 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { mock } from '@/testing/utils';
+import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreH5PFramework } from '../classes/framework';
 import { CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
+import { CoreH5PContentDependencyData } from '../classes/core';
+
+/**
+ * Test-only extension exposing a controlled way to override cached assets table access.
+ * librariesCachedAssetsTables is a protected property so it cannot be overridden in the mock function.
+ */
+class TestableCoreH5PFramework extends CoreH5PFramework {
+
+    /**
+     * Replace the cached assets table for a specific site.
+     *
+     * @param siteId Site ID.
+     * @param table Cached assets table implementation for tests.
+     */
+    setCachedAssetsTable(
+        siteId: string,
+        table: Pick<CoreDatabaseTable<CoreH5PLibraryCachedAssetsDBRecord>, 'getMany' | 'insert' | 'deleteWhere'>,
+    ): void {
+        (this.librariesCachedAssetsTables as Record<string, unknown>)[siteId] = table;
+    }
+
+}
 
 describe('CoreH5PFramework', () => {
 
-    const LIBRARIES = {
+    const LIBRARIES: Record<string, CoreH5PContentDependencyData> = {
         'H5P.DragQuestion': {
             libraryId: 1,
             dependencyType: 'preloaded',
@@ -57,31 +79,40 @@ describe('CoreH5PFramework', () => {
     let cachedAssetsLastId = 0;
     const cachedAssetsRecords: Record<number, CoreH5PLibraryCachedAssetsDBRecord> = {};
 
-    let framework: CoreH5PFramework;
+    let framework: TestableCoreH5PFramework;
     beforeEach(() => {
-        framework = mock(new CoreH5PFramework(), {
-            librariesCachedAssetsTables: {
-                [SITE_ID]: {
-                    getMany: (conditions) =>
-                        Object.values(cachedAssetsRecords).filter((record) => record.libraryid === conditions.libraryid),
-                    insert: (record) => {
-                        cachedAssetsRecords[cachedAssetsLastId++] = record;
-                    },
-                    deleteWhere: (conditions) => {
-                        Object.entries(cachedAssetsRecords).forEach(([primaryKey, record]) => {
-                            if (conditions?.sqlParams?.includes(record.hash)) {
-                                delete cachedAssetsRecords[Number(primaryKey)];
-                            }
-                        });
-                    },
-                },
+        framework = new TestableCoreH5PFramework();
+
+        framework.setCachedAssetsTable(SITE_ID, {
+            getMany: async (conditions) =>
+                Object.values(cachedAssetsRecords).filter((record) => record.libraryid === conditions?.libraryid),
+            insert: async (record) => {
+                const id = cachedAssetsLastId++;
+                cachedAssetsRecords[id] = {
+                    id: record.id ?? id,
+                    ...record,
+                };
+
+                return id;
+            },
+            deleteWhere: async (conditions) => {
+                const sqlParams = conditions.sqlParams;
+                if (!sqlParams?.length) {
+                    return;
+                }
+
+                Object.entries(cachedAssetsRecords).forEach(([primaryKey, record]) => {
+                    if (sqlParams.includes(record.hash)) {
+                        delete cachedAssetsRecords[Number(primaryKey)];
+                    }
+                });
             },
         });
     });
 
     it('correctly saves and deletes cached assets in DB', async () => {
-        const saveCachedAssets = async (hash, folderName, librariesNames) => {
-            const dependencies = {};
+        const saveCachedAssets = async (hash: string, folderName: string, librariesNames: string[]) => {
+            const dependencies: Record<string, CoreH5PContentDependencyData> = {};
             librariesNames.forEach((libraryName) => {
                 dependencies[libraryName] = LIBRARIES[libraryName];
             });

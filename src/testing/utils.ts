@@ -280,7 +280,7 @@ export function requireElement<E = HTMLElement>(
  */
 export function mock<Service>(
     instance: Service | Partial<Service> = {},
-    overrides: string[] | Record<string, unknown> = {},
+    overrides: (keyof Service)[] | Partial<Service> = {},
 ): Service {
     // If overrides is an object, apply them to the instance.
     if (!Array.isArray(overrides)) {
@@ -288,20 +288,20 @@ export function mock<Service>(
     }
 
     // Convert instance functions to jest functions.
-    for (const property of Object.getOwnPropertyNames(instance)) {
+    for (const property of Object.getOwnPropertyNames(instance) as (keyof Service)[]) {
         const value = instance[property];
 
         if (typeof value !== 'function') {
             continue;
         }
 
-        instance[property] = jest.fn((...args) => value.call(instance, ...args));
+        instance[property] = jest.fn((...args) => value.call(instance, ...args)) as unknown as Service[typeof property];
     }
 
     // If overrides is a list of methods, add them now.
     if (Array.isArray(overrides)) {
         for (const method of overrides) {
-            instance[method] = jest.fn();
+            instance[method] = jest.fn() as unknown as Service[typeof method];
         }
     }
 
@@ -319,7 +319,7 @@ export function mock<Service>(
  */
 export function mockSingleton<Service>(
     singleton: CoreSingletonProxy<Service>,
-    overrides: string[] | Record<string, unknown> = {},
+    overrides: (keyof Service)[] | Partial<Service> = {},
     { forceConstructorFallback = false } = {},
 ): Service {
     // Get the original instance (from DI or constructor).
