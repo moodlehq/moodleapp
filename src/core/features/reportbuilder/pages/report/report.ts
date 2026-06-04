@@ -29,11 +29,15 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
 })
 export default class CoreReportBuilderReportPage {
 
-    readonly reportId = signal<string>('');
+    readonly reportId = signal<number | undefined>(undefined);
     readonly reportDetail = signal<CoreReportBuilderReportDetail | undefined>(undefined);
 
     constructor() {
-        this.reportId.set(CoreNavigator.getRequiredRouteParam('id'));
+        try {
+            this.reportId.set(CoreNavigator.getRequiredRouteParam('id'));
+        } catch {
+            // No id, it should be a system report.
+        }
     }
 
     /**

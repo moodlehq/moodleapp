@@ -45,7 +45,7 @@ import { CoreReportBuilderReportColumnComponent } from '../report-column/report-
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
-    readonly reportId = input.required<string>();
+    readonly reportId = input.required<number>();
     readonly isBlock = input(true, { transform: toBoolean });
     readonly perPage = input<number>();
     readonly layout = input<'card' | 'table' | 'adaptative'>('adaptative');
@@ -115,7 +115,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
 
             const { page } = this.state();
 
-            const report = await CoreReportBuilder.loadReport(parseInt(reportId), page,this.perPage() ?? REPORT_ROWS_LIMIT);
+            const report = await CoreReportBuilder.loadReport(reportId, page,this.perPage() ?? REPORT_ROWS_LIMIT);
 
             if (!report) {
                 CoreAlerts.showError(new CoreError('No report found'));
@@ -211,7 +211,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
 
             const { page: currentPage } = this.state();
 
-            const newReport = await CoreReportBuilder.loadReport(parseInt(this.reportId()), currentPage, REPORT_ROWS_LIMIT);
+            const newReport = await CoreReportBuilder.loadReport(this.reportId(), currentPage, REPORT_ROWS_LIMIT);
 
             if (!report || !newReport || newReport.data.rows.length === 0) {
                 this.updateState({ canLoadMoreRows: false });
