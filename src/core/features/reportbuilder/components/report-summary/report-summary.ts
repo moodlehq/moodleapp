@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, OnDestroy } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
 import { CoreFormatDatePipe } from '@pipes/format-date';
 import { CoreSites } from '@services/sites';
@@ -28,44 +28,53 @@ import { ModalController } from '@singletons';
         CoreSharedModule,
     ],
 })
-export class CoreReportBuilderReportSummaryComponent implements OnInit {
+export class CoreReportBuilderReportSummaryComponent implements OnDestroy {
 
-    @Input({ required: true }) reportDetail!: CoreReportBuilderReportDetail;
-    reportUrl!: string;
-    reportDetailToDisplay!: { title: string; text: string }[];
+    readonly reportDetail = input.required<CoreReportBuilderReportDetail>();
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        const formatDate = new CoreFormatDatePipe();
+    protected readonly formatDate = inject(CoreFormatDatePipe);
+
+    readonly reportUrl = computed(() => {
         const site = CoreSites.getRequiredCurrentSite();
-        this.reportUrl = `${site.getURL()}/reportbuilder/view.php?id=${this.reportDetail.id}`;
-        this.reportDetailToDisplay = [
+
+        return `${site.getURL()}/reportbuilder/view.php?id=${this.reportDetail().id}`;
+    });
+
+    readonly reportDetailToDisplay = computed(() => {
+        const reportDetail = this.reportDetail();
+
+        return [
             {
                 title: 'core.reportbuilder.reportsource',
-                text: this.reportDetail.sourcename,
+                text: reportDetail.sourcename,
             },
             {
                 title: 'core.reportbuilder.timecreated',
-                text: formatDate.transform(this.reportDetail.timecreated * 1000),
+                text: this.formatDate.transform(reportDetail.timecreated * 1000),
             },
             {
                 title: 'addon.mod_data.timemodified',
-                text: formatDate.transform(this.reportDetail.timemodified * 1000),
+                text: this.formatDate.transform(reportDetail.timemodified * 1000),
             },
             {
                 title: 'core.reportbuilder.modifiedby',
-                text: this.reportDetail.modifiedby.fullname,
+                text: reportDetail.modifiedby.fullname,
             },
         ];
-    }
+    });
 
     /**
      * Close the modal.
      */
     closeModal(): void {
         ModalController.dismiss();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.formatDate.ngOnDestroy();
     }
 
 }

@@ -17,17 +17,19 @@
         <ion-item class="ion-text-wrap course-name">
             <ion-label>
                 <h1>
-                    <core-format-text [text]="reportDetail.name" contextLevel="report" [contextInstanceId]="reportDetail.id" />
+                    <core-format-text [text]="reportDetail().name" contextLevel="report" [contextInstanceId]="reportDetail().id" />
                 </h1>
             </ion-label>
         </ion-item>
 
-        <ion-item class="ion-text-wrap" [detail]="false" *ngFor="let item of reportDetailToDisplay">
-            <ion-label>
-                <p>{{ item.title | translate }}</p>
-                <core-format-text [text]="item.text" contextLevel="report" [contextInstanceId]="reportDetail.id" />
-            </ion-label>
-        </ion-item>
+        @for (item of reportDetailToDisplay(); track $index) {
+            <ion-item class="ion-text-wrap" [detail]="false">
+                <ion-label>
+                    <p>{{ item.title | translate }}</p>
+                    <core-format-text [text]="item.text" contextLevel="report" [contextInstanceId]="reportDetail().id" />
+                </ion-label>
+            </ion-item>
+        }
     </div>
 </ion-content>
 
@@ -36,7 +38,7 @@
         <ion-label>
             <p>
                 <ion-icon name="fas-circle-info" aria-hidden="true" />
-                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false"
+                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl() }" [filter]="false"
                     [captureLinks]="false" />
             </p>
         </ion-label>

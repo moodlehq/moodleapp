@@ -29,6 +29,7 @@ import { AddonBadgesTagAreaHandler } from './services/handlers/tag-area';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { CoreScreen } from '@services/screen';
 import { CoreCourseForceLanguageSource } from '@features/course/constants';
+import { AddonBadgesSystemReportLinkHandler } from './services/handlers/badge-systemreport-link';
 
 /**
  * Get badges services.
@@ -102,6 +103,7 @@ const mainMenuRoutes: Routes = [
             CoreContentLinksDelegate.registerHandler(AddonBadgesMyBadgesLinkHandler.instance);
             CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeLinkHandler.instance);
             CoreContentLinksDelegate.registerHandler(AddonBadgesBadgeClassLinkHandler.instance);
+            CoreContentLinksDelegate.registerHandler(AddonBadgesSystemReportLinkHandler.instance);
             CoreUserDelegate.registerHandler(AddonBadgesUserHandler.instance);
             CorePushNotificationsDelegate.registerClickHandler(AddonBadgesPushClickHandler.instance);
             CoreTagAreaDelegate.registerHandler(AddonBadgesTagAreaHandler.instance);

@@ -3309,7 +3309,7 @@ export type CoreFilepoolComponentFileEventData = CoreFilepoolFileEventData & {
 };
 
 /**
- * Function called when file download progress ocurred.
+ * Function called when file download progress occurred.
  */
 export type CoreFilepoolOnProgressCallback<T = unknown> = (event: T) => void;
 

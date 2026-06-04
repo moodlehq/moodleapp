@@ -8,16 +8,18 @@
         </ion-title>
     </ion-toolbar>
 </ion-header>
-@if (state$ | async; as state) {
-    <ion-content>
-        <ion-refresher slot="fixed" [disabled]="!state.loaded" (ionRefresh)="refreshReports($event.target)">
-            <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
-        </ion-refresher>
-        <core-loading [hideUntil]="state.loaded">
-            @if (reports.items?.length) {
-                <ion-list>
-                    <ion-item [attr.aria-current]="reports.getItemAriaCurrent(report)" [detail]="true" class="ion-text-wrap" [button]="true"
-                        *ngFor="let report of reports.items" (click)="reports.select(report)">
+<ion-content>
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshReports($event.target)">
+        <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
+    </ion-refresher>
+    <core-loading [hideUntil]="loaded()">
+
+        @let items = reports();
+        @if (items?.length) {
+            <ion-list>
+                @for (report of items; track report.id) {
+                    <ion-item [detail]="true" class="ion-text-wrap" [button]="true"
+                        (click)="openReport(report)">
                         <ion-label>
                             <p class="item-heading">
                                 <core-format-text [clean]="true" [text]="report.name" [filter]="false" />
@@ -25,13 +27,13 @@
                             <p>{{ report.sourcename }}</p>
                         </ion-label>
                     </ion-item>
-                </ion-list>
+                }
+            </ion-list>
 
-                <core-infinite-loading [enabled]="reports.loaded && !reports.completed" (action)="fetchMoreReports($event)"
-                    [error]="state.loadMoreError" />
-            } @else {
-                <core-empty-box icon="fas-rectangle-list" [message]="'core.course.nocontentavailable' | translate" />
-            }
-        </core-loading>
-    </ion-content>
-}
+            <core-infinite-loading [enabled]="loaded() && hasMoreItems()" (action)="fetchMoreReports($event)"
+                [error]="loadMoreError()" />
+        } @else {
+            <core-empty-box icon="fas-rectangle-list" [message]="'core.course.nocontentavailable' | translate" />
+        }
+    </core-loading>
+</ion-content>

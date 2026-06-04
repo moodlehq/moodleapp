@@ -12,19 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
-import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
-import { CoreReportBuilderReportsSource } from '@features/reportbuilder/classes/reports-source';
+import { ChangeDetectionStrategy, Component, signal, OnInit } from '@angular/core';
 import { CoreReportBuilder, CoreReportBuilderReport, REPORTS_LIST_LIMIT } from '@features/reportbuilder/services/reportbuilder';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
-import { BehaviorSubject } from 'rxjs';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreNavigator } from '@services/navigator';
 
 @Component({
     selector: 'core-report-builder-list',
@@ -34,42 +30,33 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export default class CoreReportBuilderListPage implements AfterViewInit, OnDestroy {
+export default class CoreReportBuilderListPage implements OnInit {
 
-    reports!: CoreListItemsManager<CoreReportBuilderReport, CoreReportBuilderReportsSource>;
-
-    state$: Readonly<BehaviorSubject<CoreReportBuilderListState>> = new BehaviorSubject<CoreReportBuilderListState>({
-        page: 1,
-        perpage: REPORTS_LIST_LIMIT,
-        loaded: false,
-        loadMoreError: false,
-    });
+    readonly reports = signal<CoreReportBuilderReport[]>([]);
+    readonly page = signal(0);
+    readonly perpage = signal(REPORTS_LIST_LIMIT);
+    readonly loaded = signal(false);
+    readonly loadMoreError = signal(false);
+    readonly hasMoreItems = signal(true);
 
     protected logView: () => void;
 
     constructor() {
         this.logView = CoreTime.once(() => this.performLogView());
-
-        try {
-            const source = CoreRoutedItemsManagerSourcesTracker.getOrCreateSource(CoreReportBuilderReportsSource, []);
-            this.reports = new CoreListItemsManager(source, CoreReportBuilderListPage);
-        } catch (error) {
-            CoreAlerts.showError(error);
-            CoreNavigator.back();
-        }
     }
 
     /**
      * @inheritdoc
      */
-    async ngAfterViewInit(): Promise<void> {
+    async ngOnInit(): Promise<void> {
         try {
-            await this.fetchReports(true);
-            this.updateState({ loaded: true });
+            await this.fetchReports();
+
+            this.logView();
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error loading reports' });
 
-            this.reports.reset();
+            this.reports.set([]);
         }
     }
 
@@ -78,26 +65,31 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
      *
      * @param reload is reoading or not.
      */
-    async fetchReports(reload: boolean): Promise<void> {
+    async fetchReports(reload = false): Promise<void> {
         if (reload) {
-            await this.reports.reload();
-        } else {
-            await this.reports.load();
+            this.loaded.set(false);
+            this.page.set(0);
+            this.hasMoreItems.set(true);
+            this.loadMoreError.set(false);
         }
 
-        this.updateState({ loadMoreError: false });
+        try {
+            const reports = await CoreReportBuilder.getReports(this.page(), this.perpage());
 
-        this.logView();
-    }
+            if (!reload) {
+                reports.unshift(...this.reports());
+            }
 
-    /**
-     * Properties of the state to update.
-     *
-     * @param state Object to update.
-     */
-    updateState(state: Partial<CoreReportBuilderListState>): void {
-        const previousState = this.state$.getValue();
-        this.state$.next({ ...previousState, ...state });
+            reports.sort((a, b) => a.timemodified < b.timemodified ? 1 : -1);
+            this.reports.set(reports);
+            this.hasMoreItems.set(reports.length >= this.perpage());
+        } catch (error) {
+            CoreAlerts.showError(error, { default: 'Error loading reports' });
+
+            this.hasMoreItems.set(false);
+        } finally {
+            this.loaded.set(true);
+        }
     }
 
     /**
@@ -106,15 +98,25 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
      * @param complete Completion callback.
      */
     async fetchMoreReports(complete: () => void): Promise<void> {
+        this.page.update((value) => value + 1);
+
         try {
-            await this.fetchReports(false);
+            await this.fetchReports();
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error loading more reports' });
 
-            this.updateState({ loadMoreError: true });
+            this.loadMoreError.set(true);
         }
-
         complete();
+    }
+
+    /**
+     * Open a report.
+     *
+     * @param report Report to open.
+     */
+    async openReport(report: CoreReportBuilderReport): Promise<void> {
+        await CoreNavigator.navigate(`${report.id}`);
     }
 
     /**
@@ -141,18 +143,4 @@ export default class CoreReportBuilderListPage implements AfterViewInit, OnDestr
         });
     }
 
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        this.reports.destroy();
-    }
-
 }
-
-type CoreReportBuilderListState = {
-    page: number;
-    perpage: number;
-    loaded: boolean;
-    loadMoreError: boolean;
-};
