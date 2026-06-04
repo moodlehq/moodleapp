@@ -56,7 +56,7 @@ export class CoreReportBuilderService {
         const report = await CoreReportBuilderWS.retrieveReport(reportId, { page, perpage });
 
         if (!report) {
-            throw new CoreError('An error ocurred.');
+            throw new CoreError('An error occurred.');
         }
 
         const settingsData: {
@@ -169,7 +169,7 @@ export class CoreReportBuilderService {
 
         const report = await CoreReportBuilderWS.getSystemReport(params, { page, perpage });
         if (!report) {
-            throw new CoreError('An error ocurred.');
+            throw new CoreError('An error occurred.');
         }
 
         return {
