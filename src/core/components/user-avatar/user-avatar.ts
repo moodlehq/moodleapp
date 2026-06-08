@@ -265,4 +265,5 @@ export type CoreUserWithAvatar = CoreUserBasicData & {
     lastaccess?: number;
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
+    initials?: string; // @since 5.3 The initials of the user.
 };
