@@ -767,6 +767,7 @@ export type CoreUserBasicData = {
     id: number; // ID of the user.
     fullname: string; // The fullname of the user.
     profileimageurl?: string; // User image profile URL - big version.
+    initials?: string; // @since 5.3 The initials of the user.
 };
 
 /**
@@ -830,6 +831,7 @@ export type CoreUserDescriptionExporter = {
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
     fullname: string; // The fullname of the user.
+    initials?: string; // @since 5.3 The initials of the user.
     email?: string; // An email address - allow email as root@localhost.
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
@@ -884,6 +886,7 @@ export type CoreUserParticipant = CoreUserBasicData & {
     username?: string; // Username policy is defined in Moodle security config.
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
+    initials?: string; // @since 5.3 The initials of the user.
     email?: string; // An email address - allow email as root@localhost.
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
