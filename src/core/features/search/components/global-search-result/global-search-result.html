@@ -3,7 +3,9 @@
         <core-course-image [course]="result.course" />
     }
     @if (result.user) {
-        <core-user-avatar [user]="result.user" [linkProfile]="false" />
+        <core-user-avatar [userId]="result.user.id" [url]="result.user.profileimageurl" [initials]="result.user.initials"
+            [fullname]="result.user.fullname" [firstname]="result.user.firstname" [lastname]="result.user.lastname"
+            [linkProfile]="false" />
     }
     <ion-label>
         @if (result.title) {

@@ -38,7 +38,7 @@
         {{ entry.timemodified * 1000 | coreFormatDate: 'strftimedatemonthabbr' }}
     </span>
 } @else if (action === 'userpicture') {
-    <core-user-avatar [user]="entry" slot="start" [courseId]="database.course" [userId]="entry.userid" [profileUrl]="userPicture" />
+    <core-user-avatar [fullname]="entry.fullname" slot="start" [courseId]="database.course" [userId]="entry.userid" [url]="userPicture" />
 } @else if (action === 'user' && entry) {
     <a core-user-link [courseId]="database.course" [userId]="entry.userid" [title]="entry.fullname">
         {{entry.fullname}}

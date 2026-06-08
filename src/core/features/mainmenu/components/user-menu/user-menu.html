@@ -39,7 +39,9 @@
                 }
 
                 <ion-item button class="core-usermenu-profile ion-text-wrap" lines="full" (click)="openUserProfile($event)" [detail]="true">
-                    <core-user-avatar [user]="user" [linkProfile]="false" slot="start" />
+                    <core-user-avatar [userId]="user?.id" [url]="user?.profileimageurl" [initials]="user?.initials"
+                        [firstname]="user?.firstname" [lastname]="user?.lastname" [fullname]="user?.fullname" [linkProfile]="false"
+                        slot="start" />
                     <ion-label>
                         <p class="item-heading">{{ user?.fullname ?? siteInfo.fullname }}</p>
                     </ion-label>

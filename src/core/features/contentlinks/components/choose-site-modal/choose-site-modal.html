@@ -14,7 +14,9 @@
 
         @for (site of sites(); track site.id) {
             <ion-item (click)="siteClicked(site.id)" [detail]="false" button>
-                <core-user-avatar [site]="site" slot="start" [linkProfile]="false" />
+                <core-user-avatar [userId]="site.userId" [url]="site.userpictureurl"
+                    [firstname]="site.firstname" [lastname]="site.lastname" [fullname]="site.fullname"
+                    [linkProfile]="false" slot="start"/>
                 <ion-label>
                     <p class="item-heading">{{site.fullname}}</p>
                 </ion-label>

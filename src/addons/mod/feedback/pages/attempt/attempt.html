@@ -19,7 +19,8 @@
                 @if (attempt) {
                     <ion-item class="ion-text-wrap" core-user-link [userId]="attempt.userid"
                         [attr.aria-label]="'core.user.viewprofile' | translate" [courseId]="attempt.courseid">
-                        <core-user-avatar [user]="attempt" slot="start" [linkProfile]="false" />
+                        <core-user-avatar [userId]="attempt.userid" [url]="attempt.profileimageurl"
+                            [fullname]="attempt.fullname" slot="start" [linkProfile]="false" />
                         <ion-label>
                             <h2>{{attempt.fullname}}</h2>
                             @if (attempt.timemodified) {

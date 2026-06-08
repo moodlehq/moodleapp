@@ -28,21 +28,24 @@
                     <core-loading [hideUntil]="confirmedLoaded">
                         @if (confirmedContacts.length) {
                             <ion-list class="ion-no-margin">
-                                <ion-item class="ion-text-wrap addon-messages-conversation-item" (click)="selectUser(contact.id)" button
-                                    *ngFor="let contact of confirmedContacts" [attr.aria-label]="contact.fullname" [detail]="true"
-                                    [attr.aria-current]="contact.id === selectedUserId ? 'page' : 'false'">
-                                    <core-user-avatar slot="start" [user]="contact" [checkOnline]="contact.showonlinestatus"
-                                        [linkProfile]="false" />
-                                    <ion-label>
-                                        <p class="item-heading">
-                                            <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0" />
-                                            @if (contact.isblocked) {
-                                                <ion-icon name="fas-user-slash" slot="end"
-                                                    [attr.aria-label]="'addon.messages.contactblocked' | translate" />
-                                            }
-                                        </p>
-                                    </ion-label>
-                                </ion-item>
+                                @for (contact of confirmedContacts; track contact.id) {
+                                    <ion-item class="ion-text-wrap addon-messages-conversation-item" (click)="selectUser(contact.id)" button
+                                        [attr.aria-label]="contact.fullname" [detail]="true"
+                                        [attr.aria-current]="contact.id === selectedUserId ? 'page' : 'false'">
+                                        <core-user-avatar [userId]="contact.id" [url]="contact.profileimageurl"
+                                            [initials]="contact.initials" [fullname]="contact.fullname" [isOnline]="contact.isonline"
+                                            [checkOnline]="contact.showonlinestatus" [linkProfile]="false" slot="start" />
+                                        <ion-label>
+                                            <p class="item-heading">
+                                                <core-format-text [text]="contact.fullname" contextLevel="system" [contextInstanceId]="0" />
+                                                @if (contact.isblocked) {
+                                                    <ion-icon name="fas-user-slash" slot="end"
+                                                        [attr.aria-label]="'addon.messages.contactblocked' | translate" />
+                                                }
+                                            </p>
+                                        </ion-label>
+                                    </ion-item>
+                                }
                             </ion-list>
                         } @else {
                             <core-empty-box icon="far-address-book" [message]="'addon.messages.nocontactsgetstarted' | translate" />
@@ -64,19 +67,23 @@
                     <core-loading [hideUntil]="requestsLoaded">
                         @if (requests.length) {
                             <ion-list class="ion-no-margin">
-                                <ion-item class="ion-text-wrap addon-messages-conversation-item" *ngFor="let request of requests"
-                                    [attr.aria-label]="request.fullname" (click)="selectUser(request.id)" button
-                                    [attr.aria-current]="request.id === selectedUserId ? 'page' : 'false'" [detail]="true">
-                                    <core-user-avatar slot="start" [user]="request" [linkProfile]="false" />
-                                    <ion-label>
-                                        <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0" />
-                                        @if (!request.iscontact) {
-                                            <p>
-                                                {{ 'addon.messages.wouldliketocontactyou' | translate }}
-                                            </p>
-                                        }
-                                    </ion-label>
-                                </ion-item>
+                                @for (request of requests; track request.id) {
+                                    <ion-item class="ion-text-wrap addon-messages-conversation-item"
+                                        [attr.aria-label]="request.fullname" (click)="selectUser(request.id)" button
+                                        [attr.aria-current]="request.id === selectedUserId ? 'page' : 'false'" [detail]="true">
+                                        <core-user-avatar [userId]="request.id" [url]="request.profileimageurl"
+                                            [initials]="request.initials" [fullname]="request.fullname"
+                                            [linkProfile]="false" slot="start" />
+                                        <ion-label>
+                                            <core-format-text [text]="request.fullname" contextLevel="system" [contextInstanceId]="0" />
+                                            @if (!request.iscontact) {
+                                                <p>
+                                                    {{ 'addon.messages.wouldliketocontactyou' | translate }}
+                                                </p>
+                                            }
+                                        </ion-label>
+                                    </ion-item>
+                                }
                             </ion-list>
                         } @else {
                             <core-empty-box icon="far-address-book" [message]="'addon.messages.nocontactrequests' | translate" />

@@ -66,7 +66,10 @@
             <ion-list>
                 <ion-item class="ion-text-wrap">
                     @if (evaluateByProfile) {
-                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                        <core-user-avatar [userId]="evaluateByProfile.id" [url]="evaluateByProfile.profileimageurl"
+                            [initials]="evaluateByProfile.initials" [fullname]="evaluateByProfile.fullname"
+                            [firstname]="evaluateByProfile.firstname" [lastname]="evaluateByProfile.lastname"
+                            slot="start" [courseId]="courseId" />
                     }
                     <ion-label>
                         @if (evaluateByProfile && evaluateByProfile.fullname) {
@@ -179,8 +182,10 @@
                 <ion-list>
                     <ion-item class="ion-text-wrap">
                         @if (evaluateGradingByProfile) {
-                            <core-user-avatar [user]="evaluateGradingByProfile" slot="start" [courseId]="courseId"
-                                [userId]="evaluateGradingByProfile.id" />
+                            <core-user-avatar [userId]="evaluateGradingByProfile.id" [url]="evaluateGradingByProfile.profileimageurl"
+                                [initials]="evaluateGradingByProfile.initials" [fullname]="evaluateGradingByProfile.fullname"
+                                [firstname]="evaluateGradingByProfile.firstname" [lastname]="evaluateGradingByProfile.lastname"
+                                slot="start" [courseId]="courseId" />
                         }
                         <ion-label>
                             @if (evaluateGradingByProfile && evaluateGradingByProfile.fullname) {

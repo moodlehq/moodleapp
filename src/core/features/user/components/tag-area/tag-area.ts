@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 import { CoreUserTagFeedElement } from '@features/user/services/handlers/tag-area';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -29,6 +29,6 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreUserTagAreaComponent {
 
-    @Input() items?: CoreUserTagFeedElement[]; // Area items to render.
+    readonly items = input<CoreUserTagFeedElement[]>(); // Area items to render.
 
 }

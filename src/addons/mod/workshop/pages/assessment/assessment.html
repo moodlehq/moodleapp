@@ -28,7 +28,9 @@
 
         <ion-item class="ion-text-wrap">
             @if (profile) {
-                <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile.id" />
+                <core-user-avatar [userId]="profile.id" [url]="profile.profileimageurl" [initials]="profile.initials"
+                    [fullname]="profile.fullname" [firstname]="profile.firstname" [lastname]="profile.lastname"
+                    slot="start" [courseId]="courseId" />
             }
 
             <ion-label>
@@ -129,7 +131,10 @@
             <ion-list>
                 <ion-item class="ion-text-wrap">
                     @if (evaluateByProfile) {
-                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                        <core-user-avatar [userId]="evaluateByProfile.id" [url]="evaluateByProfile.profileimageurl"
+                            [initials]="evaluateByProfile.initials" [fullname]="evaluateByProfile.fullname"
+                            [firstname]="evaluateByProfile.firstname" [lastname]="evaluateByProfile.lastname"
+                            slot="start" [courseId]="courseId" />
                     }
                     <ion-label>
                         @if (evaluateByProfile && evaluateByProfile.fullname) {

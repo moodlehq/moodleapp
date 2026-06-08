@@ -2,7 +2,9 @@
     @if (!summary) {
         <div>
             <ion-item class="ion-text-wrap addon-workshop-submission-title">
-                <core-user-avatar [user]="profile" [courseId]="courseId" [userId]="profile?.id" slot="start" />
+                <core-user-avatar [userId]="profile?.id" [url]="profile?.profileimageurl" [initials]="profile?.initials"
+                    [fullname]="profile?.fullname" [firstname]="profile?.firstname" [lastname]="profile?.lastname"
+                    [courseId]="courseId" slot="start" />
                 <ion-label>
                     @if (submission.title) {
                         <h2>
@@ -61,7 +63,10 @@
             @if (viewDetails && submission.feedbackauthor) {
                 <ion-item class="ion-text-wrap">
                     @if (evaluateByProfile) {
-                        <core-user-avatar [user]="evaluateByProfile" slot="start" [courseId]="courseId" [userId]="evaluateByProfile.id" />
+                        <core-user-avatar [userId]="evaluateByProfile.id" [url]="evaluateByProfile.profileimageurl"
+                            [initials]="evaluateByProfile.initials" [fullname]="evaluateByProfile.fullname"
+                            [firstname]="evaluateByProfile.firstname" [lastname]="evaluateByProfile.lastname"
+                            slot="start" [courseId]="courseId" />
                     }
 
                     <ion-label>
@@ -90,7 +95,9 @@
 
     @if (summary) {
         <ion-item class="ion-text-wrap" [detail]="submission.timemodified" (click)="gotoSubmission()" [button]="submission.timemodified">
-            <core-user-avatar [user]="profile" slot="start" [courseId]="courseId" [userId]="profile?.id" />
+            <core-user-avatar [userId]="profile?.id" [url]="profile?.profileimageurl" [initials]="profile?.initials"
+                [fullname]="profile?.fullname" [firstname]="profile?.firstname" [lastname]="profile?.lastname"
+                slot="start" [courseId]="courseId" />
             <ion-label>
                 @if (submission.title) {
                     <h2>

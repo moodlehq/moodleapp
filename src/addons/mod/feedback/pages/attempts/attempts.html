@@ -25,17 +25,19 @@
                             <h2>{{ 'addon.mod_feedback.non_anonymous_entries' | translate : {$a: identifiableAttemptsTotal } }}</h2>
                         </ion-label>
                     </ion-item-divider>
-                    <ion-item *ngFor="let attempt of identifiableAttempts" class="ion-text-wrap" button [detail]="true"
-                        (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
-                        <core-user-avatar [user]="attempt" [linkProfile]="false" slot="start" />
-                        <ion-label>
-                            <p class="item-heading">{{ attempt.fullname }}</p>
-                            @if (attempt.timemodified) {
-                                <p>{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
-                            }
-                        </ion-label>
-                    </ion-item>
-
+                    @for (attempt of identifiableAttempts; track attempt.id) {
+                        <ion-item class="ion-text-wrap" button [detail]="true"
+                            (click)="attempts?.select(attempt)" [attr.aria-current]="attempts?.getItemAriaCurrent(attempt)">
+                            <core-user-avatar [userId]="attempt.userid" [fullname]="attempt.fullname"
+                                [linkProfile]="false" slot="start" />
+                            <ion-label>
+                                <p class="item-heading">{{ attempt.fullname }}</p>
+                                @if (attempt.timemodified) {
+                                    <p>{{ attempt.timemodified * 1000 | coreFormatDate }}</p>
+                                }
+                            </ion-label>
+                        </ion-item>
+                    }
                 }
 
                 @if (identifiableAttemptsTotal === identifiableAttempts.length && anonymousAttemptsTotal > 0) {

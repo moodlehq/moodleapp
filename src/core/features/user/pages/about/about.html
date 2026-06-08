@@ -18,8 +18,9 @@
             <ion-list>
                 <ion-item class="ion-text-center core-user-profile-maininfo ion-text-wrap" [lines]="userInfo.description ? 'none' : 'full'">
                     <ion-label>
-                        <core-user-avatar [user]="userInfo" [userId]="userInfo.id" [linkProfile]="false"
-                            [checkOnline]="!canChangeProfilePicture">
+                        <core-user-avatar [userId]="userInfo.id" [url]="userInfo.profileimageurl" [initials]="userInfo.initials"
+                            [firstname]="userInfo.firstname" [lastname]="userInfo.lastname" [fullname]="userInfo.fullname"
+                            [linkProfile]="false" [checkOnline]="!canChangeProfilePicture" [lastAccess]="userInfo.lastaccess">
                             @if (canChangeProfilePicture) {
                                 <ion-button class="edit-avatar" (click)="changeProfilePicture()"
                                     [ariaLabel]="'core.user.newpicture' | translate" fill="clear">

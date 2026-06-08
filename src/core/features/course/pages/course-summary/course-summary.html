@@ -110,8 +110,8 @@
                                 @for (contact of course.contacts; track contact.id) {
                                     <ion-item button class="ion-text-wrap" core-user-link
                                         [userId]="contact.id" [courseId]="isEnrolled ? course.id : null" [detail]="true">
-                                        <core-user-avatar [user]="contact" slot="start" [userId]="contact.id"
-                                            [courseId]="isEnrolled ? course.id : null" [linkProfile]="false" />
+                                        <core-user-avatar [userId]="contact.id" [fullname]="contact.fullname"
+                                            slot="start" [linkProfile]="false" />
                                         <ion-label>
                                             <p class="item-heading">{{contact.fullname}}</p>
                                         </ion-label>

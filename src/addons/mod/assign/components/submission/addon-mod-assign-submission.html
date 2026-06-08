@@ -10,7 +10,9 @@
             @if (!blindMarking && user) {
                 <!-- User and status of the submission. -->
                 <ion-item class="ion-text-wrap" core-user-link [userId]="submitId" [courseId]="courseId" [attr.aria-label]="user.fullname">
-                    <core-user-avatar [user]="user" slot="start" [linkProfile]="false" />
+                    <core-user-avatar [userId]="user.id" [url]="user.profileimageurl" [initials]="user.initials"
+                        [fullname]="user.fullname" [firstname]="user.firstname" [lastname]="user.lastname"
+                        slot="start" [linkProfile]="false" />
                     <ion-label>
                         <p class="item-heading">{{ user.fullname }}</p>
                     </ion-label>
@@ -209,21 +211,23 @@
                         </ion-label>
                     </ion-item-divider>
                     @if (!blindMarking) {
-                        <ng-container *ngFor="let member of membersToSubmit">
+                        @for (member of membersToSubmit; track member.id) {
                             <ion-item class="ion-text-wrap" core-user-link [userId]="member.id" [courseId]="courseId"
                                 [attr.aria-label]="member.fullname">
-                                <core-user-avatar [user]="member" slot="start" [linkProfile]="false" />
+                                <core-user-avatar [userId]="member.id" [url]="member.profileimageurl" [initials]="member.initials"
+                                    [fullname]="member.fullname" [firstname]="member.firstname" [lastname]="member.lastname"
+                                    slot="start" [linkProfile]="false" />
                                 <ion-label>
                                     <p class="item-heading">{{ member.fullname }}</p>
                                 </ion-label>
                             </ion-item>
-                        </ng-container>
+                        }
                     } @else {
-                        <ng-container *ngFor="let blindId of membersToSubmitBlind">
+                        @for (blindId of membersToSubmitBlind; track blindId) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>{{ 'addon.mod_assign.hiddenuser' | translate }} {{ blindId }}</ion-label>
                             </ion-item>
-                        </ng-container>
+                        }
                     }
                 }
 
@@ -309,7 +313,9 @@
                                     <ion-label>
                                         <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
                                         <div class="flex">
-                                            <core-user-avatar [user]="grader" [linkProfile]="false" />
+                                            <core-user-avatar [userId]="grader.id" [url]="grader.profileimageurl"
+                                                [initials]="grader.initials" [fullname]="grader.fullname" [firstname]="grader.firstname"
+                                                [lastname]="grader.lastname" [linkProfile]="false" />
                                             <div>
                                                 <p>{{ grader.fullname }}</p>
                                                 @if (feedback.gradeddate) {
@@ -409,9 +415,13 @@
                                                 <ion-label>
                                                     <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
                                                     <div class="flex">
-                                                        <core-user-avatar [user]="attempt.grader" [linkProfile]="false" />
+                                                        @let attemptGrader = attempt.grader;
+                                                        <core-user-avatar [userId]="attemptGrader.id" [url]="attemptGrader.profileimageurl"
+                                                            [initials]="attemptGrader.initials" [fullname]="attemptGrader.fullname"
+                                                            [firstname]="attemptGrader.firstname" [lastname]="attemptGrader.lastname"
+                                                            [linkProfile]="false" />
                                                         <div>
-                                                            <p class="item-heading">{{ attempt.grader.fullname }}</p>
+                                                            <p class="item-heading">{{ attemptGrader.fullname }}</p>
                                                             @if (attempt.grade.timemodified) {
                                                                 <p>{{ attempt.grade.timemodified * 1000 | coreFormatDate }}</p>
                                                             }
