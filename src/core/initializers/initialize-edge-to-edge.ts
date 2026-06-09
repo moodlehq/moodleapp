@@ -26,7 +26,9 @@ export default async function(): Promise<void> {
         return;
     }
 
-    // Enable edge-to-edge. Required on Android 14 and previous versions.
+    // overlaysWebView(true) doesn't seem to do anything with cordova-android 15+ because Cordova applies margins to the WebView
+    // from system bar insets in Android 14- (see setOnApplyWindowInsetsListener in CordovaActivity.java). However, a bug was
+    // reported when using overlaysWebView(false) in Android 7 and 8, so set it to true just in case.
     StatusBar.overlaysWebView(true);
 
     // Listener for system bars and cutout inset changes.
@@ -54,7 +56,7 @@ export default async function(): Promise<void> {
         rootStyle.setProperty('--ion-safe-area-top', `${insets.top}px`);
         rootStyle.setProperty('--ion-safe-area-bottom', `${keyboardHeight > 0 ? 0 : insets.bottom}px`);
 
-        // Update the CSS variable with the kebyoard height.
+        // Update the CSS variable with the keyboard height.
         // On iOS, the variable is updated in the forked Cordova keyboard plugin.
         rootStyle.setProperty('--keyboard-height', `${keyboardHeight}px`);
     };
