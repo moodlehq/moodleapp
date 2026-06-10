@@ -25,11 +25,11 @@ jobs:
             tags: ${{ steps.set-tags.outputs.tags }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
 
@@ -112,11 +112,11 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
 
@@ -126,7 +126,7 @@ jobs:
                   ini-values: max_input_vars=5000
                   coverage: none
 
-            - uses: actions/cache/restore@v4
+            - uses: actions/cache/restore@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -214,7 +214,7 @@ jobs:
                   path: snapshots
                   merge-multiple: true
 
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
