@@ -131,7 +131,6 @@ export class CoreCourseModuleHelperService {
         const entries = await this.viewedModulesTables[site.getId()].getManyWhere({
             sql: `cmId IN (${ids.map(() => '?').join(', ')})`,
             sqlParams: ids,
-            js: (record) => ids.includes(record.cmId),
         });
 
         return CoreArray.toObject(entries, 'cmId');

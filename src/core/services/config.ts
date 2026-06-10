@@ -76,7 +76,7 @@ export class CoreConfigProvider {
     async initializeDatabase(): Promise<void> {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const table = new CoreDatabaseTableProxy<ConfigDBEntry, 'name'>(
+        const table = CoreDatabaseTableProxy.createInstance<ConfigDBEntry, 'name'>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             CoreAppDB.getDB(),
             CONFIG_TABLE_NAME,

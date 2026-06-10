@@ -194,7 +194,6 @@ export class CoreH5PFramework {
             {
                 sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')})`,
                 sqlParams: libraryIds,
-                js: record => libraryIds.includes(record.mainlibraryid),
             },
         );
     }
@@ -218,7 +217,6 @@ export class CoreH5PFramework {
             await this.librariesCachedAssetsTables[siteId].deleteWhere({
                 sql: hashes.length === 1 ? 'hash = ?' : `hash IN (${hashes.map(() => '?').join(', ')})`,
                 sqlParams: hashes,
-                js: (record) => hashes.includes(record.hash),
             });
         }
 

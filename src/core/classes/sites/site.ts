@@ -37,6 +37,7 @@ import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { asyncInstance, AsyncInstance } from '../../utils/async-instance';
 import { CoreDatabaseTable } from '../database/database-table';
 import { CoreDatabaseCachingStrategy } from '../database/database-table-proxy';
+import { CoreEagerDatabaseTable } from '../database/eager-database-table';
 import {
     CONFIG_TABLE,
     CoreSiteConfigDBRecord,
@@ -69,8 +70,8 @@ export class CoreSite extends CoreAuthenticatedSite {
 
     protected db!: SQLiteDB;
     protected cacheTable: AsyncInstance<CoreDatabaseTable<CoreSiteWSCacheRecord>>;
-    protected configTable: AsyncInstance<CoreDatabaseTable<CoreSiteConfigDBRecord, 'name', never>>;
-    protected lastViewedTable: AsyncInstance<CoreDatabaseTable<CoreSiteLastViewedDBRecord, CoreSiteLastViewedDBPrimaryKeys>>;
+    protected configTable: AsyncInstance<CoreEagerDatabaseTable<CoreSiteConfigDBRecord, 'name', never>>;
+    protected lastViewedTable: AsyncInstance<CoreEagerDatabaseTable<CoreSiteLastViewedDBRecord, CoreSiteLastViewedDBPrimaryKeys>>;
     protected lastAutoLogin = 0;
     protected tokenPluginFileWorks?: boolean;
     protected tokenPluginFileWorksPromise?: Promise<boolean>;
@@ -252,13 +253,10 @@ export class CoreSite extends CoreAuthenticatedSite {
         return this.cacheTable.reduce(
             {
                 sql: 'SUM(length(data))',
-                js: (size, record) => size + record.data.length,
-                jsInitialValue: 0,
             },
             {
                 sql: `WHERE component = ?${extraClause}`,
                 sqlParams: params,
-                js: record => record.component === component && (params.length === 1 || record.componentId === componentId),
             },
         );
     }
@@ -356,7 +354,6 @@ export class CoreSite extends CoreAuthenticatedSite {
         await this.cacheTable.updateWhere({ expirationTime: 0 }, {
             sql: 'key LIKE ?',
             sqlParams: [`${key}%`],
-            js: record => !!record.key?.startsWith(key),
         });
     }
 
@@ -434,8 +431,6 @@ export class CoreSite extends CoreAuthenticatedSite {
     async getCacheUsage(): Promise<number> {
         return this.cacheTable.reduce({
             sql: 'SUM(length(data))',
-            js: (size, record) => size + record.data.length,
-            jsInitialValue: 0,
         });
     }
 

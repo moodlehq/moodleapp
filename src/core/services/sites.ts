@@ -50,6 +50,8 @@ import { CoreSitePlugins } from '@features/siteplugins/services/siteplugins';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreDatabaseConfiguration, CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
+import { CoreEagerDatabaseTable } from '@classes/database/eager-database-table';
+import { CoreLazyDatabaseTable } from '@classes/database/lazy-database-table';
 import { asyncInstance, AsyncInstance } from '../utils/async-instance';
 import { CoreConfig } from './config';
 import { CoreNetwork } from '@services/network';
@@ -261,12 +263,6 @@ class CoreSitesDB {
      *
      * @param tableName Site table name.
      * @param options Options to configure table initialization.
-     * @param options.siteId Site ID.
-     * @param options.config Table configuration.
-     * @param options.database Database instance to create the table in.
-     * @param options.primaryKeyColumns Columns to use as primary key.
-     * @param options.rowIdColumn Column to use as row ID. If null, the table won't have a row ID column.
-     * @param options.onDestroy Callback to be called when the table is destroyed.
      * @returns Site table.
      */
     async getSiteTable<
@@ -275,14 +271,31 @@ class CoreSitesDB {
         RowIdColumn extends PrimaryKeyColumn,
     >(
         tableName: string,
-        options: {
-            siteId: string;
-            config?: Partial<CoreDatabaseConfiguration>;
-            database: SQLiteDB;
-            primaryKeyColumns?: PrimaryKeyColumn[];
-            rowIdColumn?: RowIdColumn | null;
-            onDestroy?(): void;
-        },
+        options: GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn, CoreDatabaseCachingStrategy.Eager>,
+    ): Promise<CoreEagerDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn, CoreDatabaseCachingStrategy.Lazy>,
+    ): Promise<CoreLazyDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn>,
+    ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn>,
     ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>> {
         const siteId = options.siteId;
 
@@ -292,7 +305,7 @@ class CoreSitesDB {
 
         if (!(tableName in this.siteTables[siteId])) {
             const promisedTable = this.siteTables[siteId][tableName] = new CorePromisedValue();
-            const table = new CoreDatabaseTableProxy<DBRecord, PrimaryKeyColumn, RowIdColumn>(
+            const table = CoreDatabaseTableProxy.createInstance<DBRecord, PrimaryKeyColumn, RowIdColumn>(
                 options.config ?? {},
                 options.database,
                 tableName,
@@ -444,7 +457,7 @@ export class CoreSitesProvider {
     async initializeDatabase(): Promise<void> {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const sitesTable = new CoreDatabaseTableProxy<SiteDBEntry>(
+        const sitesTable = CoreDatabaseTableProxy.createInstance<SiteDBEntry>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             CoreAppDB.getDB(),
             SITES_TABLE_NAME,
@@ -468,14 +481,31 @@ export class CoreSitesProvider {
         RowIdColumn extends PrimaryKeyColumn,
     >(
         tableName: string,
-        options: Partial<{
-            siteId: string;
-            config: Partial<CoreDatabaseConfiguration>;
-            database: SQLiteDB;
-            primaryKeyColumns: PrimaryKeyColumn[];
-            rowIdColumn: RowIdColumn | null;
-            onDestroy(): void;
-        }> = {},
+        options: Partial<GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn, CoreDatabaseCachingStrategy.Eager>>,
+    ): Promise<CoreEagerDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: Partial<GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn, CoreDatabaseCachingStrategy.Lazy>>,
+    ): Promise<CoreLazyDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: Partial<GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn>>,
+    ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>>;
+    async getSiteTable<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord,
+        RowIdColumn extends PrimaryKeyColumn,
+    >(
+        tableName: string,
+        options: Partial<GetSiteTableOptions<DBRecord, PrimaryKeyColumn, RowIdColumn>> = {},
     ): Promise<CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>> {
         const siteId = options.siteId ?? this.getCurrentSiteId();
 
@@ -2682,4 +2712,39 @@ type GetSiteFromUrlOptions = {
     userId?: number; // If set, it will return the site only if the current user has this ID.
     prioritize?: boolean; // If true, it will prioritize current site.
         // If the URL belongs to current site then it won't check any other site, it will only return current site.
+};
+
+/**
+ * Options to pass to getSiteTable.
+ */
+type GetSiteTableOptions<
+    DBRecord extends SQLiteDBRecordValues,
+    PrimaryKeyColumn extends keyof DBRecord,
+    RowIdColumn extends PrimaryKeyColumn,
+    CachingStrategy extends CoreDatabaseCachingStrategy | undefined = CoreDatabaseCachingStrategy | undefined,
+> = {
+    /**
+     * Site ID.
+     */
+    siteId: string;
+    /**
+     * Table configuration.
+     */
+    config?: Partial<CoreDatabaseConfiguration> & { cachingStrategy?: CachingStrategy };
+    /**
+     * Database instance to create the table in.
+     */
+    database: SQLiteDB;
+    /**
+     * Columns to use as primary key.
+     */
+    primaryKeyColumns?: PrimaryKeyColumn[];
+    /**
+     * Column to use as row ID. If null, the table won't have a row ID column.
+     */
+    rowIdColumn?: RowIdColumn | null;
+    /**
+     * Callback to be called when the table is destroyed.
+     */
+    onDestroy?(): void;
 };

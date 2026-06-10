@@ -88,7 +88,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]> {
+    getManyWhere(conditions: CoreDatabaseConditions): Promise<DBRecord[]> {
         this.logger.log('getManyWhere', conditions);
 
         return this.target.getManyWhere(conditions);
@@ -118,7 +118,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
+    reduce<T>(reducer: CoreDatabaseReducer, conditions?: CoreDatabaseConditions): Promise<T> {
         this.logger.log('reduce', reducer, conditions);
 
         return this.target.reduce<T>(reducer, conditions);
@@ -172,7 +172,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions): Promise<void> {
         this.logger.log('updateWhere', updates, conditions);
 
         return this.target.updateWhere(updates, conditions);
@@ -190,7 +190,7 @@ export class CoreDebugDatabaseTable<
     /**
      * @inheritdoc
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreDatabaseConditions): Promise<void> {
         this.logger.log('deleteWhere', conditions);
 
         return this.target.deleteWhere(conditions);

@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { asyncInstance } from '@/core/utils/async-instance';
-import { SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import {
@@ -66,6 +66,70 @@ export class CoreDatabaseTableProxy<
     };
 
     /**
+     * Create a database table proxy with a type inferred from the caching strategy.
+     *
+     * @param config Table configuration.
+     * @param database Database connection.
+     * @param tableName Table name.
+     * @param primaryKeyColumns Primary key columns.
+     * @param rowIdColumn Row ID column.
+     * @returns Database table proxy typed by caching strategy.
+     */
+    static createInstance<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord = 'id',
+        RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    >(
+        config: Partial<CoreDatabaseConfiguration> & { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
+    ): CoreEagerDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>;
+    static createInstance<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord = 'id',
+        RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    >(
+        config: Partial<CoreDatabaseConfiguration> & { cachingStrategy: CoreDatabaseCachingStrategy.Lazy },
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
+    ): CoreLazyDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>;
+    static createInstance<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord = 'id',
+        RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    >(
+        config: Partial<CoreDatabaseConfiguration>,
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
+    ): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn>;
+    static createInstance<
+        DBRecord extends SQLiteDBRecordValues,
+        PrimaryKeyColumn extends keyof DBRecord = 'id',
+        RowIdColumn extends PrimaryKeyColumn = PrimaryKeyColumn,
+    >(
+        config: Partial<CoreDatabaseConfiguration>,
+        database: SQLiteDB,
+        tableName: string,
+        primaryKeyColumns?: PrimaryKeyColumn[],
+        rowIdColumn?: RowIdColumn | null,
+    ): CoreDatabaseTable<DBRecord, PrimaryKeyColumn, RowIdColumn> {
+        // eslint-disable-next-line no-restricted-syntax
+        return new CoreDatabaseTableProxy<DBRecord, PrimaryKeyColumn, RowIdColumn>(
+            config,
+            database,
+            tableName,
+            primaryKeyColumns,
+            rowIdColumn,
+        );
+    }
+
+    /**
      * @inheritdoc
      */
     async initialize(): Promise<void> {
@@ -113,7 +177,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
+    getManyWhere(conditions: CoreDatabaseConditions): Promise<DBRecord[]>  {
         return this.target.getManyWhere(conditions);
     }
 
@@ -137,7 +201,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
+    async reduce<T>(reducer: CoreDatabaseReducer, conditions?: CoreDatabaseConditions): Promise<T> {
         return this.target.reduce<T>(reducer, conditions);
     }
 
@@ -186,7 +250,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions): Promise<void> {
         return this.target.updateWhere(updates, conditions);
     }
 
@@ -200,7 +264,7 @@ export class CoreDatabaseTableProxy<
     /**
      * @inheritdoc
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreDatabaseConditions): Promise<void> {
         return this.target.deleteWhere(conditions);
     }
 

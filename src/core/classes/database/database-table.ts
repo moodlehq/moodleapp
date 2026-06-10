@@ -141,10 +141,10 @@ export class CoreDatabaseTable<
      * This method should be used when it's necessary to apply complex conditions; the simple `getMany`
      * method should be favored otherwise for better performance.
      *
-     * @param conditions Matching conditions in SQL and JavaScript.
+     * @param conditions Matching conditions in SQL.
      * @returns Records matching the given conditions.
      */
-    getManyWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<DBRecord[]>  {
+    getManyWhere(conditions: CoreDatabaseConditions): Promise<DBRecord[]>  {
         return this.database.getRecordsSelect(this.tableName, conditions.sql, conditions.sqlParams);
     }
 
@@ -188,12 +188,11 @@ export class CoreDatabaseTable<
     /**
      * Reduce some records into a single value.
      *
-     * @param reducer Reducer functions in SQL and JavaScript.
-     * @param conditions Matching conditions in SQL and JavaScript. If this argument is missing, all records in the table
-     *                   will be used.
+     * @param reducer Reducer function in SQL.
+     * @param conditions Matching conditions in SQL. If this argument is missing, all records in the table will be used.
      * @returns Reduced value.
      */
-    reduce<T>(reducer: CoreDatabaseReducer<DBRecord, T>, conditions?: CoreDatabaseConditions<DBRecord>): Promise<T> {
+    reduce<T>(reducer: CoreDatabaseReducer, conditions?: CoreDatabaseConditions): Promise<T> {
         return this.database.getFieldSql(
             `SELECT ${reducer.sql} FROM ${this.tableName} ${conditions?.sql ?? ''}`,
             conditions?.sqlParams,
@@ -295,9 +294,9 @@ export class CoreDatabaseTable<
      * method should be favored otherwise for better performance.
      *
      * @param updates Record updates.
-     * @param conditions Matching conditions in SQL and JavaScript.
+     * @param conditions Matching conditions in SQL.
      */
-    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async updateWhere(updates: Partial<DBRecord>, conditions: CoreDatabaseConditions): Promise<void> {
         await this.database.updateRecordsWhere(this.tableName, updates, conditions.sql, conditions.sqlParams);
     }
 
@@ -320,9 +319,9 @@ export class CoreDatabaseTable<
      * This method should be used when it's necessary to apply complex conditions; the simple `delete`
      * method should be favored otherwise for better performance.
      *
-     * @param conditions Matching conditions in SQL and JavaScript.
+     * @param conditions Matching conditions in SQL.
      */
-    async deleteWhere(conditions: CoreDatabaseConditions<DBRecord>): Promise<void> {
+    async deleteWhere(conditions: CoreDatabaseConditions): Promise<void> {
         await this.database.deleteRecordsSelect(this.tableName, conditions.sql, conditions.sqlParams);
     }
 
@@ -468,25 +467,18 @@ export type GetDBRecordPrimaryKey<DBRecord extends SQLiteDBRecordValues, Primary
 };
 
 /**
- * Reducer used to accumulate a value from multiple records both in SQL and JavaScript.
- *
- * Both operations should be equivalent.
+ * Reducer used to accumulate a value from multiple records in SQL.
  */
-export type CoreDatabaseReducer<DBRecord, T> = {
+export type CoreDatabaseReducer = {
     sql: string;
-    js: (previousValue: T, record: DBRecord) => T;
-    jsInitialValue: T;
 };
 
 /**
- * Conditions to match database records both in SQL and JavaScript.
- *
- * Both conditions should be equivalent.
+ * Conditions to match database records in SQL.
  */
-export type CoreDatabaseConditions<DBRecord> = {
+export type CoreDatabaseConditions = {
     sql: string;
     sqlParams?: SQLiteDBRecordValue[];
-    js: (record: DBRecord) => boolean;
 };
 
 /**

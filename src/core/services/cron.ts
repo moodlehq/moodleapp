@@ -57,7 +57,7 @@ export class CoreCronDelegateService {
     async initializeDatabase(): Promise<void> {
         await CoreAppDB.createTablesFromSchema(APP_SCHEMA);
 
-        const table = new CoreDatabaseTableProxy<CronDBEntry>(
+        const table = CoreDatabaseTableProxy.createInstance<CronDBEntry>(
             { cachingStrategy: CoreDatabaseCachingStrategy.Eager },
             CoreAppDB.getDB(),
             CRON_TABLE_NAME,

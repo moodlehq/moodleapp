@@ -228,6 +228,10 @@ const appConfig = {
             'name': 'dayjs',
             'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
         }],
+        'no-restricted-syntax': ['error', {
+            selector: "NewExpression[callee.name='CoreDatabaseTableProxy']",
+            message: 'Use CoreDatabaseTableProxy.createInstance instead of new CoreDatabaseTableProxy.',
+        }],
         'no-sequences': 'error',
         'one-var': ['error', 'never'],
         'prefer-arrow/prefer-arrow-functions': [
