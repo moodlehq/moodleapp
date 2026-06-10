@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, Type } from '@angular/core';
+import { NgModule } from '@angular/core';
 
 import { CoreAttachmentsComponent } from './attachments/attachments';
 import { CoreAlertCardComponent } from './alert-card/alert-card';
@@ -55,23 +55,6 @@ import { CoreGroupSelectorComponent } from './group-selector/group-selector';
 import { CoreSheetModalComponent } from '@components/sheet-modal/sheet-modal';
 import { CoreCourseImageComponent } from '@components/course-image/course-image';
 import { CoreSitesListComponent } from './sites-list/sites-list';
-
-/**
- * Get deprecated components for site plugins.
- *
- * @returns Returns core deprecated components.
- */
-export async function getCoreDeprecatedComponents(): Promise<Type<unknown>[]> {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { CoreStyleComponent } = await import('@components/style/style');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { CoreShowPasswordComponent } = await import('@components/show-password/show-password');
-
-    return [
-        CoreStyleComponent,
-        CoreShowPasswordComponent,
-    ];
-}
 
 @NgModule({
     imports: [

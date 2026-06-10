@@ -24,7 +24,6 @@ import { CoreRedirectPayload } from './navigator';
 import { CorePromisedValue } from '@classes/promised-value';
 import { Subscription } from 'rxjs';
 import { CorePlatform } from '@services/platform';
-import { CoreKeyboard } from '@static/keyboard';
 import { CoreSSO } from '@static/sso';
 import { CoreRedirectData, CoreRedirects } from '@static/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
@@ -77,15 +76,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Closes the keyboard.
-     *
-     * @deprecated since 4.5.0. Use CoreKeyboard.closeKeyboard instead.
-     */
-    closeKeyboard(): void {
-        CoreKeyboard.close();
-    }
-
-    /**
      * Get app store URL.
      *
      * @param storesConfig Config params to send the user to the right place.
@@ -108,36 +98,6 @@ export class CoreAppProvider {
     }
 
     /**
-     * Check if the keyboard is closing.
-     *
-     * @returns Whether keyboard is closing (animating).
-     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardClosing instead.
-     */
-    isKeyboardClosing(): boolean {
-        return CoreKeyboard.isKeyboardClosing();
-    }
-
-    /**
-     * Check if the keyboard is being opened.
-     *
-     * @returns Whether keyboard is opening (animating).
-     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardOpening instead.
-     */
-    isKeyboardOpening(): boolean {
-        return CoreKeyboard.isKeyboardOpening();
-    }
-
-    /**
-     * Check if the keyboard is visible.
-     *
-     * @returns Whether keyboard is visible.
-     * @deprecated since 4.5.0. Use CoreKeyboard.isKeyboardVisible instead.
-     */
-    isKeyboardVisible(): boolean {
-        return CoreKeyboard.isKeyboardVisible();
-    }
-
-    /**
      * Checks if the current window is wider than a mobile.
      *
      * @returns Whether the app the current window is wider than a mobile.
@@ -146,52 +106,6 @@ export class CoreAppProvider {
      */
     isWide(): boolean {
         return CorePlatform.isWide();
-    }
-
-    /**
-     * Open the keyboard.
-     *
-     * @deprecated since 4.5.0. Use CoreKeyboard.openKeyboard instead.
-     */
-    openKeyboard(): void {
-        CoreKeyboard.open();
-    }
-
-    /**
-     * Notify that Keyboard has been shown.
-     *
-     * @param keyboardHeight Keyboard height.
-     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardShow instead.
-     */
-    onKeyboardShow(keyboardHeight: number): void {
-        CoreKeyboard.onKeyboardShow(keyboardHeight);
-    }
-
-    /**
-     * Notify that Keyboard has been hidden.
-     *
-     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardHide instead.
-     */
-    onKeyboardHide(): void {
-        CoreKeyboard.onKeyboardHide();
-    }
-
-    /**
-     * Notify that Keyboard is about to be shown.
-     *
-     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardWillShow instead.
-     */
-    onKeyboardWillShow(): void {
-        CoreKeyboard.onKeyboardWillShow();
-    }
-
-    /**
-     * Notify that Keyboard is about to be hidden.
-     *
-     * @deprecated since 4.5.0. Use CoreKeyboard.onKeyboardWillHide instead.
-     */
-    onKeyboardWillHide(): void {
-        CoreKeyboard.onKeyboardWillHide();
     }
 
     /**

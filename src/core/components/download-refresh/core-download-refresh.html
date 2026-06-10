@@ -3,7 +3,7 @@
     <!-- Download button. -->
     @if (status() === statusNotDownloaded) {
         <ion-button fill="clear" (click)="download($event, false)" animate.enter="show-animation" animate.leave="hide-animation"
-            [ariaLabel]="(statusTranslatable() || translates().notdownloaded) | translate: { name : statusSubject() }">
+            [ariaLabel]="(translates().notdownloaded) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fas-cloud-arrow-down" aria-hidden="true" />
         </ion-button>
     }
@@ -11,7 +11,7 @@
     <!-- Refresh button. -->
     @if (status() === statusOutdated || (status() === statusDownloaded && !canTrustDownload())) {
         <ion-button fill="clear" (click)="download($event, true)" animate.enter="show-animation" animate.leave="hide-animation"
-            [ariaLabel]="(statusTranslatable() || translates().outdated) | translate: { name : statusSubject() }">
+            [ariaLabel]="(translates().outdated) | translate: { name : statusSubject() }">
             <ion-icon slot="icon-only" name="fam-cloud-refresh" aria-hidden="true" />
         </ion-button>
     }
@@ -19,10 +19,10 @@
     <!-- Downloaded status icon. -->
     @if (status() === statusDownloaded && canTrustDownload()) {
         <ion-icon class="core-icon-downloaded ion-padding-horizontal" color="success" name="fam-cloud-done"
-            [attr.aria-label]="(statusTranslatable() || translates().downloaded) | translate: { name : statusSubject() }" role="status" />
+            [attr.aria-label]="(translates().downloaded) | translate: { name : statusSubject() }" role="status" />
     } @else if (status() === statusDownloading) {
         <ion-spinner animate.enter="show-animation" animate.leave="hide-animation"
-            [attr.aria-label]="(statusTranslatable() || translates().downloading) | translate: { name : statusSubject() }" />
+            [attr.aria-label]="(translates().downloading) | translate: { name : statusSubject() }" />
     }
 
 }

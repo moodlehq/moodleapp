@@ -44,7 +44,6 @@ import { effectWithInjectionContext } from '@/core/utils/signals';
 
 // Import core services and exported directives/objects.
 import { CoreSharedModule } from '@/core/shared.module';
-import { getCoreDeprecatedComponents } from '@components/components.module';
 import { getCoreExportedObjects, getCoreServices } from '@/core/core.module';
 import { getBlockExportedDirectives, getBlockServices } from '@features/block/block.module';
 import { getCommentsServices } from '@features/comments/comments.module';
@@ -158,7 +157,6 @@ export class CoreCompileProvider {
 
     protected static readonly LAZY_IMPORTS = [
         getBlockExportedDirectives,
-        getCoreDeprecatedComponents,
         getCourseExportedDirectives,
         getCoursesExportedDirectives,
         getEditorExportedDirectives,
