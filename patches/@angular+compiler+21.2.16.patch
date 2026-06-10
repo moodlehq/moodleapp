@@ -1,10 +1,10 @@
 diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-index e259cd3..78846f8 100755
+index 0422ff6..6362a3a 100755
 --- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
 +++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-@@ -7174,13 +7174,41 @@ var R3NgModuleMetadataKind;
-     R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
-     R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
+@@ -6709,10 +6709,39 @@ var R3NgModuleMetadataKind;
+   R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
+   R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
  })(R3NgModuleMetadataKind || (R3NgModuleMetadataKind = {}));
 +
 +/**
@@ -27,20 +27,18 @@ index e259cd3..78846f8 100755
 +    'TranslateModule',
 +];
 +
- /**
-  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
-  */
++
  function compileNgModule(meta) {
-     const statements = [];
-     const definitionMap = new DefinitionMap();
-+    const moduleName = meta.type.value?.node.loc?.identifierName;
-     definitionMap.set('type', meta.type.value);
+   const statements = [];
+   const definitionMap = new DefinitionMap();
++  const moduleName = meta.type.value?.node.loc?.identifierName;
+   definitionMap.set('type', meta.type.value);
 +
-+    if (moduleName && jitModules.includes(moduleName)) {
-+        // Force JIT compilation.
-+        meta.selectorScopeMode = R3SelectorScopeMode.Inline;
-+    }
++  if (moduleName && jitModules.includes(moduleName)) {
++    // Force JIT compilation.
++    meta.selectorScopeMode = R3SelectorScopeMode.Inline;
++  }
 +
-     // Assign bootstrap definition. In local compilation mode (i.e., for
-     // `R3NgModuleMetadataKind.LOCAL`) we assign the bootstrap field using the runtime
-     // `ɵɵsetNgModuleScope`.
+   if (meta.kind === R3NgModuleMetadataKind.Global && meta.bootstrap.length > 0) {
+     definitionMap.set('bootstrap', refsToArray(meta.bootstrap, meta.containsForwardDecls));
+   }

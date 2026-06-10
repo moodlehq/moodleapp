@@ -17,10 +17,6 @@
     "importHelpers": true,
     "target": "es2022",
     "resolveJsonModule": true,
-    "lib": [
-      "es2021",
-      "dom"
-    ],
     "types": [
       "@moodlehq/cordova-plugin-file-transfer",
       "@moodlehq/cordova-plugin-inappbrowser",

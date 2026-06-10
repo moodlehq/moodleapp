@@ -1,8 +1,8 @@
-diff --git a/node_modules/@angular/router/router_module.d.d.ts b/node_modules/@angular/router/router_module.d.d.ts
-index d05df2d..5d1143a 100755
---- a/node_modules/@angular/router/router_module.d.d.ts
-+++ b/node_modules/@angular/router/router_module.d.d.ts
-@@ -1819,7 +1819,7 @@ declare class ActivatedRoute {
+diff --git a/node_modules/@angular/router/types/_router_module-chunk.d.ts b/node_modules/@angular/router/types/_router_module-chunk.d.ts
+index 323f672..05b1c8b 100755
+--- a/node_modules/@angular/router/types/_router_module-chunk.d.ts
++++ b/node_modules/@angular/router/types/_router_module-chunk.d.ts
+@@ -3247,7 +3247,7 @@ declare class ActivatedRoute {
      /** The component of the route, a constant. */
      component: Type<any> | null;
      /** The current snapshot of this route */
