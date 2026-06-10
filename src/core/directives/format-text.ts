@@ -701,6 +701,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const site = await this.getSite();
 
         const images = Array.from(div.querySelectorAll('img'));
+        const pictures = Array.from(div.querySelectorAll('picture'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
         const videos = Array.from(div.querySelectorAll('video'));
@@ -738,7 +739,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const externalImages: CoreExternalContentDirective[] = [];
         if (images && images.length > 0) {
             // Walk through the content to find images, and add our directive.
-            images.forEach((img: HTMLElement) => {
+            images.forEach((img) => {
                 this.addMediaAdaptClass(img);
 
                 const externalImage = this.addExternalContent(img);
@@ -751,6 +752,14 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 }
             });
         }
+
+        pictures.forEach(picture => {
+            const sources = Array.from(picture.querySelectorAll('source'));
+
+            sources.forEach((source) => {
+                this.addExternalContent(source);
+            });
+        });
 
         const audioControllers = audios.map(audio => {
             this.treatMedia(audio);
