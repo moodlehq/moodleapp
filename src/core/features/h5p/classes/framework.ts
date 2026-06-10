@@ -189,11 +189,14 @@ export class CoreH5PFramework {
 
         siteId ??= CoreSites.getCurrentSiteId();
 
+        const dependencySql = `SELECT h5pid FROM ${CONTENTS_LIBRARIES_TABLE_NAME} WHERE libraryid IN ` +
+            `(${libraryIds.map(() => '?').join(', ')})`;
+
         await this.contentTables[siteId].updateWhere(
             { filtered: null },
             {
-                sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')})`,
-                sqlParams: libraryIds,
+                sql: `mainlibraryid IN (${libraryIds.map(() => '?').join(', ')}) OR id IN (${dependencySql})`,
+                sqlParams: [...libraryIds, ...libraryIds],
             },
         );
     }

@@ -14,7 +14,10 @@
 
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreH5PFramework } from '../classes/framework';
-import { CoreH5PLibraryCachedAssetsDBRecord } from '../services/database/h5p';
+import {
+    CoreH5PContentDBRecord,
+    CoreH5PLibraryCachedAssetsDBRecord,
+} from '../services/database/h5p';
 import { CoreH5PContentDependencyData } from '../classes/core';
 
 /**
@@ -34,6 +37,19 @@ class TestableCoreH5PFramework extends CoreH5PFramework {
         table: Pick<CoreDatabaseTable<CoreH5PLibraryCachedAssetsDBRecord>, 'getMany' | 'insert' | 'deleteWhere'>,
     ): void {
         (this.librariesCachedAssetsTables as Record<string, unknown>)[siteId] = table;
+    }
+
+    /**
+     * Replace the contents table for a specific site.
+     *
+     * @param siteId Site ID.
+     * @param table Contents table implementation for tests.
+     */
+    setContentTable(
+        siteId: string,
+        table: Pick<CoreDatabaseTable<CoreH5PContentDBRecord>, 'updateWhere'>,
+    ): void {
+        (this.contentTables as Record<string, unknown>)[siteId] = table;
     }
 
 }
@@ -78,9 +94,21 @@ describe('CoreH5PFramework', () => {
 
     let cachedAssetsLastId = 0;
     const cachedAssetsRecords: Record<number, CoreH5PLibraryCachedAssetsDBRecord> = {};
+    const contentRecords: Record<number, CoreH5PContentDBRecord> = {};
+    const contentLibraryDependencies: Array<{ h5pid: number; libraryid: number }> = [];
 
     let framework: TestableCoreH5PFramework;
     beforeEach(() => {
+        // Reset environment before each test.
+        cachedAssetsLastId = 0;
+        Object.keys(cachedAssetsRecords).forEach((key) => {
+            delete cachedAssetsRecords[Number(key)];
+        });
+        Object.keys(contentRecords).forEach((key) => {
+            delete contentRecords[Number(key)];
+        });
+        contentLibraryDependencies.length = 0;
+
         framework = new TestableCoreH5PFramework();
 
         framework.setCachedAssetsTable(SITE_ID, {
@@ -108,6 +136,94 @@ describe('CoreH5PFramework', () => {
                 });
             },
         });
+
+        framework.setContentTable(SITE_ID, {
+            updateWhere: async (fields, conditions) => {
+                const sqlParams = conditions.sqlParams ?? [];
+                const hasDependencySubquery = conditions.sql.includes(' OR id IN (SELECT h5pid ');
+                const mainLibraryIds = hasDependencySubquery ? sqlParams.slice(0, sqlParams.length / 2) : sqlParams;
+                const dependencyLibraryIds = hasDependencySubquery ? sqlParams.slice(sqlParams.length / 2) : [];
+
+                const dependentContentIds = hasDependencySubquery
+                    ? contentLibraryDependencies
+                        .filter((dependency) => dependencyLibraryIds.includes(dependency.libraryid))
+                        .map((dependency) => dependency.h5pid)
+                    : [];
+
+                Object.values(contentRecords).forEach((record) => {
+                    const matchesMainLibrary = mainLibraryIds.includes(record.mainlibraryid);
+                    const matchesDependencyLibrary = dependentContentIds.includes(record.id);
+
+                    if (matchesMainLibrary || matchesDependencyLibrary) {
+                        Object.assign(record, fields);
+                    }
+                });
+            },
+        });
+    });
+
+    it('clearFilteredParameters stops early when no library ids are provided', async () => {
+        contentRecords[100] = {
+            id: 100,
+            jsoncontent: '{}',
+            mainlibraryid: 2,
+            foldername: 'folder-name',
+            fileurl: 'https://example.com/file.h5p',
+            filtered: 'already-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+
+        await framework.clearFilteredParameters([], SITE_ID);
+
+        expect(contentRecords[100].filtered).toEqual('already-filtered');
+    });
+
+    it('clears filtered parameters for main and dependent libraries', async () => {
+        contentRecords[1] = {
+            id: 1,
+            jsoncontent: '{}',
+            mainlibraryid: 2,
+            foldername: 'main-library-content',
+            fileurl: 'https://example.com/main-library-content.h5p',
+            filtered: 'main-library-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+        contentRecords[2] = {
+            id: 2,
+            jsoncontent: '{}',
+            mainlibraryid: 99,
+            foldername: 'dependent-library-content',
+            fileurl: 'https://example.com/dependent-library-content.h5p',
+            filtered: 'dependent-library-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+        contentRecords[3] = {
+            id: 3,
+            jsoncontent: '{}',
+            mainlibraryid: 77,
+            foldername: 'unrelated-content',
+            fileurl: 'https://example.com/unrelated-content.h5p',
+            filtered: 'unrelated-filtered',
+            timemodified: 1,
+            timecreated: 1,
+        };
+
+        // Content 2 depends on library 7, so it should also have filtered params cleared.
+        contentLibraryDependencies.push(
+            { h5pid: 2, libraryid: 7 },
+            { h5pid: 3, libraryid: 45 },
+        );
+
+        const libraryIds = [2, 7];
+
+        await framework.clearFilteredParameters(libraryIds, SITE_ID);
+
+        expect(contentRecords[1].filtered).toBeNull();
+        expect(contentRecords[2].filtered).toBeNull();
+        expect(contentRecords[3].filtered).toEqual('unrelated-filtered');
     });
 
     it('correctly saves and deletes cached assets in DB', async () => {
