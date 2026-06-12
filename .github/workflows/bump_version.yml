@@ -1,0 +1,43 @@
+name: Bump version
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: "Version name (X.Y.Z)"
+                required: true
+                type: string
+            version_code:
+                description: "Version code (integer). Leave empty to auto-generate."
+                required: false
+                type: string
+
+jobs:
+    bump_version:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            pull-requests: write
+
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  persist-credentials: false
+                  fetch-depth: 0
+
+            - name: Bump version
+              run: ./.github/scripts/bump-version.sh "${{ github.event.inputs.version }}" "${{ github.event.inputs.version_code }}"
+
+            - name: Create Pull Request
+              uses: peter-evans/create-pull-request@v8
+              with:
+                  token: ${{ secrets.GIT_TOKEN }}
+                  commit-message: "[auto-generated] core: Bump to ${{ github.event.inputs.version }}"
+                  branch: bump-version-${{ github.event.inputs.version }}
+                  delete-branch: true
+                  title: "Bump version to ${{ github.event.inputs.version }}"
+                  body: |
+                      Automated version bump to `${{ github.event.inputs.version }}`.
+
+                      Changes made by the [bump-version.sh](.github/scripts/bump-version.sh) script.
+                  labels: automated

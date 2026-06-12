@@ -1,7 +1,5 @@
-this.CoreSitesProvider.getSite().then(site => {
-    const username = site.infos.username;
+const site = this.CoreSitesProvider.getCurrentSite();
 
-    document.getElementById('username').innerText = `, ${username}`;
-});
+document.getElementById('username').innerText = `, ${site.infos.username}`;
 
-this.ngAfterViewInit = () => this.CoreDomUtilsProvider.showToast('Lifecycle hook called');
+this.ngAfterViewInit = () => this.CoreToastsService.show({message: 'Lifecycle hook called'});
