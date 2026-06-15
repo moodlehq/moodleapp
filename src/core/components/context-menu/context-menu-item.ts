@@ -18,11 +18,11 @@ import {
     OnDestroy,
     effect,
     input,
-    model,
     computed,
     inject,
     output,
     ChangeDetectionStrategy,
+    linkedSignal,
 } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -68,7 +68,9 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
     readonly badgeA11yText = input<string>(); // Description for the badge, if needed.
     readonly hidden = input(false, { transform: toBoolean }); // Whether the item should be hidden.
     readonly showBrowserWarning = input(true, { transform: toBoolean }); // Show a warning before opening links in browser.
-    readonly toggle = model(false); // Whether the toggle is on or off.
+    // eslint-disable-next-line @angular-eslint/no-input-rename
+    readonly toggleInput = input(false, { alias: 'toggle' });
+    readonly toggle = linkedSignal(this.toggleInput); // Whether the toggle is on or off.
 
     // Use a subject and outputFromObservable because direct output syntax doesn't have the 'observed' property.
     readonly actionEmitter = new Subject<() => void>();
