@@ -21,8 +21,8 @@ import { Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreWS, CoreWSFile } from '@services/ws';
 
-import EXT_TO_MIME from '@/assets/exttomime.json';
-import MIME_TO_EXT from '@/assets/mimetoext.json';
+import EXT_TO_MIME_JSON from '@/assets/exttomime.json';
+import MIME_TO_EXT_JSON from '@/assets/mimetoext.json';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreUrl } from '@static/url';
 import { CoreUtils } from '@static/utils';
@@ -41,6 +41,9 @@ type MimeTypeGroupInfo = {
     mimetypes: string[];
     extensions: string[];
 };
+
+const EXT_TO_MIME: Record<string, MimeTypeInfo> = EXT_TO_MIME_JSON;
+const MIME_TO_EXT: Record<string, string[]> = MIME_TO_EXT_JSON;
 
 /**
  * Static class with helper functions for mimetypes and extensions.
@@ -354,8 +357,8 @@ export class CoreMimetype {
      * @returns Info for the group.
      */
     static getGroupMimeInfo(group: string): MimeTypeGroupInfo;
-    static getGroupMimeInfo(group: string, field: string): string[] | undefined;
-    static getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo | string[] | undefined {
+    static getGroupMimeInfo(group: string, field: keyof MimeTypeGroupInfo): string[] | undefined;
+    static getGroupMimeInfo(group: string, field?: keyof MimeTypeGroupInfo): MimeTypeGroupInfo | string[] | undefined {
         if (CoreMimetype.groupsMimeInfo[group] === undefined) {
             CoreMimetype.fillGroupMimeInfo(group);
         }
@@ -439,7 +442,7 @@ export class CoreMimetype {
 
         const mimetypeStr = CoreMimetype.getMimetypeType(mimetype) || '';
         const chunks = mimetype.split('/');
-        const attr = {
+        const attr: Record<string, string> = {
             mimetype,
             ext: extension || '',
             mimetype1: chunks[0],
@@ -572,7 +575,7 @@ export class CoreMimetype {
         }
 
         extension = CoreMimetype.cleanExtension(extension);
-        const extensionGroups: string[] = EXT_TO_MIME[extension] && EXT_TO_MIME[extension].groups;
+        const extensionGroups: string[] | undefined = EXT_TO_MIME[extension] && EXT_TO_MIME[extension].groups;
         let found = false;
 
         if (groups.length && extensionGroups) {
