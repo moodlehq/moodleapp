@@ -194,8 +194,8 @@ export class CoreMimetypeUtilsProvider {
      * @deprecated since 5.0. Use CoreMimetype.getGroupMimeInfo instead.
      */
     getGroupMimeInfo(group: string): MimeTypeGroupInfo;
-    getGroupMimeInfo(group: string, field: string): string[] | undefined;
-    getGroupMimeInfo(group: string, field?: string): MimeTypeGroupInfo | string[] | undefined {
+    getGroupMimeInfo(group: string, field: keyof MimeTypeGroupInfo): string[] | undefined;
+    getGroupMimeInfo(group: string, field?: keyof MimeTypeGroupInfo): MimeTypeGroupInfo | string[] | undefined {
         if (!field) {
             return CoreMimetype.getGroupMimeInfo(group);
         }
