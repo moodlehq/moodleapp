@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreText } from '@static/text';
@@ -28,6 +28,7 @@ import { ModalController } from '@singletons';
     selector: 'page-core-viewer-text',
     templateUrl: 'text.html',
     styleUrl: 'text.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

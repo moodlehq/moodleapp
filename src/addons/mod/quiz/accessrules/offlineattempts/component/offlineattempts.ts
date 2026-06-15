@@ -15,7 +15,7 @@
 import { toBoolean } from '@/core/transforms/boolean';
 import { AddonModQuizAttemptWSData, AddonModQuizQuizWSData } from '@addons/mod/quiz/services/quiz';
 import { AddonModQuizSync } from '@addons/mod/quiz/services/quiz-sync';
-import { Component, OnInit, Input, inject } from '@angular/core';
+import { Component, OnInit, Input, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-access-offline-attempts',
     templateUrl: 'addon-mod-quiz-access-offline-attempts.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

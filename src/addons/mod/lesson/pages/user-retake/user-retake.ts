@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
 import { CoreUser } from '@features/user/services/user';
@@ -45,6 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-lesson-user-retake',
     templateUrl: 'user-retake.html',
     styleUrl: 'user-retake.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

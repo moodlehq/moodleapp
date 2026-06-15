@@ -18,7 +18,7 @@ import { AddonWorkshopAssessmentStrategyDelegate } from '@addons/mod/workshop/se
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '@addons/mod/workshop/services/workshop';
 import { AddonModWorkshopSubmissionAssessmentWithFormData } from '@addons/mod/workshop/services/workshop-helper';
 import { getModWorkshopComponentModules } from '@addons/mod/workshop/workshop.module';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/classes/compile-init-component';
 
@@ -29,6 +29,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-siteplugins-workshop-assessment-strategy',
     templateUrl: 'core-siteplugins-workshop-assessment-strategy.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

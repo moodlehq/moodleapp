@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 
@@ -33,6 +33,7 @@ import { CoreGradesGradeOverviewWithCourseData } from '@features/grades/services
 @Component({
     selector: 'page-core-grades-courses',
     templateUrl: 'courses.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

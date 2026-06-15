@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, effect, input, inject } from '@angular/core';
+import { Component, ElementRef, effect, input, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreDom } from '@static/dom';
 
 /**
@@ -29,6 +29,7 @@ import { CoreDom } from '@static/dom';
 @Component({
     selector: 'core-style',
     template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [],
 })
 export class CoreStyleComponent {

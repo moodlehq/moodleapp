@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
 import { AddonCompetencyPlanFormatted, AddonCompetencyPlansSource } from '@addons/competency/classes/competency-plans-source';
@@ -31,6 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-planlist',
     templateUrl: 'planlist.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

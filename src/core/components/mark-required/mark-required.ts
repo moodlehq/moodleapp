@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, AfterViewInit, ElementRef, input, effect, inject } from '@angular/core';
+import { Component, AfterViewInit, ElementRef, input, effect, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
@@ -34,6 +34,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: '[core-mark-required]',
     templateUrl: 'core-mark-required.html',
     styleUrl: 'mark-required.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

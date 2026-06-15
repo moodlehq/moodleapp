@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -33,6 +33,7 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
 @Component({
     selector: 'page-core-user-participants',
     templateUrl: 'participants.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

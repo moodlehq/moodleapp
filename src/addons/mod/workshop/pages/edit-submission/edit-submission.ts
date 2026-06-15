@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -56,6 +56,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 @Component({
     selector: 'page-addon-mod-workshop-edit-submission',
     templateUrl: 'edit-submission.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

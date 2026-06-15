@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -37,6 +37,7 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
     selector: 'page-addon-messages-contacts',
     templateUrl: 'contacts.html',
     styleUrl: '../../messages-common.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

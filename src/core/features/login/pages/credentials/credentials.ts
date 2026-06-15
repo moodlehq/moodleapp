@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -54,6 +54,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-credentials',
     templateUrl: 'credentials.html',
     styleUrl: '../../login.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

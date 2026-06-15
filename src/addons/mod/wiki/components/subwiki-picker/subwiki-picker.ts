@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PopoverController } from '@singletons';
 import { AddonModWikiSubwikiListGrouping, AddonModWikiSubwikiListSubwiki } from '../../services/wiki';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-wiki-subwiki-picker',
     templateUrl: 'addon-mod-wiki-subwiki-picker.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

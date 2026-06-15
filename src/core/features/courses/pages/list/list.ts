@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCoursesHelper, CoreEnrolledCourseDataWithExtraInfo } from '@features/courses/services/courses-helper';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -40,6 +40,7 @@ type CoreCoursesListMode = 'search' | 'all' | 'my';
 @Component({
     selector: 'page-core-courses-list',
     templateUrl: 'list.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreUserTours } from '@features/usertours/services/user-tours';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
@@ -25,6 +25,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-swipe-navigation-tour',
     templateUrl: 'core-swipe-navigation-tour.html',
     styleUrl: 'swipe-navigation-tour.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

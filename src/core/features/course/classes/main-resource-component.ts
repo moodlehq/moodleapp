@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, inject } from '@angular/core';
+import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';
@@ -49,6 +49,7 @@ export type CoreCourseResourceDownloadResult = {
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy, CoreCourseModuleMainComponent {

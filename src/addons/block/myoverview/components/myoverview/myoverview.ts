@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreTime } from '@static/time';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -56,6 +56,7 @@ const FILTER_PRIORITY: AddonBlockMyOverviewTimeFilters[] =
     selector: 'addon-block-myoverview',
     templateUrl: 'addon-block-myoverview.html',
     styleUrl: 'myoverview.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,

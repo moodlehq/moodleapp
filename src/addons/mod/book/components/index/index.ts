@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { AddonModBook, AddonModBookBookWSData, AddonModBookTocChapter } from '../../services/book';
 import { CoreCourse } from '@features/course/services/course';
@@ -29,6 +29,7 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-book-index',
     templateUrl: 'addon-mod-book-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

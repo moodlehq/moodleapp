@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseModuleCompletionBaseComponent } from '@features/course/classes/module-completion';
 import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
@@ -37,6 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-module-completion',
     templateUrl: 'core-course-module-completion.html',
     styleUrl: 'module-completion.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

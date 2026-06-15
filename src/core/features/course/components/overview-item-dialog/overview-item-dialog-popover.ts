@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -22,6 +22,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-overview-item-dialog-popover',
     templateUrl: 'overview-item-dialog-popover.html',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

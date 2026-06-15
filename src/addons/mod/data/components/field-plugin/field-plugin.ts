@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnChanges, Input, Output, SimpleChange, Type, EventEmitter, viewChild } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnChanges,
+    Input,
+    Output,
+    SimpleChange,
+    Type,
+    EventEmitter,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreFormFields } from '@static/form';
@@ -29,6 +40,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 @Component({
     selector: 'addon-mod-data-field-plugin',
     templateUrl: 'addon-mod-data-field-plugin.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

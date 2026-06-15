@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CoreUtils } from '@static/utils';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -48,6 +48,7 @@ import { CoreConfigSettingKey } from '@/core/constants';
     selector: 'page-addon-notifications-list',
     templateUrl: 'list.html',
     styleUrls: ['list.scss', '../../notifications.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

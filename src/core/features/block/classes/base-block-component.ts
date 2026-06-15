@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, Input, Component, OnChanges, SimpleChanges } from '@angular/core';
+import { OnInit, Input, Component, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CoreLogger } from '@static/logger';
 import { CoreArray } from '@static/array';
 import { CoreText } from '@static/text';
@@ -30,6 +30,7 @@ import { Translate } from '@singletons';
  * Template class to easily create components for blocks.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, ReloadableComponent, AsyncDirective {

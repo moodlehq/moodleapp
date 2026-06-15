@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { Md5 } from 'ts-md5';
 
@@ -30,6 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-shared-files-list',
     templateUrl: 'list.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, computed, input, signal } from '@angular/core';
+import { Component, OnInit, computed, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { ModalController, Translate } from '@singletons';
 import { CoreContentLinksAction } from '../../services/contentlinks-delegate';
@@ -30,6 +30,7 @@ import { NO_SITE_ID } from '@features/login/constants';
 @Component({
     selector: 'core-content-links-choose-site-modal',
     templateUrl: 'choose-site-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

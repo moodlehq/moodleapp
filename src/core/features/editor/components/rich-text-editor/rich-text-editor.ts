@@ -29,6 +29,7 @@ import {
     signal,
     afterNextRender,
     Injector,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -70,6 +71,7 @@ import { CoreKeyboard } from '@static/keyboard';
         CoreSharedModule,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[style.height]': 'height() + "px"',
     },

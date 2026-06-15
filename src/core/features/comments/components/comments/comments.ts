@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChange, OnInit } from '@angular/core';
+import {
+    Component,
+    EventEmitter,
+    Input,
+    OnChanges,
+    OnDestroy,
+    Output,
+    SimpleChange,
+    OnInit,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { CoreComments } from '../../services/comments';
 import { CORE_COMMENTS_COUNT_CHANGED_EVENT, CORE_COMMENTS_REFRESH_EVENT } from '@features/comments/constants';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -30,6 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-comments',
     templateUrl: 'core-comments.html',
     styleUrl: 'comments.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

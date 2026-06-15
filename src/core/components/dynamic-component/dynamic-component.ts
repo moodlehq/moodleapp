@@ -30,6 +30,7 @@ import {
     inject,
     EventEmitter,
     OutputEmitterRef,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -66,6 +67,7 @@ import { CoreLogger } from '@static/logger';
 @Component({
     selector: 'core-dynamic-component',
     templateUrl: 'core-dynamic-component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [':host { display: contents; }'],
 })
 export class CoreDynamicComponent<ComponentClass> implements OnChanges, DoCheck, AsyncDirective {

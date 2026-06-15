@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChanges, Type, viewChild } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, Type, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import {
     AddonModAssignAssign,
@@ -34,6 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-submission-plugin',
     templateUrl: 'addon-mod-assign-submission-plugin.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

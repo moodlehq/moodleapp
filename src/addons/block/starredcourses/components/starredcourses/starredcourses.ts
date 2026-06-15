@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreCoursesMyCoursesUpdatedEventData, CoreCourses } from '@features/courses/services/courses';
@@ -41,6 +41,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 @Component({
     selector: 'addon-block-starredcourses',
     templateUrl: 'addon-block-starredcourses.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,

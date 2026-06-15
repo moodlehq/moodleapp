@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -68,6 +68,7 @@ import { AddonCalendarEventCardComponent } from '@addons/calendar/components/cal
     selector: 'page-addon-calendar-day',
     templateUrl: 'day.html',
     styleUrls: ['../../calendar-common.scss', 'day.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonCalendarEventCardComponent,

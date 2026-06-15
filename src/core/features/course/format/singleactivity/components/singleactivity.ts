@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, SimpleChange, Type, viewChild } from '@angular/core';
+import { Component, OnChanges, SimpleChange, Type, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreCourseUnsupportedModuleComponent } from '@features/course/components/unsupported-module/unsupported-module';
@@ -34,6 +34,7 @@ import { CoreLang } from '@services/lang';
     selector: 'core-course-format-single-activity',
     templateUrl: 'core-course-format-single-activity.html',
     styleUrl: 'single-activity.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

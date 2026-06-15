@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@singletons';
 import { AddonModScormGetScormAccessInformationWSResponse } from '../../services/scorm';
 import { AddonModScormTOCScoWithIcon } from '../../services/scorm-helper';
@@ -26,6 +26,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-scorm-toc',
     templateUrl: 'toc.html',
     styleUrl: 'toc.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

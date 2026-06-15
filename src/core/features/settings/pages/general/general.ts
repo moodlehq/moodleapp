@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Type } from '@angular/core';
+import { Component, Type, ChangeDetectionStrategy } from '@angular/core';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';
 import { CoreLang } from '@services/lang';
@@ -37,6 +37,7 @@ import { CoreEditorService } from '@features/editor/services/editor';
     selector: 'page-core-app-settings-general',
     templateUrl: 'general.html',
     styleUrl: 'general.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import {
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    inject,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
@@ -42,6 +51,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-site-policy',
     templateUrl: 'site-policy.html',
     styleUrl: 'site-policy.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

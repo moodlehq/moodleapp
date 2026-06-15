@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, OnInit, OnChanges, SimpleChange, EventEmitter, Component, inject } from '@angular/core';
+import {
+    Input,
+    Output,
+    OnInit,
+    OnChanges,
+    SimpleChange,
+    EventEmitter,
+    Component,
+    inject,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreFormFields } from '@static/form';
 import { AddonModDataData, AddonModDataEntryField, AddonModDataField } from '../services/data';
@@ -23,6 +33,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  * Base class for component to render a field.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export abstract class AddonModDataFieldPluginBaseComponent implements OnInit, OnChanges {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, OnDestroy, OnInit, Type } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CORE_COMMENTS_REFRESH_EVENT } from '@features/comments/constants';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -67,6 +67,7 @@ const contentToken = '<!-- CORE-DATABASE-CONTENT-GOES-HERE -->';
     selector: 'addon-mod-data-index',
     templateUrl: 'addon-mod-data-index.html',
     styleUrl: '../../data.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

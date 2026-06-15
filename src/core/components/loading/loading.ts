@@ -19,6 +19,7 @@ import {
     inject,
     input,
     effect,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
@@ -59,6 +60,7 @@ import { CoreTimesPipe } from '@pipes/times';
         CoreBaseModule,
         CoreTimesPipe,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.core-loading-inline]': '!fullscreen()',
         '[class.core-loading-loaded]': 'hideUntil()',

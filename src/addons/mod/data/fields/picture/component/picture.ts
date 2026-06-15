@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreDom } from '@static/dom';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-picture',
     templateUrl: 'addon-mod-data-field-picture.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, viewChild } from '@angular/core';
+import { Component, OnChanges, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseFormatDelegate } from '@features/course/services/format-delegate';
 import { CoreSitePlugins, CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
@@ -31,6 +31,7 @@ import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'component',
     },

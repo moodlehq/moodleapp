@@ -12,7 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, ElementRef, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ChangeDetectorRef,
+    ElementRef,
+    inject,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
 import { CoreError } from '@classes/errors/error';
@@ -67,6 +76,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-lesson-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

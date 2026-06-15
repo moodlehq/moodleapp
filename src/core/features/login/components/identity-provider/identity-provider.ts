@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteIdentityProvider } from '@classes/sites/unauthenticated-site';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -22,6 +22,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-identity-provider',
     templateUrl: 'identity-provider.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

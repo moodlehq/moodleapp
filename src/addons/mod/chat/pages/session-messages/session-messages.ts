@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
@@ -32,6 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-chat-session-messages',
     templateUrl: 'session-messages.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'session-messages.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

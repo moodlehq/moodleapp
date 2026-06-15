@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '@addons/mod/assign/services/assign';
 import { AddonModAssignSubmissionDelegate } from '@addons/mod/assign/services/submission-delegate';
@@ -29,6 +29,7 @@ import { getModAssignComponentModules } from '@addons/mod/assign/assign.module';
     selector: 'core-site-plugins-assign-submission',
     templateUrl: 'core-siteplugins-assign-submission.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

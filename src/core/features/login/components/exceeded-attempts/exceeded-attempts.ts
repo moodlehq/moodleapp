@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserSupport } from '@features/user/services/support';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -20,6 +20,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-login-exceeded-attempts',
     templateUrl: 'exceeded-attempts.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

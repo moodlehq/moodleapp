@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Component, EventEmitter, Output } from '@angular/core';
+import { Input, Component, EventEmitter, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreCourseFormatComponent } from '../components/course-format/course-format';
 import { CoreCourseSection, CoreCourseModuleCompletionData } from '../services/course-helper';
@@ -22,6 +22,7 @@ import { CoreCourseSectionToDisplay } from '../components/course-section/course-
  * Template class to easily create components for course formats.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export abstract class CoreCourseFormatDynamicComponent {

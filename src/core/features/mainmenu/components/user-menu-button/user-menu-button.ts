@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, OnInit, inject, input, linkedSignal, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
@@ -31,6 +31,7 @@ import { CoreMainMenuPlacement } from '@features/mainmenu/constants';
     selector: 'core-user-menu-button',
     templateUrl: 'user-menu-button.html',
     styleUrl: 'user-menu-button.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

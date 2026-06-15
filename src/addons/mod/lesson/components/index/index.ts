@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, viewChild, ElementRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, viewChild, ElementRef, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -62,6 +62,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-lesson-index',
     templateUrl: 'addon-mod-lesson-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

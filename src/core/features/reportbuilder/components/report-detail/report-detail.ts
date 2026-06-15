@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreReportBuilder,
@@ -40,6 +40,7 @@ import { CoreReportBuilderReportColumnComponent } from '../report-column/report-
     selector: 'core-report-builder-report-detail',
     templateUrl: './report-detail.html',
     styleUrl: './report-detail.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreReportBuilderReportColumnComponent,

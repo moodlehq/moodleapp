@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreConfig } from '@services/config';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -50,6 +50,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-notifications-settings',
     templateUrl: 'settings.html',
     styleUrl: 'settings.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -23,6 +23,7 @@ import {
     ContentChild,
     TemplateRef,
     inject,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreTabBase } from '@classes/tabs';
 
@@ -54,6 +55,7 @@ import { CoreBaseModule } from '@/core/base.module';
 @Component({
     selector: 'core-tab',
     template: '@if (loaded && template) {<ng-container [ngTemplateOutlet]="template" />}',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreBaseModule],
 })
 export class CoreTabComponent implements OnInit, OnDestroy, CoreTabBase {

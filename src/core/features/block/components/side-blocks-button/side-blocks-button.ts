@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreDom } from '@static/dom';
@@ -26,6 +26,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-block-side-blocks-button',
     templateUrl: 'side-blocks-button.html',
     styleUrl: 'side-blocks-button.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

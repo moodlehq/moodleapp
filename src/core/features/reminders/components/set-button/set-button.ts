@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreReminderData, CoreReminders } from '@features/reminders/services/reminders';
-import { Component, computed, input, linkedSignal } from '@angular/core';
+import { Component, computed, input, linkedSignal, ChangeDetectionStrategy } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
@@ -27,6 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-reminders-set-button',
     templateUrl: 'set-button.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

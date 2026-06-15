@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, ElementRef, Type, OnDestroy, viewChild } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, Type, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
@@ -55,6 +55,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy',
     templateUrl: 'addon-mod-workshop-assessment-strategy.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

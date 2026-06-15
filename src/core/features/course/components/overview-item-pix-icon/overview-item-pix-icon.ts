@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, effect, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 import { CoreIcons } from '@static/icons';
@@ -27,6 +27,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
     selector: 'core-course-overview-item-pix-icon',
     templateUrl: 'overview-item-pix-icon.html',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

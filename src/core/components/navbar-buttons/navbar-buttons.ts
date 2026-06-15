@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, ElementRef, ViewContainerRef, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    ViewContainerRef,
+    inject,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { CoreLogger } from '@static/logger';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { CoreDirectivesRegistry } from '@static/directives-registry';
@@ -44,6 +54,7 @@ const BUTTON_HIDDEN_CLASS = 'core-navbar-button-hidden';
 @Component({
     selector: 'core-navbar-buttons',
     template: '<ng-content/><template #contextMenuContainer>-</template>',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: 'navbar-buttons.scss',
 })
 export class CoreNavBarButtonsComponent implements OnInit, OnDestroy {

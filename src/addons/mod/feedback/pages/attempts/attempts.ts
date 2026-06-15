@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, inject, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -35,6 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-feedback-attempts',
     templateUrl: 'attempts.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

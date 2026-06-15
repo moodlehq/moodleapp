@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreReminders } from '@features/reminders/services/reminders';
 import { CoreReminderDBRecord } from '@features/reminders/services/database/reminders';
@@ -30,6 +30,7 @@ import { CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/si
     selector: 'page-core-reminders-list',
     templateUrl: 'reminders.html',
     styleUrl: 'reminders.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

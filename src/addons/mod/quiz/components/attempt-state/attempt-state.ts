@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input } from '@angular/core';
+import { Component, computed, input, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModQuiz } from '../../services/quiz';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -25,6 +25,7 @@ import { AddonModQuizAttemptStates } from '../../constants';
     selector: 'addon-mod-quiz-attempt-state',
     templateUrl: 'attempt-state.html',
     styleUrl: 'attempt-state.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

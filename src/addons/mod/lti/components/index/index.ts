@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { AddonModLti, AddonModLtiLti } from '../../services/lti';
 import { AddonModLtiHelper } from '../../services/lti-helper';
@@ -27,6 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-lti-index',
     templateUrl: 'addon-mod-lti-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

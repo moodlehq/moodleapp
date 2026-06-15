@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonCompetencyHelper } from '@addons/competency/services/competency-helper';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleSummary } from '@features/course/services/course';
 import { CoreUserSummary } from '@features/user/services/user';
 import { CoreSites } from '@services/sites';
@@ -48,6 +48,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-competency',
     templateUrl: 'competency.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

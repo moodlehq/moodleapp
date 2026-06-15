@@ -22,6 +22,7 @@ import {
     SimpleChange,
     CUSTOM_ELEMENTS_SCHEMA,
     ComponentRef,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { IonRouterOutlet, IonTabs, ViewDidEnter, ViewDidLeave, AnimationBuilder } from '@ionic/angular';
 
@@ -60,6 +61,7 @@ import { NavDirection, RouterDirection } from '@ionic/core';
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreTabsOutletComponent extends CoreTabsBaseComponent<CoreTabsOutletTabWithId>

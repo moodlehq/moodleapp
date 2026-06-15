@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
 import { toBoolean } from '@/core/transforms/boolean';
 
@@ -20,6 +20,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  * Base class for component to render a submission plugin.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class AddonModAssignSubmissionPluginBaseComponent {

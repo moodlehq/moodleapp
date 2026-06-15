@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { PopoverController } from '@singletons';
 import { AddonModGlossaryFetchMode } from '../../classes/glossary-entries-source';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-glossary-mode-picker-popover',
     templateUrl: 'addon-mod-glossary-mode-picker.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

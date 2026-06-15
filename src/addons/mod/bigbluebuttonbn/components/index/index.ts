@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnInit, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreApp } from '@services/app';
@@ -48,6 +48,7 @@ import { CoreUrl } from '@static/url';
     selector: 'addon-mod-bbb-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

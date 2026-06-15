@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-site-plugins-module-index',
     templateUrl: 'module-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSitePluginsModuleIndexComponent,

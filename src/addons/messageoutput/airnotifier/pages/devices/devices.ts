@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { AddonMessageOutputAirnotifier, AddonMessageOutputAirnotifierDevice } from '../../services/airnotifier';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-message-output-airnotifier-devices',
     templateUrl: 'devices.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

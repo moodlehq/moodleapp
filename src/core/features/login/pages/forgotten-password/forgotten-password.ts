@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnInit, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
@@ -35,6 +35,7 @@ import { CoreError } from '@classes/errors/error';
 @Component({
     selector: 'page-core-login-forgotten-password',
     templateUrl: 'forgotten-password.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreLoginExceededAttemptsComponent,

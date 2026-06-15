@@ -24,6 +24,7 @@ import {
     SimpleChange,
     ElementRef,
     inject,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -47,6 +48,7 @@ import { BackButtonPriority } from '../constants';
  * Class to abstract some common code for tabs.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreTabsBaseComponent<T extends CoreTabBase> implements AfterViewInit, OnChanges, OnDestroy, AsyncDirective {

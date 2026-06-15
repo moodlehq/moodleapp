@@ -14,13 +14,14 @@
 import { DownloadStatus } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileComponent } from '@components/file/file';
 
 @Component({
     selector: 'addon-privatefiles-file',
     templateUrl: 'file.html',
     styleUrl: 'file.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreSharedModule],
 })
 export class AddonPrivateFilesFileComponent extends CoreFileComponent implements OnDestroy {

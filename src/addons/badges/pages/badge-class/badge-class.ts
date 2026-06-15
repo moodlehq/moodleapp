@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreNavigator } from '@services/navigator';
 import { ActivatedRoute } from '@angular/router';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-badges-badge-class',
     templateUrl: 'badge-class.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

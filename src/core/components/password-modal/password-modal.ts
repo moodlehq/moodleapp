@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, viewChild, input, signal } from '@angular/core';
+import { Component, ElementRef, viewChild, input, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@static/form';
@@ -33,6 +33,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 @Component({
     selector: 'core-password-modal',
     templateUrl: 'password-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

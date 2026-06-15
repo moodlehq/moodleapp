@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, Input, HostBinding } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 import { ActionSheetButton } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -52,6 +52,7 @@ import { CoreTimeConstants } from '@/core/constants';
     selector: 'page-core-course-summary',
     templateUrl: 'course-summary.html',
     styleUrl: 'course-summary.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreRemindersDateComponent,

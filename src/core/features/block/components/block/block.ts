@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, Type, viewChild, effect, input, signal } from '@angular/core';
+import { Component, OnDestroy, Type, viewChild, effect, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreBlockDelegate } from '../../services/block-delegate';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { Subscription } from 'rxjs';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-block',
     templateUrl: 'core-block.html',
     styleUrl: 'block.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ContextLevel } from '@/core/constants';
 import { CorePromisedValue } from '@classes/promised-value';
 import type { AsyncDirective } from '@coretypes/async-directive';
@@ -21,6 +21,7 @@ import type { AsyncDirective } from '@coretypes/async-directive';
  * Base class for editor implementations.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export abstract class CoreEditorBaseComponent implements AsyncDirective {

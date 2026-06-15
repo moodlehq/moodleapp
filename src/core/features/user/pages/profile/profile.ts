@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { Component, OnDestroy, OnInit, computed, inject, signal, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSite } from '@classes/sites/site';
@@ -49,6 +49,7 @@ import { CoreWSError } from '@classes/errors/wserror';
     selector: 'page-core-user-profile',
     templateUrl: 'profile.html',
     styleUrl: 'profile.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

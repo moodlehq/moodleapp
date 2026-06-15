@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AddonCompetencyDataForPlanPageCompetency, AddonCompetencyDataForPlanPageWSResponse } from '../../services/competency';
 import { CoreNavigator } from '@services/navigator';
 import { CoreUserProfile } from '@features/user/services/user';
@@ -32,6 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-plan',
     templateUrl: 'plan.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

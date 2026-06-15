@@ -14,7 +14,7 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { isSafeNumber, safeNumber, SafeNumber } from '@/core/utils/types';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
@@ -62,6 +62,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-quiz-index',
     templateUrl: 'addon-mod-quiz-index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

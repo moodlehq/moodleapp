@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Signal } from '@angular/core';
+import { Component, OnInit, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -37,6 +37,7 @@ import { map } from 'rxjs';
     selector: 'page-addon-mod-h5pactivity-users-attempts',
     templateUrl: 'users-attempts.html',
     styleUrl: 'users-attempts.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

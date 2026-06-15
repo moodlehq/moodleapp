@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, HostBinding, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import { Component, HostBinding, OnDestroy, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 
 import { CoreTabsOutletTab, CoreTabsOutletComponent } from '@components/tabs-outlet/tabs-outlet';
@@ -44,6 +44,7 @@ import { CorePlatform } from '@services/platform';
     selector: 'page-core-course-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

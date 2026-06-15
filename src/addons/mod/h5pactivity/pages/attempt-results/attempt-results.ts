@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
@@ -37,6 +37,7 @@ import { AddonModH5PActivityAttemptSummaryComponent } from '../../components/att
     selector: 'page-addon-mod-h5pactivity-attempt-results',
     templateUrl: 'attempt-results.html',
     styleUrl: 'attempt-results.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModH5PActivityAttemptSummaryComponent,

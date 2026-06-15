@@ -21,6 +21,7 @@ import {
     inject,
     viewChild,
     viewChildren,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { Subscription } from 'rxjs';
@@ -79,6 +80,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-quiz-player',
     templateUrl: 'player.html',
     styleUrl: 'player.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModQuizQuestionCardComponent,

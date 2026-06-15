@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -68,6 +68,7 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
 @Component({
     selector: 'addon-mod-workshop-index',
     templateUrl: 'addon-mod-workshop-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModWorkshopSubmissionComponent,

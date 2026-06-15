@@ -14,7 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, Validators, FormControl } from '@angular/forms';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/signup';
@@ -24,6 +24,7 @@ import { CoreUserProfileField } from '@features/user/services/user';
  * Base class for components to render a user profile field.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export abstract class CoreUserProfileFieldBaseComponent<T = string> implements OnInit {

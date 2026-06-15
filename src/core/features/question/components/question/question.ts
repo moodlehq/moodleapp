@@ -26,6 +26,7 @@ import {
     inject,
     viewChild,
     effect,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
@@ -50,6 +51,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-question',
     templateUrl: 'core-question.html',
     styleUrl: '../../question.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

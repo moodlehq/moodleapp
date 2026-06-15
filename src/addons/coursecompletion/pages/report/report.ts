@@ -16,7 +16,7 @@ import {
     AddonCourseCompletion,
     AddonCourseCompletionCourseCompletionStatus,
 } from '@addons/coursecompletion/services/coursecompletion';
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreLoadings } from '@services/overlays/loadings';
@@ -34,6 +34,7 @@ import { AddonCourseCompletionAggregation } from '@addons/coursecompletion/const
 @Component({
     selector: 'page-addon-course-completion-report',
     templateUrl: 'report.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

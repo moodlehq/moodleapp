@@ -19,6 +19,7 @@ import {
     ViewChild,
     ElementRef,
     CUSTOM_ELEMENTS_SCHEMA,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 
 import { CoreTabsBaseComponent } from '@classes/tabs';
@@ -51,6 +52,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
         CoreUpdateNonReactiveAttributesDirective,
         CoreFaIconDirective,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreTabsComponent extends CoreTabsBaseComponent<CoreTabComponent> implements AfterViewInit {

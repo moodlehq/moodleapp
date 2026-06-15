@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import {
     ALWAYS_SHOW_LOGIN_FORM,
     ALWAYS_SHOW_LOGIN_FORM_CHANGED,
@@ -42,6 +42,7 @@ import { CORE_SETTINGS_ERROR_LOG_PAGE_NAME } from '@features/settings/constants'
 @Component({
     selector: 'page-core-app-settings-dev',
     templateUrl: 'dev.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

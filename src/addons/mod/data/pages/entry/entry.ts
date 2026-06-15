@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ChangeDetectorRef, OnInit, Type, inject, viewChild } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectorRef, OnInit, Type, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCommentsCommentsComponent } from '@features/comments/components/comments/comments';
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
@@ -57,6 +57,7 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
     selector: 'page-addon-mod-data-entry',
     templateUrl: 'entry.html',
     styleUrl: '../../data.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

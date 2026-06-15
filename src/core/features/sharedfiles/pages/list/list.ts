@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreNavigator } from '@services/navigator';
@@ -26,6 +26,7 @@ import { CoreSharedFilesListComponent } from '../../components/list/list';
 @Component({
     selector: 'page-core-shared-files-list',
     templateUrl: 'list.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSharedFilesListComponent,

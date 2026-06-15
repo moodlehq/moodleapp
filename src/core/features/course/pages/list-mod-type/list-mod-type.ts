@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourse, CoreCourseWSSection, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -35,6 +35,7 @@ import { CoreCourseModuleHelper } from '@features/course/services/course-module-
 @Component({
     selector: 'page-core-course-list-mod-type',
     templateUrl: 'list-mod-type.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

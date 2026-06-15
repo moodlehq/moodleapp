@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreUser } from '@features/user/services/user';
 import {
@@ -41,6 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-module-completion-legacy',
     templateUrl: 'core-course-module-completion-legacy.html',
     styleUrl: 'module-completion-legacy.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

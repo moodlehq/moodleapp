@@ -22,6 +22,7 @@ import {
     OnDestroy,
     inject,
     viewChild,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { IonTextarea } from '@ionic/angular';
 import { CoreUtils } from '@static/utils';
@@ -52,6 +53,7 @@ import { CoreEventObserver } from '@static/events';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent implements OnInit, AfterViewInit, OnDestroy {

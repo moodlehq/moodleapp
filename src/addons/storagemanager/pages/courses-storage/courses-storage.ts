@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, OnDestroy, OnInit, Type } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type, ChangeDetectionStrategy } from '@angular/core';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { CORE_COURSE_ALL_COURSES_CLEARED, COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';
 import { CoreCourse } from '@features/course/services/course';
@@ -41,6 +41,7 @@ import { CoreStorageManager } from '@addons/storagemanager/services/storage-mana
     selector: 'page-addon-storagemanager-courses-storage',
     templateUrl: 'courses-storage.html',
     styleUrl: 'courses-storage.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

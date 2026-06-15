@@ -23,6 +23,7 @@ import {
     KeyValueDiffer,
     inject,
     viewChild,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Md5 } from 'ts-md5';
@@ -50,6 +51,7 @@ import { ContextLevel } from '@/core/constants';
         CoreSharedModule,
         CoreCompileHtmlComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'component',
     },

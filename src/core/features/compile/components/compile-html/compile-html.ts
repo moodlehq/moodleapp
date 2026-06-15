@@ -39,6 +39,7 @@ import {
     CreateEffectOptions,
     inject,
     viewChild,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -69,6 +70,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-compile-html',
     template: '<core-loading [hideUntil]="loaded"><ng-container #dynamicComponent /></core-loading>',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreSharedModule],
 })
 export class CoreCompileHtmlComponent implements OnChanges, OnDestroy, DoCheck {

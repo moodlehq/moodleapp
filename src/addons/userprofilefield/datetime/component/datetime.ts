@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { FormControl, Validators } from '@angular/forms';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreTime } from '@static/time';
 import { CoreUtils } from '@static/utils';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-datetime',
     templateUrl: 'addon-user-profile-field-datetime.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

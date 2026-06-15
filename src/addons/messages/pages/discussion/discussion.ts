@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -65,6 +65,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
     selector: 'page-addon-messages-discussion',
     templateUrl: 'discussion.html',
     styleUrls: ['../../../../theme/components/discussion.scss', 'discussion.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

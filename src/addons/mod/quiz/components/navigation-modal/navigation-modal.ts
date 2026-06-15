@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, ElementRef, Input, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -28,6 +28,7 @@ import { CoreDom } from '@static/dom';
     selector: 'addon-mod-quiz-navigation-modal',
     templateUrl: 'navigation-modal.html',
     styleUrl: 'navigation-modal.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

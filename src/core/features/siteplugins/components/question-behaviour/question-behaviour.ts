@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
 import { CoreQuestionBehaviourDelegate } from '@features/question/services/behaviour-delegate';
@@ -29,6 +29,7 @@ import { CoreSitePluginsCompileInitComponent } from '@features/siteplugins/class
     selector: 'core-site-plugins-question-behaviour',
     templateUrl: 'core-siteplugins-question-behaviour.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

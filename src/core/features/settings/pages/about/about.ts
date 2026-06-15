@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
@@ -28,6 +28,7 @@ import { CORE_SETTINGS_DEVICEINFO_PAGE_NAME, CORE_SETTINGS_LICENSES_PAGE_NAME } 
     selector: 'page-core-app-settings-about',
     templateUrl: 'about.html',
     styleUrl: 'about.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

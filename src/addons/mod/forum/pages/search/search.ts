@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonModForum, AddonModForumData } from '@addons/mod/forum/services/forum';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCourse } from '@features/course/services/course';
@@ -39,6 +39,7 @@ import { CoreSearchGlobalSearchResultComponent } from '@features/search/componen
 @Component({
     selector: 'page-addon-mod-forum-search',
     templateUrl: 'search.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

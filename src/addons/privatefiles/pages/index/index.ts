@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreNetwork } from '@services/network';
@@ -47,6 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-privatefiles-index',
     templateUrl: 'index.html',
     styleUrl: './index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonPrivateFilesFileComponent,

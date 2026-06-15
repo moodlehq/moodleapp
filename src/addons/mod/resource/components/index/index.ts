@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourse } from '@features/course/services/course';
@@ -45,6 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-resource-index',
     templateUrl: 'addon-mod-resource-index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, effect, ChangeDetectionStrategy } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -66,6 +66,7 @@ import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel, CoreRefreshIcon, CoreSyncIcon } from '@/core/constants';
-import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -77,6 +77,7 @@ type Post = AddonModForumPost & { children?: Post[] };
     selector: 'page-addon-mod-forum-discussion',
     templateUrl: 'discussion.html',
     styleUrl: 'discussion.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModForumPostComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -50,6 +50,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'page-addon-calendar-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonCalendarCalendarComponent,

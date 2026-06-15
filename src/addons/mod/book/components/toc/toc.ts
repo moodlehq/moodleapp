@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@singletons';
 import { AddonModBookTocChapter, AddonModBookBookWSData } from '../../services/book';
 import { AddonModBookNumbering } from '../../constants';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-book-toc',
     templateUrl: 'toc.html',
     styleUrl: 'toc.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

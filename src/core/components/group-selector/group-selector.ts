@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  model,
+    Component,
+    ChangeDetectionStrategy,
+    input,
+    model,
 } from '@angular/core';
 import { CoreGroupInfo } from '@services/groups';
 import { CoreBaseModule } from '@/core/base.module';

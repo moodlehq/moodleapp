@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourses } from '../../services/courses';
 import { CoreEnrolledCourseDataWithExtraInfoAndOptions } from '../../services/courses-helper';
 import { CorePrefetchStatusInfo } from '@features/course/services/course-prefetch';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-courses-course-options-menu',
     templateUrl: 'core-courses-course-options-menu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

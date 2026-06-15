@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, viewChild } from '@angular/core';
+import { Component, Input, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreFormFields, CoreForms } from '@static/form';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -31,6 +31,7 @@ import { AddonModAssignFeedbackPluginComponent } from '../feedback-plugin/feedba
 @Component({
     selector: 'addon-mod-assign-edit-feedback-plugin-modal',
     templateUrl: 'edit-feedback-plugin-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,

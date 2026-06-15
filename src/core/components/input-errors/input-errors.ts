@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, inject } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
@@ -43,6 +43,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
         CoreBaseModule,
         CoreFaIconDirective,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.has-errors]': '(control && control.dirty && !control.valid) || !!errorText',
         '[attr.role]': '"alert"',

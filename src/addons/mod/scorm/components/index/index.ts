@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreCourse } from '@features/course/services/course';
@@ -62,6 +62,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-scorm-index',
     templateUrl: 'addon-mod-scorm-index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

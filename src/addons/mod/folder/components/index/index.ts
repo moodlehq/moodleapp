@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleMainResourceComponent } from '@features/course/classes/main-resource-component';
 import { CoreCourse } from '@features/course/services/course';
@@ -35,6 +35,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-folder-index',
     templateUrl: 'addon-mod-folder-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

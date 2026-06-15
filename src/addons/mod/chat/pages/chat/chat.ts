@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
@@ -41,6 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-chat-chat',
     templateUrl: 'chat.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'chat.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

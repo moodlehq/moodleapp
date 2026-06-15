@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { PopoverController } from '@singletons';
 import { CoreEvents } from '@static/events';
@@ -29,6 +29,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-forum-discussion-options-menu',
     templateUrl: 'discussion-options-menu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

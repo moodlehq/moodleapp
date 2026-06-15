@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -33,6 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-app-settings-synchronization',
     templateUrl: 'synchronization.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

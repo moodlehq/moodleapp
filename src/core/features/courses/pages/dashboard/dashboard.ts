@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, signal, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourses } from '../../services/courses';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -38,6 +38,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'page-core-courses-dashboard',
     templateUrl: 'dashboard.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreBlockComponent,

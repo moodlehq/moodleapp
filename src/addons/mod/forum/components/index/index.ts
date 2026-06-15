@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import {
@@ -76,6 +76,7 @@ import { CoreCourseModuleInfoComponent } from '@features/course/components/modul
     selector: 'addon-mod-forum-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

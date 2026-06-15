@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';
 import { CoreCategoryData, CoreCourseListItem, CoreCourses } from '../../services/courses';
@@ -36,6 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-courses-categories',
     templateUrl: 'categories.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCoursesCourseListItemComponent,

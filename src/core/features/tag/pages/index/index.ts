@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreScreen } from '@services/screen';
@@ -30,6 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-tag-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

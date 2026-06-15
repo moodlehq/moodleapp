@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-settings-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

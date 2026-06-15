@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -31,6 +31,7 @@ import { MAIN_MENU_HOME_PAGE_NAME } from '@features/mainmenu/constants';
 @Component({
     selector: 'page-core-mainmenu-home',
     templateUrl: 'home.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

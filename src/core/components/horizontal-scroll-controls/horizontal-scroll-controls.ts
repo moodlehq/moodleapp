@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input, signal } from '@angular/core';
+import { Component, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CorePlatform } from '@services/platform';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
@@ -29,6 +29,7 @@ const enum ScrollPosition {
     selector: 'core-horizontal-scroll-controls',
     templateUrl: 'core-horizontal-scroll-controls.html',
     styleUrl: './horizontal-scroll-controls.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

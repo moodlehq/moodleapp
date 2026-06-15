@@ -15,7 +15,7 @@
 import { DownloadStatus } from '@/core/constants';
 import { AddonBlog } from '@addons/blog/services/blog';
 import { ADDON_BLOG_MAINMENU_PAGE_NAME } from '@addons/blog/constants';
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -46,6 +46,7 @@ import { CoreCoursePrefetch } from '@features/course/services/course-prefetch';
     selector: 'core-course-module-summary',
     templateUrl: 'module-summary.html',
     styleUrl: 'module-summary.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

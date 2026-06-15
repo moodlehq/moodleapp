@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreNavigator } from '@services/navigator';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-login-sites',
     templateUrl: 'sites.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

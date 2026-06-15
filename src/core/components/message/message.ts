@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreUserAvatarComponent, CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
@@ -41,6 +41,7 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
         CoreUpdateNonReactiveAttributesDirective,
         CoreFormatDatePipe,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[animate.enter]': 'isMine() ? "" : "slide-in-left-animation"',
         '[animate.leave]': 'isMine() ? "" : "slide-out-left-animation"',

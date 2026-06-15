@@ -13,7 +13,19 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, OnInit, OnDestroy, ElementRef, input, output, signal, computed, effect, inject } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    input,
+    output,
+    signal,
+    computed,
+    effect,
+    inject,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 
 import { CoreTime } from '@static/time';
@@ -31,6 +43,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
     selector: 'core-timer',
     templateUrl: 'core-timer.html',
     styleUrl: 'timer.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreSecondsToHMSPipe,

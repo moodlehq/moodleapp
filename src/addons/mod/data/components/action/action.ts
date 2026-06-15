@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
@@ -44,6 +44,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-action',
     templateUrl: 'addon-mod-data-action.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCommentsCommentsComponent,

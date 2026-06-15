@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Component to display an empty spacer using item divider.
@@ -23,6 +23,7 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'core-spacer',
     template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styles: [':host { display: block; margin: var(--spacer-vertical) var(--spacer-horizontal); \
         border-bottom: 1px solid var(--spacer-color);}'],
 })

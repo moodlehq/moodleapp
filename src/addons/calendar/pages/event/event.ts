@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import {
     AddonCalendar,
     AddonCalendarEventToDisplay,
@@ -64,6 +64,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     selector: 'page-addon-calendar-event',
     templateUrl: 'event.html',
     styleUrls: ['../../calendar-common.scss', 'event.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

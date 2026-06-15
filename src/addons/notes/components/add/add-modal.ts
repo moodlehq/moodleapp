@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonNotes, AddonNotesPublishState } from '@addons/notes/services/notes';
-import { Component, ElementRef, Input, viewChild } from '@angular/core';
+import { Component, ElementRef, Input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@static/form';
 import { ModalController } from '@singletons';
@@ -28,6 +28,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
  */
 @Component({
     templateUrl: 'add-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -23,7 +23,7 @@ import {
 import {
     AddonNotificationsHelper,
 } from '@addons/notifications/services/notifications-helper';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -43,6 +43,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-notifications-notification',
     templateUrl: 'notification.html',
     styleUrls: ['../../notifications.scss', 'notification.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

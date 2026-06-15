@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { AddonModQuizQuestionBasicData, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
@@ -27,6 +27,7 @@ import { CoreText } from '@static/text';
     selector: 'addon-qtype-ddimageortext',
     templateUrl: 'addon-qtype-ddimageortext.html',
     styleUrls: ['../../../../core/features/question/question.scss', 'ddimageortext.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

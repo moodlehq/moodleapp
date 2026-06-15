@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-rendered-block/pre-rendered-block';
 
 /**
@@ -23,6 +23,7 @@ import { CoreBlockPreRenderedComponent } from '@features/block/components/pre-re
     selector: 'addon-block-blog-menu',
     templateUrl: '../../../../../core/features/block/components/pre-rendered-block/core-block-pre-rendered.html',
     styleUrl: 'blogmenu.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

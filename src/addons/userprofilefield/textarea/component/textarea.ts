@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
@@ -24,6 +24,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-textarea',
     templateUrl: 'addon-user-profile-field-textarea.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

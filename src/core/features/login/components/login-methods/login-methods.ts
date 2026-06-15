@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSite } from '@classes/sites/site';
 import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
@@ -26,6 +26,7 @@ import { CoreLoginIdentityProviderComponent } from '../identity-provider/identit
     selector: 'core-login-methods',
     templateUrl: 'login-methods.html',
     styleUrl: '../../login.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreLoginIdentityProviderComponent,

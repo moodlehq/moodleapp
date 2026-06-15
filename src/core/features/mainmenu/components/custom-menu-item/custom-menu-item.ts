@@ -14,7 +14,7 @@
 
 import { CoreLinkOpenMethod } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
@@ -23,6 +23,7 @@ import { CoreViewer } from '@features/viewer/services/viewer';
 @Component({
     selector: 'core-custom-menu-item',
     templateUrl: 'custom-menu-item.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

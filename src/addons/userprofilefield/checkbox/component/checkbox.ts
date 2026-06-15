@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Validators, FormControl } from '@angular/forms';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/signup';
@@ -27,6 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-user-profile-field-checkbox',
     templateUrl: 'addon-user-profile-field-checkbox.html',
     styleUrl: './checkbox.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

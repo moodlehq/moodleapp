@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNavigationBarItem } from '@components/navigation-bar/navigation-bar';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -52,6 +52,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-scorm-player',
     templateUrl: 'player.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModWorkshopGetAssessmentFormFieldsParsedData } from '../services/workshop';
 import { AddonModWorkshopSubmissionAssessmentWithFormData } from '../services/workshop-helper';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -21,6 +21,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  * Base class for component to render an assessment strategy.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class AddonModWorkshopAssessmentStrategyBaseComponent {

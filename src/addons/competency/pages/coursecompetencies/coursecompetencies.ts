@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
     AddonCompetencyDataForCourseCompetenciesPageWSResponse,
     AddonCompetencyDataForCourseCompetenciesPageCompetency,
@@ -37,6 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-coursecompetencies',
     templateUrl: 'coursecompetencies.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

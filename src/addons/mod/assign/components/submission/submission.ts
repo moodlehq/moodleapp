@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, inject, viewChildren, signal } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, viewChildren, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -73,6 +73,7 @@ import { CoreUtils } from '@static/utils';
     selector: 'addon-mod-assign-submission',
     templateUrl: 'addon-mod-assign-submission.html',
     styleUrl: 'submission.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,

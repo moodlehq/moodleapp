@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { PopoverController } from '@singletons';
 
 /**
@@ -22,6 +22,7 @@ import { PopoverController } from '@singletons';
 @Component({
     selector: 'addon-mod-data-actionsmenu',
     templateUrl: 'actionsmenu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

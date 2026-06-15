@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { AddonCalendarEventToDisplay } from '../../services/calendar';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-calendar-event-card',
     templateUrl: 'calendar-event-card.html',
     styleUrl: '../../calendar-common.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

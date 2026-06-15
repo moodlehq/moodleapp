@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, AfterViewInit, viewChild } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
@@ -47,6 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-assign-submission-list',
     templateUrl: 'submission-list.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreSites } from '@services/sites';
@@ -53,6 +53,7 @@ import { CoreGroupInfo, CoreGroups } from '@services/groups';
     selector: 'addon-mod-choice-index',
     templateUrl: 'addon-mod-choice-index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

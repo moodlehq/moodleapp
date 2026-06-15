@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange, inject } from '@angular/core';
+import {
+    Component,
+    Input,
+    ElementRef,
+    OnInit,
+    OnDestroy,
+    OnChanges,
+    SimpleChange,
+    inject,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
@@ -40,6 +50,7 @@ import { CoreFileHelper } from '@services/file-helper';
     selector: 'core-h5p-player',
     templateUrl: 'core-h5p-player.html',
     styleUrl: 'h5p-player.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreH5PIframeComponent,

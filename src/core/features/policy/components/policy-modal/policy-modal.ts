@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CorePolicySitePolicy } from '@features/policy/services/policy';
 import { ModalController } from '@singletons';
 
@@ -23,6 +23,7 @@ import { ModalController } from '@singletons';
 @Component({
     selector: 'core-policy-view-policy-modal',
     templateUrl: 'policy-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

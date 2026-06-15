@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreGradesHelper, CoreGradesMenuItem } from '@features/grades/services/grades-helper';
@@ -57,6 +57,7 @@ import { CoreErrorHelper } from '@services/error-helper';
 @Component({
     selector: 'page-addon-mod-workshop-assessment-page',
     templateUrl: 'assessment.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModWorkshopAssessmentStrategyComponent,

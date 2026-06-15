@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, viewChild } from '@angular/core';
+import { AfterViewInit, Component, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { AddonModAssignIndexComponent } from '../../components/index/index';
 import { CoreNavigator } from '@services/navigator';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-assign-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignIndexComponent,

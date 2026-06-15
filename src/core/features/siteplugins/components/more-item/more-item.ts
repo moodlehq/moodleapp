@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, input, viewChild } from '@angular/core';
+import { Component, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import type { ReloadableComponent } from '@coretypes/reloadable-component';
 
@@ -23,6 +23,7 @@ import type { ReloadableComponent } from '@coretypes/reloadable-component';
 @Component({
     selector: 'core-site-plugins-more-item',
     templateUrl: 'more-item.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

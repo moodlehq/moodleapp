@@ -24,6 +24,7 @@ import {
     viewChild,
     input,
     signal,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreUserToursFocusLayout } from '@features/usertours/classes/focus-layout';
@@ -51,6 +52,7 @@ import { BackButtonPriority } from '@/core/constants';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.is-active]': 'active()',
         '[class.is-popover]': 'popover()',

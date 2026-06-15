@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnChanges, SimpleChange, EventEmitter, OnDestroy, inject } from '@angular/core';
+import {
+    Component,
+    Input,
+    Output,
+    OnChanges,
+    SimpleChange,
+    EventEmitter,
+    OnDestroy,
+    inject,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -39,6 +49,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-h5p-iframe',
     templateUrl: 'core-h5p-iframe.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

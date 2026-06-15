@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, Type } from '@angular/core';
+import { Component, Input, OnInit, Type, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreLang } from '@services/lang';
 import { AuthEmailSignupProfileField } from '@features/login/services/signup';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-user-profile-field',
     templateUrl: 'core-user-profile-field.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

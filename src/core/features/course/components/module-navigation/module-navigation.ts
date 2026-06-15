@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, input, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -36,6 +36,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.empty]': '(!nextModule() && !previousModule())',
     },

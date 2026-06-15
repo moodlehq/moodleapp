@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreTagFeedElement } from '@features/tag/services/tag-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-tag-feed',
     templateUrl: 'core-tag-feed.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

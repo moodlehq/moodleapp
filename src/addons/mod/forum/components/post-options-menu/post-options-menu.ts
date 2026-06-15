@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
@@ -28,6 +28,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'addon-forum-post-options-menu',
     templateUrl: 'post-options-menu.html',
     styleUrl: 'post-options-menu.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

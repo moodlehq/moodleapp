@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { ModalController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -24,6 +24,7 @@ import AddonModLessonPlayerPage from '../../pages/player/player';
 @Component({
     selector: 'page-addon-mod-lesson-menu-modal',
     templateUrl: 'menu-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreDataPrivacy } from '@features/dataprivacy/services/dataprivacy';
 import { CoreUser } from '@features/user/services/user';
@@ -31,6 +31,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-data-privacy-contact-dpo',
     templateUrl: 'contactdpo.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

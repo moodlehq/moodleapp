@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -22,6 +22,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-text',
     templateUrl: 'addon-mod-data-field-text.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

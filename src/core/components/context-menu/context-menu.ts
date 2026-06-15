@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, input, signal, computed, inject } from '@angular/core';
+import { Component, OnDestroy, ElementRef, input, signal, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CorePopovers } from '@services/overlays/popovers';
 import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';
@@ -28,6 +28,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 @Component({
     selector: 'core-context-menu',
     templateUrl: 'core-context-menu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

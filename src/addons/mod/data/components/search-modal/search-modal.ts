@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, Type, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, Type, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreSites } from '@services/sites';
@@ -40,6 +40,7 @@ import { CoreCompileHtmlComponent } from '@features/compile/components/compile-h
     selector: 'addon-mod-data-search-modal',
     templateUrl: 'search-modal.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

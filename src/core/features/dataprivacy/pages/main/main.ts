@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
     CoreDataPrivacy,
     CoreDataPrivacyDataRequestType,
@@ -36,6 +36,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-data-privacy-main',
     templateUrl: 'main.html',
     styleUrl: 'main.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

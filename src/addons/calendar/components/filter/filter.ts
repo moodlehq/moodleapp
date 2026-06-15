@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEnrolledCourseData } from '@features/courses/services/courses';
 import { CoreObject } from '@static/object';
 import { ModalController } from '@singletons';
@@ -30,6 +30,7 @@ import { CoreSites } from '@services/sites';
     selector: 'addon-calendar-filter',
     templateUrl: 'filter.html',
     styleUrls: ['../../calendar-common.scss', 'filter.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

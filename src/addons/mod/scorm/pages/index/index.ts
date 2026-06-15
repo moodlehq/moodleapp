@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CoreNavigator } from '@services/navigator';
 import { AddonModScormAutoPlayData, AddonModScormIndexComponent } from '../../components/index/index';
@@ -24,6 +24,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-scorm-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModScormIndexComponent,

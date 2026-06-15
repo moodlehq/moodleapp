@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Component to display the description of a module.
@@ -42,6 +42,7 @@ import { Component, input } from '@angular/core';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.deprecated]': 'true',
     },

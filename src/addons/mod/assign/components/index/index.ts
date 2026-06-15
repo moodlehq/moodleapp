@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
@@ -61,6 +61,7 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 @Component({
     selector: 'addon-mod-assign-index',
     templateUrl: 'addon-mod-assign-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,

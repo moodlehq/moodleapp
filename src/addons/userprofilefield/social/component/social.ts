@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-social',
     templateUrl: 'addon-user-profile-field-social.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

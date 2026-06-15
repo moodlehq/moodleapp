@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, ElementRef, HostBinding, Input, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, HostBinding, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import {
     CoreCourse,
     sectionContentIsModule,
@@ -35,6 +35,7 @@ import { CoreCourseModuleCompletionStatus, CORE_COURSE_ALL_SECTIONS_ID } from '@
     selector: 'core-course-course-index',
     templateUrl: 'course-index.html',
     styleUrl: 'course-index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

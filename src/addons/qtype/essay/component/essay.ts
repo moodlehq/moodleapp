@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
@@ -32,6 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-qtype-essay',
     templateUrl: 'addon-qtype-essay.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

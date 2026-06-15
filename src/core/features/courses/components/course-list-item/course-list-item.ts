@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import {
     CoreCourseDownloadStatusHelper,
     CoreEventCourseStatusChanged,
@@ -63,6 +63,7 @@ import { CoreCoursePrefetch, CorePrefetchStatusInfo } from '@features/course/ser
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[attr.data-course-id]': 'course.id',
         '[attr.data-category-id]': 'course.categoryid',

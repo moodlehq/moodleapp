@@ -17,7 +17,7 @@ import { AddonNotesAddModalReturn } from '@addons/notes/components/add/add-modal
 import { AddonNotes, AddonNotesNoteFormatted, AddonNotesPublishState } from '@addons/notes/services/notes';
 import { AddonNotesOffline } from '@addons/notes/services/notes-offline';
 import { AddonNotesSync } from '@addons/notes/services/notes-sync';
-import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { IonContent } from '@ionic/angular';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -41,6 +41,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-notes-list-page',
     templateUrl: 'list.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

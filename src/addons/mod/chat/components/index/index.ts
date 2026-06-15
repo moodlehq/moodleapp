@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@static/time';
@@ -28,6 +28,7 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
 @Component({
     selector: 'addon-mod-chat-index',
     templateUrl: 'addon-mod-chat-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

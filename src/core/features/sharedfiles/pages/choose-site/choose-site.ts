@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfiles-helper';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-shared-files-choose-site',
     templateUrl: 'choose-site.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

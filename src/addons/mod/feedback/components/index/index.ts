@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, viewChild, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, viewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreTabsComponent } from '@components/tabs/tabs';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -56,6 +56,7 @@ import { CoreChartType } from '@components/chart/chart';
 @Component({
     selector: 'addon-mod-feedback-index',
     templateUrl: 'addon-mod-feedback-index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, viewChild } from '@angular/core';
+import { Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -40,6 +40,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-messages-search',
     templateUrl: 'search.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

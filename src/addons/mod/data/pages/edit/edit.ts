@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef, Type, viewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, Type, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
@@ -57,6 +57,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-data-edit',
     templateUrl: 'edit.html',
     styleUrls: ['../../data.scss', '../../data-forms.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

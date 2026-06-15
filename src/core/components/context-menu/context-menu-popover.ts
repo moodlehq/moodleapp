@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { LOADING_ICON } from '@/core/constants';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { PopoverController } from '@singletons';
 import { CoreContextMenuItemComponent } from './context-menu-item';
 import { CoreBaseModule } from '@/core/base.module';
@@ -27,6 +27,7 @@ import { CoreLinkDirective } from '@directives/link';
     selector: 'core-context-menu-popover',
     templateUrl: 'core-context-menu-popover.html',
     styleUrl: 'context-menu-popover.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

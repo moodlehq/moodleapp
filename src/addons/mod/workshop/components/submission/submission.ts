@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
@@ -39,6 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-workshop-submission',
     templateUrl: 'addon-mod-workshop-submission.html',
     styleUrl: 'submission.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

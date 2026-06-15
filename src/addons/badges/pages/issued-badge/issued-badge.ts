@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreUser } from '@features/user/services/user';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
@@ -35,6 +35,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'page-addon-badges-issued-badge',
     templateUrl: 'issued-badge.html',
     styleUrl: 'issued-badge.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -14,7 +14,7 @@
 
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreRating, CoreRatingItemRating } from '@features/rating/services/rating';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ModalController } from '@singletons';
@@ -24,6 +24,7 @@ import { ModalController } from '@singletons';
  */
 @Component({
     templateUrl: 'ratings-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

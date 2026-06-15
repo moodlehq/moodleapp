@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { Component, Input, OnChanges, OnDestroy } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import {
     CoreRating,
     CoreRatingInfo,
@@ -31,6 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-rating-aggregate',
     templateUrl: 'core-rating-aggregate.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

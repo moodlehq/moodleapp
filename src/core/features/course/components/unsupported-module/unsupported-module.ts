@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import type { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -24,6 +24,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-course-unsupported-module',
     templateUrl: 'core-course-unsupported-module.html',
     styleUrl: 'unsupported-module.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

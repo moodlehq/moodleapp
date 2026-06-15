@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreQuestionQuestionForView } from '@features/question/services/question';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-quiz-question-card',
     templateUrl: 'question-card.html',
     styleUrl: 'question-card.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

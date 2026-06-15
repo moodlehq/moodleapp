@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 import { CorePopovers } from '@services/overlays/popovers';
@@ -25,6 +25,7 @@ import { CorePopovers } from '@services/overlays/popovers';
     templateUrl: 'overview-item-dialog-button.html',
     styleUrl: 'overview-item-dialog-button.scss',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

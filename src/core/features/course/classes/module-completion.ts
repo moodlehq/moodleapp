@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
 
@@ -20,6 +20,7 @@ import { CoreCourseModuleCompletionData } from '@features/course/services/course
  * Base class for completion components.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreCourseModuleCompletionBaseComponent implements OnChanges {

@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, inject, viewChild, input, signal } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    OnDestroy,
+    inject,
+    viewChild,
+    input,
+    signal,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreScreen } from '@services/screen';
@@ -34,6 +44,7 @@ const disabledScrollClass = 'disable-scroll-y';
     selector: 'core-split-view',
     templateUrl: 'split-view.html',
     styleUrl: 'split-view.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreEmptyBoxComponent,

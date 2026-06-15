@@ -23,6 +23,7 @@ import {
     KeyValueDiffers,
     KeyValueDiffer,
     inject,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -51,6 +52,7 @@ import { AddonCalendarEventCardComponent } from '../calendar-event-card/calendar
     selector: 'addon-calendar-upcoming-events',
     templateUrl: 'addon-calendar-upcoming-events.html',
     styleUrl: '../../calendar-common.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonCalendarEventCardComponent,

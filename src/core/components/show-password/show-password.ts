@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ViewEncapsulation, input } from '@angular/core';
+import { Component, ViewEncapsulation, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 
 /**
@@ -26,6 +26,7 @@ import { CoreBaseModule } from '@/core/base.module';
     template: '<ng-content /><ion-input-password-toggle slot="end" />',
     styles: 'core-show-password { display: contents; }',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreBaseModule],
 })
 export class CoreShowPasswordComponent {

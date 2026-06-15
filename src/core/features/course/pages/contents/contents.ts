@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, forwardRef, ChangeDetectorRef, inject, viewChild, HostBinding } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    forwardRef,
+    ChangeDetectorRef,
+    inject,
+    viewChild,
+    HostBinding,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreUtils } from '@static/utils';
@@ -61,6 +71,7 @@ import { CoreSharedModule } from '@/core/shared.module';
             provide: CORE_REFRESH_CONTEXT,
             useExisting: forwardRef(() => CoreCourseContentsPage),
         }],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseFormatComponent,

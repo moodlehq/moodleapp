@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { AddonModQuizAccessRuleDelegate } from '@addons/mod/quiz/services/access-rules-delegate';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-site-plugins-quiz-access-rule',
     templateUrl: 'core-siteplugins-quiz-access-rule.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

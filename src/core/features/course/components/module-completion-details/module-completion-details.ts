@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleCompletionStatus } from '@features/course/constants';
 
 import {
@@ -30,6 +30,7 @@ import { Translate } from '@singletons';
     selector: 'core-course-module-completion-details',
     templateUrl: 'module-completion-details.html',
     styleUrl: 'module-completion-details.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

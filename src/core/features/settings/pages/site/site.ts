@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSettingsHandlerToDisplay } from '../../services/settings-delegate';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -37,6 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-site-preferences',
     templateUrl: 'site.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

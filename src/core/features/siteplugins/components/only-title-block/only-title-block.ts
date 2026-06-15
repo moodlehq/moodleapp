@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { OnInit, Component } from '@angular/core';
+import { OnInit, Component, ChangeDetectionStrategy } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
@@ -28,6 +28,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-siteplugins-only-title-block',
     templateUrl: 'core-siteplugins-only-title-block.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreSharedModule],
 })
 export class CoreSitePluginsOnlyTitleBlockComponent extends CoreBlockBaseComponent implements OnInit {

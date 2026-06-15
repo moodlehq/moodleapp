@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-core-login-change-password',
     templateUrl: 'change-password.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

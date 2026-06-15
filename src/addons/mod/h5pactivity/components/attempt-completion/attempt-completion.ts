@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { AddonModH5PActivityAttempt } from '../../services/h5pactivity';
 
@@ -23,6 +23,7 @@ import { AddonModH5PActivityAttempt } from '../../services/h5pactivity';
     selector: 'addon-mod-h5pactivity-attempt-completion',
     templateUrl: 'attempt-completion.html',
     styleUrl: 'attempt-completion.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

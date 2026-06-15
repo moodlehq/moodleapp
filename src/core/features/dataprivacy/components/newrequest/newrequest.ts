@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import {
     CoreDataPrivacy,
@@ -32,6 +32,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'core-data-privacy-new-request',
     templateUrl: 'newrequest.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

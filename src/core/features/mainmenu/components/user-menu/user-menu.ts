@@ -14,7 +14,7 @@
 
 import { CoreConstants } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnDestroy, OnInit, Type, viewChildren } from '@angular/core';
+import { Component, OnDestroy, OnInit, Type, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
@@ -49,6 +49,7 @@ import { CORE_SETTINGS_PREFERENCES_PAGE_NAME } from '@features/settings/constant
     selector: 'core-main-menu-user-menu',
     templateUrl: 'user-menu.html',
     styleUrl: 'user-menu.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

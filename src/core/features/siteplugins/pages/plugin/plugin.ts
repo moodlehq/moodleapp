@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, viewChild } from '@angular/core';
+import { Component, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSitePluginsContent } from '@features/siteplugins/services/siteplugins';
 import { CanLeave } from '@guards/can-leave';
@@ -28,6 +28,7 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'page-core-site-plugins-plugin',
     templateUrl: 'plugin.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUrl } from '@static/url';
 import { CoreTagCloud, CoreTagCollection, CoreTagCloudTag, CoreTag } from '@features/tag/services/tag';
@@ -35,6 +35,7 @@ import { CoreSearchBoxComponent } from '../../../search/components/search-box/se
     selector: 'page-core-tag-search',
     templateUrl: 'search.html',
     styleUrl: 'search.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ContentChild, TemplateRef, input, output } from '@angular/core';
+import { Component, ContentChild, TemplateRef, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreAccountsList } from '@features/login/services/login-helper';
@@ -44,6 +44,7 @@ import { CoreLinkDirective } from '@directives/link';
     selector: 'core-sites-list',
     templateUrl: 'sites-list.html',
     styleUrl: 'sites-list.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFormatTextDirective,

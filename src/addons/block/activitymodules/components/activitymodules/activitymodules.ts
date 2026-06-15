@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
@@ -34,6 +34,7 @@ import { CoreCourseOverview } from '@features/course/services/course-overview';
     selector: 'addon-block-activitymodules',
     templateUrl: 'addon-block-activitymodules.html',
     styleUrl: 'activitymodules.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

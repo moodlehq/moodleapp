@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AccordionGroupChangeEventDetail, IonAccordionGroup, IonContent } from '@ionic/angular';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -65,6 +65,7 @@ const enum AddonMessagesGroupConversationOptionNames {
     selector: 'page-addon-messages-group-conversations',
     templateUrl: 'group-conversations.html',
     styleUrl: '../../messages-common.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

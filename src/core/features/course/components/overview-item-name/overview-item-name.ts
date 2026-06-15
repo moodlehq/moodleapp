@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/course/services/course-overview';
 
@@ -24,6 +24,7 @@ import { CoreCourseOverviewActivity, CoreCourseOverviewItem } from '@features/co
     templateUrl: 'overview-item-name.html',
     styleUrl: 'overview-item-name.scss',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

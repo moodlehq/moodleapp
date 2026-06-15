@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, input, computed } from '@angular/core';
+import { Component, input, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
 import { CoreMimetype } from '@static/mimetype';
@@ -31,6 +31,7 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 @Component({
     selector: 'core-files',
     templateUrl: 'core-files.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFileComponent,

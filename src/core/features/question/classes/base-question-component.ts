@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Input, Output, EventEmitter, Component, ElementRef, OnInit, inject } from '@angular/core';
+import { Input, Output, EventEmitter, Component, ElementRef, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileHelper } from '@services/file-helper';
 
 import { CoreSites } from '@services/sites';
@@ -33,6 +33,7 @@ import type { AsyncDirective } from '@coretypes/async-directive';
  * Base class for components to render a question.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonModQuizQuestion> implements OnInit, AsyncDirective {

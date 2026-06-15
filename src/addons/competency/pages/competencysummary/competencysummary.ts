@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ContextLevel } from '@/core/constants';
 import { AddonCompetencySummary, AddonCompetency } from '@addons/competency/services/competency';
 import { CoreNavigator } from '@services/navigator';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-competency-competency-summary',
     templateUrl: 'competencysummary.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

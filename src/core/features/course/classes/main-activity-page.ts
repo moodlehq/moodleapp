@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Signal } from '@angular/core';
+import { Component, OnInit, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreCourseModuleData } from '../services/course-helper';
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
@@ -22,6 +22,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
  * Template class to easily create CoreCourseModuleMainComponent of resources (or activities without syncing).
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreCourseModuleMainActivityPage<ActivityType extends CoreCourseModuleMainResourceComponent> implements OnInit {

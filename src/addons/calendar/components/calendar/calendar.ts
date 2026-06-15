@@ -20,6 +20,7 @@ import {
     input,
     output,
     effect,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -62,6 +63,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[attr.hidden]': 'hidden() ? "hidden" : null',
     },

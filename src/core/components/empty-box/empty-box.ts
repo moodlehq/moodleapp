@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 
@@ -33,6 +33,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
         CoreBaseModule,
         CoreFaIconDirective,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.dimmed]': 'dimmed()',
     },

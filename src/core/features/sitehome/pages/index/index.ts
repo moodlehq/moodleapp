@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
@@ -46,6 +46,7 @@ import { CoreBlockDelegate } from '@features/block/services/block-delegate';
     selector: 'page-core-sitehome-index',
     templateUrl: 'index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

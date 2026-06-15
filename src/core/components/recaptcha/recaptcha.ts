@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
@@ -28,6 +28,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 @Component({
     selector: 'core-recaptcha',
     templateUrl: 'core-recaptcha.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

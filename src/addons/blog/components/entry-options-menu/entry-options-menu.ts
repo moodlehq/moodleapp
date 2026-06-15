@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { PopoverController } from '@singletons';
 
 @Component({
     selector: 'addon-blog-entry-options-menu',
     templateUrl: 'entry-options-menu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

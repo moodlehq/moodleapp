@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUploader, CoreFileUploaderTypeList } from '@features/fileuploader/services/fileuploader';
@@ -53,6 +53,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-attachments',
     templateUrl: 'core-attachments.html',
     styleUrl: 'attachments.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

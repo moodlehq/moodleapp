@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreCourse, sectionContentIsModule } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseSection } from '@features/course/services/course-helper';
@@ -28,6 +28,7 @@ import { CoreCourseModuleComponent } from '@features/course/components/module/mo
 @Component({
     selector: 'addon-block-sitemainmenu',
     templateUrl: 'addon-block-sitemainmenu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleComponent,

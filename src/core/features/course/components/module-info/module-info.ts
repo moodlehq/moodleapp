@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { CoreCourseModuleCompletionData, CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -36,6 +36,7 @@ import { CoreRemindersDateComponent } from '../../../reminders/components/date/d
     selector: 'core-course-module-info',
     templateUrl: 'core-course-module-info.html',
     styleUrl: 'course-module-info.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleCompletionComponent,

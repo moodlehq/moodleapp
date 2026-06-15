@@ -24,6 +24,7 @@ import {
     model,
     effect,
     computed,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
@@ -48,6 +49,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-search-box',
     templateUrl: 'core-search-box.html',
     styleUrl: 'search-box.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

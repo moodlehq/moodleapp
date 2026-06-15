@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { Http } from '@singletons';
 import { IonSearchbar } from '@ionic/angular';
@@ -41,6 +41,7 @@ export type CoreSettingsLicense = {
 @Component({
     selector: 'page-core-app-settings-licenses',
     templateUrl: 'licenses.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

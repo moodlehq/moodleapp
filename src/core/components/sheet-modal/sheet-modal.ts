@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Constructor } from '@/core/utils/types';
-import { AfterViewInit, Component, ElementRef, inject, input, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreModals } from '@services/overlays/modals';
@@ -26,6 +26,7 @@ import { CoreBaseModule } from '@/core/base.module';
     selector: 'core-sheet-modal',
     templateUrl: 'sheet-modal.html',
     styleUrl: 'sheet-modal.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreBaseModule],
 })
 export class CoreSheetModalComponent<T extends CoreModalComponent> implements AfterViewInit {

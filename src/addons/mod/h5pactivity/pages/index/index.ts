@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, viewChild } from '@angular/core';
+import { Component, OnDestroy, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseModuleMainActivityPage } from '@features/course/classes/main-activity-page';
 import { CanLeave } from '@guards/can-leave';
@@ -26,6 +26,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-h5pactivity-index',
     templateUrl: 'index.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModH5PActivityIndexComponent,

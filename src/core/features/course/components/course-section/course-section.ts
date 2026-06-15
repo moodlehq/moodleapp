@@ -15,6 +15,7 @@ import {
     Component,
     Input,
     OnInit,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import {
     CoreCourseSection,
@@ -39,6 +40,7 @@ import { CoreCourseModuleComponent } from '../module/module';
         CoreSharedModule,
         CoreCourseModuleComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'collapsible ? "collapsible" : "non-collapsible"',
     },

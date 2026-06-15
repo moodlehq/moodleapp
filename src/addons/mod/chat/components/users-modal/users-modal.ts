@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { ModalController, Translate } from '@singletons';
@@ -25,6 +25,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'addon-mod-chat-users-modal',
     templateUrl: 'users-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

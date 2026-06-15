@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, computed, input, viewChild } from '@angular/core';
+import { Component, computed, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSitePluginsPluginContentComponent } from '../plugin-content/plugin-content';
 import { CoreUserProfile } from '@features/user/services/user';
 import { CoreUserDelegateContext } from '@features/user/services/user-delegate';
@@ -25,6 +25,7 @@ import type { ReloadableComponent } from '@coretypes/reloadable-component';
 @Component({
     selector: 'core-site-plugins-user-profile-item',
     templateUrl: 'user-profile-item.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,

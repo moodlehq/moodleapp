@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input, computed, signal } from '@angular/core';
+import { Component, input, computed, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreTimeConstants } from '@/core/constants';
 import { dayjs } from '@/core/utils/dayjs';
@@ -26,6 +26,7 @@ import { CoreUserPreferences } from '@features/user/services/user-preferences';
     selector: 'core-human-date',
     templateUrl: 'core-human-date.html',
     styleUrl: 'human-date.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
     ],

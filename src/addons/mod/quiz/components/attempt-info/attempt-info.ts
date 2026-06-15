@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModQuizAttempt, AddonModQuizQuizData } from '../../services/quiz-helper';
 import { AddonModQuiz, AddonModQuizWSAdditionalData } from '../../services/quiz';
 import { ADDON_MOD_QUIZ_COMPONENT_LEGACY, AddonModQuizAttemptStates } from '../../constants';
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-quiz-attempt-info',
     templateUrl: 'attempt-info.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModQuizAttemptStateComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -37,6 +37,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-policy-acceptances',
     templateUrl: 'acceptances.html',
     styleUrl: 'acceptances.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -14,7 +14,17 @@
 
 import { ContextLevel } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, OnDestroy, OnInit, ElementRef, OnChanges, SimpleChange, viewChild } from '@angular/core';
+import {
+    Component,
+    Input,
+    OnDestroy,
+    OnInit,
+    ElementRef,
+    OnChanges,
+    SimpleChange,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { LegendOptions, ChartTypeRegistry, ChartType, type Chart, LegendItem } from 'chart.js';
@@ -33,6 +43,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-chart',
     templateUrl: 'core-chart.html',
     styleUrl: 'chart.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

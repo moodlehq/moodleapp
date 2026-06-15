@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 import { AuthEmailSignupProfileField } from '@features/login/services/signup';
 import { CoreUserProfileFieldBaseComponent } from '@features/user/classes/base-profilefield-component';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-user-profile-field-text',
     templateUrl: 'addon-user-profile-field-text.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, ElementRef, input, effect, inject } from '@angular/core';
+import { Component, ElementRef, input, effect, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseListItem } from '@features/courses/services/courses';
 import { CoreCoursesHelper } from '@features/courses/services/courses-helper';
 import { CoreColors } from '@static/colors';
@@ -25,6 +25,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     selector: 'core-course-image',
     templateUrl: 'course-image.html',
     styleUrl: './course-image.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSearchGlobalSearchResult, CoreSearchGlobalSearchResultContext } from '@features/search/services/global-search';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -21,6 +21,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-search-global-search-result',
     templateUrl: 'global-search-result.html',
     styleUrl: './global-search-result.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

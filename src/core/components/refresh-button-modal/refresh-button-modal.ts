@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreBaseModule } from '@/core/base.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFaIconDirective } from '@directives/fa-icon';
 import { ModalController } from '@singletons';
 
@@ -23,6 +23,7 @@ import { ModalController } from '@singletons';
 @Component({
     templateUrl: 'refresh-button-modal.html',
     styleUrl: 'refresh-button-modal.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

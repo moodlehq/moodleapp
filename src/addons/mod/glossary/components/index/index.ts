@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ContextLevel } from '@/core/constants';
-import { AfterViewInit, Component, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, viewChild, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
@@ -69,6 +69,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'addon-mod-glossary-index',
     templateUrl: 'addon-mod-glossary-index.html',
     styleUrl: 'index.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

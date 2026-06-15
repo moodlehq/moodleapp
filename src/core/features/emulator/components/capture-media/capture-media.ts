@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, Input, inject, viewChild } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    ElementRef,
+    ChangeDetectorRef,
+    Input,
+    inject,
+    viewChild,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -35,6 +45,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-emulator-capture-media',
     templateUrl: 'capture-media.html',
     styleUrl: 'capture-media.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

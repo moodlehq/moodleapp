@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreTagItem } from '@features/tag/services/tag';
 import { Params } from '@angular/router';
 import { CoreNavigator } from '@services/navigator';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-tag-list',
     templateUrl: 'core-tag-list.html',
     styleUrl: 'list.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

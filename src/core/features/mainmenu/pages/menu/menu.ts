@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, effect, viewChild, signal, ElementRef, inject, computed } from '@angular/core';
+import {
+    Component,
+    OnInit,
+    OnDestroy,
+    effect,
+    viewChild,
+    signal,
+    ElementRef,
+    inject,
+    computed,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 import { IonTabs } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 import { Subscription } from 'rxjs';
@@ -56,6 +67,7 @@ import { CoreKeyboard } from '@static/keyboard';
     selector: 'page-core-mainmenu',
     templateUrl: 'menu.html',
     styleUrl: 'menu.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

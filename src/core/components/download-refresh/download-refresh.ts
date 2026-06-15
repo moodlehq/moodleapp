@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, input, output, computed } from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
@@ -30,6 +30,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-download-refresh',
     templateUrl: 'core-download-refresh.html',
     styleUrl: 'download-refresh.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreUpdateNonReactiveAttributesDirective,

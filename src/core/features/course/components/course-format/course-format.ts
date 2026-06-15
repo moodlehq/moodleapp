@@ -24,6 +24,7 @@ import {
     inject,
     viewChildren,
     viewChild,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
@@ -82,6 +83,7 @@ import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-
     selector: 'core-course-format',
     templateUrl: 'course-format.html',
     styleUrl: 'course-format.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseSectionComponent,

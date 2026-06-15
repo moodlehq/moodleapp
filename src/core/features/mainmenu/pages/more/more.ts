@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, viewChildren, Type } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChildren, Type, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
@@ -47,6 +47,7 @@ import { CORE_SETTINGS_PAGE_NAME } from '@features/settings/constants';
     selector: 'page-core-mainmenu-more',
     templateUrl: 'more.html',
     styleUrl: 'more.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

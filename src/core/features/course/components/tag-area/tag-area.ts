@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreCourseHelper } from '@features/course/services/course-helper';
 import { CoreCouseTagItems } from '@features/course/services/handlers/course-tag-area';
@@ -24,6 +24,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'core-course-tag-area',
     templateUrl: 'core-course-tag-area.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

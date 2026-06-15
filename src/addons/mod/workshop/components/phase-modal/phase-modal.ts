@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreOpener } from '@static/opener';
 import { ModalController } from '@singletons';
 import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
@@ -25,6 +25,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  */
 @Component({
     templateUrl: 'phase-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

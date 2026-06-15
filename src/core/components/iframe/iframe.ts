@@ -25,6 +25,7 @@ import {
     viewChild,
     computed,
     effect,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
@@ -53,6 +54,7 @@ import { BackButtonPriority } from '@/core/constants';
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
     styleUrl: 'iframe.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreLoadingComponent,

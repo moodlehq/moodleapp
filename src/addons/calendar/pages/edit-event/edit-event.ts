@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CoreEvents } from '@static/events';
 import { CoreGroup, CoreGroups } from '@services/groups';
@@ -65,6 +65,7 @@ import { DEFAULT_TEXT_FORMAT } from '@static/text';
     selector: 'page-addon-calendar-edit-event',
     templateUrl: 'edit-event.html',
     styleUrl: 'edit-event.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

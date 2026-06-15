@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseHelper, CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -34,6 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-course-module-preview',
     templateUrl: 'module-preview.html',
     styleUrl: 'module-preview.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,

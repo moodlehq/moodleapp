@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreTime } from '@static/time';
 import { dayjs, Dayjs } from '@/core/utils/dayjs';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
@@ -24,6 +24,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-date',
     templateUrl: 'addon-mod-data-field-date.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

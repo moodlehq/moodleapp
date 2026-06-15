@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CoreQRScan } from '@services/qrscan';
 import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
@@ -26,6 +26,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'core-login-site-help',
     templateUrl: 'site-help.html',
     styleUrl: 'site-help.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

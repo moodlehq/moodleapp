@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { CoreCompileHtmlComponent } from '@features/compile/components/compile-html/compile-html';
 
@@ -31,6 +31,7 @@ import { CoreUserProfileFieldDelegate } from '@features/user/services/user-profi
     selector: 'core-site-plugins-user-profile-field',
     templateUrl: 'core-siteplugins-user-profile-field.html',
     styles: [':host { display: contents; }'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreCompileHtmlComponent,

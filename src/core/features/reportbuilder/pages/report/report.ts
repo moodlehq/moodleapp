@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
@@ -22,6 +22,7 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
 @Component({
     selector: 'core-report-builder-report',
     templateUrl: './report.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreReportBuilderReportDetailComponent,

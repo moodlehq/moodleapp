@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnChanges, viewChild } from '@angular/core';
+import { Component, OnChanges, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { CoreBlockDelegate } from '@features/block/services/block-delegate';
@@ -31,6 +31,7 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'component',
     },

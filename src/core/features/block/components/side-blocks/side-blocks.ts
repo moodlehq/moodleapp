@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef, inject, input, signal, viewChildren } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, input, signal, viewChildren, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@singletons';
 import { CoreCourse, CoreCourseBlock } from '@features/course/services/course';
 import { CoreBlockHelper } from '../../services/block-helper';
@@ -33,6 +33,7 @@ import { CoreCoursesMyPageName } from '@features/courses/constants';
     selector: 'core-block-side-blocks',
     templateUrl: 'side-blocks.html',
     styleUrl: 'side-blocks.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreBlockComponent,

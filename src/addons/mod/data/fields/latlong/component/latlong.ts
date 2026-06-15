@@ -14,7 +14,7 @@
 
 import { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 import { DomSanitizer } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -27,6 +27,7 @@ import { CoreUrl } from '@static/url';
     selector: 'addon-mod-data-field-latlong',
     templateUrl: 'addon-mod-data-field-latlong.html',
     styleUrl: 'latlong.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

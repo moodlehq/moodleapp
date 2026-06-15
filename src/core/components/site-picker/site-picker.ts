@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, input, output, signal } from '@angular/core';
+import { Component, OnInit, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreFilter } from '@features/filter/services/filter';
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
@@ -30,6 +30,7 @@ import { CoreBaseModule } from '@/core/base.module';
 @Component({
     selector: 'core-site-picker',
     templateUrl: 'core-site-picker.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CoreBaseModule],
 })
 export class CoreSitePickerComponent implements OnInit {

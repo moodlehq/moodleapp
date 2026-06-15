@@ -15,7 +15,7 @@
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileSession } from '@services/file-session';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -32,6 +32,7 @@ import { ADDON_MOD_ASSIGN_SUBMISSION_FILE_FOLDER_NAME } from '../constants';
 @Component({
     selector: 'addon-mod-assign-submission-file',
     templateUrl: 'addon-mod-assign-submission-file.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

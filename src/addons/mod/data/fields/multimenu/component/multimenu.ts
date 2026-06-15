@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -23,6 +23,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-multimenu',
     templateUrl: 'addon-mod-data-field-multimenu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

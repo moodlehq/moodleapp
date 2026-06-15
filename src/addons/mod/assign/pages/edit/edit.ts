@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
@@ -59,6 +59,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-assign-edit',
     templateUrl: 'edit.html',
     styleUrl: 'edit.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionPluginComponent,

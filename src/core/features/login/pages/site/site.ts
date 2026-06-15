@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
@@ -57,6 +57,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-core-login-site',
     templateUrl: 'site.html',
     styleUrls: ['site.scss', '../../login.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

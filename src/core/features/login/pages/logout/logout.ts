@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreConstants } from '@/core/constants';
 import { CoreNavigationOptions, CoreNavigator, CoreRedirectPayload } from '@services/navigator';
@@ -27,6 +27,7 @@ import { NO_SITE_ID } from '@features/login/constants';
 @Component({
     selector: 'page-core-login-logout',
     templateUrl: 'logout.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

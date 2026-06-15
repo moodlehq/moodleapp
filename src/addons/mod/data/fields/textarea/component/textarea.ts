@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
 import { AddonModDataEntryField } from '@addons/mod/data/services/data';
 import { CoreFileHelper } from '@services/file-helper';
@@ -27,6 +27,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-data-field-textarea',
     templateUrl: 'addon-mod-data-field-textarea.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

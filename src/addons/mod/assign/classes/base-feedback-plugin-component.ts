@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 import { CoreModals } from '@services/overlays/modals';
@@ -24,6 +24,7 @@ import { toBoolean } from '@/core/transforms/boolean';
  * Base class for component to render a feedback plugin.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssignFeedbackPluginComponent {

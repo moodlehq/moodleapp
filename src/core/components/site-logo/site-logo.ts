@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSite } from '@classes/sites/site';
@@ -31,6 +31,7 @@ import { CoreFormatTextDirective } from '@directives/format-text';
     selector: 'core-site-logo',
     templateUrl: 'site-logo.html',
     styleUrl: 'site-logo.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreExternalContentDirective,

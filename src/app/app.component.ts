@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnInit, viewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { IonRouterOutlet, IonicModule } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
@@ -34,6 +34,7 @@ register();
 @Component({
     selector: 'app-root',
     templateUrl: 'app.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [IonicModule],
 })
 export class AppComponent implements OnInit, AfterViewInit {

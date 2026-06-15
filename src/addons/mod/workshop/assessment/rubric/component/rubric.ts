@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AddonModWorkshopAssessmentStrategyBaseComponent } from '../../../classes/assessment-strategy-component';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -22,6 +22,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-workshop-assessment-strategy-rubric',
     templateUrl: 'addon-mod-workshop-assessment-strategy-rubric.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

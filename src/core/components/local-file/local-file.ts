@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, EventEmitter, ElementRef, viewChild } from '@angular/core';
+import { Component, Input, Output, OnInit, EventEmitter, ElementRef, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreIonLoadingElement } from '@classes/ion-loading';
@@ -48,6 +48,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-local-file',
     templateUrl: 'core-local-file.html',
     styleUrl: 'core-local-file.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreAriaButtonClickDirective,

@@ -15,7 +15,7 @@
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
@@ -34,6 +34,7 @@ import { CoreFileHelper } from '@services/file-helper';
 @Component({
     selector: 'addon-mod-assign-submission-online-text',
     templateUrl: 'addon-mod-assign-submission-onlinetext.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

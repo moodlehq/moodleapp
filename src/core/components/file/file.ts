@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, OnInit, OnDestroy, EventEmitter } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNetwork } from '@services/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
@@ -45,6 +45,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-file',
     templateUrl: 'core-file.html',
     styleUrl: 'core-file.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreAriaButtonClickDirective,

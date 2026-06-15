@@ -15,7 +15,7 @@
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { CoreSharedModule } from '@/core/shared.module';
 
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-file',
     templateUrl: 'addon-mod-assign-feedback-file.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

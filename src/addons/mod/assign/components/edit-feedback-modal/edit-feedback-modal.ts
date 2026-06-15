@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController, Translate } from '@singletons';
 import {
     AddonModAssign,
@@ -54,6 +54,7 @@ import { CoreFormFields, CoreForms } from '@static/form';
     selector: 'addon-mod-assign-edit-feedback-modal',
     templateUrl: 'edit-feedback-modal.html',
     styleUrl: 'edit-feedback-modal.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignFeedbackPluginComponent,

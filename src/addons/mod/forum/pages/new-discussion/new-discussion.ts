@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild } from '@angular/core';
+import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@static/events';
@@ -74,6 +74,7 @@ type NewDiscussionData = {
     selector: 'page-addon-mod-forum-new-discussion',
     templateUrl: 'new-discussion.html',
     styleUrl: 'new-discussion.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

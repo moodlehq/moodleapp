@@ -23,7 +23,7 @@ import {
     AddonBlogPublishState,
 } from '@addons/blog/services/blog';
 import { AddonBlogOffline } from '@addons/blog/services/blog-offline';
-import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, OnDestroy, OnInit, signal, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { AddonBlogSync } from '@addons/blog/services/blog-sync';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
@@ -50,6 +50,7 @@ import { DEFAULT_TEXT_FORMAT } from '@static/text';
 @Component({
     selector: 'addon-blog-edit-entry',
     templateUrl: './edit-entry.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreEditorRichTextEditorComponent,
         CoreSharedModule,

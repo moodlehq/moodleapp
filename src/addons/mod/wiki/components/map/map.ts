@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@singletons';
 import { AddonModWikiPageDBRecord } from '../../services/database/wiki';
 import { AddonModWikiSubwikiPage, AddonModWikiWiki } from '../../services/wiki';
@@ -25,6 +25,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-wiki-map',
     templateUrl: 'map.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

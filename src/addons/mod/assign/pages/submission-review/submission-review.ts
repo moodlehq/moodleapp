@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSwipeNavigationItemsManager } from '@classes/items-management/swipe-navigation-items-manager';
@@ -35,6 +35,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'page-addon-mod-assign-submission-review',
     templateUrl: 'submission-review.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModAssignSubmissionComponent,

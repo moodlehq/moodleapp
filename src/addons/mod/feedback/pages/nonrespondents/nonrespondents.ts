@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreGroupInfo, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -30,6 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-mod-feedback-nonrespondents',
     templateUrl: 'nonrespondents.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

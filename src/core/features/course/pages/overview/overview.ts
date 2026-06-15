@@ -12,7 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, effect, OnInit, signal, Type, viewChild, WritableSignal, OnDestroy, inject, ElementRef } from '@angular/core';
+import {
+    Component,
+    effect,
+    OnInit,
+    signal,
+    Type,
+    viewChild,
+    WritableSignal,
+    OnDestroy,
+    inject,
+    ElementRef,
+    ChangeDetectionStrategy,
+} from '@angular/core';
 
 import {
     CoreCourseOverview,
@@ -55,6 +67,7 @@ import { CoreDom } from '@static/dom';
     templateUrl: 'overview.html',
     styleUrl: 'overview.scss',
     standalone: true,
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

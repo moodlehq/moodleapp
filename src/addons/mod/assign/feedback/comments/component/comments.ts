@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, ElementRef, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
 import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { CoreFileHelper } from '@services/file-helper';
@@ -34,6 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-comments',
     templateUrl: 'addon-mod-assign-feedback-comments.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreEditorRichTextEditorComponent,

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, AfterViewInit, effect, inject, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, effect, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { ActivatedRoute } from '@angular/router';
 import { CoreSites } from '@services/sites';
@@ -56,6 +56,7 @@ import { CoreKeyboard } from '@static/keyboard';
     selector: 'page-core-comments-viewer',
     templateUrl: 'viewer.html',
     styleUrls: ['../../../../../theme/components/discussion.scss', 'viewer.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

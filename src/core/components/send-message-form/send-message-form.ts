@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, input, output, model, viewChild } from '@angular/core';
+import { Component, ElementRef, input, output, model, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -43,6 +43,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
     selector: 'core-send-message-form',
     templateUrl: 'core-send-message-form.html',
     styleUrl: 'send-message-form.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreAutoRowsDirective,

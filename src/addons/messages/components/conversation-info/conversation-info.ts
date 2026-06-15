@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import {
     AddonMessagesConversationFormatted,
     AddonMessagesConversationMember,
@@ -29,6 +29,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-messages-conversation-info',
     templateUrl: 'conversation-info.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

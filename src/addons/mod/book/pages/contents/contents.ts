@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, viewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
 import { CoreSwipeSlidesItemsManagerSource } from '@classes/items-management/swipe-slides-items-manager-source';
@@ -48,6 +48,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     selector: 'page-addon-mod-book-contents',
     templateUrl: 'contents.html',
     styleUrl: 'contents.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreTagListComponent,

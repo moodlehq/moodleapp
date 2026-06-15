@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, linkedSignal, OnInit, viewChild } from '@angular/core';
+import { Component, linkedSignal, OnInit, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
@@ -56,6 +56,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
     selector: 'page-addon-mod-feedback-form',
     templateUrl: 'form.html',
     styleUrls: ['../../feedback.scss', 'form.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

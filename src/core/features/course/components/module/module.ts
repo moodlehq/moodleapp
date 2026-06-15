@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import {
@@ -54,6 +54,7 @@ import { CoreCourseDownloadStatusIcon } from '@features/course/constants';
         CoreCourseModuleCompletionComponent,
         CoreRemindersDateComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class.indented]': 'indented',
     },

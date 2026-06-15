@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent } from '@ionic/angular';
 
 import { CoreCourseModuleMainResourceComponent } from './main-resource-component';
@@ -29,6 +29,7 @@ import { CoreCourseModuleHelper } from '../services/course-module-helper';
  * Template class to easily create CoreCourseModuleMainComponent of activities.
  */
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: '',
 })
 export class CoreCourseModuleMainActivityComponent extends CoreCourseModuleMainResourceComponent implements OnInit, OnDestroy {

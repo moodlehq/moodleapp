@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
-import { Component, Input, OnInit, Type, viewChild } from '@angular/core';
+import { Component, Input, OnInit, Type, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSFile } from '@services/ws';
 import {
@@ -34,6 +34,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'addon-mod-assign-feedback-plugin',
     templateUrl: 'addon-mod-assign-feedback-plugin.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

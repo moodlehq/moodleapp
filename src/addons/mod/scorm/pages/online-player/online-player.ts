@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, viewChild, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, viewChild, effect, ChangeDetectionStrategy } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreEvents } from '@static/events';
@@ -39,6 +39,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-scorm-online-player',
     templateUrl: 'online-player.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Component, OnDestroy, signal, viewChild, WritableSignal } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, signal, viewChild, WritableSignal, ChangeDetectionStrategy } from '@angular/core';
 import { AddonBadges, AddonBadgesUserBadge } from '../../services/badges';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -33,6 +33,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 @Component({
     selector: 'page-addon-badges-user-badges',
     templateUrl: 'user-badges.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

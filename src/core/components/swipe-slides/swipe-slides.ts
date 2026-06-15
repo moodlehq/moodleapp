@@ -26,6 +26,7 @@ import {
     TemplateRef,
     ViewChild,
     inject,
+    ChangeDetectionStrategy,
 } from '@angular/core';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreSwipeSlidesItemsManager } from '@classes/items-management/swipe-slides-items-manager';
@@ -49,6 +50,7 @@ import { CoreBaseModule } from '@/core/base.module';
     templateUrl: 'swipe-slides.html',
     styleUrl: 'swipe-slides.scss',
     imports: [CoreBaseModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CoreSwipeSlidesComponent<Item = unknown> implements OnChanges, OnDestroy, AsyncDirective {

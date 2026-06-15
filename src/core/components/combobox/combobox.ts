@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input, model, output, signal } from '@angular/core';
+import { Component, computed, input, model, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Translate } from '@singletons';
 import { ModalOptions } from '@ionic/core';
 import { CoreModals } from '@services/overlays/modals';
@@ -51,6 +51,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
             useExisting: CoreComboboxComponent,
         },
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

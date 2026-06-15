@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreBaseModule } from '@/core/base.module';
 
@@ -30,6 +30,7 @@ enum CoreAlertCardType {
     selector: 'core-alert-card',
     templateUrl: 'alert-card.html',
     styleUrl: 'alert-card.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreBaseModule,
     ],

@@ -15,7 +15,7 @@
 import { ContextLevel } from '@/core/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/question/services/question-helper';
 
@@ -25,6 +25,7 @@ import { CoreQuestionBehaviourButton, CoreQuestionQuestion } from '@features/que
 @Component({
     selector: 'addon-qbehaviour-informationitem',
     templateUrl: 'addon-qbehaviour-informationitem.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

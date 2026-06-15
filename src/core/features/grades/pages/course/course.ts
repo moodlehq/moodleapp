@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { AfterViewInit, Component, ElementRef, OnDestroy, inject } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CoreGrades } from '@features/grades/services/grades';
 import {
     CoreGradesFormattedTableColumn,
@@ -47,6 +47,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     imports: [
         CoreSharedModule,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[attr.data-course-id]': 'courseId ?? null',
     },

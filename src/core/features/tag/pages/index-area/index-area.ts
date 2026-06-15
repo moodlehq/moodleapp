@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Type, inject, OnDestroy } from '@angular/core';
+import { Component, OnInit, Type, inject, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { ActivatedRoute } from '@angular/router';
 import { CoreTagAreaDelegate } from '../../services/tag-area-delegate';
@@ -28,6 +28,7 @@ import { Subscription } from 'rxjs';
 @Component({
     selector: 'page-core-tag-index-area',
     templateUrl: 'index-area.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

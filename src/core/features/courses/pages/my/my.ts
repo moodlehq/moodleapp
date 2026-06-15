@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { AddonBlockMyOverviewComponent } from '@addons/block/myoverview/components/myoverview/myoverview';
-import { Component, effect, OnDestroy, OnInit, viewChild, inject } from '@angular/core';
+import { Component, effect, OnDestroy, OnInit, viewChild, inject, ChangeDetectionStrategy } from '@angular/core';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { PageLoadsManager } from '@classes/page-loads-manager';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -50,6 +50,7 @@ import { CoreCoursesMy } from '@features/courses/services/my';
             provide: PageLoadsManager,
             useClass: PageLoadsManager,
         }],
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSiteLogoComponent,

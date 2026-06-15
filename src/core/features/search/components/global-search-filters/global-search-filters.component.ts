@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CoreEnrolledCourseData, CoreCourses } from '@features/courses/services/courses';
 import {
     CoreSearchGlobalSearchFilters,
@@ -32,6 +32,7 @@ type Filter<T=unknown> = T & { checked: boolean };
     selector: 'core-search-global-search-filters',
     templateUrl: 'global-search-filters.html',
     styleUrl: './global-search-filters.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

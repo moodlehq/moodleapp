@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Input, inject, viewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreCourseModuleSummaryResult } from '@features/course/components/module-summary/module-summary';
@@ -48,6 +48,7 @@ import { CoreCourseModuleNavigationComponent } from '@features/course/components
         CoreCourseModuleInfoComponent,
         CoreCourseModuleNavigationComponent,
     ],
+    changeDetection: ChangeDetectionStrategy.Eager,
     host: {
         '[class]': 'component',
     },

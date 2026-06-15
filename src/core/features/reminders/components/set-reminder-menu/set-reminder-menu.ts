@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, input, signal } from '@angular/core';
+import { Component, OnInit, input, signal, ChangeDetectionStrategy } from '@angular/core';
 import {
     CoreReminders,
     CoreRemindersService,
@@ -30,6 +30,7 @@ import { CoreRemindersUnits, REMINDERS_DISABLED } from '@features/reminders/cons
 @Component({
     templateUrl: 'set-reminder-menu.html',
     styleUrl: 'set-reminder-menu.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

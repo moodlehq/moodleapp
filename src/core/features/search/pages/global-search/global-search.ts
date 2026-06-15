@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, ChangeDetectionStrategy } from '@angular/core';
 import { CoreSearchGlobalSearchResultsSource } from '@features/search/classes/global-search-results-source';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';
@@ -39,6 +39,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 @Component({
     selector: 'page-core-search-global-search',
     templateUrl: 'global-search.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreMainMenuUserButtonComponent,

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import {
     CORE_READING_MODE_DEFAULT_SETTINGS,
     CoreViewerReadingModeThemes,
@@ -31,6 +31,7 @@ import { CoreMath } from '@static/math';
     selector: 'core-reading-mode-settings-modal',
     templateUrl: 'reading-mode-settings.html',
     styleUrl: 'reading-mode-settings.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

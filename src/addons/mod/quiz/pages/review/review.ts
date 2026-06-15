@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, OnInit, inject, viewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CoreQuestionQuestionForView } from '@features/question/services/question';
 import { CoreQuestionHelper } from '@features/question/services/question-helper';
 import { IonContent } from '@ionic/angular';
@@ -50,6 +50,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 @Component({
     selector: 'page-addon-mod-quiz-review',
     templateUrl: 'review.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         AddonModQuizAttemptInfoComponent,

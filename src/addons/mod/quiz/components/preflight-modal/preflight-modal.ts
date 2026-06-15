@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, ElementRef, Input, Type, inject, viewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Type, inject, viewChild, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@static/form';
@@ -30,6 +30,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 @Component({
     selector: 'page-addon-mod-quiz-preflight-modal',
     templateUrl: 'preflight-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

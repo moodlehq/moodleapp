@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Component that displays a quiz entry page.
@@ -22,6 +22,7 @@ import { Component } from '@angular/core';
     selector: 'addon-mod-quiz-connection-error',
     templateUrl: 'connection-error.html',
     styleUrl: 'connection-error.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
     ],

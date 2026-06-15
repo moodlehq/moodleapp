@@ -14,7 +14,7 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
 
 import { CoreFileUtils } from '@static/file-utils';
@@ -27,6 +27,7 @@ import { CoreSharedFilesListComponent } from '../list/list';
 @Component({
     selector: 'core-shared-files-list-modal',
     templateUrl: 'list-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         CoreSharedModule,
         CoreSharedFilesListComponent,
