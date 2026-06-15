@@ -1,10 +1,10 @@
 diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-index 0422ff6..6362a3a 100755
+index 1c1e20f..1212e39 100755
 --- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
 +++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-@@ -6709,10 +6709,39 @@ var R3NgModuleMetadataKind;
-   R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
+@@ -6836,10 +6836,38 @@ var R3NgModuleMetadataKind;
    R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
+   R3NgModuleMetadataKind[R3NgModuleMetadataKind["Isolated"] = 2] = "Isolated";
  })(R3NgModuleMetadataKind || (R3NgModuleMetadataKind = {}));
 +
 +/**
@@ -26,7 +26,6 @@ index 0422ff6..6362a3a 100755
 +    'ReactiveFormsModule',
 +    'TranslateModule',
 +];
-+
 +
  function compileNgModule(meta) {
    const statements = [];
