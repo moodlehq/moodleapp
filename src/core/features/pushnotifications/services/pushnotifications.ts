@@ -58,6 +58,7 @@ import { CoreWait } from '@static/wait';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreNative } from '@features/native/services/native';
 
 /**
  * Service to handle push notifications.
@@ -498,10 +499,7 @@ export class CorePushNotificationsProvider {
         } catch (error) {
             if (CoreWSError.isWebServiceError(error) || CoreWSError.isExpiredTokenError(error)) {
                 // Cannot unregister. Don't try again.
-                await CorePromiseUtils.ignoreErrors(this.pendingUnregistersTable.delete({
-                    token: site.getToken(),
-                    siteid: site.getId(),
-                }));
+                await CorePromiseUtils.ignoreErrors(this.removePendingUnregister(site.getId()));
 
                 throw error;
             }
@@ -510,9 +508,13 @@ export class CorePushNotificationsProvider {
             await this.pendingUnregistersTable.insert({
                 siteid: site.getId(),
                 siteurl: site.getURL(),
-                token: site.getToken(),
+                token: '',
                 info: JSON.stringify(site.getInfo()),
             });
+
+            await CoreNative.plugin('secureStorage')?.store({
+                token: site.getToken(),
+            }, `pendingunregister-${site.getId()}`);
 
             return;
         }
@@ -522,10 +524,8 @@ export class CorePushNotificationsProvider {
         }
 
         await CorePromiseUtils.ignoreErrors(Promise.all([
-            // Remove the device from the local DB.
             this.registeredDevicesTables[site.getId()].delete(this.getRequiredRegisterData()),
-            // Remove pending unregisters for this site.
-            this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }),
+            this.removePendingUnregister(site.getId()),
         ]));
     }
 
@@ -708,7 +708,7 @@ export class CorePushNotificationsProvider {
             }
         } finally {
             // Remove pending unregisters for this site.
-            await CorePromiseUtils.ignoreErrors(this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: site.getId() }));
+            await CorePromiseUtils.ignoreErrors(this.removePendingUnregister(site.getId()));
         }
     }
 
@@ -794,11 +794,18 @@ export class CorePushNotificationsProvider {
         const results = await this.pendingUnregistersTable.getMany(CoreObject.withoutEmpty({ siteid: siteId }));
 
         await Promise.all(results.map(async (result) => {
+            const secureData = await CoreNative.plugin('secureStorage')?.get('token', `pendingunregister-${result.siteid}`);
+            if (!secureData?.token) {
+                await CorePromiseUtils.ignoreErrors(this.removePendingUnregister(result.siteid));
+
+                return;
+            }
+
             // Create a temporary site to unregister.
             const tmpSite = CoreSitesFactory.makeSite(
                 result.siteid,
                 result.siteurl,
-                result.token,
+                secureData?.token,
                 { info: CoreText.parseJSON<CoreSiteInfo | null>(result.info, null) || undefined },
             );
 
@@ -879,6 +886,18 @@ export class CorePushNotificationsProvider {
             unregister: !isStored && !versionOrPushChanged, // No need to unregister first if only version or push changed.
             updatePublicKey,
         };
+    }
+
+    /**
+     * Remove pending unregisters for a certain site.
+     *
+     * @param siteId Site ID.
+     */
+    protected async removePendingUnregister(siteId: string): Promise<void> {
+        await Promise.all([
+            this.pendingUnregistersTable.deleteByPrimaryKey({ siteid: siteId }),
+            CoreNative.plugin('secureStorage')?.deleteCollection(`pendingunregister-${siteId}`),
+        ]);
     }
 
 }
