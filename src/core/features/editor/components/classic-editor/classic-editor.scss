@@ -1,4 +1,4 @@
-@use "theme/globals" as *;
+@use "src/theme/globals" as *;
 :host {
     --toobar-background: var(--white);
     --button-color: var(--ion-text-color);
