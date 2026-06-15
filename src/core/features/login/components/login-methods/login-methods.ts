@@ -39,6 +39,7 @@ export class CoreLoginMethodsComponent implements OnInit {
     @Input() site?: CoreSite; // Defined when the user is reconnecting.
     @Input() showLoginForm = true;
 
+    siteId?: string;
     isBrowserSSO  = false;
     showScanQR  = false;
     loginMethods: CoreLoginMethod[] = [];
@@ -53,6 +54,7 @@ export class CoreLoginMethodsComponent implements OnInit {
     async ngOnInit(): Promise<void> {
         if (this.site) {
             this.siteUrl = this.site.getURL();
+            this.siteId = this.site.getId();
 
             this.loginMethods = await CoreLoginHelper.getLoginMethods();
 

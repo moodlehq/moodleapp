@@ -50,6 +50,7 @@ export interface EnvironmentConfig {
     sitefindersettings: Partial<CoreLoginSiteFinderSettings>;
     onlyallowlistedsites: boolean;
     skipssoconfirmation: boolean;
+    addUserIdToSsoUrl?: boolean;
     forcedefaultlanguage: boolean;
     privacypolicy: string;
     notificoncolor: string;

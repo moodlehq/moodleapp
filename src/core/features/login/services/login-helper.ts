@@ -419,23 +419,19 @@ export class CoreLoginHelperProvider {
      *
      * @param siteUrl URL of the site where the login will be performed.
      * @param provider The identity provider.
-     * @param launchUrl The URL to open for SSO. If not defined, tool/mobile launch URL will be used.
-     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
+     * @param options SSO login options.
      * @returns True if success, false if error.
      */
     async openBrowserForOAuthLogin(
         siteUrl: string,
         provider: CoreSiteIdentityProvider,
-        launchUrl?: string,
-        redirectData?: CoreRedirectPayload,
+        options?: CoreLoginSSOLoginOptions,
     ): Promise<boolean> {
-        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
-
-        this.logger.debug('openBrowserForOAuthLogin launchUrl:', launchUrl);
-
         if (!provider || !provider.url) {
             return false;
         }
+
+        this.logger.debug('openBrowserForOAuthLogin siteUrl:', siteUrl);
 
         const params = CoreUrl.extractUrlParams(provider.url);
 
@@ -446,8 +442,11 @@ export class CoreLoginHelperProvider {
         const modal = await CoreLoadings.show();
 
         try {
-            const loginUrl = await this.prepareForSSOLogin(siteUrl, undefined, launchUrl, redirectData, {
-                oauthsso: params.id,
+            const loginUrl = await this.prepareForSSOLogin(siteUrl, {
+                ...options,
+                urlParams: {
+                    oauthsso: params.id,
+                },
             });
 
             // Always open it in browser because the user might have the session stored in there.
@@ -463,26 +462,22 @@ export class CoreLoginHelperProvider {
         return false;
     }
 
-    /**
-     * Open a browser to perform SSO login.
-     *
-     * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
-     * @param service The service to use. If not defined, core service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param redirectData Data of the path/url to open once authenticated. If not defined, site initial page.
-     */
+     /**
+      * Open a browser to perform SSO login.
+      *
+      * @param siteUrl URL of the site where the SSO login will be performed.
+      * @param typeOfLogin TypeOfLogin.BROWSER or TypeOfLogin.EMBEDDED.
+      * @param options SSO login options.
+      */
     async openBrowserForSSOLogin(
         siteUrl: string,
         typeOfLogin: TypeOfLogin,
-        service?: string,
-        launchUrl?: string,
-        redirectData?: CoreRedirectPayload,
+        options?: CoreLoginSSOLoginOptions,
     ): Promise<void> {
         const modal = await CoreLoadings.show();
 
         try {
-            const loginUrl = await this.prepareForSSOLogin(siteUrl, service, launchUrl, redirectData);
+            const loginUrl = await this.prepareForSSOLogin(siteUrl, options);
 
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
@@ -588,34 +583,31 @@ export class CoreLoginHelperProvider {
         await CoreNavigator.navigate('/login/changepassword', { params: { siteId }, reset: true });
     }
 
-    /**
-     * Prepare the app to perform SSO login.
-     *
-     * @param siteUrl URL of the site where the SSO login will be performed.
-     * @param service The service to use. If not defined, core service will be used.
-     * @param launchUrl The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
-     * @param redirectData Redirect dataof the page to go once authenticated. If not defined, site initial page.
-     * @param urlParams Other params to add to the URL.
-     * @returns Login Url.
-     */
+     /**
+      * Prepare the app to perform SSO login.
+      *
+      * @param siteUrl URL of the site where the SSO login will be performed.
+      * @param options SSO login options.
+      * @returns Login Url.
+      */
     async prepareForSSOLogin(
         siteUrl: string,
-        service?: string,
-        launchUrl?: string,
-        redirectData: CoreRedirectPayload = {},
-        urlParams?: CoreUrlParams,
+        options?: CoreLoginPrepareSSOLoginOptions,
     ): Promise<string> {
 
-        service = service || CoreConstants.CONFIG.wsservice;
-        launchUrl = launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
+        const service = options?.service || CoreConstants.CONFIG.wsservice;
+        const launchUrl = options?.launchUrl || `${siteUrl}/admin/tool/mobile/launch.php`;
 
         const passport = Math.random() * 1000;
+        const reconnectIdentityParams = await this.getReconnectIdentityParams(siteUrl, options);
 
-        const additionalParams = Object.assign(urlParams || {}, {
+        const additionalParams = {
+            ...options?.urlParams,
+            ...reconnectIdentityParams,
             service,
             passport,
             urlscheme: CoreConstants.CONFIG.customurlscheme,
-        });
+        };
 
         const loginUrl = CoreUrl.addParamsToUrl(launchUrl, additionalParams);
 
@@ -624,11 +616,50 @@ export class CoreLoginHelperProvider {
         await CoreConfig.set(LOGIN_SSO_LAUNCH_DATA, JSON.stringify(<StoredLoginLaunchData> {
             siteUrl,
             passport,
-            ...redirectData,
-            ssoUrlParams: urlParams || {},
+            ...options?.redirectData,
+            ssoUrlParams: options?.urlParams || {},
         }));
 
         return loginUrl;
+    }
+
+    /**
+     * Get reconnect SSO parameters to identify the current user.
+     *
+     * @param siteUrl URL of the site where the SSO login will be performed.
+     * @param options SSO login options.
+     * @returns Params to append to the reconnect launch URL.
+     */
+    protected async getReconnectIdentityParams(
+        siteUrl: string,
+        options?: CoreLoginSSOLoginOptions,
+    ): Promise<CoreUrlParams | undefined> {
+        if (!options?.siteId || !CoreConstants.CONFIG.addUserIdToSsoUrl) {
+            return;
+        }
+
+        const site = await CorePromiseUtils.ignoreErrors(CoreSites.getSite(options.siteId));
+        if (!site || !site.containsUrl(siteUrl)) {
+            return;
+        }
+
+        const userId = site.getUserId();
+        const userPrivateAccessKey = site.getFilesAccessKey();
+
+        if (!Number(userId) || !userPrivateAccessKey) {
+            return;
+        }
+
+        const now = new Date();
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const signature = Md5.hashAsciiStr(`${year}-${month}-${day}-${userPrivateAccessKey}`);
+
+        return {
+            userid: String(userId),
+            signature,
+        };
     }
 
     /**
@@ -1382,6 +1413,38 @@ export type CoreLoginMethod = {
     name: string; // Name of the login method.
     icon: string; // Icon of the provider.
     action: () => unknown; // Action to execute on button click.
+};
+
+/**
+ * Options for SSO login functions.
+ */
+export type CoreLoginSSOLoginOptions = {
+    /**
+     * service The service to use. If not defined, core service will be used.
+     */
+    service?: string;
+    /**
+     * The URL to open for SSO. If not defined, default tool mobile launch URL will be used.
+     */
+    launchUrl?: string;
+    /**
+     * Data of the path/url to open once authenticated. If not defined, site initial page.
+     */
+    redirectData?: CoreRedirectPayload;
+    /**
+     * Site id used to resolve reconnect identity data. If not set, no user id or signature will be added.
+     */
+    siteId?: string;
+};
+
+/**
+ * Options for prepareForSSOLogin.
+ */
+export type CoreLoginPrepareSSOLoginOptions = CoreLoginSSOLoginOptions & {
+    /**
+     * Other params to add to the launch URL.
+     */
+    urlParams?: CoreUrlParams;
 };
 
 export type CoreLoginSiteFinderSettings = {

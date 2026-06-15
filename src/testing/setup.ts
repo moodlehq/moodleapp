@@ -47,3 +47,7 @@ setCreateSingletonMethodProxy(
 setSingletonsInjector({ get: (injectionToken: Type<unknown> | AbstractType<unknown> | InjectionToken<unknown>) =>
     getServiceInstance(injectionToken) });
 beforeEach(() => resetTestingEnvironment());
+afterEach(() => {
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+});

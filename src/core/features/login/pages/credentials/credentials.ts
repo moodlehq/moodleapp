@@ -256,8 +256,10 @@ export default class CoreLoginCredentialsPage implements OnInit, OnDestroy {
         CoreLoginHelper.openBrowserForSSOLogin(
             this.siteCheck.siteUrl,
             this.siteCheck.code,
-            this.siteCheck.service,
-            this.siteCheck.config?.launchurl,
+            {
+                service: this.siteCheck.service,
+                launchUrl: this.siteCheck.config?.launchurl,
+            },
         );
     }
 

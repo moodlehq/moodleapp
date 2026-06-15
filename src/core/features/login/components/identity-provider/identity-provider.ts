@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CoreSiteIdentityProvider } from '@classes/sites/unauthenticated-site';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -28,20 +28,24 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class CoreLoginIdentityProviderComponent {
 
-    @Input({ required: true }) provider!: CoreSiteIdentityProvider;
-    @Input() launchurl = '';
-    @Input() siteUrl = '';
-    @Input() redirectData?: CoreRedirectPayload;
+    readonly provider = input.required<CoreSiteIdentityProvider>();
+    readonly siteUrl = input.required<string>();
+    readonly launchurl = input('');
+    readonly redirectData = input<CoreRedirectPayload>();
+    readonly siteId = input<string>();
 
     /**
      * The button has been clicked.
      */
     async openOAuth(): Promise<void> {
         const result = await CoreLoginHelper.openBrowserForOAuthLogin(
-            this.siteUrl,
-            this.provider,
-            this.launchurl,
-            this.redirectData,
+            this.siteUrl(),
+            this.provider(),
+            {
+                launchUrl: this.launchurl(),
+                redirectData: this.redirectData(),
+                siteId: this.siteId(),
+            },
         );
 
         if (!result) {
