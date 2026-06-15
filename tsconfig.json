@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "src",
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
@@ -31,40 +30,40 @@
     ],
     "paths": {
       "@addons/*": [
-        "./addons/*"
+        "./src/addons/*"
       ],
       "@classes/*": [
-        "./core/classes/*"
+        "./src/core/classes/*"
       ],
       "@components/*": [
-        "./core/components/*"
+        "./src/core/components/*"
       ],
       "@coretypes/*": [
-        "./core/types/*"
+        "./src/core/types/*"
       ],
       "@directives/*": [
-        "./core/directives/*"
+        "./src/core/directives/*"
       ],
       "@features/*": [
-        "./core/features/*"
+        "./src/core/features/*"
       ],
       "@guards/*": [
-        "./core/guards/*"
+        "./src/core/guards/*"
       ],
       "@pipes/*": [
-        "./core/pipes/*"
+        "./src/core/pipes/*"
       ],
       "@services/*": [
-        "./core/services/*"
+        "./src/core/services/*"
       ],
       "@singletons": [
-        "./core/singletons/index"
+        "./src/core/singletons/index"
       ],
       "@static/*": [
-        "./core/static/*"
+        "./src/core/static/*"
       ],
       "@/*": [
-        "./*"
+        "./src/*"
       ]
     }
   },
