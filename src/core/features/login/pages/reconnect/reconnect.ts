@@ -349,9 +349,11 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
         CoreLoginHelper.openBrowserForSSOLogin(
             this.site.getURL(),
             this.siteConfig.typeoflogin,
-            undefined,
-            this.siteConfig.launchurl,
-            this.redirectData,
+            {
+                launchUrl: this.siteConfig.launchurl,
+                redirectData: this.redirectData,
+                siteId: this.siteId,
+            },
         );
     }
 

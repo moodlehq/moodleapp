@@ -312,7 +312,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
         };
 
         const redirect = this.siteConfig?.launchurl
-            ? await CoreLoginHelper.prepareForSSOLogin(this.site.getURL(), undefined, this.siteConfig.launchurl)
+            ? await CoreLoginHelper.prepareForSSOLogin(this.site.getURL(), { launchUrl: this.siteConfig.launchurl })
             : undefined;
 
         // Get the recaptcha response (if needed).

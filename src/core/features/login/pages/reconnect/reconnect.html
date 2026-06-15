@@ -56,7 +56,7 @@
                 <div class="core-login-methods">
                     @if (currentLogin && currentLogin.provider) {
                         <core-identity-provider [provider]="currentLogin.provider" [launchurl]="siteConfig?.launchurl"
-                            [redirectData]="redirectData" [siteUrl]="site.siteUrl" />
+                            [redirectData]="redirectData" [siteUrl]="site.siteUrl" [siteId]="siteId" />
                         @if (currentLogin.showOther) {
                             <ion-accordion-group>
                                 <ion-accordion toggleIconSlot="start">

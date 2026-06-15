@@ -2,6 +2,11 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+5.3.0
+=====
+
+- The CoreLoginHelper functions openBrowserForSSOLogin, openBrowserForOAuthLogin and prepareForSSOLogin have been modified to group all optional parameters in a single object.
+
 5.2.0
 =====
 

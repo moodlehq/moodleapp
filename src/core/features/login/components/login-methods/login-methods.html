@@ -29,6 +29,6 @@
     <ion-list class="core-login-identity-providers">
         <h2 class="item-heading">{{ 'core.login.potentialidps' | translate }}</h2>
         <core-identity-provider *ngFor="let provider of identityProviders" [provider]="provider" [launchurl]="siteConfig?.launchurl"
-            [redirectData]="redirectData" [siteUrl]="siteUrl" />
+            [redirectData]="redirectData" [siteUrl]="siteUrl" [siteId]="siteId" />
     </ion-list>
 }
