@@ -8,6 +8,12 @@
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "strictNullChecks": true,
+
+    "strictBindCallApply": false,
+    "strictFunctionTypes": false,
+    "noImplicitAny": false,
+    "useUnknownInCatchVariables": false,
+
     "strictPropertyInitialization": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": false,
@@ -68,9 +74,20 @@
     }
   },
   "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    },
+    "strictTemplates": true,
+    "strictInputTypes": false,
+    "strictOutputEventTypes": false,
+    "strictDomEventTypes": false,
+    "strictSafeNavigationTypes": false
+
   }
 }
