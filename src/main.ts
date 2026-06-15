@@ -21,7 +21,7 @@ import { AddonsModule } from '@addons/addons.module';
 import { CoreModule } from '@/core/core.module';
 import { AppRoutingModule } from './app/app-routing.module';
 import { provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { moodleTransitionAnimation } from '@classes/page-transition';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
@@ -62,7 +62,10 @@ bootstrapApplication(AppComponent, {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         provideAnimations(),
         // HttpClient is used to make JSON requests. It fails for HEAD requests because there is no content.
-        provideHttpClient(withInterceptors([coreInterceptorFn])),
+        provideHttpClient(
+            withXhr(),
+            withInterceptors([coreInterceptorFn]),
+        ),
     ],
 }).catch(err => {
     // eslint-disable-next-line no-console
