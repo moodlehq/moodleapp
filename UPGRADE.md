@@ -7,6 +7,11 @@ For more information about upgrading, read the official documentation: https://m
 
 - The CoreLoginHelper functions openBrowserForSSOLogin, openBrowserForOAuthLogin and prepareForSSOLogin have been modified to group all optional parameters in a single object.
 
+5.2.1
+=====
+
+- The CoreContentLinksHelper.confirmSiteChange function has been removed because it's no longer used. It was removed without deprecation because it required breaking changes to continue working properly.
+
 5.2.0
 =====
 
