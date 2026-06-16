@@ -65,19 +65,15 @@ export class CoreCustomURLSchemesProvider {
     /**
      * Given some data of a custom URL with a token, create a site if it needs to be created.
      *
+     * @param token Token to use to create the site.
      * @param data URL data.
-     * @returns Promise resolved with the site ID if created or already exists.
+     * @returns Site ID if created or already exists.
      */
-    protected async createSiteIfNeeded(data: CoreCustomURLSchemesParams): Promise<string | undefined> {
-        if (!data.token) {
-            return;
-        }
-
+    protected async createSiteIfNeeded(token: string, data: CoreCustomURLSchemesParams): Promise<string> {
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!currentSite || currentSite.getToken() !== data.token || currentSite.isLoggedOut()) {
+        if (!currentSite || currentSite.getToken() !== token || currentSite.isLoggedOut()) {
             // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
-
             if (!data.siteUrl.match(/^https?:\/\//)) {
                 // URL doesn't have a protocol and it's required to be able to create the site. Check which one to use.
                 const result = await CoreSites.checkSite(data.siteUrl, undefined, 'URL scheme create site');
@@ -87,9 +83,14 @@ export class CoreCustomURLSchemesProvider {
                 await CoreSites.checkApplication(result.config);
             }
 
+            if (!data.isSSOToken) {
+                // Confirm before creating the site.
+                await CoreContentLinksHelper.confirmLinkToSite({ url: data.siteUrl });
+            }
+
             return CoreSites.newSite(
                 data.siteUrl,
-                data.token,
+                token,
                 data.privateToken,
                 !!data.isSSOToken,
                 CoreLoginHelper.getOAuthIdFromParams(data.ssoUrlParams),
@@ -170,49 +171,45 @@ export class CoreCustomURLSchemesProvider {
                 throw Translate.instant('core.contentlinks.errorredirectothersite');
             }
 
-            // First of all, create the site if needed.
-            const siteId = await this.createSiteIfNeeded(data);
-
-            if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
-                // Site created and authenticated, open the page to go.
-                void CoreNavigator.navigateToSiteHome({
-                    params: <CoreRedirectPayload> {
-                        redirectPath: data.redirectPath,
-                        redirectOptions: data.redirectOptions,
-                        urlToOpen: data.urlToOpen,
-                    },
-                });
-
-                return;
-            }
-
             if (data.redirect && !data.redirect.match(/^https?:\/\//)) {
                 // Redirect is a relative URL. Append the site URL.
                 data.redirect = CorePath.concatenatePaths(data.siteUrl, data.redirect);
             }
 
-            let siteIds = [siteId];
+            // Check if the site needs to be created and ask the user to confirm if needed.
+            let siteIds: string[];
+            if (data.token) {
+                const siteId = await this.createSiteIfNeeded(data.token, data);
 
-            if (!siteId) {
-                // No site created, check if the site is stored (to know which one to use).
+                if (data.isSSOToken || (data.isAuthenticationURL && siteId && CoreSites.getCurrentSiteId() === siteId)) {
+                    // Site created and authenticated, open the page to go.
+                    void CoreNavigator.navigateToSiteHome({
+                        params: <CoreRedirectPayload> {
+                            redirectPath: data.redirectPath,
+                            redirectOptions: data.redirectOptions,
+                            urlToOpen: data.urlToOpen ?? data.redirect,
+                        },
+                    });
+
+                    return;
+                }
+
+                siteIds = [siteId];
+            } else {
                 siteIds = await CoreSites.getSiteIdsFromUrl(data.siteUrl, {
                     prioritize: true,
                     username: data.username,
                     userId: data.userId,
                 });
+
+                if (siteIds.length !== 1 || siteIds[0] !== CoreSites.getCurrentSiteId()) {
+                    // Not current site or more than one site, confirm before changing site.
+                    await CoreContentLinksHelper.confirmLinkToSite({ url: data.siteUrl });
+                }
             }
 
             if (siteIds.length > 1) {
                 // More than one site to treat the URL, let the user choose.
-
-                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
-
-                // Ask the user before changing site.
-                const canChange = await CoreContentLinksHelper.confirmSiteChange();
-                if (!canChange) {
-                    return;
-                }
-
                 void CoreContentLinksHelper.goToChooseSite(data.redirect || data.siteUrl);
             } else if (siteIds.length === 1) {
                 // Only one site, handle the link.
@@ -221,7 +218,10 @@ export class CoreCustomURLSchemesProvider {
 
                 if (!data.redirect) {
                     // No redirect, go to the root URL if needed.
-                    await CoreContentLinksHelper.handleRootURL(site, false, true);
+                    await CoreContentLinksHelper.handleRootURL(site, {
+                        checkToken: true,
+                        confirmSiteChange: false,
+                    });
                 } else {
                     // Handle the redirect link.
                     await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
@@ -230,7 +230,10 @@ export class CoreCustomURLSchemesProvider {
                        this will make sure that the link is opened with the user the token belongs to. */
                     const username = site.getInfo()?.username || data.username;
 
-                    const treated = await CoreContentLinksHelper.handleLink(data.redirect, username);
+                    const treated = await CoreContentLinksHelper.handleLink(data.redirect, {
+                        username,
+                        confirmSiteChange: false,
+                    });
 
                     if (!treated) {
                         CoreAlerts.showError(Translate.instant('core.contentlinks.errornoactions'));
@@ -241,18 +244,14 @@ export class CoreCustomURLSchemesProvider {
                 // Site not stored. Try to add the site.
                 const result = await CoreSites.checkSite(data.siteUrl, undefined, `URL scheme redirect: ${url}`);
 
-                // Site exists. We'll allow to add it.
-                await modal.dismiss(); // Dismiss modal so it doesn't collide with confirms.
-                // Ask the user before changing site.
-                const canChange = await CoreContentLinksHelper.confirmSiteChange();
-                if (!canChange) {
-                    return;
-                }
-
                 await this.goToAddSite(data, result);
             }
 
         } catch (error) {
+            if (CoreErrorHelper.isCanceledError(error)) {
+                return;
+            }
+
             if (!error || !CoreErrorHelper.getErrorMessageFromError(error)) {
                 // Use a default error.
                 this.createInvalidSchemeError(url, data);

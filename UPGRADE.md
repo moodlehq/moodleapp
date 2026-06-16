@@ -2,6 +2,11 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+5.2.1
+=====
+
+- The CoreContentLinksHelper.confirmSiteChange function has been removed because it's no longer used. It was removed without deprecation because it required breaking changes to continue working properly.
+
 5.2.0
 =====
 

@@ -174,7 +174,7 @@ export class CoreIframe {
         link.innerHTML = Translate.instant('core.viewembeddedcontent');
 
         link.onclick = (event: Event): void => {
-            CoreContentLinksHelper.handleLink(src, username);
+            CoreContentLinksHelper.handleLink(src, { username });
             event.preventDefault();
         };
 

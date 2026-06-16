@@ -1,8 +1,10 @@
 {
     "chooseaccount": "Choose account",
     "chooseaccounttoopenlink": "Choose an account to open the link with.",
-    "confirmurlothersite": "This link belongs to another site. Do you want to open it?",
+    "confirmlinktosite": "This link will take you to:<br><br><strong>{{url}}</strong><br><br>Only continue if you trust this site.",
+    "confirmlinktositetitle": "Open another site?",
     "errornoactions": "Couldn't find an action to perform with this link.",
     "errornosites": "Couldn't find any site to handle this link.",
-    "errorredirectothersite": "The redirect URL cannot point to a different site."
+    "errorredirectothersite": "The redirect URL cannot point to a different site.",
+    "opensite": "Open site"
 }
