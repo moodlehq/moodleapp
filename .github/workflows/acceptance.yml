@@ -14,7 +14,7 @@ on:
                 required: true
                 default: "https://github.com/moodle/moodle.git"
     pull_request:
-        branches: [ main, v*.x ]
+        branches: [main, v*.x]
 
 concurrency:
     group: acceptance-${{ github.ref }}
@@ -28,7 +28,7 @@ jobs:
             node-version: ${{ steps.node-version.outputs.version }}
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v6
               with:
                   path: app
 
@@ -36,7 +36,7 @@ jobs:
               id: node-version
               run: echo "version=$(cat app/.nvmrc | tr -d '[:space:]')" >> $GITHUB_OUTPUT
 
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version-file: "app/.nvmrc"
                   cache: "npm"
@@ -125,7 +125,7 @@ jobs:
                 options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
         steps:
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
                   node-version: ${{ needs.build.outputs.node-version }}
 
@@ -135,7 +135,7 @@ jobs:
                   ini-values: max_input_vars=5000
                   coverage: none
 
-            - uses: actions/cache/restore@v4
+            - uses: actions/cache/restore@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -211,7 +211,7 @@ jobs:
                   echo "❌ $PARALLEL_NAME failed" >> $GITHUB_STEP_SUMMARY
 
             - name: Upload Snapshot failures
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
               env:
                   PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
@@ -221,7 +221,7 @@ jobs:
                   if-no-files-found: ignore
 
             - name: Upload Behat failures
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v6
               if: ${{ failure() && steps.run-behat-tests.conclusion == 'failure' }}
               env:
                   PARALLEL_NAME: ${{ steps.filename.outputs.PARALLEL_NAME }}
