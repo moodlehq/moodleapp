@@ -311,13 +311,20 @@ export class CoreCustomURLSchemesProvider {
             }
         }
 
+        // Only allow using token authentication for https URLs. Also allow it for Behat tests since they use
+        // deep links to speed up the execution and they use http URLs.
+        const parsedUrl = CoreUrl.parse(url);
+        const isSecureTokenSource = CorePlatform.isAutomated() ?
+            true :
+            parsedUrl?.protocol === 'https' && (!parsedUrl?.port || parsedUrl?.port === '443');
+
         return {
             siteUrl: url,
             username: username,
-            token: params.token,
-            privateToken: params.privateToken || params.privatetoken,
+            token: isSecureTokenSource ? params.token : undefined,
+            privateToken: isSecureTokenSource ? params.privateToken || params.privatetoken : undefined,
             redirect: params.redirect,
-            isAuthenticationURL: !!params.token,
+            isAuthenticationURL: isSecureTokenSource && !!params.token,
         };
     }
 
