@@ -1,7 +1,7 @@
 os: linux
 dist: noble
 language: java
-node_js: 22
+node_js: 24
 jdk:
   - openjdk17
 
