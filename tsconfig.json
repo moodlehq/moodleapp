@@ -9,7 +9,6 @@
     "experimentalDecorators": true,
     "strictNullChecks": true,
 
-    "strictBindCallApply": false,
     "strictFunctionTypes": false,
     "noImplicitAny": false,
     "useUnknownInCatchVariables": false,
