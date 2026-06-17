@@ -13,14 +13,13 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 
 @Component({
     selector: 'addon-privatefiles-file-actions',
     styleUrl: 'file-actions.scss',
     templateUrl: 'file-actions.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreSharedModule,
     ],

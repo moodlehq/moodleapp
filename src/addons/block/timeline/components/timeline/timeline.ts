@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, effect, OnInit, signal, untracked } from '@angular/core';
+import { Component, effect, OnInit, signal, untracked } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreBlockBaseComponent } from '@features/block/classes/base-block-component';
 import { AddonBlockTimeline } from '../../services/timeline';
@@ -39,7 +39,6 @@ import { Translate } from '@singletons';
     selector: 'addon-block-timeline',
     templateUrl: 'addon-block-timeline.html',
     styleUrl: 'timeline.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreSharedModule,
         CoreSearchBoxComponent,

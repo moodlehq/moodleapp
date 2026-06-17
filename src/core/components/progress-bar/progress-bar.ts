@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ChangeDetectionStrategy, input, computed } from '@angular/core';
+import { Component, input, computed } from '@angular/core';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
 
@@ -26,7 +26,6 @@ import { CoreBaseModule } from '@/core/base.module';
     selector: 'core-progress-bar',
     templateUrl: 'core-progress-bar.html',
     styleUrl: 'progress-bar.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [CoreBaseModule],
     host: {
         '[class]': 'color() ? `ion-color ion-color-${color()}` : ""',

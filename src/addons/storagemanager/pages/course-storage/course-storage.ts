@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DownloadStatus } from '@/core/constants';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, inject } from '@angular/core';
 import {
     CORE_COURSE_ALL_COURSES_CLEARED,
     CORE_COURSE_ALL_SECTIONS_ID,
@@ -52,7 +52,6 @@ import { CoreCourseDownloadStatusHelper } from '@features/course/services/course
     selector: 'page-addon-storagemanager-course-storage',
     templateUrl: 'course-storage.html',
     styleUrl: 'course-storage.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreSharedModule,
     ],

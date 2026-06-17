@@ -14,13 +14,12 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, viewChild } from '@angular/core';
 
 @Component({
     selector: 'core-audio-histogram',
     templateUrl: 'audio-histogram.html',
     styleUrl: 'audio-histogram.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreSharedModule,
     ],

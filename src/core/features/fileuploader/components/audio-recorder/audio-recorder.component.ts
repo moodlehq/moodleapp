@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePlatform } from '@services/platform';
 import { DomSanitizer, Translate } from '@singletons';
@@ -34,7 +34,6 @@ import { CoreAlerts } from '@services/overlays/alerts';
     selector: 'core-fileuploader-audio-recorder',
     styleUrl: 'audio-recorder.scss',
     templateUrl: 'audio-recorder.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreSharedModule,
         CoreFileUploaderAudioHistogramComponent,

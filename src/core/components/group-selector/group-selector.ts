@@ -14,7 +14,6 @@
 
 import {
     Component,
-    ChangeDetectionStrategy,
     input,
     model,
 } from '@angular/core';
@@ -31,7 +30,6 @@ import { CoreAlertCardComponent } from '@components/alert-card/alert-card';
     selector: 'core-group-selector',
     templateUrl: 'group-selector.html',
     styleUrl: 'group-selector.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreBaseModule,
         CoreFaIconDirective,

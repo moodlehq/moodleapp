@@ -14,7 +14,6 @@
 
 import { toBoolean } from '@/core/transforms/boolean';
 import {
-  ChangeDetectionStrategy,
   Component,
   signal,
   input,
@@ -46,7 +45,6 @@ const enum IconVersion {
     selector: 'core-mod-icon',
     templateUrl: 'mod-icon.html',
     styleUrl: 'mod-icon.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [
         CoreBaseModule,
         CoreExternalContentDirective,
