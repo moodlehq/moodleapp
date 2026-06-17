@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { TestBed } from '@angular/core/testing';
 import { mockSingleton } from '@/testing/utils';
 import { CoreLang, CoreLangProvider } from '@services/lang';
 
@@ -22,7 +23,9 @@ describe('Lang', () => {
     let parentLanguage: string | undefined;
 
     beforeEach(() => {
-        lang = new CoreLangProvider();
+        TestBed.runInInjectionContext(() => {
+            lang = new CoreLangProvider();
+        });
         currentLanguage = 'en';
 
         mockSingleton(CoreLang, {
