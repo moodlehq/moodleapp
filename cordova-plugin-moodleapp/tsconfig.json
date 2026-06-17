@@ -1,13 +1,12 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "module": "esnext",
-        "moduleResolution": "node",
+        "module": "node16",
+        "moduleResolution": "nodenext",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "experimentalDecorators": true,
-        "baseUrl": "./"
     },
     "include": [
         "src/ts/**/*.ts",
