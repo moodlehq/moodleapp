@@ -13,26 +13,49 @@
 // limitations under the License.
 
 import {
-    TranslateStore,
     LangChangeEvent,
     Language,
     TranslationObject,
     InterpolatableTranslationObject,
     FallbackLangChangeEvent,
     TranslationChangeEvent,
+    InterpolationParameters,
 } from '@ngx-translate/core';
 import { Observable, Subject, from, isObservable, of, take } from 'rxjs';
 import { mock } from '../utils';
 
 // Global translation store for test mocks
-const store = new TranslateStore();
+const store = {
+    translations: new Map<Language, InterpolatableTranslationObject>(),
+    hasTranslationFor(lang: Language): boolean {
+        return this.translations.has(lang);
+    },
+    getTranslations(lang: Language): InterpolatableTranslationObject {
+        return this.translations.get(lang) ?? {};
+    },
+    setTranslations(lang: Language, translations: InterpolatableTranslationObject, merge: boolean): void {
+        if (!merge) {
+            this.translations.set(lang, { ...translations });
+
+            return;
+        }
+
+        this.translations.set(lang, {
+            ...this.getTranslations(lang),
+            ...translations,
+        });
+    },
+    deleteTranslations(lang: Language): void {
+        this.translations.delete(lang);
+    },
+};
 let currentLang = 'en';
 const onLangChange = new Subject<LangChangeEvent>();
 const onTranslationChange = new Subject<TranslationChangeEvent>();
 const onFallbackLangChange = new Subject<FallbackLangChangeEvent>();
 const onDefaultLangChange = new Subject<LangChangeEvent>();
 
-const currentLoader = {
+export const translateLoaderMock = mock({
     getTranslation: (lang: string): Observable<TranslationObject> =>
         // Load translations from json file.
         from(
@@ -40,11 +63,32 @@ const currentLoader = {
                 .then((json: TranslationObject) => json.default as TranslationObject)
                 .catch(() => ({} as TranslationObject)),
         ),
-};
+    getParentLanguage: (lang: string): string | undefined =>
+        store.getTranslations(lang)?.['core.parentlanguage'] as string | undefined,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    clearCustomStrings: (_langToReload?: string) => Promise.resolve(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    clearSitePluginsStrings: (_langToReload?: string) => Promise.resolve(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setCustomStrings: (_strings: Record<string, TranslationObject>, _currentLang?: string) => Promise.resolve(),
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setSitePluginsStrings: (_strings: Record<string, TranslationObject>, _currentLang?: string) => Promise.resolve(),
+});
 
 export const translateMock = mock({
     instant: (key: string | string[], replacements?: Record<string, string | number>) =>
         interpolateTranslation(key, replacements),
+    translate: (
+        key: string | string[] | (() => string | string[]),
+        params?: InterpolationParameters | (() => InterpolationParameters | undefined),
+        lang?: Language | (() => Language | undefined),
+    ) => {
+        const resolvedKey = typeof key === 'function' ? key() : key;
+        const resolvedParams = typeof params === 'function' ? params() : params;
+        const resolvedLang = typeof lang === 'function' ? lang() : lang ?? currentLang;
+
+        return () => interpolateTranslation(resolvedKey, resolvedParams, resolvedLang);
+    },
     get: (key: string | string[], replacements?: Record<string, string | number>) =>
         of(interpolateTranslation(key, replacements)),
     onLangChange: onLangChange.asObservable(),
@@ -72,7 +116,7 @@ export const translateMock = mock({
 
         return of(store.getTranslations(lang));
     },
-    currentLoader,
+    langLoaderMock: translateLoaderMock,
     getCurrentLang: () => currentLang,
     getFallbackLang: () => 'en',
     resetLang: (lang: Language) => {
@@ -106,7 +150,7 @@ function loadOrExtendLanguage(
 ): Observable<InterpolatableTranslationObject> | undefined {
     // if this language is unavailable, ask for it
     if (!store.hasTranslationFor(lang)) {
-        return currentLoader.getTranslation(lang);
+        return translateLoaderMock.getTranslation(lang);
     }
 
     return of(store.getTranslations(lang));
@@ -117,12 +161,15 @@ function loadOrExtendLanguage(
  *
  * @param keys The translation key or array of keys.
  * @param replacements Optional replacements for placeholders in the translation strings.
+ * @param lang Optional language code to use for interpolation. Defaults to the current language.
  * @returns The interpolated translation string or an object with interpolated strings for each key.
  */
 function interpolateTranslation(
     keys: string | string[],
     replacements?: Record<string, string | number>,
+    lang?: Language,
 ): string | Record<string, string> {
+    lang = lang ?? currentLang;
     const applyReplacements = (text: string): string => {
         let result = text;
         for (const [name, value] of Object.entries(replacements ?? {})) {
@@ -131,10 +178,7 @@ function interpolateTranslation(
 
         return result;
     };
-    const translations = store.getTranslations(currentLang);
-    if (!translations) {
-        throw new Error(`No translations loaded for language '${currentLang}', load them first.`);
-    }
+    const translations = store.getTranslations(lang);
 
     if (!Array.isArray(keys)) {
         const translation = translations[keys] as string | undefined;
