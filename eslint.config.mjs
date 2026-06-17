@@ -54,6 +54,7 @@ const appConfig = {
     rules: {
         '@angular-eslint/component-class-suffix': ['error', { suffixes: ['Component', 'Page'] }],
         '@angular-eslint/no-output-on-prefix': 'off', // @todo: The recommendation is to enable this rule.
+        '@angular-eslint/prefer-on-push-component-change-detection': 'warn',
         '@angular-eslint/prefer-signals': [
             'error',
             {
