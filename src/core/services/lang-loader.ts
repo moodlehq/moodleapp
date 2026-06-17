@@ -14,12 +14,12 @@
 
 import { Injectable } from '@angular/core';
 import { mergeDeep, TranslateLoader, TranslationObject } from '@ngx-translate/core';
-import { Http, Translate } from '@singletons';
+import { Http, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { firstValueFrom, from, Observable, of } from 'rxjs';
 
-@Injectable()
-export class MoodleTranslateLoader implements TranslateLoader {
+@Injectable({ providedIn: 'root' })
+export class MoodleTranslateLoaderService implements TranslateLoader {
 
     protected translations: { [lang: string]: TranslationObject } = {};
     protected translationFiles: { [lang: string]: TranslationObject } = {};
@@ -121,8 +121,8 @@ export class MoodleTranslateLoader implements TranslateLoader {
      * @returns Parent language code or undefined if not found.
      */
     getParentLanguage(lang: string): string | undefined {
-        const parentLang = this.translationFiles[lang]?.[MoodleTranslateLoader.PARENT_LANG_KEY] as string | undefined;
-        if (parentLang && parentLang !== MoodleTranslateLoader.PARENT_LANG_KEY && parentLang !== lang) {
+        const parentLang = this.translationFiles[lang]?.[MoodleTranslateLoaderService.PARENT_LANG_KEY] as string | undefined;
+        if (parentLang && parentLang !== MoodleTranslateLoaderService.PARENT_LANG_KEY && parentLang !== lang) {
             return parentLang;
         }
     }
@@ -255,3 +255,4 @@ export class MoodleTranslateLoader implements TranslateLoader {
     }
 
 }
+export const MoodleTranslateLoader = makeSingleton(MoodleTranslateLoaderService);
