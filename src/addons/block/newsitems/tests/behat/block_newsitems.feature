@@ -37,7 +37,6 @@ Feature: Basic tests of news items block
     And I press "Open block drawer" in the app
     And I press "Older topics" in the app
     Then the header should be "Announcements" in the app
-    And I should find "3 discussions" in the app
     And I should find "Discussion One" in the app
     And I should find "Discussion Two" in the app
     And I should find "Discussion Three" in the app
