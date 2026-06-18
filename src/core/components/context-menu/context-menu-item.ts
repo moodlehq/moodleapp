@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, effect, input, model, computed, inject, output } from '@angular/core';
+import { Component, OnInit, OnDestroy, effect, input, model, computed, inject } from '@angular/core';
 import { CoreContextMenuComponent } from '../context-menu/context-menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreUtils } from '@static/utils';
@@ -65,7 +65,6 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
     // Use a subject and outputFromObservable because direct output syntax doesn't have the 'observed' property.
     readonly onClosedEmitter = new Subject<void>();
     readonly onClosed = outputFromObservable(this.onClosedEmitter);
-    readonly toggleChange = output<boolean>(); // Will emit an event when toggle changes to enable 2-way data binding.
 
     uniqueId = CoreUtils.getUniqueId('CoreContextMenuItem');
     // Effective href to use when the item is clicked. Use this instead of href directly.
@@ -93,17 +92,6 @@ export class CoreContextMenuItemComponent implements OnInit, OnDestroy {
         if (!this.destroyed) {
             this.ctxtMenu.addItem(this);
         }
-    }
-
-    /**
-     * Toggle changed.
-     *
-     * @param event Event.
-     */
-    toggleChanged(event: Event): void {
-        event.preventDefault();
-        event.stopPropagation();
-        this.toggleChange.emit(this.toggle());
     }
 
     /**

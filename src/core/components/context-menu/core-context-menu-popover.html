@@ -6,7 +6,7 @@
                 [hidden]="item.hidden()" [detail]="!!(item.effectiveHref() && !item.iconAction())" role="menuitem"
                 [button]="!!(item.effectiveHref() && !item.iconAction())" [showBrowserWarning]="item.showBrowserWarning()">
                 @if (item.iconAction() === 'toggle') {
-                    <ion-toggle [(ngModel)]="item.toggle" (ionChange)="item.toggleChanged($event)">
+                    <ion-toggle [(ngModel)]="item.toggle">
                         <p class="item-heading">{{ item.content() }}</p>
                     </ion-toggle>
                 } @else {
