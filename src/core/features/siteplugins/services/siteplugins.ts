@@ -33,7 +33,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreEnrolAction, CoreEnrolInfoIcon } from '@features/enrol/services/enrol-delegate';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreUserProfileHandlerType } from '@features/user/services/user-delegate';
-import { CORE_SITE_PLUGINS_COMPONENT, CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '../constants';
+import { CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT } from '../constants';
 import { CoreObject } from '@static/object';
 
 /**
@@ -43,14 +43,6 @@ import { CoreObject } from '@static/object';
 export class CoreSitePluginsProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'CoreSitePlugins:';
-    /**
-     * @deprecated since 4.5.0. Use CORE_SITE_PLUGINS_COMPONENT instead.
-     */
-    static readonly COMPONENT = CORE_SITE_PLUGINS_COMPONENT;
-    /**
-     * @deprecated since 4.5.0. Use CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT instead.
-     */
-    static readonly UPDATE_COURSE_CONTENT = CORE_SITE_PLUGINS_UPDATE_COURSE_CONTENT;
 
     protected logger: CoreLogger;
     protected sitePlugins: { [name: string]: CoreSitePluginsHandler } = {}; // Site plugins registered.

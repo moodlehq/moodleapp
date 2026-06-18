@@ -65,8 +65,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { CoreUrlUtilsProvider } = await import('@services/utils/url');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreUtilsProvider } = await import('@services/utils/utils');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreMimetypeUtilsProvider } = await import('@services/utils/mimetype');
@@ -102,7 +100,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreTextUtilsProvider,
         CoreTimeUtilsProvider,
         CoreUpdateManagerProvider,
-        CoreUrlUtilsProvider,
         CoreUtilsProvider,
         CoreWSProvider,
         CoreAlertsService,

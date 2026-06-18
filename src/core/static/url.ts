@@ -263,17 +263,6 @@ export class CoreUrl {
     }
 
     /**
-     * Removes protocol from the url.
-     *
-     * @param url Site url.
-     * @returns Url without protocol.
-     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol) instead.
-     */
-    static removeProtocol(url: string): string {
-        return CoreUrl.removeUrlParts(url, CoreUrlPartNames.Protocol);
-    }
-
-    /**
      * Check if two URLs have the same domain and path.
      *
      * @param urlA First URL.
@@ -310,18 +299,6 @@ export class CoreUrl {
         const urlParts = CoreUrl.parse(url);
 
         return urlParts?.fragment ? `#${urlParts.fragment}` : undefined;
-    }
-
-    /**
-     * Remove the anchor from a URL.
-     *
-     * @param url URL.
-     * @returns URL without anchor if any.
-     *
-     * @deprecated since 4.5. Use CoreUrl.removeUrlParts(url, CoreUrlPartNames.Fragment) instead.
-     */
-    static removeUrlAnchor(url: string): string {
-        return CoreUrl.removeUrlParts(url, CoreUrlPartNames.Fragment);
     }
 
     /**

@@ -46,11 +46,6 @@ export class CoreDownloadRefreshComponent {
     readonly canTrustDownload = input(false, { transform: toBoolean }); // If false, refresh will be shown if downloaded.
     readonly action = output<boolean>(); // Will emit an event when the item clicked.
 
-    /**
-     * @deprecated since 4.5. Use statusesTranslatable instead.
-     */
-    readonly statusTranslatable = input<string>(); // Download status translatable string.
-
     statusDownloaded = DownloadStatus.DOWNLOADED;
     statusNotDownloaded = DownloadStatus.DOWNLOADABLE_NOT_DOWNLOADED;
     statusOutdated = DownloadStatus.OUTDATED;

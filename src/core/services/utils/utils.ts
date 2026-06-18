@@ -20,11 +20,7 @@ import { CoreRedirects } from '@static/redirects';
 import { CoreMimetype } from '@static/mimetype';
 import { makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreArray } from '@static/array';
-import { CoreText } from '@static/text';
-import { CoreWait, CoreWaitOptions } from '@static/wait';
-import { CoreQRScan } from '@services/qrscan';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils, OrderedPromiseData } from '@static/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@static/opener';
@@ -196,18 +192,6 @@ export class CoreUtilsProvider {
      */
     clone<T>(source: T, level = 0): T {
         return CoreUtilsSingleton.clone(source, level);
-    }
-
-    /**
-     * Copies a text to clipboard and shows a toast message.
-     *
-     * @param text Text to be copied
-     * @returns Promise resolved when the text is copied.
-     *
-     * @deprecated since 4.5 Use CoreText.copyToClipboard instead.
-     */
-    async copyToClipboard(text: string): Promise<void> {
-        return CoreText.copyToClipboard(text);
     }
 
     /**
@@ -749,52 +733,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Check whether the app can scan QR codes.
-     *
-     * @returns Whether the app can scan QR codes.
-     *
-     * @deprecated since 4.5. Use CoreQRScan.canScanQR instead.
-     */
-    canScanQR(): boolean {
-        return CoreQRScan.canScanQR();
-    }
-
-    /**
-     * Open a modal to scan a QR code.
-     *
-     * @param title Title of the modal. Defaults to "QR reader".
-     * @returns Promise resolved with the captured text or undefined if cancelled or error.
-     *
-     * @deprecated since 4.5. Use CoreQRScan.scanQR instead.
-     */
-    async scanQR(title?: string): Promise<string | undefined> {
-        return CoreQRScan.scanQR(title);
-    }
-
-    /**
-     * Start scanning for a QR code.
-     *
-     * @returns Promise resolved with the QR string, rejected if error or cancelled.
-     *
-     * @deprecated since 4.5. Use CoreQRScan.startScanQR instead.
-     */
-    async startScanQR(): Promise<string | undefined> {
-        return CoreQRScan.startScanQR();
-    }
-
-    /**
-     * Stop scanning for QR code. If no param is provided, the app will consider the user cancelled.
-     *
-     * @param data If success, the text of the QR code. If error, the error object or message. Undefined for cancelled.
-     * @param error True if the data belongs to an error, false otherwise.
-     *
-     * @deprecated since 4.5. Use CoreQRScan.stopScanQR instead.
-     */
-    stopScanQR(data?: string | Error, error?: boolean): void {
-        CoreQRScan.stopScanQR(data, error);
-    }
-
-    /**
      * Ignore errors from a promise.
      *
      * @param promise Promise to ignore errors.
@@ -810,51 +748,6 @@ export class CoreUtilsProvider {
         }
 
         return CorePromiseUtils.ignoreErrors(promise);
-    }
-
-    /**
-     * Wait some time.
-     *
-     * @param milliseconds Number of milliseconds to wait.
-     * @deprecated since 4.5. Use CoreWait.wait instead.
-     */
-    async wait(milliseconds: number): Promise<void> {
-        await CoreWait.wait(milliseconds);
-    }
-
-    /**
-     * Wait until a given condition is met.
-     *
-     * @param condition Condition.
-     * @returns Cancellable promise.
-     * @deprecated since 4.5. Use CoreWait.waitFor instead.
-     */
-    waitFor(condition: () => boolean): CoreCancellablePromise<void>;
-    waitFor(condition: () => boolean, options: CoreWaitOptions): CoreCancellablePromise<void>;
-    waitFor(condition: () => boolean, interval: number): CoreCancellablePromise<void>;
-    waitFor(condition: () => boolean, optionsOrInterval: CoreWaitOptions | number = {}): CoreCancellablePromise<void> {
-        const options = typeof optionsOrInterval === 'number' ? { interval: optionsOrInterval } : optionsOrInterval;
-
-        return CoreWait.waitFor(condition, options);
-    }
-
-    /**
-     * Wait until the next tick.
-     *
-     * @deprecated since 4.5. Use CoreWait.nextTick instead.
-     */
-    async nextTick(): Promise<void> {
-        await CoreWait.nextTick();
-    }
-
-    /**
-     * Wait until several next ticks.
-     *
-     * @param numTicks Number of ticks to wait.
-     * @deprecated since 4.5. Use CoreWait.nextTicks instead.
-     */
-    async nextTicks(numTicks = 0): Promise<void> {
-        await CoreWait.nextTicks(numTicks);
     }
 
     /**

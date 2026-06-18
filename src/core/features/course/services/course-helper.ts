@@ -353,7 +353,6 @@ export class CoreCourseHelperProvider {
             hasContent: true,
             summary: '',
             summaryformat: DEFAULT_TEXT_FORMAT,
-            modules: [],
             contents: [],
         };
     }
