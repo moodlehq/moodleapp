@@ -25,7 +25,7 @@ import { CoreSite } from '../classes/sites/site';
 import { CorePlatform } from '@services/platform';
 import { CoreLogger } from '@static/logger';
 import { CoreSites } from './sites';
-import { MoodleTranslateLoader } from '@classes/lang-loader';
+import { MoodleTranslateLoader, MoodleTranslateLoaderService } from '@services/lang-loader';
 import { firstValueFrom } from 'rxjs';
 import { CoreEvents } from '@static/events';
 
@@ -171,7 +171,7 @@ export class CoreLangProvider {
         // Create a promise to convert the observable into a promise.
         const promise = new Promise<TranslationObject>((resolve, reject): void => {
             CoreSubscriptions.once(
-                Translate.currentLoader.getTranslation(lang),
+                this.getTranslateLoader().getTranslation(lang),
                 (table) => resolve(table),
                 reject,
             );
@@ -217,9 +217,9 @@ export class CoreLangProvider {
             return this.getParentLanguage();
         }
 
-        const parentLang = await this.getMessage(MoodleTranslateLoader.PARENT_LANG_KEY, lang);
+        const parentLang = await this.getMessage(MoodleTranslateLoaderService.PARENT_LANG_KEY, lang);
 
-        if (parentLang && parentLang !== MoodleTranslateLoader.PARENT_LANG_KEY && parentLang !== lang) {
+        if (parentLang && parentLang !== MoodleTranslateLoaderService.PARENT_LANG_KEY && parentLang !== lang) {
             return parentLang;
         }
     }
@@ -532,8 +532,8 @@ export class CoreLangProvider {
      *
      * @returns The MoodleTranslateLoader instance.
      */
-    protected getTranslateLoader(): MoodleTranslateLoader {
-        return Translate.currentLoader as MoodleTranslateLoader;
+    protected getTranslateLoader(): MoodleTranslateLoaderService {
+        return MoodleTranslateLoader;
     }
 
     /**

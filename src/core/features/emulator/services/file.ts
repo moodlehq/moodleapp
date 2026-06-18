@@ -745,7 +745,7 @@ export class FileMock extends File {
 
         if (data instanceof ArrayBuffer) {
             // Convert to string.
-            data = String.fromCharCode.apply(null, new Uint8Array(data));
+            data = String.fromCharCode(...new Uint8Array(data));
         }
 
         return new Promise<void>((resolve, reject) => {

@@ -363,8 +363,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         refresh = false,
         isGuest = false,
     ): Promise<CoreCourseOptionsHandlerToDisplay[]> {
-        return this.getHandlersToDisplayInternal(false, course, refresh, isGuest) as
-            Promise<CoreCourseOptionsHandlerToDisplay[]>;
+        return this.getHandlersToDisplayInternal(false, course, refresh, isGuest);
     }
 
     /**
@@ -381,8 +380,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         refresh = false,
         isGuest = false,
     ): Promise<CoreCourseOptionsMenuHandlerToDisplay[]> {
-        return this.getHandlersToDisplayInternal(true, course, refresh, isGuest) as
-            Promise<CoreCourseOptionsMenuHandlerToDisplay[]>;
+        return this.getHandlersToDisplayInternal(true, course, refresh, isGuest);
     }
 
     /**
@@ -395,6 +393,18 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
      * @param isGuest Whether user is using an ACCESS_GUEST enrolment method.
      * @returns Promise resolved with array of handlers.
      */
+    protected getHandlersToDisplayInternal(
+        menu: true,
+        course: CoreCourseAnyCourseData,
+        refresh?: boolean,
+        isGuest?: boolean,
+    ): Promise<CoreCourseOptionsMenuHandlerToDisplay[]>;
+    protected getHandlersToDisplayInternal(
+        menu: false,
+        course: CoreCourseAnyCourseData,
+        refresh?: boolean,
+        isGuest?: boolean,
+    ): Promise<CoreCourseOptionsHandlerToDisplay[]>;
     protected async getHandlersToDisplayInternal(
         menu: boolean,
         course: CoreCourseAnyCourseData,
@@ -406,7 +416,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         const accessData = {
             type: isGuest ? CoreCourseAccessDataType.ACCESS_GUEST : CoreCourseAccessDataType.ACCESS_DEFAULT,
         };
-        const handlersToDisplay: CoreCourseOptionsHandlerToDisplay[] | CoreCourseOptionsMenuHandlerToDisplay[] = [];
+        const handlersToDisplay: (CoreCourseOptionsHandlerToDisplay | CoreCourseOptionsMenuHandlerToDisplay)[] = [];
 
         await this.loadCourseOptions(courseWithOptions, refresh);
 
@@ -421,7 +431,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
         const promises: Promise<void>[] = [];
 
-        const handlerList = menu
+        const handlerList: CoreCourseOptionsMenuHandler[] | CoreCourseOptionsHandler[] = menu
             ? this.coursesHandlers[course.id].enabledMenuHandlers
             : this.coursesHandlers[course.id].enabledHandlers;
 
@@ -436,7 +446,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
 
             promises.push(Promise.resolve(getFunction.call(handler, courseWithOptions)).then((data) => {
                 handlersToDisplay.push({
-                    data: data,
+                    data,
                     priority: handler.priority || 0,
                     prefetch: async (course) => await handler.prefetch?.(course),
                     name: handler.name,
@@ -451,10 +461,7 @@ export class CoreCourseOptionsDelegateService extends CoreDelegate<CoreCourseOpt
         await Promise.all(promises);
 
         // Sort them by priority.
-        handlersToDisplay.sort((
-            a: CoreCourseOptionsHandlerToDisplay | CoreCourseOptionsMenuHandlerToDisplay,
-            b: CoreCourseOptionsHandlerToDisplay | CoreCourseOptionsMenuHandlerToDisplay,
-        ) => (b.priority || 0) - (a.priority || 0));
+        handlersToDisplay.sort((a, b) => (b.priority || 0) - (a.priority || 0));
 
         return handlersToDisplay;
     }

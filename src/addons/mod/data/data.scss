@@ -1,4 +1,4 @@
-@use "theme/globals" as *;
+@use "src/theme/globals" as *;
 
 /// @prop - The padding for the grid column
 $grid-column-padding:        var(--ion-grid-column-padding, 5px) !default;
@@ -23,7 +23,7 @@ $grid-column-paddings: (
     padding: 16px;
 
     ::ng-deep {
-        @import "theme/components/bootstrap/bootstrap";
+        @import "src/theme/components/bootstrap/bootstrap";
 
         table {
             display: block;

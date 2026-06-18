@@ -28,6 +28,7 @@ polyfillEventComposedPath();
 
 /**
  * Polyfill Event.composedPath() if necessary.
+ * Chrome < 109
  *
  * @see https://github.com/ionic-team/stencil/issues/2681
  */
@@ -38,21 +39,25 @@ function polyfillEventComposedPath() {
         return;
     }
 
+    const composedPathCache = new WeakMap<Event, EventTarget[]>();
+
     Event.prototype.composedPath = function () {
-        if (this._composedPath) {
-            return this._composedPath;
+        const cached = composedPathCache.get(this);
+        if (cached) {
+            return cached;
         }
 
-        let node = this.target;
+        let node = this.target as Node | null;
+        const path: EventTarget[] = [];
 
-        for (this._composedPath = []; node.parentNode !== null;) {
-            this._composedPath.push(node);
-
-            node = node.parentNode;
+        for (; node !== null && (node as Node).parentNode !== null;) {
+            path.push(node);
+            node = (node as Node).parentNode;
         }
 
-        this._composedPath.push(document, window);
+        path.push(document, window);
+        composedPathCache.set(this, path);
 
-        return this._composedPath;
+        return path;
     };
 }

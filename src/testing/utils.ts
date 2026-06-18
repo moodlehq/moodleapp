@@ -36,13 +36,14 @@ import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator } from '@services/navigator';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { TranslatePipe } from '@ngx-translate/core';
+import { TranslatePipe, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DefaultUrlSerializer, UrlSerializer } from '@angular/router';
 import { Equal } from '@/core/utils/types';
-import { translateMock } from './stubs/translate.mock';
+import { translateMock, translateLoaderMock } from './stubs/translate.mock';
 import { CoreLang } from '@services/lang';
+import { MoodleTranslateLoader } from '@services/lang-loader';
 
 abstract class WrapperComponent<U> {
 
@@ -78,6 +79,7 @@ const DEFAULT_SERVICE_SINGLETON_MOCKS: [CoreSingletonProxy, unknown][] = [
     [CoreLoadings, mock({
         show: () => Promise.resolve(mock<CoreIonLoadingElement>({ dismiss: jest.fn() })),
     })],
+    [MoodleTranslateLoader, translateLoaderMock],
 ];
 
 /**
@@ -284,7 +286,14 @@ export function mock<Service>(
 ): Service {
     // If overrides is an object, apply them to the instance.
     if (!Array.isArray(overrides)) {
-        Object.assign(instance as Record<string, unknown>, overrides);
+        for (const [key, value] of Object.entries(overrides as Record<string, unknown>)) {
+            try {
+                (instance as Record<string, unknown>)[key] = value;
+            } catch {
+                // Property may be read-only (e.g. getter without setter); use defineProperty as fallback.
+                Object.defineProperty(instance, key, { get: () => value, configurable: true });
+            }
+        }
     }
 
     // Convert instance functions to jest functions.
@@ -342,6 +351,13 @@ export function resetTestingEnvironment(): void {
     testBedInitialized = false;
 
     TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+        providers: [
+            provideTranslateService({
+                loader: provideTranslateLoader(() => translateLoaderMock),
+            }),
+        ],
+    });
     TestBed.runInInjectionContext(() => {
         for (const [singleton, mockInstance] of DEFAULT_SERVICE_SINGLETON_MOCKS) {
             // Pass mockInstance as property overrides
@@ -394,9 +410,9 @@ export function getServiceInstance<Service = unknown>(
 
         return new constructor();
     } catch (error) {
-        // @todo Remove special case when TranslateLoader and Router issue is resolved.
+        // @todo Remove special case when Router issue is resolved.
         const errorMessage = (error as Error).message || '';
-        if (errorMessage.includes('TranslateLoader') || errorMessage.includes('_Console')) {
+        if (errorMessage.includes('_Console')) {
             return {};
         }
 
