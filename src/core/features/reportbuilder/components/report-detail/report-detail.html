@@ -1,22 +1,21 @@
-@let reportState = state();
-<core-loading [hideUntil]="reportState.loaded">
+<core-loading [hideUntil]="loaded()">
 
-    <ion-refresher slot="fixed" [disabled]="!reportState.loaded" (ionRefresh)="refreshReport($event.target)">
+    <ion-refresher slot="fixed" [disabled]="!loaded()" (ionRefresh)="refreshReport($event.target)">
         <ion-refresher-content pullingText="{{ 'core.pulltorefresh' | translate }}" />
     </ion-refresher>
-
-    @if (reportState.report && reportState.report?.data?.rows?.length && reportState.report?.data?.headers && reportState.report?.details) {
+    @let reportData = report();
+    @if (reportData && reportData?.data?.rows?.length && reportData?.data?.headers) {
 
         @if (isCardLayout()) {
-            @for (row of reportState.report.data.rows; track rowIndex; let rowIndex = $index) {
+            @for (row of reportData.data.rows; track rowIndex; let rowIndex = $index) {
                 <ion-card>
                     <ion-list class="ion-text-wrap">
                         @for (column of row.columns | slice:0:row.isExpanded ?
-                            row.columns.length : reportState.cardVisibleColumns; track columnIndex; let columnIndex = $index) {
+                            row.columns.length : cardVisibleColumns(); track columnIndex; let columnIndex = $index) {
                             <core-report-builder-report-column [columnIndex]="columnIndex" [rowIndex]="rowIndex"
-                                [isExpandable]="columnIndex === 0 && row.columns.length > reportState.cardVisibleColumns"
-                                [isExpanded]="row.isExpanded" [showFirstTitle]="reportState.cardviewShowFirstTitle" [source]="source()"
-                                [contextId]="reportState.report.details.contextid" [header]="reportState.report.data.headers[columnIndex]"
+                                [isExpandable]="columnIndex === 0 && row.columns.length > cardVisibleColumns()"
+                                [isExpanded]="row.isExpanded" [showFirstTitle]="cardviewShowFirstTitle()" [contextLevel]="contextLevel()"
+                                [contextInstanceId]="contextInstanceId()" [header]="reportData.data.headers[columnIndex]"
                                 [column]="column" (onToggleRow)="toggleRow(rowIndex)" />
                         }
                     </ion-list>
@@ -27,7 +26,7 @@
                 <table class="core-table">
                     <thead>
                         <tr>
-                            @for (header of reportState.report.data.headers; track $index) {
+                            @for (header of reportData.data.headers; track $index) {
                                 <th>
                                     {{ header }}
                                 </th>
@@ -35,13 +34,13 @@
                         </tr>
                     </thead>
                     <tbody class="auto-striped">
-                        @for (row of reportState.report.data.rows; track $index) {
+                        @for (row of reportData.data.rows; track $index) {
                             <tr>
                                 @for (column of row.columns; track $index) {
                                     <td>
                                         @if (isString(column)) {
-                                            <core-format-text [text]="column" [contextLevel]="source()"
-                                                [contextInstanceId]="reportState.report.details.contextid" />
+                                            <core-format-text [text]="column" [contextLevel]="contextLevel()"
+                                                [contextInstanceId]="contextInstanceId()" />
                                         } @else {
                                             {{ column }}
                                         }
@@ -64,9 +63,9 @@
 
     }
 
-    @if (!isBlock() && reportState.report?.data?.rows?.length && reportState.report?.data?.headers && reportState.report?.details) {
-        <core-infinite-loading [enabled]="reportState.canLoadMoreRows" (action)="fetchMoreInfo($event)"
-            [error]="reportState.errorLoadingRows" />
+    @if (!isBlock() && reportData?.data?.rows?.length && reportData?.data?.headers) {
+        <core-infinite-loading [enabled]="canLoadMoreRows()" (action)="fetchMoreInfo($event)"
+            [error]="errorLoadingRows()" />
     }
 
 </core-loading>

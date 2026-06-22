@@ -16,6 +16,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, computed, input, output } from '@angular/core';
 import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilder';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ContextLevel } from '@/core/constants';
 
 @Component({
     selector: 'core-report-builder-report-column',
@@ -33,9 +34,9 @@ export class CoreReportBuilderReportColumnComponent {
     readonly columnIndex = input.required<number>();
     readonly rowIndex = input.required<number>();
     readonly column = input.required<string | number>();
-    readonly contextId = input.required<number>();
     readonly header = input.required<string>();
-    readonly source = input.required<string>();
+    readonly contextLevel = input.required<ContextLevel>();
+    readonly contextInstanceId = input.required<number>();
     readonly onToggleRow = output<number>();
 
     readonly columnIsString = computed(() => CoreReportBuilder.isString(this.column()));
