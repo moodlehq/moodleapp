@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, signal } from '@angular/core';
-import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
+import { Component, linkedSignal, signal } from '@angular/core';
+import { CoreReportBuilderReportDetail, CoreReportBuilderSystemReportParams } from '@features/reportbuilder/services/reportbuilder';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -30,14 +30,21 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
 export default class CoreReportBuilderReportPage {
 
     readonly reportId = signal<number | undefined>(undefined);
+    readonly reportParams = signal<CoreReportBuilderSystemReportParams | undefined>(undefined);
     readonly reportDetail = signal<CoreReportBuilderReportDetail | undefined>(undefined);
+    readonly reportName = linkedSignal(() => this.reportDetail()?.name ?? this.reportParams()?.name);
 
     constructor() {
-        try {
-            this.reportId.set(CoreNavigator.getRequiredRouteParam('id'));
-        } catch {
+        const reportId = CoreNavigator.getRouteNumberParam('id');
+        if (reportId) {
+            this.reportId.set(reportId);
+        } else {
             // No id, it should be a system report.
+            const params = CoreNavigator.getRequiredRouteParam<CoreReportBuilderSystemReportParams>('params');
+
+            this.reportParams.set(params);
         }
+
     }
 
     /**

@@ -2424,6 +2424,7 @@
   "core.remove": "moodle",
   "core.removedownloadeddata": "local_moodlemobileapp",
   "core.removefiles": "local_moodlemobileapp",
+  "core.reportbuilder.errorreportview": "reportbuilder",
   "core.reportbuilder.filtersapplied": "local_moodlemobileapp",
   "core.reportbuilder.hidecolumns": "local_moodlemobileapp",
   "core.reportbuilder.modifiedby": "tool_reportbuilder",
