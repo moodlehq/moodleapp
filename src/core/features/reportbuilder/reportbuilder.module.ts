@@ -33,6 +33,10 @@ const routes: Routes = [
                 path: ':id',
                 loadComponent: () => import('@features/reportbuilder/pages/report/report'),
             },
+            {
+                path: 'system',
+                loadComponent: () => import('@features/reportbuilder/pages/report/report'),
+            },
         ],
     },
 ];
