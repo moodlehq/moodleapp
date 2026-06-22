@@ -14,18 +14,22 @@
 
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
-import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSites } from '@services/sites';
-import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';
+import {
+    CoreReportBuilderCanViewSystemReportWSParams,
+    CoreReportBuilderCanViewSystemReportWSResponse,
+    CoreReportBuilderReportWSResponse,
+    CoreReportBuilderRetrieveReportWSResponse,
+    CoreReportBuilderWS,
+} from './reportbuilder-ws';
+import { ContextLevel } from '@/core/constants';
 
 export const REPORTS_LIST_LIMIT = 20;
 export const REPORT_ROWS_LIMIT = 20;
 
 @Injectable({ providedIn: 'root' })
 export class CoreReportBuilderService {
-
-    protected static readonly ROOT_CACHE_KEY = 'mmaReportBuilder:';
 
     /**
      * Obtain the reports list.
@@ -35,13 +39,7 @@ export class CoreReportBuilderService {
      * @returns Reports list.
      */
     async getReports(page?: number, perpage?: number): Promise<CoreReportBuilderReport[]> {
-        const site = CoreSites.getRequiredCurrentSite();
-        const preSets: CoreSiteWSPreSets = { cacheKey: this.getReportBuilderCacheKey() };
-        const response = await site.read<CoreReportBuilderListReportsWSResponse>(
-            'core_reportbuilder_list_reports',
-            { page, perpage },
-            preSets,
-        );
+        const response = await CoreReportBuilderWS.getReports({ page, perpage });
 
         return response.reports;
     }
@@ -49,22 +47,16 @@ export class CoreReportBuilderService {
     /**
      * Get the detail of a report.
      *
-     * @param reportid Report id
+     * @param reportId Report id
      * @param page Current page.
      * @param perpage Rows obtained per page.
      * @returns Detail of the report.
      */
-    async loadReport(reportid: number, page?: number, perpage?: number): Promise<CoreReportBuilderRetrieveReportMapped> {
-        const site = CoreSites.getRequiredCurrentSite();
-        const preSets: CoreSiteWSPreSets = { cacheKey: this.getReportBuilderReportCacheKey() };
-        const report = await site.read<CoreReportBuilderRetrieveReportWSResponse>(
-            'core_reportbuilder_retrieve_report',
-            { reportid, page, perpage },
-            preSets,
-        );
+    async loadReport(reportId: number, page?: number, perpage?: number): Promise<CoreReportBuilderRetrieveReportMapped> {
+        const report = await CoreReportBuilderWS.retrieveReport(reportId, { page, perpage });
 
         if (!report) {
-            throw new CoreError('An error ocurred.');
+            throw new CoreError('An error occurred.');
         }
 
         const settingsData: {
@@ -95,13 +87,10 @@ export class CoreReportBuilderService {
     /**
      * View a report.
      *
-     * @param reportid Report viewed.
-     * @returns Response of the WS.
+     * @param reportId Report viewed.
      */
-    async viewReport(reportid: string): Promise<void> {
-        const site = CoreSites.getRequiredCurrentSite();
-
-        await site.write<CoreReportBuilderViewReportWSResponse>('core_reportbuilder_view_report', { reportid });
+    async viewReport(reportId: number): Promise<void> {
+        await CoreReportBuilderWS.viewReport(reportId);
     }
 
     /**
@@ -120,140 +109,97 @@ export class CoreReportBuilderService {
 
     /**
      * Invalidates reports list WS calls.
-     *
-     * @returns Promise resolved when the list is invalidated.
      */
     async invalidateReportsList(): Promise<void> {
-        const site = CoreSites.getRequiredCurrentSite();
-        await site.invalidateWsCacheForKey(this.getReportBuilderCacheKey());
+        await CoreReportBuilderWS.invalidateReportsList();
     }
 
     /**
      * Invalidates report WS calls.
-     *
-     * @returns Promise resolved when report is invalidated.
      */
     async invalidateReport(): Promise<void> {
-        const site = CoreSites.getCurrentSite();
-
-        if (!site) {
-            return;
-        }
-
-        await site.invalidateWsCacheForKey(this.getReportBuilderReportCacheKey());
+        await CoreReportBuilderWS.invalidateReport();
     }
 
     /**
-     * Get cache key for report builder list WS calls.
+     * Invalidates system report WS calls.
      *
-     * @returns Cache key.
+     * @param source Report source.
      */
-    protected getReportBuilderCacheKey(): string {
-        return `${CoreReportBuilderService.ROOT_CACHE_KEY}list`;
+    async invalidateSystemReport(source: string): Promise<void> {
+        await CoreReportBuilderWS.invalidateSystemReport(source);
     }
 
     /**
-     * Get cache key for report builder report WS calls.
+     * Invalidates can view system report WS calls.
      *
-     * @returns Cache key.
+     * @param source Report parameters.
      */
-    protected getReportBuilderReportCacheKey(): string {
-        return `${CoreReportBuilderService.ROOT_CACHE_KEY}report`;
+    async invalidateCanViewSystemReport(source: string): Promise<void> {
+        await CoreReportBuilderWS.invalidateCanViewSystemReport(source);
     }
 
     isString(value: unknown): boolean {
         return typeof value === 'string';
     }
 
+    /**
+     * Get the detail of a system report.
+     *
+     * @param reportParams Report parameters.
+     * @param page Current page.
+     * @param perpage Rows obtained per page.
+     * @returns Detail of the report.
+     */
+    async getSystemReport(
+        reportParams: CoreReportBuilderSystemReportParams,
+        page?: number,
+        perpage?: number,
+    ): Promise<CoreReportBuilderRetrieveReportMapped> {
+        const params: CoreReportBuilderCanViewSystemReportWSParams = {
+            source: reportParams.source,
+            component: reportParams.component,
+            area: reportParams.area,
+            itemid: reportParams.itemid,
+            parameters: reportParams.parameters,
+            context: reportParams.context ?? {
+                instanceid: 0,
+                contextlevel: ContextLevel.SYSTEM,
+            },
+        };
+
+        const report = await CoreReportBuilderWS.getSystemReport(params, { page, perpage });
+        if (!report) {
+            throw new CoreError('An error occurred.');
+        }
+
+        return {
+            ...report,
+            data: {
+                ...report.data,
+                rows: [...report.data.rows.map(row => ({ columns: row.columns, isExpanded: row.isExpanded ?? false }))],
+            },
+        };
+    }
+
+    /**
+     * Determine access to a system report.
+     *
+     * @param params Report parameters.
+     * @returns Whether the user can view the system report.
+     */
+    async canViewSystemReport(
+        params: CoreReportBuilderCanViewSystemReportWSParams,
+    ): Promise<CoreReportBuilderCanViewSystemReportWSResponse> {
+        return CoreReportBuilderWS.canViewSystemReport(params);
+    }
+
 }
 
 export const CoreReportBuilder = makeSingleton(CoreReportBuilderService);
 
-type CoreReportBuilderPagination = {
-    page?: number;
-    perpage?: number;
-};
-
-export type CoreReportBuilderRetrieveReportWSParams = CoreReportBuilderPagination & {
-    reportid: number; // Report ID.
-};
-
-/**
- * Data returned by core_reportbuilder_list_reports WS.
- */
-export type CoreReportBuilderListReportsWSResponse = {
-    reports: CoreReportBuilderReportWSResponse[];
-    warnings?: CoreWSExternalWarning[];
-};
-
-export type CoreReportBuilderReportWSResponse = {
-    name: string; // Name.
-    source: string; // Source.
-    type: number; // Type.
-    uniquerows: boolean; // Uniquerows.
-    conditiondata: string; // Conditiondata.
-    settingsdata: string | null; // Settingsdata.
-    contextid: number; // Contextid.
-    component: string; // Component.
-    area: string; // Area.
-    itemid: number; // Itemid.
-    usercreated: number; // Usercreated.
-    id: number; // Id.
-    timecreated: number; // Timecreated.
-    timemodified: number; // Timemodified.
-    usermodified: number; // Usermodified.
-    sourcename: string; // Sourcename.
-    modifiedby: {
-        id: number; // Id.
-        email: string; // Email.
-        idnumber: string; // Idnumber.
-        phone1: string; // Phone1.
-        phone2: string; // Phone2.
-        department: string; // Department.
-        institution: string; // Institution.
-        fullname: string; // Fullname.
-        identity: string; // Identity.
-        profileurl: string; // Profileurl.
-        profileimageurl: string; // Profileimageurl.
-        profileimageurlsmall: string; // Profileimageurlsmall.
-    };
-};
-
-/**
- * Data returned by core_reportbuilder_retrieve_report WS.
- */
-export type CoreReportBuilderRetrieveReportWSResponse = {
-    details: CoreReportBuilderReportWSResponse;
-    data: CoreReportBuilderReportDataWSResponse;
-    warnings?: CoreWSExternalWarning[];
-};
-
 export type CoreReportBuilderRetrieveReportMapped = Omit<CoreReportBuilderRetrieveReportWSResponse, 'details'> & {
-    details: CoreReportBuilderReportDetail;
-};
-
-export type CoreReportBuilderReportDataWSResponse = {
-    headers: string[]; // Headers.
-    rows: { // Rows.
-        columns: (string | number)[]; // Columns.
-        isExpanded: boolean;
-    }[];
-    totalrowcount: number; // Totalrowcount.
-};
-
-/**
- * Params of core_reportbuilder_view_report WS.
- */
-export type CoreReportBuilderViewReportWSParams = {
-    reportid: number; // Report ID.
-};
-
-/**
- * Data returned by core_reportbuilder_view_report WS.
- */
-export type CoreReportBuilderViewReportWSResponse = {
-    status: boolean; // Success.
-    warnings?: CoreWSExternalWarning[];
+    details?: CoreReportBuilderReportDetail;
 };
 
 export type CoreReportBuilderReportDetail = Omit<CoreReportBuilderReportWSResponse, 'settingsdata'> & {
@@ -266,3 +212,8 @@ export type CoreReportBuilderReportDetailSettingsData = {
 };
 
 export type CoreReportBuilderReport = CoreReportBuilderReportWSResponse;
+
+export type CoreReportBuilderSystemReportParams = Omit<Partial<CoreReportBuilderCanViewSystemReportWSParams>, 'source'> & {
+    source: string;
+    name: string;
+};

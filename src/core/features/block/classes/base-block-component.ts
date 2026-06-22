@@ -103,7 +103,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, Reloa
         try {
             await this.invalidateContent();
         } catch (ex) {
-            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            // An error occurred in the function, log the error and just resolve the promise so the workflow continues.
             this.logger.error(ex);
         }
 
@@ -125,7 +125,7 @@ export abstract class CoreBlockBaseComponent implements OnInit, OnChanges, Reloa
         try {
             await this.fetchContent();
         } catch (error) {
-            // An error ocurred in the function, log the error and just resolve the promise so the workflow continues.
+            // An error occurred in the function, log the error and just resolve the promise so the workflow continues.
             this.logger.error(error);
 
             // Error getting data, fail.

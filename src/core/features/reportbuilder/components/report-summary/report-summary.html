@@ -13,21 +13,44 @@
 </ion-header>
 
 <ion-content>
+    @let details = reportDetail();
     <div class="list-item-limited-width">
         <ion-item class="ion-text-wrap course-name">
             <ion-label>
                 <h1>
-                    <core-format-text [text]="reportDetail.name" contextLevel="report" [contextInstanceId]="reportDetail.id" />
+                    <core-format-text [text]="details.name" />
                 </h1>
             </ion-label>
         </ion-item>
 
-        <ion-item class="ion-text-wrap" [detail]="false" *ngFor="let item of reportDetailToDisplay">
+        <ion-item class="ion-text-wrap" [detail]="false">
             <ion-label>
-                <p>{{ item.title | translate }}</p>
-                <core-format-text [text]="item.text" contextLevel="report" [contextInstanceId]="reportDetail.id" />
+                <p class="item-heading">{{ 'core.reportbuilder.reportsource' | translate }}</p>
+                <p><core-format-text [text]="details.sourcename" /></p>
             </ion-label>
         </ion-item>
+
+        <ion-item class="ion-text-wrap" [detail]="false">
+            <ion-label>
+                <p class="item-heading">{{ 'core.reportbuilder.timecreated' | translate }}</p>
+                <p>{{ details.timecreated * 1000 | coreFormatDate }}</p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-text-wrap" [detail]="false">
+            <ion-label>
+                <p class="item-heading">{{ 'core.reportbuilder.timemodified' | translate }}</p>
+                <p>{{ details.timemodified * 1000 | coreFormatDate }}</p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="ion-text-wrap" [detail]="false">
+            <ion-label>
+                <p class="item-heading">{{ 'core.reportbuilder.modifiedby' | translate }}</p>
+                <p><core-format-text [text]="details.modifiedby.fullname" /></p>
+            </ion-label>
+        </ion-item>
+
     </div>
 </ion-content>
 
@@ -36,7 +59,7 @@
         <ion-label>
             <p>
                 <ion-icon name="fas-circle-info" aria-hidden="true" />
-                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl }" [filter]="false"
+                <core-format-text [text]="'core.reportbuilder.filtersapplied' | translate: { $a: reportUrl() }" [filter]="false"
                     [captureLinks]="false" />
             </p>
         </ion-label>
