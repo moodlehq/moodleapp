@@ -13,9 +13,8 @@
 // limitations under the License.
 
 import { CoreSharedModule } from '@/core/shared.module';
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
-import { CoreFormatDatePipe } from '@pipes/format-date';
 import { CoreSites } from '@services/sites';
 import { ModalController } from '@singletons';
 
@@ -28,38 +27,15 @@ import { ModalController } from '@singletons';
         CoreSharedModule,
     ],
 })
-export class CoreReportBuilderReportSummaryComponent implements OnInit {
+export class CoreReportBuilderReportSummaryComponent {
 
-    @Input({ required: true }) reportDetail!: CoreReportBuilderReportDetail;
-    reportUrl!: string;
-    reportDetailToDisplay!: { title: string; text: string }[];
+    readonly reportDetail = input.required<CoreReportBuilderReportDetail>();
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        const formatDate = new CoreFormatDatePipe();
+    readonly reportUrl = computed(() => {
         const site = CoreSites.getRequiredCurrentSite();
-        this.reportUrl = `${site.getURL()}/reportbuilder/view.php?id=${this.reportDetail.id}`;
-        this.reportDetailToDisplay = [
-            {
-                title: 'core.reportbuilder.reportsource',
-                text: this.reportDetail.sourcename,
-            },
-            {
-                title: 'core.reportbuilder.timecreated',
-                text: formatDate.transform(this.reportDetail.timecreated * 1000),
-            },
-            {
-                title: 'addon.mod_data.timemodified',
-                text: formatDate.transform(this.reportDetail.timemodified * 1000),
-            },
-            {
-                title: 'core.reportbuilder.modifiedby',
-                text: this.reportDetail.modifiedby.fullname,
-            },
-        ];
-    }
+
+        return `${site.getURL()}/reportbuilder/view.php?id=${this.reportDetail().id}`;
+    });
 
     /**
      * Close the modal.
