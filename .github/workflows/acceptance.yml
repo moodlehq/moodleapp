@@ -91,12 +91,12 @@ jobs:
               run: touch logs.txt
 
             - name: Upload build logs
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v7
               with:
                   name: build
                   path: logs.txt
 
-            - uses: actions/cache/save@v4
+            - uses: actions/cache/save@v5
               with:
                   key: build-${{ github.sha }}
                   path: |
@@ -108,8 +108,6 @@ jobs:
     behat:
         runs-on: ubuntu-latest
         needs: build
-        continue-on-error: true
-
         strategy:
             matrix:
                 tags: ${{ fromJSON(needs.build.outputs.tags) }}
@@ -237,11 +235,11 @@ jobs:
     complete:
         runs-on: ubuntu-latest
         needs: behat
+        if: always()
 
         steps:
-            - uses: technote-space/workflow-conclusion-action@v3
             - name: Check job status and fail if they are red
-              if: env.WORKFLOW_CONCLUSION == 'failure'
+              if: ${{ needs.behat.result == 'failure' }}
               run: |
                   echo "There were some failures in the previous jobs"
                   echo "### ❌ There were some failures in the previous jobs" >> $GITHUB_STEP_SUMMARY
