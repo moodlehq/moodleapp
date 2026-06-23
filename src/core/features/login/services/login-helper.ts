@@ -395,6 +395,24 @@ export class CoreLoginHelperProvider {
     }
 
     /**
+     * Check if the app is configured to have a list of allowed sites.
+     *
+     * @returns Whether the app has a site allowlist.
+     */
+    async hasSiteAllowlist(): Promise<boolean> {
+        if (
+            CoreConstants.CONFIG.multisitesdisplay === CoreLoginSiteSelectorListMethod.SITE_FINDER &&
+            CoreConstants.CONFIG.onlyallowlistedsites
+        ) {
+            return true;
+        }
+
+        const sites = await this.getAvailableSites();
+
+        return sites.length > 0;
+    }
+
+    /**
      * Check if SSO login should use an embedded browser.
      *
      * @param code Code to check.
