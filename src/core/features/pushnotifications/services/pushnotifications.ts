@@ -120,6 +120,8 @@ export class CorePushNotificationsProvider {
             this.initializeDefaultChannel(),
         ]);
 
+        CoreSites.registerDeleteTokensListener(() => this.deletePendingUnregistersFromOtherSites());
+
         // Now register the device to receive push notifications. Don't block for this.
         this.registerDevice();
 
@@ -811,6 +813,25 @@ export class CorePushNotificationsProvider {
 
             await this.unregisterDeviceOnMoodle(tmpSite);
         }));
+    }
+
+    /**
+     * Delete pending unregisters from sites that don't match current site URL.
+     */
+    async deletePendingUnregistersFromOtherSites(): Promise<void> {
+        const currentSite = CoreSites.getCurrentSite();
+        if (!currentSite) {
+            return;
+        }
+
+        const pendingUnregisters = await this.pendingUnregistersTable.getMany();
+        const pendingUnregistersToDelete = pendingUnregisters.filter(
+            pendingUnregister => currentSite.getURL() !== pendingUnregister.siteurl,
+        );
+
+        await CorePromiseUtils.allPromisesIgnoringErrors(
+            pendingUnregistersToDelete.map(pendingUnregister => this.removePendingUnregister(pendingUnregister.siteid)),
+        );
     }
 
     /**

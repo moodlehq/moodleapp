@@ -375,6 +375,8 @@ export class CoreSitePluginsInitService {
      * @param plugins The plugins to load.
      */
     protected async loadSitePlugins(plugins: CoreSitePluginsPlugin[]): Promise<void> {
+        await CoreSites.deleteTokensFromOtherSites();
+
         this.courseRestrictHandlers = {};
 
         await CorePromiseUtils.allPromises(plugins.map(async (plugin) => {
