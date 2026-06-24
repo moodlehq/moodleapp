@@ -89,7 +89,7 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreCanceledError();
         }
 
-        if (result.name == 'File') {
+        if (result.name === 'File') {
             // In some Android 4.4 devices the file name cannot be retrieved. Try to use the one from the URI.
             result.name = this.getChosenFileNameFromPath(result) || result.name;
         }
@@ -127,7 +127,7 @@ export class CoreFileUploaderHelperProvider {
         wifiThreshold?: number,
         limitedThreshold?: number,
     ): Promise<void> {
-        if (size == 0) {
+        if (size === 0) {
             return;
         }
 
@@ -521,7 +521,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         if (typeof error === 'string') {
-            if (error.toLowerCase().indexOf('no image selected') > -1) {
+            if (error.toLowerCase().includes('no image selected')) {
                 // User cancelled.
                 return new CoreCanceledError();
             }
@@ -574,7 +574,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // Make sure the path has the protocol. In iOS it doesn't.
-        if (CorePlatform.isMobile() && path.indexOf('file://') == -1) {
+        if (CorePlatform.isMobile() && !path.includes('file://')) {
             path = `file://${path}`;
         }
 
@@ -657,9 +657,9 @@ export class CoreFileUploaderHelperProvider {
                 options.mediaType = Camera.MediaType.ALLMEDIA;
             }
         } else if (mimetypes) {
-            if (mimetypes.indexOf('image/jpeg') > -1) {
+            if (mimetypes.includes('image/jpeg')) {
                 options.encodingType = Camera.EncodingType.JPEG;
-            } else if (mimetypes.indexOf('image/png') > -1) {
+            } else if (mimetypes.includes('image/png')) {
                 options.encodingType = Camera.EncodingType.PNG;
             }
         }

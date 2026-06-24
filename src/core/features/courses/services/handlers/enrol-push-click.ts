@@ -39,8 +39,8 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
      * @returns Whether the notification click is handled by this handler
      */
     async handles(notification: CorePushNotificationsNotificationBasicData): Promise<boolean> {
-        return CoreUtils.isTrueOrOne(notification.notif) && notification.moodlecomponent?.indexOf('enrol_') === 0 &&
-            notification.name == 'expiry_notification';
+        return CoreUtils.isTrueOrOne(notification.notif) && !!notification.moodlecomponent?.startsWith('enrol_') &&
+            notification.name === 'expiry_notification';
     }
 
     /**
@@ -62,7 +62,7 @@ export class CoreCoursesEnrolPushClickHandlerService implements CorePushNotifica
             };
             let page = `course/${courseId}`;
 
-            if (notification.contexturl?.indexOf('user/index.php') != -1) {
+            if (notification.contexturl?.includes('user/index.php')) {
                 // Open the participants tab.
                 params.selectedTab = 'participants'; // @todo Set this when participants is done.
             } else if (!result.enrolled) {

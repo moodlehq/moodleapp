@@ -172,7 +172,7 @@ export class CoreOpener {
             CoreOpener.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
             CoreOpener.logger.error('Error: ', JSON.stringify(error));
 
-            if (!extension || extension.indexOf('/') > -1 || extension.indexOf('\\') > -1) {
+            if (!extension || extension.includes('/') || extension.includes('\\')) {
                 // Extension not found.
                 throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }
@@ -310,7 +310,7 @@ export class CoreOpener {
         options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.
         options.allowInlineMediaPlayback = options.allowInlineMediaPlayback ?? 'yes'; // Allow playing inline videos in iOS.
 
-        if (!options.location && CorePlatform.isIOS() && url.indexOf('file://') === 0) {
+        if (!options.location && CorePlatform.isIOS() && url.startsWith('file://')) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             options.location = 'no';

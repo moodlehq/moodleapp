@@ -62,7 +62,7 @@ export class AddonCalendarHelperProvider {
      * @returns Event icon.
      */
     getEventIcon(eventType: AddonCalendarEventType | string): string {
-        if (this.eventTypeIcons.length == 0) {
+        if (this.eventTypeIcons.length === 0) {
             CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
                 const value = AddonCalendarEventType[name];
                 this.eventTypeIcons[value] = AddonCalendarEventIcons[name];
@@ -450,8 +450,8 @@ export class AddonCalendarHelperProvider {
                 events: [],
                 hasevents: false,
                 mday: date.date(),
-                isweekend: date.day() == 0 || date.day() == 6,
-                istoday: isCurrentMonth && today.date() == date.date(),
+                isweekend: date.day() === 0 || date.day() === 6,
+                istoday: isCurrentMonth && today.date() === date.date(),
                 calendareventtypes: [],
                 // Added to match the type. And possibly unused.
                 popovertitle: '',
@@ -774,7 +774,7 @@ export class AddonCalendarHelperProvider {
      */
     sortEvents(events: (AddonCalendarEventToDisplay)[]): (AddonCalendarEventToDisplay)[] {
         return events.sort((a, b) => {
-            if (a.timestart == b.timestart) {
+            if (a.timestart === b.timestart) {
                 return a.timeduration - b.timeduration;
             }
 

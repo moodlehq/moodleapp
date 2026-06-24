@@ -65,7 +65,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
     isEmptyForEdit(assign: AddonModAssignAssign): boolean {
         const currentFiles = CoreFileSession.getFiles(ADDON_MOD_ASSIGN_COMPONENT_LEGACY, assign.id);
 
-        return currentFiles.length == 0;
+        return currentFiles.length === 0;
      }
 
     /**
@@ -270,7 +270,7 @@ export class AddonModAssignSubmissionFileHandlerService implements AddonModAssig
 
         const files = await this.getSubmissionFilesToSync(assign, submission, offlineData, siteId);
 
-        if (files.length == 0) {
+        if (files.length === 0) {
             return;
         }
 

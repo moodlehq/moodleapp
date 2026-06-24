@@ -32,7 +32,7 @@ import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@featu
 /**
  * Service that provides some features for IMSCP.
  */
-@Injectable( { providedIn: 'root' })
+@Injectable({ providedIn: 'root' })
 export class AddonModImscpProvider {
 
     protected static readonly ROOT_CACHE_KEY = 'mmaModImscp:';
@@ -78,7 +78,7 @@ export class AddonModImscpProvider {
      * @returns True if we should ommit the file.
      */
     protected checkSpecialFiles(fileName: string): boolean {
-        return fileName == 'imsmanifest.xml';
+        return fileName === 'imsmanifest.xml';
     }
 
     /**
@@ -128,7 +128,7 @@ export class AddonModImscpProvider {
      */
     protected getFileUrlFromContents(items: CoreCourseModuleContentFile[], targetFilePath: string): string | undefined {
         const item = items.find((item) => {
-            if (item.type != 'file') {
+            if (item.type !== 'file') {
                 return false;
             }
 

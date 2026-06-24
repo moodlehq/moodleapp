@@ -159,7 +159,7 @@ export class CoreFilterProvider {
             classified[context.contextlevel][context.instanceid] = [];
         });
 
-        if (contexts.length == 1 && !hadSystemContext) {
+        if (contexts.length === 1 && !hadSystemContext) {
             // Only 1 context, no need to iterate over the filters.
             classified[contexts[0].contextlevel][contexts[0].instanceid] = filters;
 

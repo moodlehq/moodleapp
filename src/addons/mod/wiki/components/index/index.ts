@@ -140,7 +140,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         try {
             await this.loadContent(false, true);
         } finally {
-            if (this.action == 'map') {
+            if (this.action === 'map') {
                 this.openMap();
             }
         }
@@ -202,14 +202,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         // This is an offline page. Check if the page was created.
-        const page = data.created.find((page) => page.title == this.pageTitle);
+        const page = data.created.find((page) => page.title === this.pageTitle);
         if (page) {
             // Page was created, set the ID so it's retrieved from server.
             this.currentPage = page.pageId;
             this.pageIsOffline = false;
         } else {
             // Page not found in created list, check if it was discarded.
-            const page = data.discarded.find((page) => page.title == this.pageTitle);
+            const page = data.discarded.find((page) => page.title === this.pageTitle);
             if (page) {
                 // Page discarded, show warning.
                 this.pageWarning = page.warning;
@@ -394,7 +394,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
         }
 
         this.subwikiPages = AddonModWiki.sortPagesByTitle(
-            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]> onlinePages).concat(dbPages),
+            (<(AddonModWikiSubwikiPage | AddonModWikiPageDBRecord)[]>onlinePages).concat(dbPages),
         );
 
         return this.subwikiPages;
@@ -845,7 +845,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
 
         const sameSubwiki = this.currentSubwiki &&
             ((this.currentSubwiki.id > 0 && this.currentSubwiki.id === editedPageData.subwikiId) ||
-            (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
+                (this.currentSubwiki.userid === editedPageData.userId && this.currentSubwiki.groupid === editedPageData.groupId));
 
         if (sameSubwiki && editedPageData.pageTitle === this.pageTitle) {
             this.showLoadingAndRefresh(true, false);
@@ -862,7 +862,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             groupId: editedPageData.groupId,
         });
 
-        if (editedPageData.pageId && (!this.pageContent || this.pageContent.indexOf('/mod/wiki/create.php') != -1)) {
+        if (editedPageData.pageId && (!this.pageContent || this.pageContent.includes('/mod/wiki/create.php'))) {
             // Refresh current page anyway because the new page could have been created using the create link.
             this.showLoadingAndRefresh(true, false);
         }
@@ -899,8 +899,8 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModWikiAutoSyncData): boolean {
         if (this.currentSubwiki && syncEventData.subwikiId == this.currentSubwiki.id &&
-                syncEventData.wikiId == this.currentSubwiki.wikiid && syncEventData.userId == this.currentSubwiki.userid &&
-                syncEventData.groupId == this.currentSubwiki.groupid) {
+            syncEventData.wikiId == this.currentSubwiki.wikiid && syncEventData.userId == this.currentSubwiki.userid &&
+            syncEventData.groupId == this.currentSubwiki.groupid) {
 
             if (this.isCurrentView && syncEventData.warnings && syncEventData.warnings.length) {
                 // Show warnings.

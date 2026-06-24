@@ -342,7 +342,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 throw error;
             }
 
-            for (let attempt = lastSuccessful; offlineAttempts.indexOf(attempt) != -1; attempt++) {
+            for (let attempt = lastSuccessful; offlineAttempts.includes(attempt); attempt++) {
                 // Move it back.
                 await AddonModScormOffline.changeAttemptNumber(scormId, attempt + newAttempts.length, attempt, siteId);
             }
@@ -375,7 +375,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             // Let's try to get cached data about the attempt.
             userData = await CorePromiseUtils.ignoreErrors(
                 AddonModScorm.getScormUserData(scormId, attempt, { cmId, siteId }),
-                <AddonModScormUserDataMap> {},
+                <AddonModScormUserDataMap>{},
             );
 
             // We need to add the synced data to the snapshot.
@@ -414,7 +414,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             const snapshotSco = snapshot[scoId];
 
             for (const element in siteSco.userdata) {
-                if (element.indexOf('.') > -1) {
+                if (element.includes('.')) {
                     if (!snapshotSco || siteSco.userdata[element] !== snapshotSco.userdata[element]) {
                         return false;
                     }
@@ -428,7 +428,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
             const snapshotSco = snapshot[scoId];
 
             for (const element in snapshotSco.userdata) {
-                if (element.indexOf('.') > -1) {
+                if (element.includes('.')) {
                     if (!siteSco || siteSco.userdata[element] !== snapshotSco.userdata[element]) {
                         return false;
                     }
@@ -512,7 +512,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
 
         // Get data to send (only elements with dots like cmi.core.exit, in Mobile we store more data to make offline work).
         tracks.forEach((track) => {
-            if (track.element.indexOf('.') > -1) {
+            if (track.element.includes('.')) {
                 if (!scos[track.scoid]) {
                     scos[track.scoid] = [];
                 }
@@ -634,7 +634,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         // Check if there are collisions between offline and online attempts (same number).
         attemptsData.online.forEach((attempt) => {
             lastOnline = Math.max(lastOnline, attempt);
-            if (attemptsData.offline.indexOf(attempt) > -1) {
+            if (attemptsData.offline.includes(attempt)) {
                 collisions.push(attempt);
             }
         });
@@ -680,7 +680,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
         // Get only the attempt number.
         const attempts = entries.map((entry) => entry.attempt);
 
-        if (incomplete && attempts.indexOf(lastOnline) > -1) {
+        if (incomplete && attempts.includes(lastOnline)) {
             // Last online was incomplete, but it was continued in offline.
             incomplete = false;
         }
@@ -761,8 +761,7 @@ export class AddonModScormSyncProvider extends CoreCourseActivitySyncBaseProvide
                 const tracks = await AddonModScormOffline.getScormStoredData(scormId, attempt, true, false, siteId);
 
                 // Check if there are elements to sync.
-                const hasDataToSend = tracks.find(track => track.element.indexOf('.') > -1);
-
+                const hasDataToSend = tracks.some(track => track.element.includes('.'));
                 if (!hasDataToSend) {
                     // Nothing to sync, delete the attempt.
                     return CorePromiseUtils.ignoreErrors(AddonModScormOffline.deleteAttempt(scormId, attempt, siteId));

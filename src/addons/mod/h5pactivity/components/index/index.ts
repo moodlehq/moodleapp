@@ -193,7 +193,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         this.trackComponent = this.h5pActivity.enabletracking && this.accessInfo?.cansubmit ?
             ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT : '';
         this.canViewAllAttempts = !!this.h5pActivity.enabletracking && !!this.accessInfo?.canreviewattempts &&
-                AddonModH5PActivity.canGetUsersAttemptsInSite();
+            AddonModH5PActivity.canGetUsersAttemptsInSite();
 
         if (this.h5pActivity.package && this.h5pActivity.package[0]) {
             // The online player should use the original file, not the trusted one.
@@ -474,7 +474,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
                         this.progressMessage = data.message;
                     } else if (data.loaded !== undefined) {
                         // Downloading or unzipping.
-                        const totalSize = this.progressMessage == 'core.downloading' ? deployedFile.filesize : data.total;
+                        const totalSize = this.progressMessage === 'core.downloading' ? deployedFile.filesize : data.total;
 
                         if (totalSize !== undefined) {
                             const percentageNumber = (Number(data.loaded / totalSize) * 100);

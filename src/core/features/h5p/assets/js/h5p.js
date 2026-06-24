@@ -184,9 +184,9 @@ H5P.init = function (target) {
       if (useFakeFullScreen) {
         // Register message listener to enter fullscreen.
         window.addEventListener('message', function receiveMessage(event) {
-          if (event.data == 'enterFullScreen') {
+          if (event.data === 'enterFullScreen') {
             H5P.fullScreen($container, instance);
-          } else if (event.data == 'exitFullScreen') {
+          } else if (event.data === 'exitFullScreen') {
             H5P.exitFullScreen();
           }
         }, false);

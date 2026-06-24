@@ -42,8 +42,8 @@ export class AddonModLessonPushClickHandlerService implements CorePushNotificati
     async handles(notification: NotificationData): Promise<boolean> {
         if (
             CoreUtils.isTrueOrOne(notification.notif) &&
-            notification.moodlecomponent == 'mod_lesson' &&
-            notification.name == 'graded_essay' &&
+            notification.moodlecomponent === 'mod_lesson' &&
+            notification.name === 'graded_essay' &&
             notification.customdata?.cmid
         ) {
 

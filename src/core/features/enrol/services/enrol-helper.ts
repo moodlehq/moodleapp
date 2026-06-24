@@ -61,7 +61,7 @@ export class CoreEnrolHelperService {
             });
         }
 
-        if (enrolmentIcons.length == 0) {
+        if (enrolmentIcons.length === 0) {
             enrolmentIcons.push({
                 className: 'enrol_locked',
                 label: 'core.courses.notenrollable',

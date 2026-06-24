@@ -284,10 +284,10 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
         if (question.parsedSettings) {
             question.allowsAttachments = question.parsedSettings.attachments != '0';
-            question.allowsAnswerFiles = question.parsedSettings.responseformat == 'editorfilepicker';
-            question.isMonospaced = question.parsedSettings.responseformat == 'monospaced';
-            question.isPlainText = question.isMonospaced || question.parsedSettings.responseformat == 'plain';
-            question.hasInlineText = question.parsedSettings.responseformat != 'noinline';
+            question.allowsAnswerFiles = question.parsedSettings.responseformat === 'editorfilepicker';
+            question.isMonospaced = question.parsedSettings.responseformat === 'monospaced';
+            question.isPlainText = question.isMonospaced || question.parsedSettings.responseformat === 'plain';
+            question.hasInlineText = question.parsedSettings.responseformat !== 'noinline';
         } else {
             question.allowsAttachments = !!questionEl.querySelector('div[id*=filemanager]');
             question.allowsAnswerFiles = !!answerDraftIdInput;
@@ -588,13 +588,13 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
             };
 
             // Check if answer is correct.
-            if (columns[1].className.indexOf('partiallycorrect') >= 0) {
+            if (columns[1].className.includes('partiallycorrect')) {
                 rowModel.correctClass = 'partiallycorrect';
                 rowModel.correctColor = CoreIonicColorNames.WARNING;
-            } else if (columns[1].className.indexOf('incorrect') >= 0) {
+            } else if (columns[1].className.includes('incorrect')) {
                 rowModel.correctClass = 'incorrect';
                 rowModel.correctColor = CoreIonicColorNames.DANGER;
-            } else if (columns[1].className.indexOf('correct') >= 0) {
+            } else if (columns[1].className.includes('correct')) {
                 rowModel.correctClass = 'correct';
                 rowModel.correctColor = CoreIonicColorNames.SUCCESS;
             }
@@ -714,13 +714,13 @@ export class CoreQuestionBaseComponent<T extends AddonModQuizQuestion = AddonMod
 
                 if (parent) {
                     // Check if answer is correct.
-                    if (parent.className.indexOf('partiallycorrect') >= 0) {
+                    if (parent.className.includes('partiallycorrect')) {
                         option.correctClass = 'partiallycorrect';
                         option.correctColor = CoreIonicColorNames.WARNING;
-                    } else if (parent.className.indexOf('incorrect') >= 0) {
+                    } else if (parent.className.includes('incorrect')) {
                         option.correctClass = 'incorrect';
                         option.correctColor = CoreIonicColorNames.DANGER;
-                    } else if (parent.className.indexOf('correct') >= 0) {
+                    } else if (parent.className.includes('correct')) {
                         option.correctClass = 'correct';
                         option.correctColor = CoreIonicColorNames.SUCCESS;
                     }

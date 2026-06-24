@@ -75,7 +75,7 @@ export class AddonModDataShowLinkHandlerLazyService extends AddonModDataShowLink
             return false;
         }
 
-        if ((!params.mode || params.mode != 'single') && params.rid === undefined) {
+        if ((!params.mode || params.mode !== 'single') && params.rid === undefined) {
             return false;
         }
 
