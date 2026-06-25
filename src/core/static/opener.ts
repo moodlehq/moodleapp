@@ -305,26 +305,29 @@ export class CoreOpener {
      * @returns The opened window.
      */
     static openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): InAppBrowserObject {
-        options = options || {};
-        options.usewkwebview = 'yes'; // Force WKWebView in iOS.
-        options.enableViewPortScale = options.enableViewPortScale ?? 'yes'; // Enable zoom on iOS by default.
-        options.allowInlineMediaPlayback = options.allowInlineMediaPlayback ?? 'yes'; // Allow playing inline videos in iOS.
+        const { originalUrl, ...otherOptions } = options || {};
+        const iabOptions: InAppBrowserOptions = {
+            ...otherOptions,
+            usewkwebview: 'yes', // Force WKWebView in iOS.
+            enableViewPortScale: otherOptions?.enableViewPortScale ?? 'yes', // Enable zoom on iOS by default.
+            allowInlineMediaPlayback: options?.allowInlineMediaPlayback ?? 'yes', // Allow playing inline videos in iOS.
+            toolbartranslucent: options?.toolbartranslucent ?? 'no', // Make toolbar opaque in iOS by default.
+            ...CoreOpener.calculateInAppBrowserToolbarColors(options || {}),
+        };
 
-        if (!options.location && CorePlatform.isIOS() && url.indexOf('file://') === 0) {
+        if (!iabOptions.location && CorePlatform.isIOS() && url.indexOf('file://') === 0) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
-            options.location = 'no';
+            iabOptions.location = 'no';
         }
-
-        CoreOpener.setInAppBrowserToolbarColors(options);
 
         if (CoreSites.getCurrentSite()?.containsUrl(url)) {
             url = CoreUrl.addParamsToUrl(url, { lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) }, {
-                checkAutoLoginUrl: options.originalUrl !== url,
+                checkAutoLoginUrl: originalUrl !== url,
             });
         }
 
-        CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', options);
+        CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', iabOptions);
 
         const loadStartUrls: string[] = [];
 
@@ -366,53 +369,51 @@ export class CoreOpener {
 
         CoreAnalytics.logEvent({
             type: CoreAnalyticsEventType.OPEN_LINK,
-            link: CoreUrl.unfixPluginfileURL(options.originalUrl ?? url),
+            link: CoreUrl.unfixPluginfileURL(originalUrl ?? url),
         });
 
         return CoreOpener.iabInstance;
     }
 
     /**
-     * Given some IAB options, set the toolbar colors properties to the right values.
+     * Given some IAB options, calculate the right toolbar colors properties.
      *
-     * @param options Options to change.
-     * @returns Changed options.
+     * @param options Original options.
+     * @returns Calculated options.
      */
-    protected static setInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
-        if (options.toolbarcolor) {
-            // Color already set.
-            return options;
-        }
-
-        // Color not set. Check if it needs to be changed automatically.
-        let bgColor: string | undefined;
+    protected static calculateInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
+        let bgColor = options.toolbarcolor;
         let textColor: string | undefined;
-
-        if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
-            bgColor = CoreColors.getToolbarBackgroundColor();
-        } else if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
-            bgColor = CoreConstants.CONFIG.iabToolbarColors.background;
-            textColor = CoreConstants.CONFIG.iabToolbarColors.text;
-        }
+        let locationTextColor: string | undefined;
 
         if (!bgColor) {
-            // Use default color. In iOS, use black background color since the default is transparent and doesn't look good.
-            options.locationcolor = '#000000';
-
-            return options;
+            if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
+                bgColor = CoreColors.getToolbarBackgroundColor();
+            } else if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
+                bgColor = CoreConstants.CONFIG.iabToolbarColors.background;
+                textColor = CoreConstants.CONFIG.iabToolbarColors.text;
+            } else {
+                // Android default color is light gray, in iOS default color was black but now it's transparent. Use black instead.
+                bgColor = CorePlatform.isAndroid() ? '#CCCCCC' : '#000000';
+            }
         }
 
         if (!textColor) {
             textColor = CoreColors.isWhiteContrastingBetter(bgColor) ? '#ffffff' : '#000000';
         }
+        if (!options.locationtextcolor) {
+            locationTextColor = options.locationcolor ?
+                CoreColors.isWhiteContrastingBetter(options.locationcolor) ? '#ffffff' : '#000000' :
+                textColor;
+        }
 
-        options.toolbarcolor = bgColor;
-        options.closebuttoncolor = textColor;
-        options.navigationbuttoncolor = textColor;
-        options.locationcolor = bgColor;
-        options.locationtextcolor = textColor;
-
-        return options;
+        return {
+            toolbarcolor: bgColor,
+            closebuttoncolor: options.closebuttoncolor || textColor,
+            navigationbuttoncolor: options.navigationbuttoncolor || textColor,
+            locationcolor: options.locationcolor || bgColor,
+            locationtextcolor: options.locationtextcolor || locationTextColor,
+        };
     }
 
 }
