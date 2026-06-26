@@ -26,6 +26,7 @@ enum CoreNetworkConnection {
     CELL_2G = '2g',
     CELL_3G = '3g',
     CELL_4G = '4g',
+    CELL_5G = '5g',
     CELL = 'cellular',
     NONE = 'none',
 }
@@ -206,6 +207,7 @@ export class CoreNetworkService extends Network {
                 case CoreNetworkConnection.CELL_2G:
                 case CoreNetworkConnection.CELL_3G:
                 case CoreNetworkConnection.CELL_4G:
+                case CoreNetworkConnection.CELL_5G:
                     this._connectionType.set(CoreNetworkConnectionType.CELL);
 
                     return;
