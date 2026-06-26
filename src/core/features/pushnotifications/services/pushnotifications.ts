@@ -59,6 +59,7 @@ import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/consta
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNative } from '@features/native/services/native';
+import { AndroidNotificationPriority } from '@features/native/constants';
 
 /**
  * Service to handle push notifications.
@@ -277,7 +278,7 @@ export class CorePushNotificationsProvider {
             await Push.createChannel({
                 id: 'PushPluginChannel',
                 description: Translate.instant('core.misc'),
-                importance: 4,
+                importance: AndroidNotificationPriority.HIGH,
             });
         } catch (error) {
             this.logger.error('Error changing push channel name', error);

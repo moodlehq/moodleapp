@@ -79,6 +79,7 @@
         <config-file parent="/*" target="AndroidManifest.xml">
             <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
             <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+            <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
         </config-file>
     </platform>
     <platform name="ios">
