@@ -5577,7 +5577,7 @@
     "url": "http://blog.izs.me/",
     "licenseFile": "LICENSE"
   },
-  "moodlemobile@5.2.0": {
+  "moodlemobile@5.2.1": {
     "licenses": "Apache-2.0",
     "repository": "https://github.com/moodlehq/moodleapp",
     "publisher": "Moodle Pty Ltd.",
