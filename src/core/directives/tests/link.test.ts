@@ -49,11 +49,11 @@ describe('CoreLinkDirective', () => {
         anchor?.click();
 
         // Assert
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledTimes(1);
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         expect(CoreContentLinksHelper.handleLink).toHaveBeenCalledWith(
             'https://moodle.org/',
-            undefined,
-            expect.anything(),
             expect.anything(),
         );
     });

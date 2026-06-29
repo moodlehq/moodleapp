@@ -350,6 +350,7 @@ export class CoreSitesProvider {
     protected currentSite?: CoreSite;
     protected sites: { [s: string]: CoreSite } = {};
     protected logoutPromise?: CorePromisedValue<void>;
+    protected deleteTokensListeners: CoreSitesDeleteTokensListener[] = [];
 
     protected sitesTable = asyncInstance<CoreDatabaseTable<SiteDBEntry>>();
     protected sitesDB: CoreSitesDB; // To handle sites DB.
@@ -880,15 +881,28 @@ export class CoreSitesProvider {
                 site.setConfig(config);
             }
 
+            const allowedScripts = (config !== undefined
+                ? this.getContentAllowedScriptUrlsFromConfig(config)
+                : site.getContentAllowedScriptUrls());
+
             // Add site to sites list.
             await this.addSite(siteId, siteUrl, token, info, privateToken, config, oauthId);
             this.sites[siteId] = site;
 
             if (login) {
                 this.currentSite = site;
+
+                if (allowedScripts.length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 // Store session.
                 await this.login(siteId);
             } else if (this.currentSite && this.currentSite.getId() === siteId) {
+                if (allowedScripts.length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 // Current site has just been updated, trigger the event.
                 CoreEvents.trigger(CoreEvents.SITE_UPDATED, info, siteId);
             }
@@ -1214,6 +1228,21 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Get URLs of scripts that are allowed in the user generated content from a site config.
+     *
+     * @param config Site config.
+     * @returns List of allowed script URLs.
+     */
+    protected getContentAllowedScriptUrlsFromConfig(config?: CoreSiteConfig): string[] {
+        const allowedScriptsConfig = config?.tool_mobile_scriptallowlist;
+        if (!allowedScriptsConfig) {
+            return [];
+        }
+
+        return allowedScriptsConfig.split(/(?:\r\n|\r|\n)/).map((url) => url.trim()).filter(url => !!url);
+    }
+
+    /**
      * Login a user to a site from the list of sites.
      *
      * @param siteId ID of the site to load.
@@ -1237,6 +1266,10 @@ export class CoreSitesProvider {
             CoreEvents.trigger(CoreEvents.SESSION_EXPIRED, redirectData || {}, site.getId());
 
             return false;
+        }
+
+        if (site.getContentAllowedScriptUrls().length > 0) {
+            await this.deleteTokensFromOtherSites();
         }
 
         this.login(siteId);
@@ -1884,6 +1917,50 @@ export class CoreSitesProvider {
     }
 
     /**
+     * Register a listener to be called when deleting tokens of sites that don't match current site URL.
+     *
+     * @param listener Listener.
+     */
+    registerDeleteTokensListener(listener: CoreSitesDeleteTokensListener): void {
+        this.deleteTokensListeners.push(listener);
+    }
+
+    /**
+     * Delete tokens for all sites that don't match current site URL.
+     * If the app is configured to only allow connecting to certain sites, tokens won't be deleted.
+     *
+     * @returns Promise resolved when done.
+     */
+    async deleteTokensFromOtherSites(): Promise<void> {
+        const currentSite = this.currentSite;
+        if (!currentSite) {
+            return;
+        }
+
+        const hasSiteAllowlist = await CoreLoginHelper.hasSiteAllowlist();
+        if (hasSiteAllowlist) {
+            // Sites connected to are trusted, no need to delete tokens from other sites.
+            return;
+        }
+
+        const sites = await this.sitesTable.getMany();
+        const sitesToDeleteTokens = sites.filter(site => currentSite.getURL() !== site.siteUrl);
+
+        await CorePromiseUtils.allPromisesIgnoringErrors([
+            CorePromiseUtils.allPromisesIgnoringErrors(sitesToDeleteTokens.map(async (site) => {
+                const loadedSite = this.sites[site.id];
+                if (loadedSite) {
+                    loadedSite.token = '';
+                    loadedSite.privateToken = '';
+                }
+
+                await CoreNative.plugin('secureStorage')?.deleteCollection(site.id);
+            })),
+            ...this.deleteTokensListeners.map(listener => Promise.resolve(listener())),
+        ]);
+    }
+
+    /**
      * Updates a site's info.
      *
      * @param siteId Site's ID.
@@ -1918,6 +1995,10 @@ export class CoreSitesProvider {
             };
 
             if (config !== undefined) {
+                if (this.isCurrentSite(site) && this.getContentAllowedScriptUrlsFromConfig(config).length > 0) {
+                    await this.deleteTokensFromOtherSites();
+                }
+
                 site.setConfig(config);
                 newValues.config = JSON.stringify(config);
             }
@@ -2673,6 +2754,11 @@ export type CoreSitesAfterLoginNavigationProcess = {
     priority: number;
     callback: () => Promise<void>;
 };
+
+/**
+ * Listener called when tokens from other sites need to be deleted.
+ */
+export type CoreSitesDeleteTokensListener = () => Promise<void> | void;
 
 /**
  * Options to get a site from a URL.
