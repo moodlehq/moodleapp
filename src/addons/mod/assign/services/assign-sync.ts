@@ -85,7 +85,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         optionsList.unshift('');
 
-        const index = options.indexOf(selected) || 0;
+        const index = optionsList.indexOf(selected) || 0;
         if (index < 0) {
             return 0;
         }
