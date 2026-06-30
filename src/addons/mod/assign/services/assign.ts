@@ -247,8 +247,8 @@ export class AddonModAssignProvider {
         const response = await site.read<AddonModAssignGetUserMappingsWSResponse>('mod_assign_get_user_mappings', params, preSets);
 
         // Search the user.
-        if (response.assignments.length && response.assignments[0].assignmentid == assignId) {
-            const mapping = response.assignments[0].mappings.find((mapping) => mapping.userid == userId);
+        if (response.assignments.length && response.assignments[0].assignmentid === assignId) {
+            const mapping = response.assignments[0].mappings.find((mapping) => mapping.userid === userId);
 
             if (mapping) {
                 return mapping.id;
@@ -293,7 +293,7 @@ export class AddonModAssignProvider {
         const response = await site.read<AddonModAssignGetGradesWSResponse>('mod_assign_get_grades', params, preSets);
 
         // Search the assignment.
-        if (response.assignments.length && response.assignments[0].assignmentid == assignId) {
+        if (response.assignments.length && response.assignments[0].assignmentid === assignId) {
             return response.assignments[0].grades;
         } else if (response.warnings && response.warnings.length) {
             if (response.warnings[0].warningcode == '3') {
