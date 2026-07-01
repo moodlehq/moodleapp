@@ -454,7 +454,7 @@ class behat_app_helper extends behat_base {
 
         $this->i_log_out_in_app(false);
 
-        $this->handle_url($url, $successXPath);
+        $this->handle_url($url, $successXPath, true);
     }
 
     /**
@@ -472,7 +472,7 @@ class behat_app_helper extends behat_base {
             'redirect' => $path,
         ]);
 
-        $this->handle_url($url, $successXPath, $username ? 'This link belongs to another site' : '');
+        $this->handle_url($url, $successXPath);
     }
 
     /**
@@ -517,15 +517,20 @@ class behat_app_helper extends behat_base {
      *
      * @param string $customurl To navigate.
      * @param string $successXPath The XPath of the element to lookat after navigation.
-     * @param string $texttofind If set, when this text is found the operation is considered finished. This is useful for
-     *                           operations that might expect user input before finishing, like a confirm modal.
+     * @param boolean $confirm Whether to confirm the site change when prompted.
      */
-    protected function handle_url(string $customurl, string $successXPath = '', string $texttofind = '') {
+    protected function handle_url(string $customurl, string $successXPath = '', bool $confirm = false) {
+        $texttofind = 'Only continue if you trust this site.';
         $result = $this->zone_js("customUrlSchemes.handleCustomURL('$customurl')", false, $texttofind);
 
         if ($result !== 'OK') {
             throw new DriverException('Error handling url - ' . $customurl . ' - '.$result);
         }
+
+        if ($confirm) {
+            $this->i_press_in_the_app('"Open site"');
+        }
+
         if (!empty($successXPath)) {
             // Wait until the page appears.
             $this->spin(
@@ -540,7 +545,9 @@ class behat_app_helper extends behat_base {
 
         $this->wait_for_pending_js();
 
-        $this->i_wait_the_app_to_restart();
+        if ($confirm) {
+            $this->i_wait_the_app_to_restart();
+        }
     }
 
     /**
