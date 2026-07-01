@@ -21,7 +21,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CorePlatform } from '@services/platform';
 
 /**
  * Service that provides some features regarding content links.
@@ -221,11 +220,6 @@ export class CoreContentLinksHelperProvider {
     async confirmLinkToSite(data: { url: string; siteId?: string }): Promise<void>;
     async confirmLinkToSite(data: { siteId: string; url?: string }): Promise<void>;
     async confirmLinkToSite(data: { url?: string; siteId?: string }): Promise<void> {
-        if (CorePlatform.isAutomated()) {
-            // Behat tests use deep links to speed up the execution. Avoid showing this confirm in any Behat test.
-            return;
-        }
-
         let siteUrl = data.url;
         if (data.siteId) {
             const site = await CoreSites.getSite(data.siteId);
