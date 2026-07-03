@@ -28,6 +28,9 @@ import { ContextLevel } from '@/core/constants';
 @Component({
     selector: 'page-core-site-plugins-plugin',
     templateUrl: 'plugin.html',
+    host: {
+        '[class]': 'component',
+    },
     imports: [
         CoreSharedModule,
         CoreSitePluginsPluginContentComponent,
