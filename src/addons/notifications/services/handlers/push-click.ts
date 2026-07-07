@@ -104,7 +104,10 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
                     return CoreViewer.openIframeViewer(notification.title ?? notification.message ?? '', url);
 
                 default: {
-                    const treated = await CoreContentLinksHelper.handleLink(url, undefined, undefined, true);
+                    const treated = await CoreContentLinksHelper.handleLink(url, {
+                        checkRoot: true,
+                        openBrowserRoot: true,
+                    });
                     if (treated) {
                         // Link treated, stop.
                         return;

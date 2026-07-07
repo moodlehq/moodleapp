@@ -55,6 +55,10 @@ Feature: It navigates properly using deep links.
     And I open a custom link in the app for:
       | discussion  |
       | Forum topic |
+    Then I should find "Only continue if you trust this site." in the app
+
+    When I press "Open site" in the app
+    And I wait the app to restart
     And I log in as "student1"
     And I wait loading to finish in the app
     Then I should find "Forum topic" in the app
@@ -74,6 +78,10 @@ Feature: It navigates properly using deep links.
     And I open a custom link in the app for:
       | forum      |
       | Test forum |
+    Then I should find "Only continue if you trust this site." in the app
+
+    When I press "Open site" in the app
+    And I wait the app to restart
     Then I should find "Reconnect" in the app
 
     When I set the field "Password" to "student2" in the app
@@ -89,9 +97,9 @@ Feature: It navigates properly using deep links.
     When I open a custom link in the app for:
       | discussion  | user     |
       | Forum topic | student2 |
-    Then I should find "This link belongs to another site" in the app
+    Then I should find "Only continue if you trust this site." in the app
 
-    When I press "OK" in the app
+    When I press "Open site" in the app
     And I wait the app to restart
     Then the header should be "Log in" in the app
 
@@ -111,9 +119,9 @@ Feature: It navigates properly using deep links.
     When I open a custom link in the app for:
       | discussion  | user     |
       | Forum topic | student2 |
-    Then I should find "This link belongs to another site" in the app
+    Then I should find "Only continue if you trust this site." in the app
 
-    When I press "OK" in the app
+    When I press "Open site" in the app
     And I wait the app to restart
     Then I should find "Forum topic" in the app
     And I should find "Forum message" in the app
@@ -131,9 +139,9 @@ Feature: It navigates properly using deep links.
     When I open a custom link in the app for:
       | discussion  | user     |
       | Forum topic | student2 |
-    Then I should find "This link belongs to another site" in the app
+    Then I should find "Only continue if you trust this site." in the app
 
-    When I press "OK" in the app
+    When I press "Open site" in the app
     And I wait the app to restart
     Then the header should be "Reconnect" in the app
     And I should find "pau student2" in the app
@@ -158,9 +166,9 @@ Feature: It navigates properly using deep links.
     And I open a custom link in the app for:
       | discussion  | user     |
       | Forum topic | student2 |
-    Then I should find "This link belongs to another site" in the app
+    Then I should find "Only continue if you trust this site." in the app
 
-    When I press "OK" in the app
+    When I press "Open site" in the app
     Then I should find "Leave page?" in the app
     And I should find "Unsaved changes will be lost." in the app
 
@@ -170,7 +178,9 @@ Feature: It navigates properly using deep links.
     When I open a custom link in the app for:
       | discussion  | user     |
       | Forum topic | student2 |
-    And I press "OK" in the app
+    Then I should find "Only continue if you trust this site." in the app
+
+    When I press "Open site" in the app
     And I press "Leave" in the app
     And I wait the app to restart
     Then I should find "Forum topic" in the app

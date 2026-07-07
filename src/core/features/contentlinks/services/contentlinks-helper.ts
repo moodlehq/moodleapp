@@ -114,18 +114,36 @@ export class CoreContentLinksHelperProvider {
      * Handle a link.
      *
      * @param url URL to handle.
-     * @param username Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
-     *                 the username 'myuser'. Don't use it if you don't want to filter by username.
-     * @param checkRoot Whether to check if the URL is the root URL of a site.
-     * @param openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
+     * @param options Behaviour options.
      * @returns Promise resolved with a boolean: true if URL was treated, false otherwise.
+     */
+    async handleLink(url: string, options?: HandleLinkOptions): Promise<boolean>;
+    /**
+     * @deprecated since 5.2. Use the overload accepting HandleLinkOptions instead.
      */
     async handleLink(
         url: string,
         username?: string,
         checkRoot?: boolean,
         openBrowserRoot?: boolean,
+    ): Promise<boolean>;
+    async handleLink(
+        url: string,
+        usernameOrOptions?: string | HandleLinkOptions,
+        checkRoot?: boolean,
+        openBrowserRoot?: boolean,
     ): Promise<boolean> {
+        const options =
+            typeof usernameOrOptions === 'string' || usernameOrOptions === undefined
+                ? {
+                    username: usernameOrOptions,
+                    checkRoot,
+                    openBrowserRoot,
+                }
+                : usernameOrOptions;
+
+        const confirmSiteChange = options.confirmSiteChange ?? true;
+
         try {
             if (CoreCustomURLSchemes.isCustomURL(url)) {
                 await CoreCustomURLSchemes.handleCustomURL(url);
@@ -133,25 +151,32 @@ export class CoreContentLinksHelperProvider {
                 return true;
             }
 
-            if (checkRoot) {
-                const data = await CoreSites.isStoredRootURL(url, username);
+            if (options.checkRoot) {
+                const data = await CoreSites.isStoredRootURL(url, options.username);
 
                 if (data.site) {
                     // URL is the root of the site.
-                    await this.handleRootURL(data.site, openBrowserRoot);
+                    await this.handleRootURL(data.site, {
+                        openBrowserRoot: options.openBrowserRoot,
+                        confirmSiteChange,
+                    });
 
                     return true;
                 }
             }
 
             // Check if the link should be treated by some component/addon.
-            const action = await this.getFirstValidActionFor(url, undefined, username);
+            const action = await this.getFirstValidActionFor(url, undefined, options.username);
             if (!action) {
                 return false;
             }
 
             if (!CoreSites.isLoggedIn()) {
                 // No current site. Perform the action if only 1 site found, choose the site otherwise.
+                if (confirmSiteChange) {
+                    await this.confirmLinkToSite({ siteId: action.sites?.[0], url });
+                }
+
                 if (action.sites?.length === 1) {
                     await action.action(action.sites[0]);
                 } else {
@@ -163,7 +188,10 @@ export class CoreContentLinksHelperProvider {
             } else {
                 try {
                     // Not current site or more than one site. Ask for confirmation.
-                    await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
+                    if (confirmSiteChange) {
+                        await this.confirmLinkToSite({ siteId: action.sites?.[0], url });
+                    }
+
                     if (action.sites?.length === 1) {
                         await action.action(action.sites[0]);
                     } else {
@@ -183,28 +211,78 @@ export class CoreContentLinksHelperProvider {
     }
 
     /**
+     * Confirm open a link to a certain site.
+     *
+     * @param data Data.
+     * @param data.url Site URL.
+     * @param data.siteId Site ID.
+     */
+    async confirmLinkToSite(data: { url: string; siteId?: string }): Promise<void>;
+    async confirmLinkToSite(data: { siteId: string; url?: string }): Promise<void>;
+    async confirmLinkToSite(data: { url?: string; siteId?: string }): Promise<void> {
+        let siteUrl = data.url;
+        if (data.siteId) {
+            const site = await CoreSites.getSite(data.siteId);
+            siteUrl = site.getURL();
+        }
+
+        await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmlinktosite', { url: siteUrl }), {
+            header: Translate.instant('core.contentlinks.confirmlinktositetitle'),
+            okText: Translate.instant('core.contentlinks.opensite'),
+        });
+    }
+
+    /**
      * Handle a root URL of a site.
      *
      * @param site Site to handle.
-     * @param openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
-     * @param checkToken Whether to check that token is the same to verify it's current site. If false or not defined,
-     *                   only the URL will be checked.
+     * @param options Behaviour options.
      */
-    async handleRootURL(site: CoreSite, openBrowserRoot?: boolean, checkToken?: boolean): Promise<void> {
-        const currentSite = CoreSites.getCurrentSite();
+    async handleRootURL(site: CoreSite, options?: HandleRootURLOptions): Promise<void>;
+    /**
+     * @deprecated since 5.2.1. Use the overload accepting HandleRootURLOptions instead.
+     */
+    async handleRootURL(
+        site: CoreSite,
+        openBrowserRoot?: boolean,
+        checkToken?: boolean,
+    ): Promise<void>;
+    async handleRootURL(
+        site: CoreSite,
+        openBrowserRootOrOptions?: boolean | HandleRootURLOptions,
+        checkToken?: boolean,
+    ): Promise<void> {
+        const options =
+            typeof openBrowserRootOrOptions === 'boolean' || openBrowserRootOrOptions === undefined
+                ? {
+                    openBrowserRoot: openBrowserRootOrOptions,
+                    checkToken,
+                }
+                : openBrowserRootOrOptions;
 
-        if (currentSite && currentSite.getURL() === site.getURL() && (!checkToken || currentSite.getToken() === site.getToken())) {
+        const currentSite = CoreSites.getCurrentSite();
+        const shouldConfirmSiteChange = options.confirmSiteChange ?? true;
+
+        if (
+            currentSite &&
+            currentSite.getURL() === site.getURL() &&
+            (!options.checkToken || currentSite.getToken() === site.getToken())
+        ) {
             // Already logged in.
-            if (openBrowserRoot) {
+            if (options.openBrowserRoot) {
                 await site.openInBrowserWithAutoLogin(site.getURL());
             }
 
             return;
         }
 
-        const canChange = await this.confirmSiteChange(site.getId());
-        if (!canChange) {
-            return;
+        if (shouldConfirmSiteChange && CoreSites.getCurrentSiteId() !== site.getId()) {
+            try {
+                // Ask the user before changing site.
+                await this.confirmLinkToSite({ url: site.getURL() });
+            } catch {
+                return;
+            }
         }
 
         // Login in the site.
@@ -216,22 +294,9 @@ export class CoreContentLinksHelperProvider {
      *
      * @param url URL to handle.
      * @param options Behaviour options.
-     * @param options.siteId Site Id.
-     * @param options.username Username related with the URL. E.g. in 'http://myuser@m.com', url would be 'http://m.com' and
-     *                 the username 'myuser'. Don't use it if you don't want to filter by username.
-     * @param options.checkRoot Whether to check if the URL is the root URL of a site.
-     * @param options.openBrowserRoot Whether to open in browser if it's root URL and it belongs to current site.
      */
-    async visitLink(
-        url: string,
-        options: {
-            siteId?: string;
-            username?: string;
-            checkRoot?: boolean;
-            openBrowserRoot?: boolean;
-        } = {},
-    ): Promise<void> {
-        const treated = await this.handleLink(url, options.username, options.checkRoot, options.openBrowserRoot);
+    async visitLink(url: string, options: VisitLinkOptions = {}): Promise<void> {
+        const treated = await this.handleLink(url, options);
 
         if (treated) {
             return;
@@ -244,30 +309,56 @@ export class CoreContentLinksHelperProvider {
         await site?.openInBrowserWithAutoLogin(url);
     }
 
-    /**
-     * Confirm the user wants to change site if needed.
-     *
-     * @param siteId Site ID to change to. If not defined, it will be assumed the site changes (when multiple sites have been found)
-     * @returns Promise resolved with boolean: whether the user confirmed or not.
-     */
-    async confirmSiteChange(siteId?: string): Promise<boolean> {
-        if (!CoreSites.isLoggedIn()) {
-            return true;
-        }
-        if (siteId && CoreSites.getCurrentSiteId() === siteId) {
-            return true;
-        }
-
-        try {
-            // Ask the user before changing site.
-            await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmurlothersite'));
-
-            return true;
-        } catch {
-            return false;
-        }
-    }
-
 }
 
 export const CoreContentLinksHelper = makeSingleton(CoreContentLinksHelperProvider);
+
+/**
+ * Options for handleLink.
+ */
+type HandleLinkOptions = {
+    /**
+     * Username to use to filter sites.
+     */
+    username?: string;
+    /**
+     * Whether to check if the URL is the root URL of a site.
+     */
+    checkRoot?: boolean;
+    /**
+     * Whether to open in browser if it's root URL and it belongs to current site.
+     */
+    openBrowserRoot?: boolean;
+    /**
+     * Whether to ask for confirmation before opening the link in a different site. Defaults to true.
+     */
+    confirmSiteChange?: boolean;
+};
+
+/**
+ * Options for handleRootURL.
+ */
+type HandleRootURLOptions = {
+    /**
+     * Whether to open in browser if it's root URL and it belongs to current site.
+     */
+    openBrowserRoot?: boolean;
+    /**
+     * Whether to check that token is the same to verify it's current site.
+     */
+    checkToken?: boolean;
+    /**
+     * Whether to ask for confirmation before changing site. Defaults to true.
+     */
+    confirmSiteChange?: boolean;
+};
+
+/**
+ * Options for visitLink.
+ */
+type VisitLinkOptions = HandleLinkOptions & {
+    /**
+     * Site Id.
+     */
+    siteId?: string;
+};
