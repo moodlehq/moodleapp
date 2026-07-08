@@ -68,6 +68,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 import { AddonModForumPostOptionsMenuAction } from '../post-options-menu/post-options-menu';
+import { AddonModForumWS } from '../../services/forum-ws';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -148,7 +149,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         } else {
             // Cannot know if the user can edit/delete or not, display the menu if the WebServices are available.
             this.optionsMenuEnabled = this.post.id < 0 || (AddonModForum.isGetDiscussionPostAvailable() &&
-                        (AddonModForum.isDeletePostAvailable() || AddonModForum.isUpdatePostAvailable()));
+                        (AddonModForumWS.isDeletePostAvailable() || AddonModForumWS.isUpdatePostAvailable()));
         }
     }
 

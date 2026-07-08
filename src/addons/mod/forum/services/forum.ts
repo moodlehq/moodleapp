@@ -21,12 +21,11 @@ import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
 import { CoreNetwork } from '@services/network';
 import { CoreFileEntry } from '@services/file-helper';
-import { CoreGroups } from '@services/groups';
+import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CoreUtils } from '@static/utils';
 import {
-    CoreStatusWithWarningsWSResponse,
     CoreWSExternalFile,
     CoreWSExternalWarning,
     CoreWSFile,
@@ -55,6 +54,7 @@ import { CoreObject } from '@static/object';
 import { CoreTextFormat } from '@static/text';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
+import { AddonModForumDeletePostWSResponse, AddonModForumUpdateDiscussionPostWSOptionsObject, AddonModForumWS } from './forum-ws';
 
 declare module '@static/events' {
 
@@ -310,12 +310,7 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     async deletePost(postId: number, siteId?: string): Promise<AddonModForumDeletePostWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-        const params: AddonModForumDeletePostWSParams = {
-            postid: postId,
-        };
-
-        return site.write<AddonModForumDeletePostWSResponse>('mod_forum_delete_post', params);
+        return AddonModForumWS.deletePost(postId, siteId);
     }
 
     /**
@@ -360,7 +355,7 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     isDeletePostAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_forum_delete_post');
+        return AddonModForumWS.isDeletePostAvailable();
     }
 
     /**
@@ -370,7 +365,7 @@ export class AddonModForumProvider {
      * @since 3.8
      */
     isUpdatePostAvailable(): boolean {
-        return CoreSites.wsAvailableInCurrentSite('mod_forum_update_discussion_post');
+        return AddonModForumWS.isUpdatePostAvailable();
     }
 
     /**
@@ -393,7 +388,7 @@ export class AddonModForumProvider {
             const strAllGroups = Translate.instant('core.allgroups');
 
             // Turn groups into an object where each group is identified by id.
-            const groups = {};
+            const groups: Record<number, CoreGroup> = {};
             result.groups.forEach((fg) => {
                 groups[fg.id] = fg;
             });
@@ -1233,34 +1228,38 @@ export class AddonModForumProvider {
      * @param list Array of posts or discussions.
      */
     protected storeUserData(list: AddonModForumPost[] | AddonModForumDiscussion[]): void {
-        const users = {};
+        const users: Record<number, { id: number; fullname: string; profileimageurl?: string }> = {};
 
         list.forEach((entry: AddonModForumPost | AddonModForumDiscussion) => {
             if ('author' in entry) {
                 const authorId = Number(entry.author.id);
                 if (!isNaN(authorId) && !users[authorId]) {
                     users[authorId] = {
-                        id: entry.author.id,
-                        fullname: entry.author.fullname,
+                        id: authorId,
+                        fullname: typeof entry.author.fullname === 'string' ? entry.author.fullname : '',
                         profileimageurl: entry.author.urls?.profileimage,
                     };
                 }
             }
-            const userId = parseInt(entry['userid']);
-            if ('userid' in entry && !isNaN(userId) && !users[userId]) {
-                users[userId] = {
-                    id: userId,
-                    fullname: entry.userfullname,
-                    profileimageurl: entry.userpictureurl,
-                };
+            if ('userid' in entry) {
+                const userId = Number(entry.userid);
+                if (!isNaN(userId) && !users[userId]) {
+                    users[userId] = {
+                        id: userId,
+                        fullname: typeof entry.userfullname === 'string' ? entry.userfullname : '',
+                        profileimageurl: entry.userpictureurl,
+                    };
+                }
             }
-            const userModified = parseInt(entry['usermodified']);
-            if ('usermodified' in entry && !isNaN(userModified) && !users[userModified]) {
-                users[userModified] = {
-                    id: userModified,
-                    fullname: entry.usermodifiedfullname,
-                    profileimageurl: entry.usermodifiedpictureurl,
-                };
+            if ('usermodified' in entry) {
+                const userModified = Number(entry.usermodified);
+                if (!isNaN(userModified) && !users[userModified]) {
+                    users[userModified] = {
+                        id: userModified,
+                        fullname: entry.usermodifiedfullname,
+                        profileimageurl: entry.usermodifiedpictureurl,
+                    };
+                }
             }
         });
 
@@ -1313,23 +1312,7 @@ export class AddonModForumProvider {
         options?: AddonModForumUpdateDiscussionPostWSOptionsObject,
         siteId?: string,
     ): Promise<boolean> {
-        const site = await CoreSites.getSite(siteId);
-        const params: AddonModForumUpdateDiscussionPostWSParams = {
-            postid: postId,
-            subject: subject,
-            message: message,
-
-            options: CoreObject.toArrayOfObjects<
-                AddonModForumUpdateDiscussionPostWSOptionsArray[0],
-                AddonModForumUpdateDiscussionPostWSOptionsObject
-            >(
-                options || {},
-                'name',
-                'value',
-            ),
-        };
-
-        const response = await site.write<AddonModForumUpdateDiscussionPostWSResponse>('mod_forum_update_discussion_post', params);
+        const response = await AddonModForumWS.updatePost(postId, subject, message, options, siteId);
 
         return response && response.status;
     }
@@ -1801,32 +1784,6 @@ export type AddonModForumAddDiscussionPostWSOptionsObject = {
 };
 
 /**
- * Array options of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSOptionsArray = {
-    // Option name.
-    name: 'pinned' | 'discussionsubscribe' | 'inlineattachmentsid' | 'attachmentsid';
-
-    // Option value.
-    // This param is validated in the external function, expected values are:
-    // pinned              (bool) - (only for discussions) whether to pin this discussion or not
-    // discussionsubscribe (bool) - whether to subscribe to the post or not
-    // inlineattachmentsid (int)  - the draft file area id for inline attachments in the text
-    // attachmentsid       (int)  - the draft file area id for attachments.
-    value: string; // The value of the option.
-}[];
-
-/**
- * Object options of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSOptionsObject = {
-    pinned?: boolean;
-    discussionsubscribe?: boolean;
-    inlineattachmentsid?: number;
-    attachmentsid?: number;
-};
-
-/**
  * Params of mod_forum_add_discussion WS.
  */
 export type AddonModForumAddDiscussionWSParams = {
@@ -1897,18 +1854,6 @@ export type AddonModForumCanAddDiscussionWSParams = {
 export type AddonModForumCanAddDiscussionWSResponse = {
     warnings?: CoreWSExternalWarning[];
 } & AddonModForumCanAddDiscussion;
-
-/**
- * Params of mod_forum_delete_post WS.
- */
-export type AddonModForumDeletePostWSParams = {
-    postid: number; // Post to be deleted. It can be a discussion topic post.
-};
-
-/**
- * Data returned by mod_forum_delete_post WS.
- */
-export type AddonModForumDeletePostWSResponse = CoreStatusWithWarningsWSResponse;
 
 /**
  * Params of mod_forum_get_discussion_post WS.
@@ -2099,22 +2044,6 @@ export type AddonModForumToggleFavouriteStateWSResponse = {
         visible?: boolean; // Visible.
     };
 };
-
-/**
- * Params of mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSParams = {
-    postid: number; // Post to be updated. It can be a discussion topic post.
-    subject?: string; // Updated post subject.
-    message?: string; // Updated post message (HTML assumed if messageformat is not provided).
-    messageformat?: CoreTextFormat; // Message format (1 = HTML, 0 = MOODLE, 2 = PLAIN or 4 = MARKDOWN).
-    options?: AddonModForumUpdateDiscussionPostWSOptionsArray; // Configuration options for the post.
-};
-
-/**
- * Data returned by mod_forum_update_discussion_post WS.
- */
-export type AddonModForumUpdateDiscussionPostWSResponse = CoreStatusWithWarningsWSResponse;
 
 /**
  * Params of mod_forum_prepare_draft_area_for_post WS.
