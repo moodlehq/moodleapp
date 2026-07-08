@@ -145,11 +145,16 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         if (this.post.id < 0) {
             this.optionsMenuEnabled = true;
         } else if (this.post.capabilities.delete !== undefined) {
-            this.optionsMenuEnabled = this.post.capabilities.delete === true || this.post.capabilities.edit === true;
+            this.optionsMenuEnabled = AddonModForumHelper.canDeletePost(this.post) ||
+                AddonModForumHelper.canUpdatePost(this.post) ||
+                AddonModForumHelper.canSetReadState(this.post);
         } else {
-            // Cannot know if the user can edit/delete or not, display the menu if the WebServices are available.
-            this.optionsMenuEnabled = this.post.id < 0 || (AddonModForum.isGetDiscussionPostAvailable() &&
-                        (AddonModForumWS.isDeletePostAvailable() || AddonModForumWS.isUpdatePostAvailable()));
+            // Cannot know if the user can edit/delete/setreadstate or not, display the menu if the WebServices are available.
+            this.optionsMenuEnabled = AddonModForum.isGetDiscussionPostAvailable() && (
+                AddonModForumWS.isDeletePostAvailable() ||
+                AddonModForumWS.isUpdatePostAvailable() ||
+                AddonModForum.isSetReadStateAvailable()
+            );
         }
     }
 
@@ -254,7 +259,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Show the context menu.
+     * Show the post options menu.
      *
      * @param event Click Event.
      */
@@ -283,6 +288,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
                     break;
                 case AddonModForumPostOptionsMenuAction.DELETE_OFFLINE:
                     this.discardOfflineReply();
+                    break;
+                case AddonModForumPostOptionsMenuAction.MARKREAD:
+                    this.setReadState(true);
+                    break;
+                case AddonModForumPostOptionsMenuAction.MARKUNREAD:
+                    this.setReadState(false);
                     break;
             }
         }
@@ -502,6 +513,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         } finally {
             modal.dismiss();
         }
+    }
+
+    async setReadState(read: boolean): Promise<void> {
+        const success = await AddonModForum.setReadState(this.post.id, read);
+
+        if (success) {
+            // Invalidate the discussion posts to update the read state.
+            AddonModForum.invalidateDiscussionPosts(this.discussionId, this.forum.id);
+        }
+
+        this.post.unread = !read;
     }
 
     /**

@@ -681,6 +681,8 @@
   "addon.mod_forum.lastpost": "forum",
   "addon.mod_forum.lockdiscussion": "forum",
   "addon.mod_forum.lockupdated": "forum",
+  "addon.mod_forum.markread": "forum",
+  "addon.mod_forum.markunread": "forum",
   "addon.mod_forum.message": "forum",
   "addon.mod_forum.modeflatnewestfirst": "forum",
   "addon.mod_forum.modeflatoldestfirst": "forum",

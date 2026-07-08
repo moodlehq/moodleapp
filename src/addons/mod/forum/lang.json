@@ -40,6 +40,8 @@
     "lastpost": "Last post",
     "lockdiscussion": "Lock this discussion",
     "lockupdated": "The lock option has been updated.",
+    "markread": "Mark read",
+    "markunread": "Mark unread",
     "message": "Message",
     "modeflatnewestfirst": "Display replies flat, with newest first",
     "modeflatoldestfirst": "Display replies flat, with oldest first",

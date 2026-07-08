@@ -1,6 +1,20 @@
 <ion-content>
     <core-loading [hideUntil]="loaded()" [fullscreen]="false">
         <ion-list>
+            @if (canMarkAsRead()) {
+                <ion-item button class="ion-text-wrap" (click)="toggleReadState()" [detail]="false">
+                    <ion-icon name="fas-bookmark" slot="start" aria-hidden="true" />
+                    <ion-label>
+                        <p class="item-heading">
+                            @if (postCalculated().unread) {
+                                {{ 'addon.mod_forum.markread' | translate }}
+                            } @else {
+                                {{ 'addon.mod_forum.markunread' | translate }}
+                            }
+                        </p>
+                    </ion-label>
+                </ion-item>
+            }
             @if (isOfflinePost() || canEdit()) {
                 <ion-item button class="ion-text-wrap" (click)="editPost()" [detail]="false">
                     <ion-icon name="fas-pen" slot="start" aria-hidden="true" />

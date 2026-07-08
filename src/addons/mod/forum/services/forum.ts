@@ -369,6 +369,31 @@ export class AddonModForumProvider {
     }
 
     /**
+     * Returns whether or not markAsRead WS available or not.
+     *
+     * @returns If WS is available.
+     * @since 5.3
+     */
+    isSetReadStateAvailable(): boolean {
+        return AddonModForumWS.isSetReadStateAvailable();
+    }
+
+    /**
+     * Set the read state of a post.
+     *
+     * @param postId Post id.
+     * @param read Whether to mark as read or unread.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with true if success, false otherwise.
+     * @since 5.3
+     */
+    async setReadState(postId: number, read: boolean, siteId?: string): Promise<boolean> {
+        const response = await AddonModForumWS.setReadState(postId, read, siteId);
+
+        return response && response.status;
+    }
+
+    /**
      * Format discussions, setting groupname if the discussion group is valid.
      *
      * @param cmId Forum cmid.

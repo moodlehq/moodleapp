@@ -102,6 +102,35 @@ export class AddonModForumWSService {
         return site.write('mod_forum_update_discussion_post', params);
     }
 
+    /**
+     * Returns whether or not setReadState WS available or not.
+     *
+     * @returns If WS is available.
+     * @since 5.3
+     */
+    isSetReadStateAvailable(): boolean {
+        return CoreSites.wsAvailableInCurrentSite('mod_forum_set_read_state');
+    }
+
+    /**
+     * Set the read/unread state of a forum post.
+     *
+     * @param postId Post ID.
+     * @param targetState Target read state (true = read, false = unread).
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Promise resolved with the WS response.
+     */
+    async setReadState(postId: number, targetState: boolean, siteId?: string): Promise<AddonModForumSetReadStateWSResponse> {
+        const site = await CoreSites.getSite(siteId);
+
+        const params: AddonModForumSetReadStateWSParams = {
+            postid: postId,
+            targetstate: targetState,
+        };
+
+        return site.write('mod_forum_set_read_state', params);
+    }
+
 }
 export const AddonModForumWS = makeSingleton(AddonModForumWSService);
 
@@ -158,3 +187,15 @@ export type AddonModForumUpdateDiscussionPostWSOptionsObject = {
     inlineattachmentsid?: number;
     attachmentsid?: number;
 };
+
+/**
+ * Params of mod_forum_set_read_state WS.
+ *
+ * Web Service to control the read/unread state of a forum post.
+ */
+type AddonModForumSetReadStateWSParams = {
+    postid: number; // Identifier of the post whose read state will be changed.
+    targetstate: boolean; // Target read state (true = read, false = unread).
+};
+
+export type AddonModForumSetReadStateWSResponse = CoreStatusWithWarningsWSResponse;
