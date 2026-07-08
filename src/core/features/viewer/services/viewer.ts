@@ -108,6 +108,27 @@ export class CoreViewerService {
     }
 
     /**
+     * Open iframe viewer in a modal.
+     *
+     * @param title Modal title.
+     * @param url Iframe URL.
+     * @param autoLogin Whether to try to use auto-login.
+     */
+    async openIframeViewerModal(title: string, url: string, autoLogin?: boolean): Promise<void> {
+        const { default: CoreViewerIframePage } = await import('@features/viewer/pages/iframe/iframe');
+
+        await CoreModals.openModal({
+            component: CoreViewerIframePage,
+            componentProps: {
+                title,
+                url,
+                autoLogin,
+            },
+            cssClass: 'core-modal-fullscreen',
+        });
+    }
+
+    /**
      * Get reading mode settings.
      *
      * @returns Reading mode settings.

@@ -18,7 +18,6 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFile } from '@services/file';
-import { CorePlatform } from '@services/platform';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreUrl } from '@static/url';
@@ -48,17 +47,18 @@ export class AddonModLtiProvider {
     }
 
     /**
-     * Generates a launcher file.
+     * Generates a data URL to launch the tool.
      *
      * @param url Launch URL.
      * @param params Launch params.
-     * @returns Promise resolved with the file URL.
+     * @returns Data URL.
      */
-    async generateLauncher(url: string, params: AddonModLtiParam[]): Promise<string> {
-        // Generate a form with the params.
-        let text = `<form action="${url}" name="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">\n`;
+    protected generateLauncher(url: string, params: AddonModLtiParam[]): string {
+        const escapedUrl = CoreText.escapeHTML(url);
+        let text = '<!DOCTYPE html>\n<html><head><meta charset="utf-8"></head><body>\n';
+        text += `<form action="${escapedUrl}" name="ltiLaunchForm" method="post" encType="application/x-www-form-urlencoded">\n`;
         params.forEach((p) => {
-            if (p.name == 'ext_submit') {
+            if (p.name === 'ext_submit') {
                 text += '    <input type="submit"';
             } else {
                 text += '    <input type="hidden" name="' + CoreText.escapeHTML(p.name) + '"';
@@ -68,15 +68,15 @@ export class AddonModLtiProvider {
         text += '</form>\n';
 
         // Add an in-line script to automatically submit the form.
-        text += '<script type="text/javascript"> \n' +
-            '    window.onload = function() { \n' +
-            '        document.ltiLaunchForm.submit(); \n' +
-            '    }; \n' +
-            '</script> \n';
+        text += '<script type="text/javascript">\n' +
+            '    window.onload = function() {\n' +
+            '        document.ltiLaunchForm.submit();\n' +
+            '    };\n' +
+            '</script>\n';
 
-        const entry = await CoreFile.writeFile(AddonModLtiProvider.LAUNCHER_FILE_NAME, text);
+        text += '</body></html>\n';
 
-        return CoreFile.getFileEntryURL(entry);
+        return `data:text/html;charset=utf-8,${encodeURIComponent(text)}`;
     }
 
     /**
@@ -238,15 +238,9 @@ export class AddonModLtiProvider {
             throw Translate.instant('addon.mod_lti.errorinvalidlaunchurl');
         }
 
-        // Generate launcher and open it.
-        const launcherUrl = await this.generateLauncher(url, params);
+        const launcherUrl = this.generateLauncher(url, params);
 
-        if (CorePlatform.isMobile()) {
-            CoreOpener.openInApp(launcherUrl);
-        } else {
-            // In desktop open in browser, we found some cases where inapp caused JS issues.
-            CoreOpener.openInBrowser(launcherUrl);
-        }
+        CoreOpener.openInApp(launcherUrl);
     }
 
     /**

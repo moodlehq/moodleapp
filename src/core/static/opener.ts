@@ -31,6 +31,7 @@ import { CoreEvents } from '@static/events';
 import { CoreColors } from './colors';
 import { CorePrompts } from '@services/overlays/prompts';
 import { CoreNativeCordovaPluginResultStatus } from '@features/native/constants';
+import { CoreViewer } from '@features/viewer/services/viewer';
 
 /**
  * Static class with helper functions to handler open files and urls.
@@ -89,8 +90,11 @@ export class CoreOpener {
         const mimetype = extension && CoreMimetype.getMimeType(extension);
 
         if (mimetype === 'text/html' && CorePlatform.isAndroid()) {
-            // Open HTML local files in InAppBrowser, in system browser some embedded files aren't loaded.
-            CoreOpener.openInApp(path);
+            // Open HTML local files in a fullscreen modal iframe.
+            // This used to open an InAppBrowser, but with AndroidInsecureFileModeEnabled=false it's no longer allowed.
+            const title = path.substring(path.lastIndexOf('/') + 1) || path;
+
+            await CoreViewer.openIframeViewerModal(title, path, false);
 
             return;
         } else if (extension === 'apk' && CorePlatform.isAndroid()) {

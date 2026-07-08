@@ -36,7 +36,7 @@ export default function(): void {
         const protocol = CoreUrl.getUrlProtocol(event.url);
         const url = event.url.replace(/^https?:\/\//, '');
         const urlScheme = CoreUrl.getUrlProtocol(url);
-        const isExternalApp = urlScheme && urlScheme !== 'file' && urlScheme !== 'cdvfile';
+        const isExternalApp = urlScheme && !['file', 'cdvfile', 'data', 'about'].includes(urlScheme);
 
         if (CoreCustomURLSchemes.isCustomURL(url)) {
             // Close the browser if it's a valid SSO URL.
