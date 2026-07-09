@@ -41,6 +41,7 @@ export class CoreErrorLogs {
     static addErrorLog(error: CoreSettingsErrorLog): void {
         CoreErrorLogs.errorLogs.push({
             ...error,
+            message: CoreErrorLogs.sanitizeData(error.message),
             data: CoreErrorLogs.sanitizeData(error.data),
         });
     }
@@ -51,10 +52,14 @@ export class CoreErrorLogs {
      * @param data Data to sanitize.
      * @returns Sanitized data.
      */
+    protected static sanitizeData<T>(data: T): T;
     protected static sanitizeData(data: unknown): unknown {
         if (typeof data === 'string') {
             // Hide anything that looks like a possible token.
-            return data.replace(/\b[a-zA-Z0-9]{32,}/g, (match) => `...${match.slice(-3)}`);
+            return data
+                .replace(/([?&](?:wstoken|token|key|privatetoken)=)[^&\s"']+/gi, '$1***')
+                .replace(/\/tokenpluginfile\.php\/[^/]+\//g, '/tokenpluginfile.php/***/')
+                .replace(/\b[a-zA-Z0-9]{20,}\b/g, '***');
         }
 
         if (typeof data !== 'object' || data === null) {
