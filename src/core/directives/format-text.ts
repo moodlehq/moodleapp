@@ -364,6 +364,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
 
     /**
      * Wrap an image with a container to adapt its width.
+     * If the image is inside a picture element, the picture element is wrapped instead.
      *
      * @param img Image to adapt.
      */
@@ -371,6 +372,11 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         if (img.classList.contains('texrender')) {
             return;
         }
+
+        // If the image is inside a picture element, wrap the picture element instead.
+        const elementToWrap = img.parentElement?.tagName === 'PICTURE'
+            ? img.parentElement
+            : img;
 
         // Element to wrap the image.
         const container = document.createElement('span');
@@ -399,22 +405,25 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             container.classList.add('atto_image_button_text-bottom');
         }
 
-        CoreDom.wrapElement(img, container);
+        CoreDom.wrapElement(elementToWrap, container);
     }
 
     /**
      * Add image viewer button to view adapted images at full size.
      */
     protected async addImageViewerButton(): Promise<void> {
-        const imgs = Array.from(this.element.querySelectorAll('.core-adapted-img-container > img'));
+        const imgs = Array.from(
+            this.element.querySelectorAll<HTMLImageElement>(
+                '.core-adapted-img-container > img, .core-adapted-img-container > picture > img',
+            ),
+        );
         if (!imgs.length) {
             return;
         }
 
         // If cannot calculate element's width, use viewport width to avoid false adapt image icons appearing.
         const elWidth = await this.getElementWidth();
-
-        imgs.forEach((img: HTMLImageElement) => {
+        imgs.forEach((img) => {
             // Skip image if it's inside a link.
             if (img.closest('a')) {
                 return;
@@ -701,6 +710,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const site = await this.getSite();
 
         const images = Array.from(div.querySelectorAll('img'));
+        const pictures = Array.from(div.querySelectorAll('picture'));
         const anchors = Array.from(div.querySelectorAll('a'));
         const audios = Array.from(div.querySelectorAll('audio'));
         const videos = Array.from(div.querySelectorAll('video'));
@@ -735,11 +745,21 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             this.addExternalContent(anchor);
         });
 
+        const siteId = this.getSiteId();
         const externalImages: CoreExternalContentDirective[] = [];
         if (images && images.length > 0) {
             // Walk through the content to find images, and add our directive.
-            images.forEach((img: HTMLElement) => {
+            images.forEach((img) => {
                 this.addMediaAdaptClass(img);
+
+                if (siteId) {
+                    // Avoid WebView starting network requests before external-content can rewrite URLs.
+                    const srcset = img.getAttribute('srcset');
+                    if (srcset) {
+                        img.setAttribute('data-original-srcset', srcset);
+                        img.removeAttribute('srcset');
+                    }
+                }
 
                 const externalImage = this.addExternalContent(img);
                 if (externalImage && !externalImage.invalid) {
@@ -751,6 +771,22 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 }
             });
         }
+
+        pictures.forEach(picture => {
+            const sources = Array.from(picture.querySelectorAll('source'));
+
+            sources.forEach((source) => {
+                if (siteId) {
+                    // Avoid WebView starting network requests before external-content can rewrite URLs.
+                    const srcset = source.getAttribute('srcset');
+                    if (srcset) {
+                        source.setAttribute('data-original-srcset', srcset);
+                        source.removeAttribute('srcset');
+                    }
+                }
+                this.addExternalContent(source);
+            });
+        });
 
         const audioControllers = audios.map(audio => {
             this.treatMedia(audio);
