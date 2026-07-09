@@ -143,8 +143,8 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 this.logView(report.details);
                 this.onReportLoaded.emit(report.details);
             }
-        } catch {
-            if (this.reportId()) {
+        } catch (error) {
+            if (this.reportId() && error && error.errorcode === 'invalidresponse') {
                 const errorConfig: CoreErrorObject = {
                     title: Translate.instant('core.error'),
                     body: `
@@ -175,7 +175,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 return;
             }
 
-            await CoreAlerts.showError(new CoreError(Translate.instant('core.reportbuilder.errorreportview')));
+            await CoreAlerts.showError(error, { default: Translate.instant('core.reportbuilder.errorreportview') });
         }
     }
 
