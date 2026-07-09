@@ -3,22 +3,28 @@
         <ion-buttons slot="start">
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
-        <ion-buttons slot="end">
-            <ion-button fill="clear" (click)="openInfo()" [ariaLabel]="'core.close' | translate">
-                <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true" />
-            </ion-button>
-        </ion-buttons>
-        @if (reportDetail) {
-            <ion-title>
+        @let details = reportDetail();
+        <ion-title>
+            @if (reportName()) {
                 <h1>
-                    <core-format-text [clean]="true" [text]="reportDetail.name" [filter]="false" />
+                    <core-format-text [clean]="true" [text]="reportName()" [filter]="false" />
                 </h1>
-                <p class="subheading"> {{ reportDetail.sourcename }} </p>
-            </ion-title>
+            }
+            @if (details && details.sourcename) {
+                <p class="subheading"> {{ details.sourcename }} </p>
+            }
+        </ion-title>
+        @if (details) {
+            <ion-buttons slot="end">
+                <ion-button fill="clear" (click)="openInfo()" [ariaLabel]="'core.more' | translate">
+                    <ion-icon slot="icon-only" name="fas-circle-info" aria-hidden="true" />
+                </ion-button>
+            </ion-buttons>
         }
     </ion-toolbar>
 </ion-header>
 
 <ion-content>
-    <core-report-builder-report-detail [isBlock]="false" [reportId]="reportId" (onReportLoaded)="loadReportDetail($event)" />
+    <core-report-builder-report-detail [isBlock]="false" [reportParams]="reportId() ?? reportParams()"
+        (onReportLoaded)="loadReportDetail($event)" />
 </ion-content>

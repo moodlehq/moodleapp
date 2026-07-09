@@ -13,12 +13,13 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, OnInit, computed, input, linkedSignal, output, signal } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import {
     CoreReportBuilder,
     CoreReportBuilderReportDetail,
     CoreReportBuilderRetrieveReportMapped,
+    CoreReportBuilderSystemReportParams,
     REPORT_ROWS_LIMIT,
 } from '@features/reportbuilder/services/reportbuilder';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -29,12 +30,11 @@ import { CoreErrorObject } from '@services/error-helper';
 import { CoreOpener } from '@static/opener';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreReportBuilderReportColumnComponent } from '../report-column/report-column';
+import { ContextLevel } from '@/core/constants';
 
 @Component({
     selector: 'core-report-builder-report-detail',
@@ -47,52 +47,70 @@ import { CoreReportBuilderReportColumnComponent } from '../report-column/report-
 })
 export class CoreReportBuilderReportDetailComponent implements OnInit {
 
-    @Input({ required: true }) reportId!: string;
-    @Input({ transform: toBoolean }) isBlock = true;
-    @Input() perPage?: number;
-    @Input() layout: 'card' | 'table' | 'adaptative' = 'adaptative';
-    @Output() onReportLoaded = new EventEmitter<CoreReportBuilderReportDetail>();
+    readonly reportParams = input.required<number | CoreReportBuilderSystemReportParams>();
+    readonly isBlock = input(true, { transform: toBoolean });
+    readonly perPage = input<number>();
+    readonly layout = input<'card' | 'table' | 'adaptative'>('adaptative');
+    readonly onReportLoaded = output<CoreReportBuilderReportDetail>();
 
-    get isCardLayout(): boolean {
-        return this.layout === 'card' || (CoreScreen.isMobile && this.layout === 'adaptative');
-    }
+    readonly isCardLayout = computed(() => {
+        const layout = this.layout();
 
-    state$: Readonly<BehaviorSubject<CoreReportBuilderReportDetailState>> =
-        new BehaviorSubject<CoreReportBuilderReportDetailState>({
-            report: null,
-            loaded: false,
-            canLoadMoreRows: false,
-            errorLoadingRows: false,
-            cardviewShowFirstTitle: false,
-            cardVisibleColumns: 1,
-            page: 0,
-        });
+        return layout === 'card' || (CoreScreen.isMobile && layout === 'adaptative');
+    });
 
-    source$: Observable<string>;
+    readonly report = signal<CoreReportBuilderRetrieveReportMapped | null>(null);
+    readonly loaded = signal<boolean>(false);
+    readonly errorLoadingRows = signal<boolean>(false);
+    readonly page = signal<number>(0);
+
+    readonly canLoadMoreRows = linkedSignal(() => {
+        const report = this.report();
+
+        return !!report && report.data.totalrowcount > report.data.rows.length;
+    });
+
+    readonly cardviewShowFirstTitle = computed(() => this.report()?.details?.settingsdata.cardviewShowFirstTitle ?? false);
+    readonly cardVisibleColumns = computed(() => {
+        const reportDetails = this.report()?.details;
+
+        return reportDetails?.settingsdata.cardviewVisibleColumns ?? 1;
+    });
+
+    readonly contextLevel = computed(() => this.reportParamsObject()?.context?.contextlevel ?? ContextLevel.SYSTEM);
+    readonly contextInstanceId = computed(() => this.reportParamsObject()?.context?.instanceid ?? 0);
+
+    readonly reportId = computed(() => {
+        const report = this.reportParams();
+
+        return typeof report === 'number' ? report : undefined;
+    });
+
+    readonly reportParamsObject = computed(() => {
+        const report = this.reportParams();
+
+        return typeof report === 'object' ? report : undefined;
+    });
 
     isString = (value: unknown): boolean => CoreReportBuilder.isString(value);
 
-    protected logView: (report: CoreReportBuilderRetrieveReportMapped) => void;
+    protected logView: (reportDetails: CoreReportBuilderReportDetail) => void;
 
     constructor() {
-        this.source$ = this.state$.pipe(
-            map(state => {
-                const splittedSource = state.report?.details.source.split('\\');
-                const source = splittedSource?.[splittedSource?.length - 1];
+        this.logView = CoreTime.once(async (reportDetails) => {
+            const reportId = this.reportId();
+            if (!reportId) {
+                return;
+            }
 
-                return source ?? 'system';
-            }),
-        );
-
-        this.logView = CoreTime.once(async (report) => {
-            await CorePromiseUtils.ignoreErrors(CoreReportBuilder.viewReport(this.reportId));
+            await CorePromiseUtils.ignoreErrors(CoreReportBuilder.viewReport(reportId));
 
             CoreAnalytics.logEvent({
                 type: CoreAnalyticsEventType.VIEW_ITEM,
                 ws: 'core_reportbuilder_view_report',
-                name: report.details.name,
-                data: { id: this.reportId, category: 'reportbuilder' },
-                url: `/reportbuilder/view.php?id=${this.reportId}`,
+                name: reportDetails.name,
+                data: { id: reportId, category: 'reportbuilder' },
+                url: `/reportbuilder/view.php?id=${reportId}`,
             });
         });
     }
@@ -102,7 +120,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         await this.getReport();
-        this.updateState({ loaded: true });
+        this.loaded.set(true);
     }
 
     /**
@@ -110,16 +128,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      */
     async getReport(): Promise<void> {
         try {
-            if (!this.reportId) {
-                CoreAlerts.showError(new CoreError('No report found'));
-                CoreNavigator.back();
-
-                return;
-            }
-
-            const { page } = this.state$.getValue();
-
-            const report = await CoreReportBuilder.loadReport(parseInt(this.reportId), page,this.perPage ?? REPORT_ROWS_LIMIT);
+            const report = await this.loadReport();
 
             if (!report) {
                 CoreAlerts.showError(new CoreError('No report found'));
@@ -128,48 +137,64 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
                 return;
             }
 
-            this.updateState({
-                report,
-                cardVisibleColumns: report.details.settingsdata.cardviewVisibleColumns,
-                cardviewShowFirstTitle: report.details.settingsdata.cardviewShowFirstTitle,
-                canLoadMoreRows: report.data.totalrowcount > report.data.rows.length,
-            });
+            this.report.set(report);
 
-            this.logView(report);
-            this.onReportLoaded.emit(report.details);
-        } catch {
-            const errorConfig: CoreErrorObject = {
-                title: Translate.instant('core.error'),
-                body: `
-                    <p>${Translate.instant('addon.mod_page.errorwhileloadingthepage')}</p>
-                    <p>${Translate.instant('core.course.useactivityonbrowser')}</p>
-                `,
-                buttons: [
-                    {
-                        text: Translate.instant('core.cancel'),
-                        role: 'cancel',
-                        handler: async () => await CoreNavigator.back(),
-                    },
-                    {
-                        text: Translate.instant('core.openinbrowser'),
-                        role: 'confirm',
-                        handler: async () => {
-                            const site = CoreSites.getRequiredCurrentSite();
-                            const href = `${site.getURL()}/reportbuilder/view.php?id=${this.reportId}`;
-                            await CoreOpener.openInBrowser(href, { showBrowserWarning: false });
-                            await CoreNavigator.back();
+            if (report.details) {
+                this.logView(report.details);
+                this.onReportLoaded.emit(report.details);
+            }
+        } catch (error) {
+            if (this.reportId() && error && error.errorcode === 'invalidresponse') {
+                const errorConfig: CoreErrorObject = {
+                    title: Translate.instant('core.error'),
+                    body: `
+                        <p>${Translate.instant('addon.mod_page.errorwhileloadingthepage')}</p>
+                        <p>${Translate.instant('core.course.useactivityonbrowser')}</p>
+                    `,
+                    buttons: [
+                        {
+                            text: Translate.instant('core.cancel'),
+                            role: 'cancel',
+                            handler: async () => await CoreNavigator.back(),
                         },
-                    },
-                ],
-            };
+                        {
+                            text: Translate.instant('core.openinbrowser'),
+                            role: 'confirm',
+                            handler: async () => {
+                                const site = CoreSites.getRequiredCurrentSite();
+                                const href = `${site.getURL()}/reportbuilder/view.php?id=${this.reportId()}`;
+                                await CoreOpener.openInBrowser(href, { showBrowserWarning: false });
+                                await CoreNavigator.back();
+                            },
+                        },
+                    ],
+                };
 
-            await CoreAlerts.showError(errorConfig);
+                await CoreAlerts.showError(errorConfig);
+
+                return;
+            }
+
+            await CoreAlerts.showError(error, { default: Translate.instant('core.reportbuilder.errorreportview') });
         }
     }
 
-    updateState(state: Partial<CoreReportBuilderReportDetailState>): void {
-        const previousState = this.state$.getValue();
-        this.state$.next({ ...previousState, ...state });
+    /**
+     * Load report data.
+     *
+     * @returns System or custom report data.
+     */
+    protected async loadReport(): Promise<CoreReportBuilderRetrieveReportMapped> {
+        const page = this.page();
+
+        const reportParams = this.reportParams();
+        if (typeof reportParams === 'object') {
+            return await CoreReportBuilder.getSystemReport(reportParams, page, this.perPage() ?? REPORT_ROWS_LIMIT);
+        }
+
+        const reportId = reportParams;
+
+        return await CoreReportBuilder.loadReport(reportId, page, this.perPage() ?? REPORT_ROWS_LIMIT);
     }
 
     /**
@@ -178,8 +203,13 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * @param ionRefresher ionic refresher.
      */
     async refreshReport(ionRefresher?: HTMLIonRefresherElement): Promise<void> {
-        await CorePromiseUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
-        this.updateState({ page: 0, canLoadMoreRows: false });
+        const reportParams = this.reportParams();
+        if (typeof reportParams === 'object') {
+            await CorePromiseUtils.ignoreErrors(CoreReportBuilder.invalidateSystemReport(reportParams.source));
+        } else {
+            await CorePromiseUtils.ignoreErrors(CoreReportBuilder.invalidateReport());
+        }
+        this.page.set(0);
         await CorePromiseUtils.ignoreErrors(this.getReport());
         await ionRefresher?.complete();
     }
@@ -188,8 +218,7 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * Increment page of report rows.
      */
     protected incrementPage(): void {
-        const { page } = this.state$.getValue();
-        this.updateState({ page: page + 1 });
+        this.page.update(page => page + 1);
     }
 
     /**
@@ -198,7 +227,8 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * @param complete Completion callback.
      */
     async fetchMoreInfo(complete: () => void): Promise<void> {
-        const { canLoadMoreRows, report } = this.state$.getValue();
+        const canLoadMoreRows = this.canLoadMoreRows();
+        const report = this.report();
 
         if (!canLoadMoreRows) {
             complete();
@@ -206,37 +236,34 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
             return;
         }
 
+        this.errorLoadingRows.set(false);
+
         try {
             this.incrementPage();
 
-            const { page: currentPage } = this.state$.getValue();
-
-            const newReport = await CoreReportBuilder.loadReport(parseInt(this.reportId), currentPage, REPORT_ROWS_LIMIT);
+            const newReport = await this.loadReport();
 
             if (!report || !newReport || newReport.data.rows.length === 0) {
-                this.updateState({ canLoadMoreRows: false });
                 complete();
 
                 return;
             }
 
-            this.updateState({
-                report: {
-                    ...report,
-                    data: {
-                        ...report.data,
-                        rows: [
-                            ...report.data.rows,
-                            ...newReport.data.rows,
-                        ],
-                    },
+            this.report.set({
+                ...report,
+                data: {
+                    ...report.data,
+                    rows: [
+                        ...report.data.rows,
+                        ...newReport.data.rows,
+                    ],
                 },
-                canLoadMoreRows: newReport.data.totalrowcount > report.data.rows.length + newReport.data.rows.length,
             });
         } catch (error) {
             CoreAlerts.showError(error, { default: 'Error loading more reports' });
 
-            this.updateState({ canLoadMoreRows: false, errorLoadingRows: true });
+            this.canLoadMoreRows.set(false);
+            this.errorLoadingRows.set(true);
         }
 
         complete();
@@ -248,24 +275,22 @@ export class CoreReportBuilderReportDetailComponent implements OnInit {
      * @param rowIndex card to expand or close.
      */
     toggleRow(rowIndex: number): void {
-        const { report } = this.state$.getValue();
+        const report = this.report();
 
         if (!report?.data?.rows[rowIndex]) {
             return;
         }
 
-        report.data.rows[rowIndex].isExpanded = !report.data.rows[rowIndex].isExpanded;
-        this.updateState({ report });
+        const updatedRows = report.data.rows.map((row, index) =>
+            index === rowIndex ? { ...row, isExpanded: !row.isExpanded } : row);
+
+        this.report.set({
+            ...report,
+            data: {
+                ...report.data,
+                rows: updatedRows,
+            },
+        });
     }
 
 }
-
-export type CoreReportBuilderReportDetailState = {
-    report: CoreReportBuilderRetrieveReportMapped | null;
-    loaded: boolean;
-    canLoadMoreRows: boolean;
-    errorLoadingRows: boolean;
-    cardviewShowFirstTitle: boolean;
-    cardVisibleColumns: number;
-    page: number;
-};

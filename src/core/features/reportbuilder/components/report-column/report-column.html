@@ -1,28 +1,29 @@
-<ion-item class="ion-text-wrap" lines="inset" [detail]="false" [button]="isExpandable" [attr.aria-expanded]="isExpanded"
-    [attr.aria-controls]="'core-report-builder-column-' + rowIndex"
-    [attr.aria-label]="(isExpanded ? 'core.hidecolumns' : 'core.showcolumns') | translate" (click)="toggleRow()">
+<ion-item class="ion-text-wrap" lines="inset" [detail]="false" [button]="isExpandable()" [attr.aria-expanded]="isExpanded()"
+    [attr.aria-controls]="'core-report-builder-column-' + rowIndex()"
+    [attr.aria-label]="(isExpanded() ? 'core.hidecolumns' : 'core.showcolumns') | translate" (click)="toggleRow()">
     <ion-label>
-        @if (columnIndex !== 0 || (columnIndex === 0 && showFirstTitle)) {
-            <p class="item-heading">{{ header }}</p>
+        @if (columnIndex() !== 0 || (columnIndex() === 0 && showFirstTitle())) {
+            <p class="item-heading">{{ header() }}</p>
         }
-        @if (columnIndex === 0) {
+        @let columnData = column();
+        @if (columnIndex() === 0) {
             <h2>
-                @if (isString(column)) {
-                    <core-format-text [text]="column" [contextLevel]="source" [contextInstanceId]="contextId" />
+                @if (columnIsString()) {
+                    <core-format-text [text]="columnData" [contextLevel]="contextLevel()" [contextInstanceId]="contextInstanceId()" />
                 } @else {
-                    {{ column }}
+                    {{ columnData }}
                 }
             </h2>
         } @else {
-            @if (isString(column)) {
-                <core-format-text [text]="column" [contextLevel]="source" [contextInstanceId]="contextId" />
+            @if (columnIsString()) {
+                <core-format-text [text]="columnData" [contextLevel]="contextLevel()" [contextInstanceId]="contextInstanceId()" />
             } @else {
-                {{ column }}
+                {{ columnData }}
             }
         }
     </ion-label>
-    @if (isExpandable) {
-        <ion-icon [class.expandable-status-icon-expanded]="!isExpanded" slot="end" aria-hidden="true" name="fas-chevron-up"
+    @if (isExpandable()) {
+        <ion-icon [class.expandable-status-icon-expanded]="!isExpanded()" slot="end" aria-hidden="true" name="fas-chevron-up"
             class="expandable-status-icon" flip-rtl />
     }
 </ion-item>

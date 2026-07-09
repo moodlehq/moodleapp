@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
-import { CoreReportBuilderReportDetail } from '@features/reportbuilder/services/reportbuilder';
+import { Component, linkedSignal, signal } from '@angular/core';
+import { CoreReportBuilderReportDetail, CoreReportBuilderSystemReportParams } from '@features/reportbuilder/services/reportbuilder';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -27,16 +27,24 @@ import { CoreReportBuilderReportDetailComponent } from '../../components/report-
         CoreReportBuilderReportDetailComponent,
     ],
 })
-export default class CoreReportBuilderReportPage implements OnInit {
+export default class CoreReportBuilderReportPage {
 
-    reportId!: string;
-    reportDetail?: CoreReportBuilderReportDetail;
+    readonly reportId = signal<number | undefined>(undefined);
+    readonly reportParams = signal<CoreReportBuilderSystemReportParams | undefined>(undefined);
+    readonly reportDetail = signal<CoreReportBuilderReportDetail | undefined>(undefined);
+    readonly reportName = linkedSignal(() => this.reportDetail()?.name ?? this.reportParams()?.name);
 
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.reportId = CoreNavigator.getRequiredRouteParam('id');
+    constructor() {
+        const reportId = CoreNavigator.getRouteNumberParam('id');
+        if (reportId) {
+            this.reportId.set(reportId);
+        } else {
+            // No id, it should be a system report.
+            const params = CoreNavigator.getRequiredRouteParam<CoreReportBuilderSystemReportParams>('params');
+
+            this.reportParams.set(params);
+        }
+
     }
 
     /**
@@ -45,7 +53,7 @@ export default class CoreReportBuilderReportPage implements OnInit {
      * @param reportDetail it contents the detail of the report.
      */
     loadReportDetail(reportDetail: CoreReportBuilderReportDetail): void {
-        this.reportDetail = reportDetail;
+        this.reportDetail.set(reportDetail);
     }
 
     /**
@@ -57,7 +65,7 @@ export default class CoreReportBuilderReportPage implements OnInit {
 
         CoreModals.openSideModal<void>({
             component: CoreReportBuilderReportSummaryComponent,
-            componentProps: { reportDetail: this.reportDetail },
+            componentProps: { reportDetail: this.reportDetail() },
         });
     }
 

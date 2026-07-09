@@ -427,7 +427,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                 inputData,
             );
         } catch {
-            // Error ocurred, consider there are no changes.
+            // Error occurred, consider there are no changes.
             return false;
         }
     }

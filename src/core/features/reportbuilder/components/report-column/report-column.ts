@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { toBoolean } from '@/core/transforms/boolean';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { CoreReportBuilder } from '@features/reportbuilder/services/reportbuilder';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ContextLevel } from '@/core/constants';
 
 @Component({
     selector: 'core-report-builder-report-column',
@@ -27,24 +28,24 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreReportBuilderReportColumnComponent {
 
-    @Input({ transform: toBoolean }) isExpanded = false;
-    @Input({ transform: toBoolean }) isExpandable = false;
-    @Input({ transform: toBoolean }) showFirstTitle = false;
-    @Input({ required: true }) columnIndex!: number;
-    @Input({ required: true }) rowIndex!: number;
-    @Input({ required: true }) column!: string | number;
-    @Input({ required: true }) contextId!: number;
-    @Input({ required: true }) header!: string;
-    @Input({ required: true }) source!: string;
-    @Output() onToggleRow: EventEmitter<number> = new EventEmitter();
+    readonly isExpanded = input(false, { transform: toBoolean });
+    readonly isExpandable = input(false, { transform: toBoolean });
+    readonly showFirstTitle = input(false, { transform: toBoolean });
+    readonly columnIndex = input.required<number>();
+    readonly rowIndex = input.required<number>();
+    readonly column = input.required<string | number>();
+    readonly header = input.required<string>();
+    readonly contextLevel = input.required<ContextLevel>();
+    readonly contextInstanceId = input.required<number>();
+    readonly onToggleRow = output<number>();
 
-    isString = (value: unknown): boolean => CoreReportBuilder.isString(value);
+    readonly columnIsString = computed(() => CoreReportBuilder.isString(this.column()));
 
     /**
      * Emits row click
      */
     toggleRow(): void {
-        this.onToggleRow.emit(this.rowIndex);
+        this.onToggleRow.emit(this.rowIndex());
     }
 
 }

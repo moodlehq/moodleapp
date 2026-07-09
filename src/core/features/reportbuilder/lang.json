@@ -1,4 +1,5 @@
 {
+    "errorreportview": "You cannot view this report",
     "filtersapplied": "There may be filters applied to this view. To edit filters or change the sorting order, <a href=\"{{$a}}\">open this report on your browser.</a>",
     "hidecolumns": "Hide columns",
     "modifiedby": "Modified by",

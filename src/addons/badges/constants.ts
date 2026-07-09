@@ -18,3 +18,8 @@ export const ADDONS_BADGES_COMPONENT_NAME = 'AddonBadges';
 
 export const ADDONS_BADGES_USER_PROFILE_FEATURE_NAME = `${CORE_USER_FEATURE_PREFIX}${ADDONS_BADGES_COMPONENT_NAME}`;
 export const ADDONS_BADGES_USER_MENU_FEATURE_NAME = `${ADDONS_BADGES_USER_PROFILE_FEATURE_NAME}:account`;
+
+export enum BadgeReportType {
+    SITE = 1, // Badge type for site badges.
+    COURSE = 2, // Badge type for course badges.
+};
