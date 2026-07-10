@@ -1126,6 +1126,8 @@ export class CoreUrl {
 
         const normalize = (url: string) => {
             const stripped = CoreUrl.removeUrlParts(url, [
+                CoreUrlPartNames.Query,
+                CoreUrlPartNames.Fragment,
                 CoreUrlPartNames.Protocol,
                 CoreUrlPartNames.WWWInDomain,
             ]);

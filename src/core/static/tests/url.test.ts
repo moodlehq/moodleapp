@@ -404,6 +404,7 @@ describe('CoreUrl', () => {
         expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example.com/path/too/resource')).toBe(false);
         expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example.com/other/path/to/resource')).toBe(false);
         expect(CoreUrl.isSubpathOf('https://example.com/path/to', 'https://example2.com/path/to/resource')).toBe(false);
+        expect(CoreUrl.isSubpathOf('https://firstsite.com', 'https://anothersite.com?referer=https://firstsite.com')).toBe(false);
     });
 
 });
