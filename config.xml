@@ -41,10 +41,11 @@
     <preference name="android-minSdkVersion" value="24" />
     <preference name="android-targetSdkVersion" value="36" />
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
-    <preference name="AndroidInsecureFileModeEnabled" value="true" />
+    <preference name="AndroidInsecureFileModeEnabled" value="false" />
     <preference name="CustomURLSchemePluginClearsAndroidIntent" value="true" />
     <preference name="deployment-target" value="15.0" />
     <preference name="iosPersistentFileLocation" value="Compatibility" />
+    <preference name="scheme" value="http" />
     <preference name="iosScheme" value="moodleappfs" />
     <preference name="WKWebViewOnly" value="true" />
     <preference name="WKFullScreenEnabled" value="true" />

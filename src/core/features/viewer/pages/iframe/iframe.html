@@ -1,17 +1,26 @@
 <ion-header>
     <ion-toolbar>
-        <ion-buttons slot="start">
-            <ion-back-button [text]="'core.back' | translate" />
-        </ion-buttons>
+        @if (!isModal) {
+            <ion-buttons slot="start">
+                <ion-back-button [text]="'core.back' | translate" />
+            </ion-buttons>
+        }
         <ion-title>
-            <h1>{{ title }}</h1>
+            <h1>{{ effectiveTitle() }}</h1>
         </ion-title>
+        @if (isModal) {
+            <ion-buttons slot="end">
+                <ion-button fill="clear" (click)="closeModal()" [ariaLabel]="'core.close' | translate">
+                    <ion-icon slot="icon-only" name="fas-xmark" aria-hidden="true" />
+                </ion-button>
+            </ion-buttons>
+        }
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <core-loading [hideUntil]="!!url">
-        @if (url) {
-            <core-iframe [src]="url" [allowAutoLogin]="autoLogin" />
+    <core-loading [hideUntil]="!!effectiveUrl()">
+        @if (effectiveUrl()) {
+            <core-iframe [src]="effectiveUrl()" [allowAutoLogin]="effectiveAutoLogin()" />
         }
     </core-loading>
 </ion-content>

@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, input, linkedSignal } from '@angular/core';
+import { toBoolean } from '@/core/transforms/boolean';
 import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
+import { ModalController } from '@singletons';
+import { CoreAnyError } from '@classes/errors/error';
 
 /**
  * Page to display a URL in an iframe.
@@ -29,25 +32,42 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export default class CoreViewerIframePage implements OnInit {
 
-    title?: string; // Page title.
-    url?: string; // Iframe URL.
-    autoLogin?: boolean; // Whether to try to use auto-login.
+    readonly title = input<string>();
+    readonly url = input<string>();
+    readonly autoLogin = input(true, { transform: toBoolean });
+
+    readonly effectiveTitle = linkedSignal(() => this.title());
+    readonly effectiveUrl = linkedSignal(() => this.url());
+    readonly effectiveAutoLogin = linkedSignal(() => this.autoLogin());
+
+    isModal = false;
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        try {
-            this.title = CoreNavigator.getRequiredRouteParam('title');
-            this.url = CoreNavigator.getRequiredRouteParam('url');
-        } catch (error) {
-            CoreAlerts.showError(error);
-            CoreNavigator.back();
+        if (!this.title() || !this.url()) {
+            try {
+                this.effectiveTitle.set(CoreNavigator.getRequiredRouteParam('title'));
+                this.effectiveUrl.set(CoreNavigator.getRequiredRouteParam('url'));
+            } catch (error) {
+                CoreAlerts.showError(error as CoreAnyError);
+                CoreNavigator.back();
 
-            return;
+                return;
+            }
+
+            this.effectiveAutoLogin.set(CoreNavigator.getRouteBooleanParam('autoLogin') ?? this.autoLogin());
+        } else {
+            this.isModal = true;
         }
+    }
 
-        this.autoLogin = CoreNavigator.getRouteBooleanParam('autoLogin') ?? true;
+    /**
+     * Close the modal.
+     */
+    closeModal(): void {
+        ModalController.dismiss();
     }
 
 }
