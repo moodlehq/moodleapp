@@ -320,15 +320,15 @@ export class CoreFileHelperProvider {
                 || CoreMimetype.getFileExtension(file.filename ?? '') === 'apk';
         }
 
-        if (mimetype.indexOf('application/vnd.google-apps.') != -1) {
+        if (mimetype.includes('application/vnd.google-apps.')) {
             // Google Docs file, always open in browser.
             return true;
         }
 
-        if (file.repositorytype == 'onedrive') {
+        if (file.repositorytype === 'onedrive') {
             // In OneDrive, open in browser the office docs
-            return mimetype.indexOf('application/vnd.openxmlformats-officedocument') != -1 ||
-                    mimetype == 'text/plain' || mimetype == 'document/unknown';
+            return mimetype.includes('application/vnd.openxmlformats-officedocument') ||
+                    mimetype === 'text/plain' || mimetype === 'document/unknown';
         }
 
         return false;
@@ -484,7 +484,7 @@ export class CoreFileHelperProvider {
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
         const path = CoreFileUtils.isFileEntry(file) ? file.fullPath : file.filepath;
 
-        if (path === undefined || path.length == 0) {
+        if (path === undefined || path.length === 0) {
             return;
         }
 
@@ -552,7 +552,7 @@ export class CoreFileHelperProvider {
 
             // Get the filename from the URL.
             let filename = url.substring(url.lastIndexOf('/') + 1);
-            if (filename.indexOf('?') != -1) {
+            if (filename.includes('?')) {
                 filename = filename.substring(0, filename.indexOf('?'));
             }
             filename = CoreUrl.decodeURIComponent(filename);
@@ -609,7 +609,7 @@ export class CoreFileHelperProvider {
             // encodeURIComponent doesn't encode parenthesis, so it's better to rely on the name from the URL.
             const url = CoreFileHelper.getFileUrl(file);
             let filename = url.substring(url.lastIndexOf('/') + 1);
-            if (filename.indexOf('?') != -1) {
+            if (filename.includes('?')) {
                 filename = filename.substring(0, filename.indexOf('?'));
             }
 

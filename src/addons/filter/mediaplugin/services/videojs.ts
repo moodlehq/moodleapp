@@ -106,7 +106,7 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const dataSetupString = video.getAttribute('data-setup') || video.getAttribute('data-setup-lazy') || '{}';
         const data = CoreText.parseJSON<VideoJSOptions>(dataSetupString, {});
-        const youtubeUrl = data.techOrder?.[0] == 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
+        const youtubeUrl = data.techOrder?.[0] === 'youtube' && CoreUrl.getYoutubeEmbedUrl(data.sources?.[0]?.src);
 
         if (!youtubeUrl) {
             return;

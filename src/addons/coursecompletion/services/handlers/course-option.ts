@@ -84,7 +84,7 @@ export class AddonCourseCompletionCourseOptionHandlerService implements CoreCour
                 emergencyCache: false,
             });
         } catch (error) {
-            if (error && error.errorcode == 'notenroled') {
+            if (error && error.errorcode === 'notenroled') {
                 // Not enrolled error, probably a teacher. Ignore error.
             } else {
                 throw error;

@@ -85,7 +85,7 @@ export default class AddonModAssignSubmissionListPage implements AfterViewInit, 
         this.syncObserver = CoreEvents.onMultiple<AddonModAssignAutoSyncData | AddonModAssignManualSyncData>(
             events,
             (data) => {
-                if (!this.submissions.loaded || ('context' in data && data.context == 'submission-list')) {
+                if (!this.submissions.loaded || ('context' in data && data.context === 'submission-list')) {
                     return;
                 }
 

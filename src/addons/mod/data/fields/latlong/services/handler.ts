@@ -112,9 +112,9 @@ export class AddonModDataFieldLatlongHandlerService implements AddonModDataField
         });
 
         // If we get here then only one field has been filled in.
-        if (valueCount == 1) {
+        if (valueCount === 1) {
             return Translate.instant('addon.mod_data.latlongboth');
-        } else if (field.required && valueCount == 0) {
+        } else if (field.required && valueCount === 0) {
             return Translate.instant('addon.mod_data.errormustsupplyvalue');
         }
     }

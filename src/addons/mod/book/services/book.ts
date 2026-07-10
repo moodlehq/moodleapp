@@ -126,12 +126,12 @@ export class AddonModBookProvider {
             }
             let key: string;
             const chapter: string = matches[1];
-            const filepathIsChapter = content.filepath == `/${chapter}/`;
+            const filepathIsChapter = content.filepath === `/${chapter}/`;
 
             // Init the chapter if it's not defined yet.
             map[chapter] = map[chapter] || { paths: {} };
 
-            if (content.filename == 'index.html' && filepathIsChapter) {
+            if (content.filename === 'index.html' && filepathIsChapter) {
                 // Index of the chapter, set indexUrl and tags of the chapter.
                 map[chapter].indexUrl = content.fileurl;
                 map[chapter].tags = content.tags;

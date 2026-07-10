@@ -158,7 +158,7 @@ export class AddonModScormHelperProvider {
             const filtered: Record<string, AddonModScormDataValue> = {};
 
             for (const element in sco.userdata) {
-                if (element.indexOf('.') == -1 && elementsToIgnore.indexOf(element) == -1) {
+                if (!element.includes('.') && !elementsToIgnore.includes(element)) {
                     // The element doesn't use a dot notation, probably SCO data.
                     filtered[element] = sco.userdata[element];
                 }
@@ -198,7 +198,7 @@ export class AddonModScormHelperProvider {
         }
 
         // Check if last online incomplete.
-        const hasOffline = attempts.offline.indexOf(lastOnline) > -1;
+        const hasOffline = attempts.offline.includes(lastOnline);
 
         const incomplete = await AddonModScorm.isAttemptIncomplete(scorm.id, lastOnline, {
             offline: hasOffline,
@@ -263,7 +263,7 @@ export class AddonModScormHelperProvider {
         if (scorm.maxattempt && attempts.lastAttempt.num > scorm.maxattempt) {
             return {
                 num: scorm.maxattempt,
-                offline: attempts.offline.indexOf(scorm.maxattempt) > -1,
+                offline: attempts.offline.includes(scorm.maxattempt),
             };
         } else {
             return {
@@ -281,7 +281,7 @@ export class AddonModScormHelperProvider {
      * @returns Next SCO.
      */
     getNextScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
+        const currentTocIndex = toc.findIndex((item) => item.id === scoId);
 
         // We found the current SCO. Now search the next visible SCO with fulfilled prerequisites.
         for (let j = currentTocIndex + 1; j < toc.length; j++) {
@@ -299,7 +299,7 @@ export class AddonModScormHelperProvider {
      * @returns Previous SCO.
      */
     getPreviousScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        const currentTocIndex = toc.findIndex((item) => item.id == scoId);
+        const currentTocIndex = toc.findIndex((item) => item.id === scoId);
 
         // We found the current SCO. Now let's search the previous visible SCO with fulfilled prerequisites.
         for (let j = currentTocIndex - 1; j >= 0; j--) {
@@ -317,7 +317,7 @@ export class AddonModScormHelperProvider {
      * @returns SCO.
      */
     getScoFromToc(toc: AddonModScormScoWithData[], scoId: number): AddonModScormScoWithData | undefined {
-        return toc.find(sco => sco.id == scoId);
+        return toc.find(sco => sco.id === scoId);
     }
 
     /**
@@ -337,7 +337,7 @@ export class AddonModScormHelperProvider {
     ): Promise<AddonModScormTOCScoWithIcon[]> {
         const toc = await AddonModScorm.getOrganizationToc(scormId, lastAttempt, options);
 
-        const tocArray = <AddonModScormTOCScoWithIcon[]> AddonModScorm.formatTocToArray(toc);
+        const tocArray = <AddonModScormTOCScoWithIcon[]>AddonModScorm.formatTocToArray(toc);
 
         // Get images for each SCO.
         tocArray.forEach((sco) => {

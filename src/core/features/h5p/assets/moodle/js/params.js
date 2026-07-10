@@ -25,30 +25,30 @@ if (window.H5PIntegration && window.H5PIntegration.contents && location.search) 
     split.forEach(function(param) {
         var nameAndValue = param.split('=');
 
-        if (nameAndValue[0] == 'displayOptions' && contentData) {
+        if (nameAndValue[0] === 'displayOptions' && contentData) {
             try {
                 contentData.displayOptions = contentData.displayOptions || {};
 
                 var displayOptions = JSON.parse(decodeURIComponent(nameAndValue[1]));
 
-                if (displayOptions && typeof displayOptions == 'object') {
+                if (displayOptions && typeof displayOptions === 'object') {
                     Object.assign(contentData.displayOptions, displayOptions);
                 }
             } catch (error) {
                 console.error('Error parsing display options', decodeURIComponent(nameAndValue[1]));
             }
-        } else if (nameAndValue[0] == 'component') {
+        } else if (nameAndValue[0] === 'component') {
             window.H5PIntegration.moodleComponent = nameAndValue[1];
             if (window.H5PIntegration.moodleComponent) {
                 window.H5PIntegration.reportingIsEnabled = true;
             }
-        } else if (nameAndValue[0] == 'trackingUrl' && contentData) {
+        } else if (nameAndValue[0] === 'trackingUrl' && contentData) {
             contentData.url = nameAndValue[1];
-        } else if (nameAndValue[0] == 'saveFreq' && nameAndValue[1] !== undefined) {
+        } else if (nameAndValue[0] === 'saveFreq' && nameAndValue[1] !== undefined) {
             window.H5PIntegration.saveFreq = nameAndValue[1];
-        } else if (nameAndValue[0] == 'state' && nameAndValue[1] !== undefined && contentData) {
+        } else if (nameAndValue[0] === 'state' && nameAndValue[1] !== undefined && contentData) {
             contentData.contentUserData = [{ state: decodeURIComponent(nameAndValue[1]) }];
-        } else if (nameAndValue[0] == 'customCssUrl' && nameAndValue[1] !== undefined) {
+        } else if (nameAndValue[0] === 'customCssUrl' && nameAndValue[1] !== undefined) {
             contentData.styles = contentData.styles || [];
             contentData.styles.push(nameAndValue[1]);
         }

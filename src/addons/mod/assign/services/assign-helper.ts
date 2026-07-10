@@ -269,7 +269,7 @@ export class AddonModAssignHelperProvider {
 
                     return;
                 }))
-            :[];
+            : [];
 
         await Promise.all(promises);
 
@@ -307,7 +307,7 @@ export class AddonModAssignHelperProvider {
         const enabled: AddonModAssignPlugin[] = [];
 
         assign.configs.forEach((config) => {
-            if (config.subtype == subtype && config.name == 'enabled' && parseInt(config.value, 10) === 1) {
+            if (config.subtype == subtype && config.name === 'enabled' && parseInt(config.value, 10) === 1) {
                 // Format the plugin objects.
                 enabled.push({
                     type: config.plugin,
@@ -456,7 +456,7 @@ export class AddonModAssignHelperProvider {
             }
 
             submission.manyGroups = !!participant.groups && participant.groups.length > 1;
-            submission.noGroups = !!participant.groups && participant.groups.length == 0;
+            submission.noGroups = !!participant.groups && participant.groups.length === 0;
             if (participant.groupname) {
                 submission.groupid = participant.groupid ?? 0;
                 submission.groupname = participant.groupname;

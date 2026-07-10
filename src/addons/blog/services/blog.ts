@@ -158,7 +158,7 @@ export class AddonBlogProvider {
      * @returns void
      */
     async updateEntry(
-        { forceOffline, created, ...params }: AddonBlogUpdateEntryParams,
+        { created, forceOffline, ...params }: AddonBlogUpdateEntryParams,
         siteId?: string,
     ): Promise<void> {
         const site = await CoreSites.getSite(siteId);

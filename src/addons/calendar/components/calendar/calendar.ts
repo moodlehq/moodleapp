@@ -105,7 +105,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
 
                 // Remove it from the list of deleted events if it's there.
                 const index = this.manager?.getSource().deletedEvents.indexOf(data.eventId) ?? -1;
-                if (index != -1) {
+                if (index !== -1) {
                     this.manager?.getSource().deletedEvents.splice(index, 1);
                 }
             },
@@ -303,7 +303,7 @@ export class AddonCalendarCalendarComponent implements OnInit, OnDestroy {
             }
 
             return month.weeks?.some((week) => week.days.some((day) => {
-                const event = day.eventsFormated?.find((event) => event.id == eventId);
+                const event = day.eventsFormated?.find((event) => event.id === eventId);
 
                 if (event) {
                     event.deleted = false;
@@ -606,13 +606,13 @@ class AddonCalendarMonthSlidesItemsManagerSource extends CoreSwipeSlidesDynamicI
                 if (this.deletedEvents.length) {
                     // Mark as deleted the events that were deleted in offline.
                     day.eventsFormated?.forEach((event) => {
-                        event.deleted = this.deletedEvents.indexOf(event.id) != -1;
+                        event.deleted = this.deletedEvents.includes(event.id);
                     });
                 }
 
                 if (this.offlineEditedEventsIds.length) {
                     // Remove the online events that were modified in offline.
-                    day.events = day.events.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+                    day.events = day.events.filter((event) => !this.offlineEditedEventsIds.includes(event.id));
                 }
 
                 if (monthOfflineEvents && monthOfflineEvents[day.mday] && day.eventsFormated) {

@@ -194,7 +194,7 @@ export class CoreSitePluginsModuleIndexComponent implements OnInit, OnDestroy, C
         });
 
         const content = this.content();
-        if (data && data.action == 'refresh' && content?.dataLoaded) {
+        if (data && data.action === 'refresh' && content?.dataLoaded) {
             content?.refreshContent(true);
         }
     }

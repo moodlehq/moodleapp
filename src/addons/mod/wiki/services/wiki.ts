@@ -559,7 +559,7 @@ export class AddonModWikiProvider {
             const subwikis = await this.getSubwikis(wikiId, options);
 
             // Search the subwiki.
-            const subwiki = subwikis.find((subwiki) => subwiki.id == subwikiId);
+            const subwiki = subwikis.find((subwiki) => subwiki.id === subwikiId);
 
             if (!subwiki) {
                 return false;
@@ -573,7 +573,7 @@ export class AddonModWikiProvider {
             });
 
             // Check if there's any page with the same title.
-            const page = pages.find((page) => page.title == title);
+            const page = pages.find((page) => page.title === title);
 
             return !!page;
         } catch {
@@ -797,7 +797,7 @@ export class AddonModWikiProvider {
             // Get the subwikis to check if any of them matches the one passed as param.
             const subwikis = await this.getSubwikis(wikiId, options);
 
-            const subwiki = subwikis.find((subwiki) => subwiki.id == subwikiId);
+            const subwiki = subwikis.find((subwiki) => subwiki.id === subwikiId);
 
             return !!subwiki;
         } catch {

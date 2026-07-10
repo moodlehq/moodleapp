@@ -245,7 +245,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
      * @returns True if success.
      */
     protected async treatSiteConfig(): Promise<boolean> {
-        if (this.siteConfig?.registerauth == 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME)) {
+        if (this.siteConfig?.registerauth === 'email' && !this.site.isFeatureDisabled(EMAIL_SIGNUP_FEATURE_NAME)) {
             this.siteName = await this.site.getSiteName();
 
             this.authInstructions = this.siteConfig.authinstructions;
@@ -348,7 +348,7 @@ export default class CoreLoginEmailSignupPage implements OnInit {
                 const warning = result.warnings?.[0];
                 if (warning) {
                     let error = warning.message;
-                    if (error == 'incorrect-captcha-sol' || (!error && warning.item == 'recaptcharesponse')) {
+                    if (error === 'incorrect-captcha-sol' || (!error && warning.item === 'recaptcharesponse')) {
                         error = Translate.instant('core.login.recaptchaincorrect');
                     }
 

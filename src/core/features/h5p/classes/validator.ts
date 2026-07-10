@@ -186,7 +186,7 @@ export class CoreH5PValidator {
         const libraries: CoreH5PLibrariesJsonData = {};
 
         await Promise.all(entries.map(async (entry) => {
-            if (entry.name[0] == '.' || entry.name[0] == '_' || entry.name == 'content' || entry.isFile) {
+            if (entry.name[0] === '.' || entry.name[0] === '_' || entry.name === 'content' || entry.isFile) {
                 // Skip files, the content folder and any folder starting with a . or _.
                 return;
             }

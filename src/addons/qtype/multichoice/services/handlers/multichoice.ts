@@ -52,7 +52,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
         // To know if it's single or multi answer we need to search for answers with "choice" in the name.
         for (const name in answers) {
-            if (name.indexOf('choice') !== -1) {
+            if (name.includes('choice')) {
                 isSingle = false;
                 if (CoreUtils.isTrueOrOne(answers[name])) {
                     isMultiComplete = true;
@@ -122,7 +122,7 @@ export class AddonQtypeMultichoiceHandlerService implements CoreQuestionHandler 
 
         // To know if it's single or multi answer we need to search for answers with "choice" in the name.
         for (const name in newAnswers) {
-            if (name.indexOf('choice') !== -1) {
+            if (name.includes('choice')) {
                 isSingle = false;
                 if (!CoreObject.sameAtKeyMissingIsBlank(prevAnswers, newAnswers, name)) {
                     isMultiSame = false;

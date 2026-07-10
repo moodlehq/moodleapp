@@ -224,7 +224,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
 
         delete this.keepMessageMap[hash];
 
-        const position = this.messages.findIndex((message) => message.hash == hash);
+        const position = this.messages.findIndex((message) => message.hash === hash);
         if (position >= 0) {
             this.messages.splice(position, 1);
         }
@@ -417,7 +417,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * @param addMessages Number of messages still to be read.
      */
     protected setNewMessagesBadge(addMessages: number): void {
-        if (this.newMessages == 0 && addMessages > 0) {
+        if (this.newMessages === 0 && addMessages > 0) {
             this.scrollFunction();
         }
 
@@ -428,7 +428,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      * The scroll was moved. Update new messages count.
      */
     scrollFunction(): void {
-        if (this.newMessages == 0) {
+        if (this.newMessages === 0) {
             return;
         }
 
@@ -442,7 +442,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         const scrollElRect = this.scrollElement?.getBoundingClientRect();
         const scrollBottomPos = (scrollElRect && scrollElRect.bottom) || 0;
 
-        if (scrollBottomPos == 0) {
+        if (scrollBottomPos === 0) {
             return;
         }
 
@@ -497,7 +497,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
                     });
 
                     this.loadMessages(messages);
-                } else if (error.errorcode != 'errorconversationdoesnotexist') {
+                } else if (error.errorcode !== 'errorconversationdoesnotexist') {
                     // Display the error.
                     throw error;
                 }
@@ -656,7 +656,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
             }, this.siteId);
 
             // Update navBar links and buttons.
-            const newCanDelete = (last && 'id' in last && last.id && this.messages.length == 1) || this.messages.length > 1;
+            const newCanDelete = (last && 'id' in last && last.id && this.messages.length === 1) || this.messages.length > 1;
             if (this.canDelete != newCanDelete) {
                 this.checkCanDelete();
             }
@@ -689,7 +689,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
         }
 
         // Do not update the message unread from label on next refresh.
-        if (this.unreadMessageFrom == 0) {
+        if (this.unreadMessageFrom === 0) {
             // Using negative to indicate the label is not placed but should not be placed.
             this.unreadMessageFrom = -1;
         }

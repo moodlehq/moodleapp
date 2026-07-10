@@ -129,7 +129,7 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
             .slice(0, CoreMainMenu.getNumItems());
 
         // Get only the handlers that don't appear in the main view.
-        this.handlers = this.allHandlers.filter((handler) => mainHandlers.indexOf(handler) === -1);
+        this.handlers = this.allHandlers.filter((handler) => !mainHandlers.includes(handler));
         this.hasComponentHandlers = this.handlers.some((handler) => 'component' in handler);
 
         this.handlersLoaded = CoreMainMenuDelegate.areHandlersLoaded();

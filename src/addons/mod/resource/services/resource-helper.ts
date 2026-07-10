@@ -172,10 +172,10 @@ export class AddonModResourceHelperProvider {
      */
     isNextcloudFile(module: CoreCourseAnyModuleData): boolean {
         if ('contentsinfo' in module && module.contentsinfo) {
-            return module.contentsinfo.repositorytype == 'nextcloud';
+            return module.contentsinfo.repositorytype === 'nextcloud';
         }
 
-        return !!(module.contents && module.contents[0] && module.contents[0].repositorytype == 'nextcloud');
+        return !!(module.contents && module.contents[0] && module.contents[0].repositorytype === 'nextcloud');
     }
 
     /**

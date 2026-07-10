@@ -1318,7 +1318,7 @@ export class CoreCourseModulePrefetchDelegateService extends CoreDelegate<CoreCo
 
         // Treat warnings, adding the not supported modules.
         response.warnings?.forEach((warning) => {
-            if (warning.warningcode == 'missingcallback') {
+            if (warning.warningcode === 'missingcallback') {
                 result[warning.itemid || -1] = false;
             }
         });

@@ -328,7 +328,7 @@ export class CoreGradesProvider {
         // Check that the configurable mygradesurl is pointing to the gradereport_overview plugin.
         const url = site.getStoredConfig('mygradesurl') || '';
 
-        return url.indexOf('/grade/report/overview/') !== -1;
+        return url.includes('/grade/report/overview/');
     }
 
     /**

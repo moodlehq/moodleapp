@@ -95,7 +95,7 @@ export class AddonModDataPrefetchHandlerLazyService extends AddonModDataPrefetch
             files = this.getIntroFilesFromInstance(module, database);
 
             const groupInfo = await CoreGroups.getActivityGroupInfo(module.id, false, undefined, options.siteId);
-            if (!groupInfo.groups || groupInfo.groups.length == 0) {
+            if (!groupInfo.groups || groupInfo.groups.length === 0) {
                 groupInfo.groups = [{ id: 0, name: '' }];
             }
             groups = groupInfo.groups || [];

@@ -54,7 +54,7 @@ const NAV_EVENT = '^previous$|^continue$';
 // Children lists.
 const CMI_CHILDREN = 'core,suspend_data,launch_data,comments,objectives,student_data,student_preference,interactions';
 const CORE_CHILDREN = 'student_id,student_name,lesson_location,credit,lesson_status,entry,score,total_time,lesson_mode,' +
-        'exit,session_time';
+    'exit,session_time';
 const SCORE_CHILDREN = 'raw,min,max';
 const COMMENTS_CHILDREN = 'content,location,time';
 const OBJECTIVES_CHILDREN = 'id,score,status';
@@ -195,7 +195,7 @@ export class AddonModScormDataModel12 {
 
         for (const element in this.currentUserData[this.scoId].userdata) {
             // Ommit for example the nav. elements and the session time element.
-            if (element.substring(0, 3) != 'cmi' || element == 'cmi.core.session_time') {
+            if (element.substring(0, 3) !== 'cmi' || element === 'cmi.core.session_time') {
                 continue;
             }
 
@@ -210,7 +210,7 @@ export class AddonModScormDataModel12 {
             }
 
             // Check if the current element exists in the datamodel and it's not a read only element.
-            if (this.dataModel[this.scoId][element] === undefined || this.dataModel[this.scoId][element].mod == 'r') {
+            if (this.dataModel[this.scoId][element] === undefined || this.dataModel[this.scoId][element].mod === 'r') {
                 continue;
             }
 
@@ -558,13 +558,13 @@ export class AddonModScormDataModel12 {
                     this.currentUserData[scoId].userdata[elementDotFormat] = this.defExtra[scoId][element];
 
                     // Get the correct counter and current index.
-                    if (elementDotFormat.indexOf('cmi.evaluation.comments') === 0) {
+                    if (elementDotFormat.startsWith('cmi.evaluation.comments')) {
                         counterElement = 'cmi.evaluation.comments._count';
                         currentCounterIndex = elementDotFormat.match(/.(\d+)./)?.[1] || '0';
-                    } else if (elementDotFormat.indexOf('cmi.objectives') === 0) {
+                    } else if (elementDotFormat.startsWith('cmi.objectives')) {
                         counterElement = 'cmi.objectives._count';
                         currentCounterIndex = elementDotFormat.match(/.(\d+)./)?.[1] || '0';
-                    } else if (elementDotFormat.indexOf('cmi.interactions') === 0) {
+                    } else if (elementDotFormat.startsWith('cmi.interactions')) {
                         if (elementDotFormat.indexOf('.objectives.') > 0) {
                             const currentN = elementDotFormat.match(/cmi.interactions.(\d+)./)?.[1];
                             currentCounterIndex = elementDotFormat.match(/objectives.(\d+)./)?.[1] || '0';
@@ -585,7 +585,7 @@ export class AddonModScormDataModel12 {
                             this.currentUserData[scoId].userdata[counterElement] = 0;
                         }
                         // Check if we need to sum.
-                        if (Number(currentCounterIndex) == Number(counterData)) {
+                        if (Number(currentCounterIndex) === Number(counterData)) {
                             this.currentUserData[scoId].userdata[counterElement] = Number(counterData) + 1;
                         }
                         if (Number(currentCounterIndex) > Number(counterData)) {
@@ -658,7 +658,7 @@ export class AddonModScormDataModel12 {
 
                 const result = this.storeData(true);
                 if (this.getEl('nav.event') != '') {
-                    if (this.getEl('nav.event') == 'continue') {
+                    if (this.getEl('nav.event') === 'continue') {
                         this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_NEXT_SCO_EVENT);
                     } else {
                         this.triggerEvent(ADDON_MOD_SCORM_LAUNCH_PREV_SCO_EVENT);
@@ -738,7 +738,7 @@ export class AddonModScormDataModel12 {
                 const elementModel = String(element).replace(expression, '.n.');
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
-                    if (this.dataModel[this.scoId][elementModel].mod != 'w') {
+                    if (this.dataModel[this.scoId][elementModel].mod !== 'w') {
                         this.errorCode = '0';
 
                         return this.getEl(element);
@@ -820,7 +820,7 @@ export class AddonModScormDataModel12 {
                 const elementModel = String(element).replace(expression, '.n.');
 
                 if (this.dataModel[this.scoId][elementModel] !== undefined) {
-                    if (this.dataModel[this.scoId][elementModel].mod != 'r') {
+                    if (this.dataModel[this.scoId][elementModel].mod !== 'r') {
                         expression = new RegExp(this.dataModel[this.scoId][elementModel].format ?? '');
                         value = value + '';
 
@@ -831,21 +831,21 @@ export class AddonModScormDataModel12 {
                             if (element != elementModel) {
 
                                 // Init default counters and values.
-                                if (element.indexOf('cmi.objectives') === 0) {
+                                if (element.startsWith('cmi.objectives')) {
                                     const currentN = element.match(/cmi.objectives.(\d+)./)?.[1];
                                     const counterElement = 'cmi.objectives.' + currentN + '.score';
 
                                     if (this.currentUserData[this.scoId].userdata[counterElement + '._children'] === undefined) {
                                         this.setEl(
-                                            <string> this.currentUserData[this.scoId].userdata[counterElement + '._children'],
+                                            <string>this.currentUserData[this.scoId].userdata[counterElement + '._children'],
                                             SCORE_CHILDREN,
                                         );
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.raw'], '');
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.min'], '');
-                                        this.setEl(<string> this.currentUserData[this.scoId].userdata[counterElement + '.max'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.raw'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.min'], '');
+                                        this.setEl(<string>this.currentUserData[this.scoId].userdata[counterElement + '.max'], '');
                                     }
 
-                                } else if (element.indexOf('cmi.interactions') === 0) {
+                                } else if (element.startsWith('cmi.interactions')) {
                                     const currentN = element.match(/cmi.interactions.(\d+)./)?.[1];
                                     let counterElement = 'cmi.interactions.' + currentN + '.objectives._count';
 
@@ -914,7 +914,7 @@ export class AddonModScormDataModel12 {
                                         this.errorCode = this.dataModel[this.scoId][elementModel].writeerror;
                                     }
                                 } else {
-                                    if (element == 'cmi.comments') {
+                                    if (element === 'cmi.comments') {
                                         this.setEl('cmi.comments', this.getEl('cmi.comments') + value);
                                     } else {
                                         this.setEl(element, value);
@@ -992,15 +992,15 @@ export class AddonModScormDataModel12 {
         let tracks: AddonModScormDataEntry[];
 
         if (storeTotalTime) {
-            if (this.getEl('cmi.core.lesson_status') == 'not attempted') {
+            if (this.getEl('cmi.core.lesson_status') === 'not attempted') {
                 this.setEl('cmi.core.lesson_status', 'completed');
             }
 
             if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.NORMAL) {
                 if (this.getEl('cmi.core.credit') === 'credit') {
                     if (this.getEl('cmi.student_data.mastery_score') !== '' && this.getEl('cmi.core.score.raw') !== '') {
-                        if (parseFloat(<string> this.getEl('cmi.core.score.raw')) >=
-                                parseFloat(<string> this.getEl('cmi.student_data.mastery_score'))) {
+                        if (parseFloat(<string>this.getEl('cmi.core.score.raw')) >=
+                            parseFloat(<string>this.getEl('cmi.student_data.mastery_score'))) {
                             this.setEl('cmi.core.lesson_status', 'passed');
                         } else {
                             this.setEl('cmi.core.lesson_status', 'failed');
@@ -1011,7 +1011,7 @@ export class AddonModScormDataModel12 {
 
             if (this.getEl('cmi.core.lesson_mode') === AddonModScormMode.BROWSE) {
                 if (this.dataModel[this.scoId]['cmi.core.lesson_status'].defaultvalue == '' &&
-                        this.getEl('cmi.core.lesson_status') == 'not attempted') {
+                    this.getEl('cmi.core.lesson_status') === 'not attempted') {
                     this.setEl('cmi.core.lesson_status', 'browsed');
                 }
             }
@@ -1042,7 +1042,7 @@ export class AddonModScormDataModel12 {
      * @returns Total time element.
      */
     protected totalTime(): AddonModScormDataEntry {
-        const totalTime = this.addTime(<string> this.getEl('cmi.core.total_time'), <string> this.getEl('cmi.core.session_time'));
+        const totalTime = this.addTime(<string>this.getEl('cmi.core.total_time'), <string>this.getEl('cmi.core.session_time'));
 
         return { element: 'cmi.core.total_time', value: totalTime };
     }
@@ -1053,7 +1053,7 @@ export class AddonModScormDataModel12 {
      * @param name Name of the event to trigger.
      */
     protected triggerEvent(name: string): void {
-        CoreEvents.trigger(name, <AddonModScormCommonEventData> {
+        CoreEvents.trigger(name, <AddonModScormCommonEventData>{
             scormId: this.scorm.id,
             scoId: this.scoId,
             attempt: this.attempt,
