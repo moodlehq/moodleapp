@@ -47,7 +47,7 @@ import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@featu
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
-const STATUSES = {
+const STATUSES: Record<string, string> = {
     'passed': 'passed',
     'completed': 'completed',
     'failed': 'failed',
@@ -61,7 +61,7 @@ const STATUSES = {
     'b': 'browsed',
     'n': 'notattempted',
 };
-const STATUS_TO_ICON = {
+const STATUS_TO_ICON: Record<string, string> = {
     asset: '', // Empty to show an space.
     browsed: 'moodle-browsed',
     completed: 'fas-check',
@@ -286,7 +286,7 @@ export class AddonModScormProvider {
      * @returns Whether the prerequisites are fulfilled.
      */
     evalPrerequisites(prerequisites: string, trackData: Record<string, Record<string, AddonModScormDataValue>>): boolean {
-        const stack: string[] = []; // List of prerequisites.
+        const tokens: string[] = []; // List of tokens of the boolean expression: 'true', 'false', '!', '&&', '||', '(', ')'.
 
         // Expand the amp entities.
         prerequisites = prerequisites.replace(/&amp;/gi, '&');
@@ -299,7 +299,7 @@ export class AddonModScormProvider {
         // Now - grab all the tokens.
         const elements = prerequisites.trim().split('\t');
 
-        // Process each token to build an expression to be evaluated.
+        // Process each token to build the list of boolean tokens to be evaluated.
         elements.forEach((element) => {
             element = element.trim();
             if (!element) {
@@ -328,34 +328,26 @@ export class AddonModScormProvider {
                         }
                     });
 
-                    if (count >= repeat) {
-                        element = 'true';
-                    } else {
-                        element = 'false';
-                    }
+                    element = count >= repeat ? 'true' : 'false';
                 } else if (element === '~') {
                     // Not maps ~.
                     element = '!';
                 } else if (reOther.test(element)) {
                     // Other symbols = | <> .
                     const otherMatches = element.match(reOther) ?? [];
-                    element = otherMatches[1]?.trim();
+                    const elementName = otherMatches[1]?.trim() ?? '';
 
-                    if (trackData[element] !== undefined) {
+                    if (trackData[elementName] !== undefined) {
                         let value = otherMatches[3].trim().replace(/('|")/gi, '');
-                        let oper: string;
 
                         if (STATUSES[value] !== undefined) {
                             value = STATUSES[value];
                         }
 
-                        if (otherMatches[2] === '<>') {
-                            oper = '!=';
-                        } else {
-                            oper = '==';
-                        }
+                        const isEqual = trackData[elementName].status === value;
+                        const result = otherMatches[2] === '<>' ? !isEqual : isEqual;
 
-                        element = `('${trackData[element].status}' ${oper} '${value}')`;
+                        element = result ? 'true' : 'false';
                     } else {
                         element = 'false';
                     }
@@ -370,12 +362,72 @@ export class AddonModScormProvider {
                 }
             }
 
-            // Add the element to the list of prerequisites.
-            stack.push(` ${element} `);
+            tokens.push(element);
         });
 
-        // eslint-disable-next-line no-eval
-        return eval(`${stack.join('')};`);
+        // This code used to do an eval(), but it was changed to a more secure approach.
+        return this.evaluateBooleanTokens(tokens);
+    }
+
+    /**
+     * Evaluates a boolean expression represented as a list of tokens, without using eval.
+     * Supported tokens are 'true', 'false', '!', '&&', '||', '(' and ')', with the usual JS precedence
+     * and short-circuit semantics (unary '!' first, then '&&', then '||').
+     *
+     * @param tokens List of tokens conforming the boolean expression.
+     * @returns Result of evaluating the expression.
+     */
+    protected evaluateBooleanTokens(tokens: string[]): boolean {
+        let position = 0;
+
+        const peek = (): string | undefined => tokens[position];
+        const consume = (): string | undefined => tokens[position++];
+
+        // Handles 'true', 'false', parenthesised expressions and negation.
+        const parseUnary = (): boolean => {
+            const token = consume();
+
+            if (token === '!') {
+                return !parseUnary();
+            }
+
+            if (token === '(') {
+                const value = parseOr();
+                consume(); // Consume the closing ')'.
+
+                return value;
+            }
+
+            return token === 'true';
+        };
+
+        // Handles '&&', binding tighter than '||'.
+        const parseAnd = (): boolean => {
+            let value = parseUnary();
+
+            while (peek() === '&&') {
+                consume();
+                const right = parseUnary();
+                value = value && right;
+            }
+
+            return value;
+        };
+
+        // Handles '||'.
+        const parseOr = (): boolean => {
+            let value = parseAnd();
+
+            while (peek() === '||') {
+                consume();
+                const right = parseAnd();
+                value = value || right;
+            }
+
+            return value;
+        };
+
+        return parseOr();
     }
 
     /**
