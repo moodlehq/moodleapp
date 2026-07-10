@@ -441,14 +441,14 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
 
             button.addEventListener('click', (e: Event) => {
-                const imgSrc = CoreText.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
-
                 e.preventDefault();
                 e.stopPropagation();
-                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component(), this.componentId());
+
+                const imgElement = img.parentElement?.tagName === 'PICTURE' ? img.parentElement : img;
+                CoreViewer.viewImageElement(imgElement);
             });
 
-            img.parentNode?.appendChild(button);
+            img.closest('.core-adapted-img-container')?.appendChild(button);
 
             if (img.complete && img.naturalWidth > 0) {
                 // Image has already loaded, show the button only if it's wider than the container.

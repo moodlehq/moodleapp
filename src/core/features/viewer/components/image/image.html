@@ -1,13 +1,17 @@
 <ion-content>
     <swiper-container #swiperRef>
         <swiper-slide>
-            <div class="swiper-zoom-container">
-                @if (dataUrl) {
-                    <img [src]="dataUrl" [alt]="title">
-                } @else {
-                    <img [url]="image" [alt]="title" core-external-content [component]="component" [componentId]="componentId">
-                }
-            </div>
+            @if (imageHTML()) {
+                <div class="swiper-zoom-container" [innerHTML]="imageHTML()?.outerHTML"></div>
+            } @else {
+                <div class="swiper-zoom-container">
+                    @if (dataUrl()) {
+                        <img [src]="dataUrl()" [alt]="title()">
+                    } @else {
+                        <img [url]="image()" [alt]="title()" core-external-content [component]="component()" [componentId]="componentId()">
+                    }
+                </div>
+            }
         </swiper-slide>
     </swiper-container>
 </ion-content>

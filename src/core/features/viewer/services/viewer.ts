@@ -69,6 +69,29 @@ export class CoreViewerService {
     }
 
     /**
+     * View an image HTML element in a modal.
+     *
+     * @param imageHTML Image element of the image.
+     */
+    async viewImageElement(
+        imageHTML: HTMLImageElement | HTMLPictureElement,
+    ): Promise<void> {
+        if (!imageHTML) {
+            return;
+        }
+        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
+
+        await CoreModals.openModal({
+            component: CoreViewerImageComponent,
+            componentProps: {
+                imageHTML,
+            },
+            cssClass: 'core-modal-transparent',
+        });
+
+    }
+
+    /**
      * Shows a text on a new page.
      *
      * @param title Title of the new state.
