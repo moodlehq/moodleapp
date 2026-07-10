@@ -47,7 +47,7 @@ import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@featu
 
 // Private constants.
 const VALID_STATUSES = ['notattempted', 'passed', 'completed', 'failed', 'incomplete', 'browsed', 'suspend'];
-const STATUSES = {
+const STATUSES: Record<string, string> = {
     'passed': 'passed',
     'completed': 'completed',
     'failed': 'failed',
@@ -61,7 +61,7 @@ const STATUSES = {
     'b': 'browsed',
     'n': 'notattempted',
 };
-const STATUS_TO_ICON = {
+const STATUS_TO_ICON: Record<string, string> = {
     asset: '', // Empty to show an space.
     browsed: 'moodle-browsed',
     completed: 'fas-check',
