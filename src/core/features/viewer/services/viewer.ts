@@ -71,20 +71,23 @@ export class CoreViewerService {
     /**
      * View an image HTML element in a modal.
      *
-     * @param imageHTML Image element of the image.
+     * @param imageHTMLElement Image element of the image.
      */
     async viewImageElement(
-        imageHTML: HTMLImageElement | HTMLPictureElement,
+        imageHTMLElement: HTMLImageElement | HTMLPictureElement,
     ): Promise<void> {
-        if (!imageHTML) {
+        // Only allow IMG and PICTURE elements to be viewed in the modal.
+        if (!imageHTMLElement || (imageHTMLElement.tagName !== 'IMG' && imageHTMLElement.tagName !== 'PICTURE')) {
             return;
         }
         const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
 
+        const clonedElement = imageHTMLElement.cloneNode(true) as HTMLImageElement | HTMLPictureElement;
+
         await CoreModals.openModal({
             component: CoreViewerImageComponent,
             componentProps: {
-                imageHTML,
+                imageHTMLElement: clonedElement,
             },
             cssClass: 'core-modal-transparent',
         });

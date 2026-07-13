@@ -54,7 +54,32 @@ export class CoreViewerImageComponent {
 
     readonly title = input(Translate.instant('core.imageviewer')); // Modal title.
     readonly image = input(''); // Image URL.
-    readonly imageHTML = input<HTMLImageElement | HTMLPictureElement>(); // Image HTML element.
+    readonly imageHTMLElement = input<HTMLImageElement | HTMLPictureElement>(); // Image HTML element.
+
+    readonly imageHTML = computed(() => {
+        // Clone the image HTML element to avoid modifying the original one.
+        const imageElement = this.imageHTMLElement();
+
+        if (!imageElement) {
+            return null;
+        }
+
+        // Remove classes and styles in all the cloned elements that may affect the image display in the modal.
+        imageElement.className = '';
+        imageElement.removeAttribute('style');
+        imageElement.querySelectorAll('*').forEach((element) => {
+            element.className = '';
+            element.removeAttribute('style');
+        });
+
+        // Remove also style tags in the cloned element, as they may affect the image display in the modal.
+        imageElement.querySelectorAll('style').forEach((style) => {
+            style.remove();
+        });
+
+        return imageElement.outerHTML;
+    });
+
     readonly component = input<string>(); // Component to use in external-content.
     readonly componentId = input<string | number>(); // Component ID to use in external-content.
 

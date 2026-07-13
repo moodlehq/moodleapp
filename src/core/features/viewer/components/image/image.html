@@ -2,7 +2,7 @@
     <swiper-container #swiperRef>
         <swiper-slide>
             @if (imageHTML()) {
-                <div class="swiper-zoom-container" [innerHTML]="imageHTML()?.outerHTML"></div>
+                <div class="swiper-zoom-container" [innerHTML]="imageHTML()"></div>
             } @else {
                 <div class="swiper-zoom-container">
                     @if (dataUrl()) {
