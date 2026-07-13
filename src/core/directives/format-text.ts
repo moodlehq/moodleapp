@@ -429,16 +429,6 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 return;
             }
 
-            let imgWidth = Number(img.getAttribute('width'));
-            if (!imgWidth) {
-                // No width attribute, use real size.
-                imgWidth = img.naturalWidth;
-            }
-
-            if (imgWidth <= elWidth) {
-                return;
-            }
-
             const label = Translate.instant('core.openfullimage');
             const button = document.createElement('button');
 
@@ -451,21 +441,27 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
             button.innerHTML = `<ion-icon name="fas-${iconName}" aria-hidden="true" src="${src}"></ion-icon>`;
 
             button.addEventListener('click', (e: Event) => {
-                const imgSrc = CoreText.escapeHTML(img.getAttribute('data-original-src') || img.getAttribute('src'));
-
                 e.preventDefault();
                 e.stopPropagation();
-                CoreViewer.viewImage(imgSrc, img.getAttribute('alt'), this.component(), this.componentId());
+
+                const imgElement = img.parentElement?.tagName === 'PICTURE' ? img.parentElement : img;
+                CoreViewer.viewImageElement(imgElement);
             });
 
-            img.parentNode?.appendChild(button);
+            img.closest('.core-adapted-img-container')?.appendChild(button);
 
             if (img.complete && img.naturalWidth > 0) {
-                // Image has already loaded, show the button.
-                button.classList.remove('hidden');
+                // Image has already loaded, show the button only if it's wider than the container.
+                if (img.naturalWidth > elWidth) {
+                    button.classList.remove('hidden');
+                }
             } else {
-                // Show the button when the image is loaded.
-                img.onload = () => button.classList.remove('hidden');
+                // Show the button when the image is loaded, only if it's wider than the container.
+                img.onload = () => {
+                    if (img.naturalWidth > elWidth) {
+                        button.classList.remove('hidden');
+                    }
+                };
             }
         });
     }

@@ -69,6 +69,32 @@ export class CoreViewerService {
     }
 
     /**
+     * View an image HTML element in a modal.
+     *
+     * @param imageHTMLElement Image element of the image.
+     */
+    async viewImageElement(
+        imageHTMLElement: HTMLImageElement | HTMLPictureElement,
+    ): Promise<void> {
+        // Only allow IMG and PICTURE elements to be viewed in the modal.
+        if (!imageHTMLElement || (imageHTMLElement.tagName !== 'IMG' && imageHTMLElement.tagName !== 'PICTURE')) {
+            return;
+        }
+        const { CoreViewerImageComponent } = await import('@features/viewer/components/image/image');
+
+        const clonedElement = imageHTMLElement.cloneNode(true) as HTMLImageElement | HTMLPictureElement;
+
+        await CoreModals.openModal({
+            component: CoreViewerImageComponent,
+            componentProps: {
+                imageHTMLElement: clonedElement,
+            },
+            cssClass: 'core-modal-transparent',
+        });
+
+    }
+
+    /**
      * Shows a text on a new page.
      *
      * @param title Title of the new state.

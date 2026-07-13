@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, ElementRef, Input, OnInit, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, ElementRef, ViewChild, CUSTOM_ELEMENTS_SCHEMA, input, computed } from '@angular/core';
 import { DomSanitizer, ModalController, Translate } from '@singletons';
 import { CoreMath } from '@static/math';
 import { Swiper } from 'swiper';
 import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@static/swiper';
-import { SafeResourceUrl } from '@angular/platform-browser';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -33,7 +32,7 @@ import { CoreSharedModule } from '@/core/shared.module';
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class CoreViewerImageComponent implements OnInit {
+export class CoreViewerImageComponent {
 
     protected swiper?: Swiper;
     @ViewChild('swiperRef') set swiperRef(swiperRef: ElementRef) {
@@ -53,12 +52,47 @@ export class CoreViewerImageComponent implements OnInit {
         });
     }
 
-    @Input() title = ''; // Modal title.
-    @Input() image = ''; // Image URL.
-    @Input() component?: string; // Component to use in external-content.
-    @Input() componentId?: string | number; // Component ID to use in external-content.
+    readonly title = input(Translate.instant('core.imageviewer')); // Modal title.
+    readonly image = input(''); // Image URL.
+    readonly imageHTMLElement = input<HTMLImageElement | HTMLPictureElement>(); // Image HTML element.
 
-    dataUrl?: SafeResourceUrl;
+    readonly imageHTML = computed(() => {
+        // Clone the image HTML element to avoid modifying the original one.
+        const imageElement = this.imageHTMLElement();
+
+        if (!imageElement) {
+            return null;
+        }
+
+        // Remove classes and styles in all the cloned elements that may affect the image display in the modal.
+        imageElement.className = '';
+        imageElement.removeAttribute('style');
+        imageElement.querySelectorAll('*').forEach((element) => {
+            element.className = '';
+            element.removeAttribute('style');
+        });
+
+        // Remove also style tags in the cloned element, as they may affect the image display in the modal.
+        imageElement.querySelectorAll('style').forEach((style) => {
+            style.remove();
+        });
+
+        return imageElement.outerHTML;
+    });
+
+    readonly component = input<string>(); // Component to use in external-content.
+    readonly componentId = input<string | number>(); // Component ID to use in external-content.
+
+    readonly dataUrl = computed(() => {
+        const image = this.image();
+
+        if (image.startsWith('data:')) {
+            // It's a data image, sanitize it so it can be rendered.
+            return DomSanitizer.bypassSecurityTrustResourceUrl(image);
+        }
+
+        return null;
+    });
 
     private static readonly MAX_RATIO = 8;
     private static readonly MIN_RATIO = 0.5;
@@ -74,19 +108,6 @@ export class CoreViewerImageComponent implements OnInit {
             toggle: true,
         },
     };
-
-    /**
-     * @inheritdoc
-     */
-    ngOnInit(): void {
-        this.title = this.title || Translate.instant('core.imageviewer');
-
-        if (this.image.startsWith('data:')) {
-            // It's a data image, sanitize it so it can be rendered.
-            // Don't sanitize other images because they load fine and they need to be treated by core-external-content.
-            this.dataUrl = DomSanitizer.bypassSecurityTrustResourceUrl(this.image);
-        }
-    }
 
     /**
      * Close modal.
