@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, computed, input, linkedSignal, signal } from '@angular/core';
-import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { Component, OnInit, computed, effect, input, linkedSignal, signal } from '@angular/core';
+import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
 import { PopoverController } from '@singletons';
-import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { AddonModForumHelper } from '../../services/forum-helper';
@@ -40,26 +39,28 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
     readonly forumId = input.required<number>(); // The forum Id.
 
     protected readonly postCalculated = linkedSignal(() => this.post());
-    readonly canEdit = computed(() => AddonModForumHelper.canUpdatePost(this.postCalculated()));
-    readonly canDelete = computed(() => AddonModForumHelper.canDeletePost(this.postCalculated()));
+    readonly canEdit = computed(() => this.isOfflinePost() ||
+        (AddonModForumHelper.canUpdatePost(this.postCalculated()) && this.isOnline()));
+
+    readonly canDelete = computed(() => this.isOfflinePost() ||
+        (AddonModForumHelper.canDeletePost(this.postCalculated()) && this.isOnline()));
+
     readonly canMarkAsRead = computed(() =>
-        !this.isOfflinePost() && AddonModForumHelper.canSetReadState(this.postCalculated()));
+        !this.isOfflinePost() && AddonModForumHelper.canSetReadState(this.postCalculated()) && this.isOnline());
 
     readonly loaded = signal(false);
-    readonly url = computed(() => {
-        // Display the open in browser button to prevent having an empty menu.
-        if(!this.canDelete() && !this.canEdit() && !this.canMarkAsRead()) {
-            const site = CoreSites.getRequiredCurrentSite();
-            if (!site.shouldDisplayInformativeLinks()) {
-                return;
-            }
-            const post = this.postCalculated();
-
-            return site.createSiteUrl('/mod/forum/discuss.php', { d: post.discussionid.toString() }, `p${post.id}`);
-        }
-    });
 
     readonly isOfflinePost = computed(() => this.postCalculated().id < 0);
+    protected readonly isOnline = CoreNetwork.onlineSignal;
+
+    constructor() {
+        effect(() => {
+            // Dismiss the modal to prevent having an empty menu.
+            if(!this.canDelete() && !this.canEdit() && !this.canMarkAsRead()) {
+                this.dismiss();
+            }
+        });
+    }
 
     /**
      * @inheritdoc
@@ -103,12 +104,6 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      */
     deletePost(): void {
         if (!this.isOfflinePost()) {
-            if (!CoreNetwork.isOnline()) {
-                CoreAlerts.showError(new CoreNetworkError());
-
-                return;
-            }
-
             PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.DELETE });
         } else {
             PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.DELETE_OFFLINE });
@@ -119,12 +114,6 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      * Edit a post.
      */
     editPost(): void {
-        if (!this.isOfflinePost() && !CoreNetwork.isOnline()) {
-            CoreAlerts.showError(new CoreNetworkError());
-
-            return;
-        }
-
         PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.EDIT });
     }
 
@@ -132,12 +121,6 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      * Toggle the read state of a post.
      */
     toggleReadState(): void {
-        if (!CoreNetwork.isOnline()) {
-            CoreAlerts.showError(new CoreNetworkError());
-
-            return;
-        }
-
         PopoverController.dismiss({
             action: this.postCalculated().unread
                 ? AddonModForumPostOptionsMenuAction.MARKREAD
