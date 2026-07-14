@@ -22,6 +22,7 @@ import {
     OnInit,
     Output,
     SimpleChange,
+    effect,
     inject,
     viewChild,
 } from '@angular/core';
@@ -69,6 +70,7 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 import { AddonModForumPostOptionsMenuAction } from '../post-options-menu/post-options-menu';
 import { AddonModForumWS } from '../../services/forum-ws';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -105,6 +107,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
     readonly formElement = viewChild<ElementRef>('replyFormEl');
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     messageControl = new FormControl<string | null>(null);
 
@@ -117,6 +120,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
+        effect(() => {
+            this.setOptionsMenuEnabled(this.isOnline());
+        });
+    }
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -142,15 +151,27 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         this.defaultReplySubject = this.post.subject;
 
+        this.setOptionsMenuEnabled(this.isOnline());
+    }
+
+    /**
+     * Sets the options menu enabled or disabled based on the post capabilities and online status.
+     *
+     * @param isOnline Whether the app is online. If not provided, it will be determined from the CoreNetwork service.
+     */
+    protected setOptionsMenuEnabled(isOnline: boolean): void {
         if (this.post.id < 0) {
+            // Offline post, always display the menu to allow discarding it.
             this.optionsMenuEnabled = true;
         } else if (this.post.capabilities.delete !== undefined) {
+            // Capabilities are loaded, check if the user can edit/delete/setreadstate and is online.
             this.optionsMenuEnabled = AddonModForumHelper.canDeletePost(this.post) ||
                 AddonModForumHelper.canUpdatePost(this.post) ||
-                AddonModForumHelper.canSetReadState(this.post);
+                (AddonModForumHelper.canSetReadState(this.post) && isOnline);
         } else {
             // Cannot know if the user can edit/delete/setreadstate or not, display the menu if the WebServices are available.
-            this.optionsMenuEnabled = AddonModForum.isGetDiscussionPostAvailable() && (
+            this.optionsMenuEnabled = AddonModForum.isGetDiscussionPostAvailable() && isOnline &&
+            (
                 AddonModForumWS.isDeletePostAvailable() ||
                 AddonModForumWS.isUpdatePostAvailable() ||
                 AddonModForum.isSetReadStateAvailable()
