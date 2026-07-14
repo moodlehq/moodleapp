@@ -18,21 +18,6 @@
                                 <core-format-text [text]="post.subject" contextLevel="module" [contextInstanceId]="forum && forum.cmid"
                                     [courseId]="courseId" [sanitize]="!post.id || post.id < 0" />
                             </h2>
-                            @if ((trackPosts && post.unread) || optionsMenuEnabled) {
-                                <div class="addon-mod-forum-post-title-options">
-                                    @if (trackPosts && post.unread) {
-                                        <ion-note [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                                            <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
-                                        </ion-note>
-                                    }
-                                    @if (optionsMenuEnabled) {
-                                        <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
-                                            (click)="showOptionsMenu($event)">
-                                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                                        </ion-button>
-                                    }
-                                </div>
-                            }
                         </div>
                     }
                     <div class="addon-mod-forum-post-info">
@@ -63,22 +48,18 @@
                             }
                         </div>
 
-                        @if (!displaySubject) {
-                            @if ((trackPosts && post.unread) || optionsMenuEnabled) {
-                                <div class="addon-mod-forum-post-title-options">
-                                    @if (trackPosts && post.unread) {
-                                        <ion-note [attr.aria-label]="'addon.mod_forum.unread' | translate">
-                                            <ion-icon name="fas-circle" color="primary" aria-hidden="true" />
-                                        </ion-note>
-                                    }
-                                    @if (optionsMenuEnabled) {
-                                        <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
-                                            (click)="showOptionsMenu($event)">
-                                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                                        </ion-button>
-                                    }
-                                </div>
-                            }
+                        @if ((trackPosts && post.unread) || optionsMenuEnabled) {
+                            <div class="addon-mod-forum-post-title-options">
+                                @if (trackPosts && post.unread) {
+                                    <ion-icon name="fas-circle" color="primary" [attr.aria-label]="'addon.mod_forum.unread' | translate" />
+                                }
+                                @if (optionsMenuEnabled) {
+                                    <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
+                                        (click)="showOptionsMenu($event)">
+                                        <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                                    </ion-button>
+                                }
+                            </div>
                         }
                     </div>
                 </ion-label>
