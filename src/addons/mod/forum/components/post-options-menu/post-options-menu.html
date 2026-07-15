@@ -1,7 +1,7 @@
 <ion-content>
-    <core-loading [hideUntil]="loaded" [fullscreen]="false">
+    <core-loading [hideUntil]="loaded()" [fullscreen]="false">
         <ion-list>
-            @if (offlinePost || canEdit) {
+            @if (isOfflinePost() || canEdit()) {
                 <ion-item button class="ion-text-wrap" (click)="editPost()" [detail]="false">
                     <ion-icon name="fas-pen" slot="start" aria-hidden="true" />
                     <ion-label>
@@ -9,20 +9,22 @@
                     </ion-label>
                 </ion-item>
             }
-            @if (offlinePost || canDelete) {
+            @if (isOfflinePost() || canDelete()) {
                 <ion-item button class="ion-text-wrap" (click)="deletePost()" [detail]="false">
                     <ion-icon name="fas-trash" slot="start" aria-hidden="true" />
                     <ion-label>
-                        @if (!offlinePost) {
-                            <p class="item-heading">{{ 'addon.mod_forum.delete' | translate }}</p>
-                        } @else {
-                            <p class="item-heading">{{ 'core.discard' | translate }}</p>
-                        }
+                        <p class="item-heading">
+                            @if (!isOfflinePost()) {
+                                {{ 'addon.mod_forum.delete' | translate }}
+                            } @else {
+                                {{ 'core.discard' | translate }}
+                            }
+                        </p>
                     </ion-label>
                 </ion-item>
             }
-            @if (url) {
-                <ion-item class="ion-text-wrap" [href]="url" core-link [capture]="false" button [detail]="false"
+            @if (url()) {
+                <ion-item class="ion-text-wrap" [href]="url()" core-link [capture]="false" button [detail]="false"
                     [showBrowserWarning]="false">
                     <ion-icon name="fas-up-right-from-square" slot="start" aria-hidden="true" />
                     <ion-label>
