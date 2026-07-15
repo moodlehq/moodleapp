@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, computed, input, linkedSignal, signal } from '@angular/core';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
@@ -34,67 +34,57 @@ import { CoreAlerts } from '@services/overlays/alerts';
 })
 export class AddonModForumPostOptionsMenuComponent implements OnInit {
 
-    @Input({ required: true }) post!: AddonModForumPost; // The post.
-    @Input({ required: true }) cmId!: number;
-    @Input({ required: true }) forumId!: number; // The forum Id.
+    readonly post = input.required<AddonModForumPost>(); // The post.
+    readonly cmId = input.required<number>();
+    readonly forumId = input.required<number>(); // The forum Id.
 
-    canEdit = false;
-    canDelete = false;
-    loaded = false;
-    url?: string;
-    offlinePost = false;
+    protected readonly postCalculated = linkedSignal(() => this.post());
+    readonly canEdit = computed(() => !!this.postCalculated().capabilities.edit && AddonModForum.isUpdatePostAvailable());
+    readonly canDelete = computed(() => !!this.postCalculated().capabilities.delete && AddonModForum.isDeletePostAvailable());
+    readonly loaded = signal(false);
+    readonly url = computed(() => {
+        // Display the open in browser button to prevent having an empty menu.
+        if(!this.canDelete() && !this.canEdit()) {
+            const site = CoreSites.getRequiredCurrentSite();
+            if (!site.shouldDisplayInformativeLinks()) {
+                return;
+            }
+            const post = this.postCalculated();
+
+            return site.createSiteUrl('/mod/forum/discuss.php', { d: post.discussionid.toString() }, `p${post.id}`);
+        }
+    });
+
+    readonly isOfflinePost = computed(() => this.postCalculated().id < 0);
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.offlinePost = this.post.id < 0;
-        if (this.offlinePost) {
-            this.loaded = true;
+        if (this.isOfflinePost()) {
+            this.loaded.set(true);
 
             return;
         }
 
-        if (this.post.capabilities.delete === undefined) {
-            if (this.forumId) {
+        let post = this.postCalculated();
+        if (post.capabilities.delete === undefined) {
+            const forumId = this.forumId();
+            if (forumId) {
                 try {
-                    this.post =
-                        await AddonModForum.getDiscussionPost(this.forumId, this.post.discussionid, this.post.id, {
-                            cmId: this.cmId,
+                    post =
+                        await AddonModForum.getDiscussionPost(forumId, post.discussionid, post.id, {
+                            cmId: this.cmId(),
                             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
                         });
+                    this.postCalculated.set(post);
                 } catch (error) {
                     CoreAlerts.showError(error, { default: 'Error getting discussion post.' });
                 }
-            } else {
-                this.loaded = true;
-                // Display the open in browser button to prevent having an empty menu.
-                this.setOpenInBrowserUrl();
-
-                return;
             }
         }
 
-        this.canDelete = !!this.post.capabilities.delete && AddonModForum.isDeletePostAvailable();
-        this.canEdit = !!this.post.capabilities.edit && AddonModForum.isUpdatePostAvailable();
-        if (!this.canDelete && !this.canEdit) {
-            // Display the open in browser button to prevent having an empty menu.
-            this.setOpenInBrowserUrl();
-        }
-
-        this.loaded = true;
-    }
-
-    /**
-     * Set the URL to open in browser.
-     */
-    protected setOpenInBrowserUrl(): void {
-        const site = CoreSites.getRequiredCurrentSite();
-        if (!site.shouldDisplayInformativeLinks()) {
-            return;
-        }
-
-        this.url = site.createSiteUrl('/mod/forum/discuss.php', { d: this.post.discussionid.toString() }, `p${this.post.id}`);
+        this.loaded.set(true);
     }
 
     /**
@@ -108,16 +98,16 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      * Delete a post.
      */
     deletePost(): void {
-        if (!this.offlinePost) {
+        if (!this.isOfflinePost()) {
             if (!CoreNetwork.isOnline()) {
                 CoreAlerts.showError(new CoreNetworkError());
 
                 return;
             }
 
-            PopoverController.dismiss({ action: 'delete' });
+            PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.DELETE });
         } else {
-            PopoverController.dismiss({ action: 'deleteoffline' });
+            PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.DELETE_OFFLINE });
         }
     }
 
@@ -125,13 +115,19 @@ export class AddonModForumPostOptionsMenuComponent implements OnInit {
      * Edit a post.
      */
     editPost(): void {
-        if (!this.offlinePost && !CoreNetwork.isOnline()) {
+        if (!this.isOfflinePost() && !CoreNetwork.isOnline()) {
             CoreAlerts.showError(new CoreNetworkError());
 
             return;
         }
 
-        PopoverController.dismiss({ action: 'edit' });
+        PopoverController.dismiss({ action: AddonModForumPostOptionsMenuAction.EDIT });
     }
 
 }
+
+export enum AddonModForumPostOptionsMenuAction {
+    DELETE = 'delete',
+    DELETE_OFFLINE = 'deleteoffline',
+    EDIT = 'edit',
+};

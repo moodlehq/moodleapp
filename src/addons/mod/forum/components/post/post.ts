@@ -67,6 +67,7 @@ import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { AddonModForumPostOptionsMenuAction } from '../post-options-menu/post-options-menu';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -260,7 +261,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         const { AddonModForumPostOptionsMenuComponent } =
             await import('../post-options-menu/post-options-menu');
 
-        const popoverData = await CorePopovers.open<{ action?: string }>({
+        const popoverData = await CorePopovers.open<{ action?: AddonModForumPostOptionsMenuAction }>({
             component: AddonModForumPostOptionsMenuComponent,
             componentProps: {
                 post: this.post,
@@ -271,15 +272,15 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             waitForDismissCompleted: true,
         });
 
-        if (popoverData && popoverData.action) {
+        if (popoverData?.action) {
             switch (popoverData.action) {
-                case 'edit':
+                case AddonModForumPostOptionsMenuAction.EDIT:
                     this.editPost();
                     break;
-                case 'delete':
+                case AddonModForumPostOptionsMenuAction.DELETE:
                     this.deletePost();
                     break;
-                case 'deleteoffline':
+                case AddonModForumPostOptionsMenuAction.DELETE_OFFLINE:
                     this.discardOfflineReply();
                     break;
             }
