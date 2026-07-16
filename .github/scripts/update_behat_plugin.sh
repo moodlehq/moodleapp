@@ -1,68 +1,90 @@
 #!/bin/bash
 source "./.github/scripts/functions.sh"
 
-if [ -z $GIT_TOKEN ] || [ -z $BEHAT_PLUGIN_GITHUB_REPOSITORY ] || [ -z $BEHAT_PLUGIN_BRANCH ]; then
+if [ -z $GIT_TOKEN ] || [ -z $BEHAT_PLUGIN_GITHUB_REPOSITORY ]; then
     print_error "Env vars not correctly defined"
     exit 1
 fi
 
-if [[ $BEHAT_PLUGIN_BRANCH != $GITHUB_REF_NAME ]]; then
+
+BRANCHNAME=${GITHUB_REF_NAME#$BEHAT_PLUGIN_BRANCH_PREFIX}
+if [[ $BRANCHNAME != "main" && $BRANCHNAME != "latest" ]]; then
     echo "Script disabled for this branch"
     exit 0
 fi
 
+REPO_PATH="/tmp/local_moodleappbehat"
+
 # Clone plugin repository.
 print_title "Cloning Behat plugin repository..."
 
-git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git tmp/local_moodleappbehat -b $GITHUB_REF_NAME
-pluginversion=$(cat tmp/local_moodleappbehat/version.php | grep "\$plugin->version" | grep -o -E "[0-9]+")
+git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git "${REPO_PATH}" -b $GITHUB_REF_NAME
 
-# Auto-generate plugin.
-print_title "Building Behat plugin..."
+build_behat_plugin $GITHUB_REF_NAME $BEHAT_PLUGIN_EXCLUDE_FEATURES
 
-if [ -z $BEHAT_PLUGIN_EXCLUDE_FEATURES ]; then
-    scripts/build-behat-plugin.js tmp/local_moodleappbehat
-else
-    scripts/build-behat-plugin.js tmp/local_moodleappbehat --exclude-features
-fi
-notify_on_error_exit "Unsuccessful build, stopping..."
+# Update the ci branch with the same content as latest but with feature files.
+if [[ $GITHUB_REF_NAME == "latest" ]]; then
+    pushd "${REPO_PATH}"
+    print_title "Checking out ci branch of Behat plugin repository..."
+    git checkout ci
+    popd
 
-# Check if there are any changes (ignoring plugin version).
-print_title "Checking changes..."
-
-newpluginversion=$(cat tmp/local_moodleappbehat/version.php | grep "\$plugin->version" | grep -o -E "[0-9]+")
-sed -i s/\$plugin-\>version\ =\ [0-9]\\+\;/\$plugin-\>version\ =\ $pluginversion\;/ tmp/local_moodleappbehat/version.php
-
-if [[ -z `git -C tmp/local_moodleappbehat/ status --short` ]]; then
-    echo "There weren't any changes to apply!"
-    exit
+    build_behat_plugin ci
 fi
 
-if [[ $pluginversion -eq $newpluginversion ]]; then
-    ((newpluginversion++))
-fi
 
-sed -i s/\$plugin-\>version\ =\ [0-9]\\+\;/\$plugin-\>version\ =\ $newpluginversion\;/ tmp/local_moodleappbehat/version.php
+function build_behat_plugin() {
+    branchname=$1
+    excludefeatures=$2
 
-# Apply new changes
-print_title "Applying changes to repository..."
+    pluginversion=$(cat "${REPO_PATH}"/version.php | grep "\$plugin->version" | grep -o -E "[0-9]+")
 
-diff=`get_behat_plugin_changes_diff`
+    # Build Behat plugin for ci branch.
+    print_title "Building Behat plugin for branch ${branchname}..."
 
-cd tmp/local_moodleappbehat
+    if [ -z $excludefeatures ]; then
+        scripts/build-behat-plugin.js "${REPO_PATH}"
+    else
+        scripts/build-behat-plugin.js "${REPO_PATH}" --exclude-features
+    fi
 
-# Set up Github Actions bot user
-# See https://github.community/t/github-actions-bot-email-address/17204/6
-git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-git config --local user.name "github-actions[bot]"
-git add .
-git commit -m "[auto-generated] Update plugin files
+    notify_on_error_exit "Unsuccessful build for branch ${branchname}, stopping..."
+
+    # Check if there are any changes (ignoring plugin version).
+    print_title "Checking changes for branch ${branchname}..."
+
+    newpluginversion=$(cat "${REPO_PATH}"/version.php | grep "\$plugin->version" | grep -o -E "[0-9]+")
+    sed -i s/\$plugin-\>version\ =\ [0-9]\\+\;/\$plugin-\>version\ =\ $pluginversion\;/ "${REPO_PATH}"/version.php
+
+    if [[ -z `git -C "${REPO_PATH}"/ status --short` ]]; then
+        echo "There weren't any changes to apply to branch ${branchname}!"
+        exit
+    fi
+
+    if [[ $pluginversion -eq $newpluginversion ]]; then
+        ((newpluginversion++))
+    fi
+
+    sed -i s/\$plugin-\>version\ =\ [0-9]\\+\;/\$plugin-\>version\ =\ $newpluginversion\;/ "${REPO_PATH}"/version.php
+
+    # Apply new changes to ci branch.
+    print_title "Applying changes to branch ${branchname}..."
+
+    pushd "${REPO_PATH}"
+
+    git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    git config --local user.name "github-actions[bot]"
+    git add .
+    git commit -m "[auto-generated] Update plugin files
 Check out the commits that caused these changes: https://github.com/$GITHUB_REPOSITORY/compare/$diff
 "
-notify_on_error_exit "Unsuccessful commit, stopping..."
+    notify_on_error_exit "Unsuccessful commit for branch ${branchname}, stopping..."
 
-echo "Pushing changes..."
-git push
-notify_on_error_exit "Unsuccessful push, stopping..."
+    echo "Pushing changes to ci branch..."
+    git push
+    notify_on_error_exit "Unsuccessful push to ci branch, stopping..."
 
-echo "Behat plugin updated!"
+    popd
+
+    echo "Behat plugin branch ${branchname} updated!"
+}
