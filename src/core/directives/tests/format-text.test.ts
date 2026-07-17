@@ -97,9 +97,10 @@ describe('CoreFormatTextDirective', () => {
 
     it('should get filters from server and format text', async () => {
         // Arrange
-        const site = mock(new CoreSite('25', 'https://mysite.com', 'token'), {
-            getId: () => site.id,
-        });
+       let site: CoreSite;
+    site = mock(new CoreSite('25', 'https://mysite.com', 'token'), {
+    getId: (): string => site.id,
+});
 
         mockSingleton(CoreSites, {
             getSite: () => Promise.resolve(site),
@@ -207,11 +208,11 @@ describe('CoreFormatTextDirective', () => {
         beforeEach(() => {
             allowedScriptUrls = [allowedBaseUrl];
 
-            const site = mock(new CoreSite('42', 'https://mysite.com', 'token'), {
-                getId: () => site.id,
-                getContentAllowedScriptUrls: () => allowedScriptUrls,
-            });
-
+           let site: CoreSite;
+          site = mock(new CoreSite('42', 'https://mysite.com', 'token'), {
+    getId: (): string => site.id,
+    getContentAllowedScriptUrls: () => allowedScriptUrls,
+});
             mockSingleton(CoreSites, {
                 getSite: () => Promise.resolve(site),
                 getCurrentSite: () => site,

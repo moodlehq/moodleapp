@@ -147,6 +147,7 @@ core-format-text {
     .atto_image_button_right {
         height: auto;
         width: auto;
+        float: none !important; // remove float so icon doesn't wrap beside text
 
         &.img-responsive {
             height: auto;
@@ -228,6 +229,28 @@ core-rich-text-editor .core-rte-editor {
     p {
         margin-bottom: 1rem;
         margin-block-start: 0;
+        line-height: 1.4;
+        font-size: 0.80em;
+        text-align-last: left;
+
+        // icon on top row, text on next row (column layout), no overlap
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        .core-adapted-img-container {
+            float: none !important;
+            display: block;
+            line-height: 0;
+            margin: 0 0 8px 0; // POSITIVE margin only - keeps a clean gap, never overlaps text
+
+            img {
+                display: block;
+                margin: 0;
+                padding: 0;
+                vertical-align:top;
+            }
+        }
     }
 
     > p:only-child {

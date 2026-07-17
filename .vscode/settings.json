@@ -20,5 +20,6 @@
         "moodle.config.json": "jsonc",
         "moodle.config.*.json": "jsonc",
     },
+    "js/ts.tsdk.path": "./node_modules/typescript/lib",
 
 }

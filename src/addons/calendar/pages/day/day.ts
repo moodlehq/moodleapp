@@ -218,15 +218,17 @@ export default class AddonCalendarDayPage implements OnInit, OnDestroy {
     ngOnInit(): void {
         const types: string[] = [];
 
+        const filterAsRecord = this.filter as unknown as Record<string, boolean | number | undefined>;
+
         CoreObject.enumKeys(AddonCalendarEventType).forEach((name) => {
             const value = AddonCalendarEventType[name];
-            this.filter[name] = CoreNavigator.getRouteBooleanParam(name) ?? true;
+            filterAsRecord[name] = CoreNavigator.getRouteBooleanParam(name) ?? true;
             types.push(value);
         });
         this.filter.courseId = CoreNavigator.getRouteNumberParam('courseId');
         this.filter.categoryId = CoreNavigator.getRouteNumberParam('categoryId');
 
-        this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !this.filter[name]);
+        this.filter.filtered = this.filter.courseId !== undefined || types.some((name) => !filterAsRecord[name]);
 
         const month = CoreNavigator.getRouteNumberParam('month');
         const source = new AddonCalendarDaySlidesItemsManagerSource(this, dayjs({
@@ -762,9 +764,9 @@ class AddonCalendarDaySlidesItemsManagerSource extends CoreSwipeSlidesDynamicIte
 
         if (this.offlineEditedEventsIds.length) {
             // Remove the online events that were modified in offline.
-            result = result.filter((event) => this.offlineEditedEventsIds.indexOf(event.id) == -1);
+            result = result.filter((event) => !this.offlineEditedEventsIds.includes(event.id));
 
-            if (result.length != day.onlineEvents?.length) {
+            if (result.length !== day.onlineEvents?.length) {
                 day.hasOffline = true;
             }
         }

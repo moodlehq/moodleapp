@@ -70,14 +70,14 @@
     "wsservice": "moodle_mobile_app",
     "demo_sites": {
         "student": {
-            "url": "https://school.moodledemo.net",
-            "username": "student",
-            "password": "moodle26"
+            "url": "https://lets-test.lumhs.app",
+            "username": "ali",
+            "password": "Mali12345$"
         },
         "teacher": {
-            "url": "https://school.moodledemo.net",
-            "username": "teacher",
-            "password": "moodle26"
+            "url": "https://lets-test.lumhs.app",
+            "username": "ali",
+            "password": "Mali12345$"
         }
     },
     "defaultZoomLevel": "none",

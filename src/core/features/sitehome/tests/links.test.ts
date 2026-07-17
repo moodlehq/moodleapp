@@ -25,7 +25,7 @@ describe('Site Home link handlers', () => {
 
     it('Handles links ending with /?redirect=0', async () => {
         // Arrange.
-        const siteUrl = 'https://school.moodledemo.net';
+        const siteUrl = 'https://lets-test.lumhs.app';
         const siteId = CoreSites.createSiteID(siteUrl, 'student');
 
         mockSingleton(CoreSites, {

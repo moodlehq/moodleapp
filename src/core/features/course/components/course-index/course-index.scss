@@ -66,10 +66,10 @@ ion-item.item {
             @include padding-horizontal(11px, null);
         }
 
-        &.indented {
-            margin-inline-start: 1rem;
-        }
-
+        // Removed data-driven "indented" margin (it depended on a backend
+        // flag that wasn't set consistently, causing items to misalign).
+        // Alignment now comes purely from .core-course-index-subsection's
+        // padding below, so every nesting level lines up the same way.
     }
 
     ion-icon {
@@ -94,10 +94,21 @@ ion-item.item {
     &::part(native) {
         @include core-focus-inset-outline();
     }
+
+    // Fix: core-format-text renders an inner <p> for section/module names.
+    // The global format-text.scss rule adds margin-bottom: 1rem to all
+    // core-format-text p, which pushed index items far apart and broke
+    // the visual sequence. Reset it here, scoped only to this list.
+    ion-label {
+        p.item-heading core-format-text p,
+        h2 core-format-text p {
+            margin-bottom: 0;
+        }
+    }
 }
 
 div.core-course-index-subsection {
-    @include padding-horizontal(16px, null);
+    padding: 0;
 }
 
 .ripple-parent {

@@ -72,8 +72,8 @@ export default class AddonBadgesBadgeClassPage implements OnInit {
             const badge = await AddonBadges.getBadgeClass(this.badgeId);
             this.badge.set(badge);
             this.logView(badge);
-        } catch (message) {
-            CoreAlerts.showError(message, { default: 'Error getting badge data.' });
+        } catch (error) {
+            CoreAlerts.showError(error, { default: 'Error getting badge data.' });
         }
     }
 

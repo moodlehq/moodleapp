@@ -205,7 +205,7 @@
     }
 
     &.indented ion-card {
-        @include padding-horizontal(calc(var(--horizontal-spacing) + 1rem), null);
+        @include padding-horizontal(calc(var(--horizontal-spacing) ), null);
     }
 
     // Hide download folder icon meanwhile MOBILE-4147 is not solved
