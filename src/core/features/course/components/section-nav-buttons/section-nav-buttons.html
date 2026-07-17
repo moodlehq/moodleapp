@@ -1,0 +1,21 @@
+@let previousSectionValue = previousSection();
+@let nextSectionValue = nextSection();
+
+@if (previousSectionValue || nextSectionValue) {
+    <div class="core-course-section-nav-buttons list-item-limited-width">
+        @if (previousSectionValue) {
+            <ion-button (click)="sectionChange.emit(previousSectionValue)" expand="block"
+                [ariaLabel]="('core.previous' | translate) + ': ' + previousSectionValue.name" class="ion-text-nowrap">
+                <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
+                <core-format-text [text]="previousSectionValue.name" contextLevel="course" [contextInstanceId]="courseId()" />
+            </ion-button>
+        }
+        @if (nextSectionValue) {
+            <ion-button (click)="sectionChange.emit(nextSectionValue)" expand="block"
+                [ariaLabel]="('core.next' | translate) + ': ' + nextSectionValue.name" class="ion-text-nowrap">
+                <core-format-text [text]="nextSectionValue.name" contextLevel="course" [contextInstanceId]="courseId()" />
+                <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
+            </ion-button>
+        }
+    </div>
+}

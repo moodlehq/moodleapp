@@ -32,10 +32,10 @@
                     <ion-accordion-group [multiple]="true" (ionChange)="accordionMultipleChange($event.detail)"
                         [value]="accordionMultipleValue">
                         @for (section of sections; track section.id) {
-                            @if ($index
-                    <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !==allSectionsId && section.id
-                        !==stealthModulesSectionId) { <core-course-section [course]="course" [section]="section"
-                                    [lastModuleViewed]="lastModuleViewed" [viewedModules]="viewedModules" [collapsible]="true" />
+                            @if ($index <= lastShownSectionIndex && !section.hiddenbynumsections && section.id !==allSectionsId &&
+                                section.id !==stealthModulesSectionId) {
+                                    <core-course-section [course]="course" [section]="section" [lastModuleViewed]="lastModuleViewed"
+                                        [viewedModules]="viewedModules" [collapsible]="true" />
                             }
                         }
                     </ion-accordion-group>
@@ -45,24 +45,10 @@
             </div>
         }
 
-        @if (displayCourseIndex && (previousSection || nextSection)) {
+        @if (displayCourseIndex && selectedSection && selectedSection.id !== allSectionsId && sections.length > 1) {
             <div collapsible-footer appearOnBottom slot="fixed">
-                <div class="core-course-section-nav-buttons list-item-limited-width">
-                    @if (previousSection) {
-                        <ion-button (click)="sectionChanged(previousSection)" expand="block"
-                            [ariaLabel]="('core.previous' | translate) + ': ' + previousSection.name" class="ion-text-nowrap">
-                            <ion-icon name="fas-arrow-left" slot="start" aria-hidden="true" />
-                            <core-format-text [text]="previousSection.name" contextLevel="course" [contextInstanceId]="course.id" />
-                        </ion-button>
-                    }
-                    @if (nextSection) {
-                        <ion-button (click)="sectionChanged(nextSection)" expand="block"
-                            [ariaLabel]="('core.next' | translate) + ': ' + nextSection.name" class="ion-text-nowrap">
-                            <core-format-text [text]="nextSection.name" contextLevel="course" [contextInstanceId]="course.id" />
-                            <ion-icon name="fas-arrow-right" slot="end" aria-hidden="true" />
-                        </ion-button>
-                    }
-                </div>
+                <core-course-section-nav-buttons [currentSectionId]="selectedSection?.id" [allSections]="sections"
+                    [courseId]="course.id" (sectionChange)="sectionChanged($event)" />
             </div>
         }
     </core-loading>
