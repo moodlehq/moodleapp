@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, OnDestroy, output, signal } from '@angular/core';
 import { CoreCourseSectionToDisplay } from '@features/course/components/course-section/course-section';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_COURSE_ALL_SECTIONS_ID } from '@features/course/constants';
 import { CoreCourseHelper } from '@features/course/services/course-helper';
+import { CoreSites } from '@services/sites';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 
 /**
  * Component to display previous/next section navigation buttons.
@@ -33,17 +35,22 @@ import { CoreCourseHelper } from '@features/course/services/course-helper';
         CoreSharedModule,
     ],
 })
-export class CoreCourseSectionNavButtonsComponent {
+export class CoreCourseSectionNavButtonsComponent implements OnDestroy {
+
+    protected static readonly FEATURE_NAME = 'NoDelegate_CoreCourseSectionNavigation';
 
     readonly currentSectionId = input<number>();
     readonly allSections = input<CoreCourseSectionToDisplay[]>();
     readonly courseId = input.required<number>();
 
+    protected readonly enabled = signal(false);
+
     readonly previousSection = computed(() => {
+        const enabled = this.enabled();
         const currentSectionId = this.currentSectionId();
         const allSections = this.allSections();
 
-        if (currentSectionId === undefined || !allSections) {
+        if (!enabled || currentSectionId === undefined || !allSections) {
             return undefined;
         }
 
@@ -62,10 +69,11 @@ export class CoreCourseSectionNavButtonsComponent {
     });
 
     readonly nextSection = computed(() => {
+        const enabled = this.enabled();
         const currentSectionId = this.currentSectionId();
         const allSections = this.allSections();
 
-        if (currentSectionId === undefined || !allSections) {
+        if (!enabled || currentSectionId === undefined || !allSections) {
             return undefined;
         }
 
@@ -84,5 +92,34 @@ export class CoreCourseSectionNavButtonsComponent {
     });
 
     readonly sectionChange = output<CoreCourseSectionToDisplay>();
+
+    protected updateSiteObserver: CoreEventObserver;
+
+    constructor() {
+        const siteId = CoreSites.getCurrentSiteId();
+
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.checkFeatureEnabled();
+        }, siteId);
+
+        this.checkFeatureEnabled();
+    }
+
+    /**
+     * Check if the feature is enabled.
+     */
+    checkFeatureEnabled(): void {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        const disabled = site.isFeatureDisabled(CoreCourseSectionNavButtonsComponent.FEATURE_NAME);
+        this.enabled.set(!disabled);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    ngOnDestroy(): void {
+        this.updateSiteObserver.off();
+    }
 
 }
