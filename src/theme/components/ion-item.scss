@@ -26,6 +26,11 @@ ion-item.item {
         border-bottom: 1px solid var(--border-color);
     }
 
+    &.item-lines-top {
+        --inner-border-width: 0px;
+        --border-width: 1px 0 0 0;
+    }
+
     &.item-lines-default,
     &.item-has-interactive-control {
         /** Remove lines by default and interactive control (toggles, radios, checkbox and selects) */

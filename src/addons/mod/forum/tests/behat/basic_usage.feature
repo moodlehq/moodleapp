@@ -173,10 +173,10 @@ Feature: Test basic usage of forum activity in app
     And I press "Cancel" in the app
     And I press "OK" in the app
     And I press "Display options" within "Auto-test" "ion-card-header" in the app
-    And I should not find "Edit" in the app
+    And I should not be able to press "Edit" in the app
+    And I should find "You're offline. Reconnect to use these actions." in the app
 
     When I switch network connection to wifi
-    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     And I press "Edit" in the app
     And I set the field "Message" to "Auto-test message edited" in the app
     And I press "Save changes" in the app
@@ -197,10 +197,10 @@ Feature: Test basic usage of forum activity in app
     And I press "Cancel" in the app
     And I switch network connection to offline
     And I press "Display options" within "Auto-test" "ion-card-header" in the app
-    Then I should not find "Delete" in the app
+    Then I should not be able to press "Delete" in the app
+    And I should find "You're offline. Reconnect to use these actions." in the app
 
     And I switch network connection to wifi
-    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     And I press "Delete" in the app
     And I press "Delete" in the app
     Then I should not find "Auto-test" in the app

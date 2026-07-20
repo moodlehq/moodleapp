@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, computed, effect, input, linkedSignal, signal } from '@angular/core';
+import { Component, computed, effect, input, linkedSignal, signal, untracked } from '@angular/core';
 import { CoreSitesReadingStrategy } from '@services/sites';
 import { CoreNetwork } from '@services/network';
 import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
@@ -32,64 +32,83 @@ import { AddonModForumHelper } from '../../services/forum-helper';
         CoreSharedModule,
     ],
 })
-export class AddonModForumPostOptionsMenuComponent implements OnInit {
+export class AddonModForumPostOptionsMenuComponent {
 
     readonly post = input.required<AddonModForumPost>(); // The post.
     readonly cmId = input.required<number>();
     readonly forumId = input.required<number>(); // The forum Id.
 
     protected readonly postCalculated = linkedSignal(() => this.post());
-    readonly canEdit = computed(() => this.isOfflinePost() ||
-        (AddonModForumHelper.canUpdatePost(this.postCalculated()) && this.isOnline()));
+    readonly canEdit = computed(() => this.isOfflinePost() || AddonModForumHelper.canUpdatePost(this.postCalculated()));
 
-    readonly canDelete = computed(() => this.isOfflinePost() ||
-        (AddonModForumHelper.canDeletePost(this.postCalculated()) && this.isOnline()));
+    readonly canDelete = computed(() => this.isOfflinePost() || AddonModForumHelper.canDeletePost(this.postCalculated()));
+    readonly editDeleteDisabled = computed(() => this.unknownCapabilities() || (!this.isOfflinePost() && !this.isOnline()));
 
     readonly canMarkAsRead = computed(() =>
-        !this.isOfflinePost() && AddonModForumHelper.canSetReadState(this.postCalculated()) && this.isOnline());
+        !this.isOfflinePost() && AddonModForumHelper.canSetReadState(this.postCalculated()));
+
+    readonly markAsReadDisabled = computed(() => this.unknownCapabilities() || !this.isOnline());
 
     readonly loaded = signal(false);
 
     readonly isOfflinePost = computed(() => this.postCalculated().id < 0);
     protected readonly isOnline = CoreNetwork.onlineSignal;
 
-    constructor() {
-        effect(() => {
-            // Dismiss the modal to prevent having an empty menu.
-            if(!this.canDelete() && !this.canEdit() && !this.canMarkAsRead()) {
-                this.dismiss();
-            }
-        });
-    }
+    protected readonly unknownCapabilities = computed(() => {
+        if (this.isOfflinePost()) {
+            return false;
+        }
+
+        const post = this.postCalculated();
+
+        return post.capabilities.delete === undefined;
+    });
 
     /**
      * @inheritdoc
      */
-    async ngOnInit(): Promise<void> {
-        if (this.isOfflinePost()) {
-            this.loaded.set(true);
+    constructor() {
+        effect(async () => {
+            const unknownCapabilities = this.unknownCapabilities();
+            const isOnline = this.isOnline();
 
-            return;
-        }
+            if (!unknownCapabilities) {
+                this.loaded.set(true);
 
-        let post = this.postCalculated();
-        if (post.capabilities.delete === undefined) {
-            const forumId = this.forumId();
-            if (forumId) {
-                try {
-                    post =
-                        await AddonModForum.getDiscussionPost(forumId, post.discussionid, post.id, {
-                            cmId: this.cmId(),
-                            readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
-                        });
-                    this.postCalculated.set(post);
-                } catch (error) {
-                    CoreAlerts.showError(error, { default: 'Error getting discussion post.' });
-                }
+                return;
             }
-        }
 
-        this.loaded.set(true);
+            // Only check this one because the others are always available if this one is.
+            const wsAvailable = AddonModForum.isDeletePostAvailable();
+            if (!wsAvailable) {
+                // If the WS is not available, we cannot do anything.
+                this.loaded.set(true);
+
+                return;
+            }
+
+            const forumId = this.forumId();
+            if (forumId && isOnline) {
+                this.loaded.set(false);
+
+                await untracked(async () => {
+                    let post = this.postCalculated();
+
+                    try {
+                        post =
+                            await AddonModForum.getDiscussionPost(forumId, post.discussionid, post.id, {
+                                cmId: this.cmId(),
+                                readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
+                            });
+                        this.postCalculated.set(post);
+                    } catch (error) {
+                        CoreAlerts.showError(error, { default: 'Error getting discussion post.' });
+                    }
+                });
+            }
+
+            this.loaded.set(true);
+        });
     }
 
     /**
