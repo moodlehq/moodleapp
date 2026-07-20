@@ -17,10 +17,9 @@ import { Component, OnDestroy, signal, computed, input, linkedSignal } from '@an
 import { CoreSiteBasicInfo, CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';
 import { CoreEventObserver, CoreEvents } from '@static/events';
-import { CoreUserBasicData } from '@features/user/services/user';
+import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
-import { CoreUserHelper } from '@features/user/services/user-helper';
 import { CoreUrl } from '@static/url';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { toBoolean } from '@/core/transforms/boolean';
@@ -133,11 +132,10 @@ export class CoreUserAvatarComponent implements OnDestroy {
 
         return this.user()?.initials ??
             this.user()?.userinitials ??
-            CoreUserHelper.getUserInitialsFromParts({
+            CoreUser.getUserInitials({
                 firstname: user?.firstname ?? site?.firstname,
                 lastname: user?.lastname ?? site?.lastname,
                 fullname: this.fullnameEffective(),
-                userId: this.userIdEffective(),
             });
     });
 

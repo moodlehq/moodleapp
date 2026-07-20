@@ -382,7 +382,14 @@ export class CoreUserProvider {
         if ('country' in user && user.country) {
             user.country = CoreCountries.getCountryName(user.country);
         }
-        this.storeUser(user.id, user.fullname, user.profileimageurl);
+        user.initials = CoreUser.getUserInitials({
+            firstname: user.firstname,
+            lastname: user.lastname,
+            fullname: user.fullname,
+            initials: user.initials,
+        });
+
+        this.storeUser(user, siteId);
 
         return user;
     }
@@ -665,25 +672,29 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param userId User ID.
-     * @param fullname User full name.
-     * @param avatar User avatar URL.
+     * @param record User record.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        if (!userId) {
+    protected async storeUser(record: CoreUserDBRecord, siteId?: string): Promise<void> {
+        if (!record.id) {
             return;
         }
 
-        const site = await CoreSites.getSite(siteId);
-
         const userRecord: CoreUserDBRecord = {
-            id: userId,
-            fullname: fullname,
-            profileimageurl: avatar,
+            id: record.id,
+            fullname: record.fullname,
+            profileimageurl: record.profileimageurl,
+            initials: record.initials,
         };
 
-        await site.getDb().insertRecord(USERS_TABLE_NAME, userRecord);
+        const db = await CoreSites.getSiteDb(siteId);
+
+        try {
+            await db.recordExists(USERS_TABLE_NAME, { id: userRecord.id });
+            await db.updateRecords(USERS_TABLE_NAME, userRecord, { id: userRecord.id });
+        } catch {
+            await db.insertRecord(USERS_TABLE_NAME, userRecord);
+        }
     }
 
     /**
@@ -692,9 +703,17 @@ export class CoreUserProvider {
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-        await Promise.all(users.map((user) =>
-            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
+    async storeUsers(users: CoreUserBasicDataForInitials[], siteId?: string): Promise<void> {
+        await Promise.all(users.map(async (user) => {
+            user.initials = CoreUser.getUserInitials({
+                firstname: user.firstname,
+                lastname: user.lastname,
+                fullname: user.fullname,
+                initials: user.initials,
+            });
+
+            return this.storeUser(user, siteId);
+        }));
     }
 
     /**
@@ -740,6 +759,42 @@ export class CoreUserProvider {
         await CoreUserPreferences.setPreferencesOnline(preferences, disableNotifications, userId, siteId);
     }
 
+    /**
+     * Get the user initials.
+     *
+     * @param userParts User name parts. Containing firstname, lastname, fullname and initials.
+     * @returns User initials.
+     */
+    getUserInitials(userParts: CoreUserNameParts): string {
+        if (userParts.initials) {
+            return userParts.initials;
+        }
+
+        const nameFields = ['firstname', 'lastname'];
+        const dummyUser = {
+            firstname: 'firstname',
+            lastname: 'lastname',
+        };
+        const nameFormat = Translate.instant('core.user.fullnamedisplay', { $a:dummyUser });
+        const availableFieldsSorted = nameFields
+            .filter((field) => nameFormat.indexOf(field) >= 0)
+            .sort((a, b) => nameFormat.indexOf(a) - nameFormat.indexOf(b));
+
+        if (!userParts.firstname && !userParts.lastname && userParts.fullname) {
+            // It's a complete workaround.
+            const split = userParts.fullname.split(' ');
+            userParts.firstname = split[0];
+            if (split.length > 1) {
+                userParts.lastname = split[split.length - 1];
+            }
+        }
+
+        const initials = availableFieldsSorted.reduce((initials, fieldName) =>
+            initials + (userParts[fieldName]?.charAt(0) ?? ''), '');
+
+        return initials || 'UNK';
+    }
+
 }
 export const CoreUser = makeSingleton(CoreUserProvider);
 
@@ -768,6 +823,18 @@ export type CoreUserBasicData = {
     fullname: string; // The fullname of the user.
     profileimageurl?: string; // User image profile URL - big version.
     initials?: string; // @since 5.3 The initials of the user.
+};
+
+/**
+ * Basic data of a user.
+ */
+type CoreUserBasicDataForInitials = {
+    id: number; // ID of the user.
+    fullname: string; // The fullname of the user.
+    profileimageurl?: string; // User image profile URL - big version.
+    initials?: string; // @since 5.3 The initials of the user.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
 };
 
 /**
@@ -886,7 +953,6 @@ export type CoreUserParticipant = CoreUserBasicData & {
     username?: string; // Username policy is defined in Moodle security config.
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
-    initials?: string; // @since 5.3 The initials of the user.
     email?: string; // An email address - allow email as root@localhost.
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
@@ -1022,3 +1088,10 @@ type CoreEnrolSearchUsersWSParams = {
  * Data returned by core_enrol_search_users WS.
  */
 type CoreEnrolSearchUsersWSResponse = CoreUserDescriptionExporter[];
+
+type CoreUserNameParts = {
+    firstname?: string;
+    lastname?: string;
+    fullname?: string;
+    initials?: string;
+};

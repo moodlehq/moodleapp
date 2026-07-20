@@ -14,6 +14,7 @@
 
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUserBasicData } from '../user';
+import { SQLiteDB } from '@classes/sqlitedb';
 
 /**
  * Database variables for CoreUser service.
@@ -21,7 +22,7 @@ import { CoreUserBasicData } from '../user';
 export const USERS_TABLE_NAME = 'users';
 export const CORE_USER_CACHE_SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreUserProvider',
-    version: 1,
+    version: 2,
     canBeCleared: [USERS_TABLE_NAME],
     tables: [
         {
@@ -40,9 +41,21 @@ export const CORE_USER_CACHE_SITE_SCHEMA: CoreSiteSchema = {
                     name: 'profileimageurl',
                     type: 'TEXT',
                 },
+                {
+                    name: 'initials',
+                    type: 'TEXT',
+                },
             ],
         },
     ],
+    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
+        if (oldVersion >= 2) {
+            return;
+        }
+
+        // Add the initials column to the table.
+        await db.addColumn(USERS_TABLE_NAME, 'initials', 'TEXT');
+    },
 };
 
 /**

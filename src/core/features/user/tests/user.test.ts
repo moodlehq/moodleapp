@@ -13,24 +13,23 @@
 // limitations under the License.
 
 import { overrideTranslations } from '@/testing/utils';
-import { CoreUserHelper } from '../services/user-helper';
+import { CoreUser } from '../services/user';
 
-describe('getUserInitialsFromParts', () => {
+describe('getUserInitials', () => {
     beforeEach(() => {
         overrideTranslations({
             'core.user.fullnamedisplay': '{{$a.firstname}} {{$a.lastname}}',
         });
     });
 
-    it('should return initials based on firstname and lastname', async () => {
+    it('should return initials based on firstname and lastname', () => {
         const parts = {
             firstname: 'John',
             lastname: 'Doe',
             fullname: '',
-            userId: 123,
         };
 
-        let result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        let result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('JD');
 
@@ -38,7 +37,7 @@ describe('getUserInitialsFromParts', () => {
             'core.user.fullnamedisplay': '{{$a.lastname}} {{$a.firstname}}',
         });
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('DJ');
 
@@ -46,7 +45,7 @@ describe('getUserInitialsFromParts', () => {
             'core.user.fullnamedisplay': '{{$a.lastname}}',
         });
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('D');
 
@@ -54,7 +53,7 @@ describe('getUserInitialsFromParts', () => {
             'core.user.fullnamedisplay': '{{$a.firstname}}',
         });
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('J');
 
@@ -62,20 +61,32 @@ describe('getUserInitialsFromParts', () => {
             'core.user.fullnamedisplay': '{{$a.noname}}',
         });
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('UNK');
     });
 
-    it('should return initials based on fullname if firstname and lastname are missing', async () => {
-        let parts: { firstname?: string; lastname?: string; fullname?: string; userId?: number } = {
+    it('should return initials directly if initials field is provided', () => {
+        const parts = {
+            firstname: 'John',
+            lastname: 'Doe',
+            fullname: 'John Doe',
+            initials: 'AB',
+        };
+
+        const result = CoreUser.getUserInitials(parts);
+
+        expect(result).toEqual('AB');
+    });
+
+    it('should return initials based on fullname if firstname and lastname are missing', () => {
+        let parts: { firstname?: string; lastname?: string; fullname?: string } = {
             firstname: '',
             lastname: '',
             fullname: 'John Doe',
-            userId: 123,
         };
 
-        let result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        let result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('JD');
 
@@ -85,7 +96,7 @@ describe('getUserInitialsFromParts', () => {
             fullname: 'John Fitzgerald Doe',
         };
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('JD');
 
@@ -93,23 +104,23 @@ describe('getUserInitialsFromParts', () => {
             'core.user.fullnamedisplay': '{{$a.lastname}} {{$a.firstname}}',
         });
 
-        result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('DJ');
     });
 
-    it('should return UNK string if empty parts', async () => {
+    it('should return UNK string if empty parts', () => {
         const parts = {
             firstname: '',
             lastname: '',
             fullname: '',
         };
 
-        let result = await CoreUserHelper.getUserInitialsFromParts(parts);
+        let result = CoreUser.getUserInitials(parts);
 
         expect(result).toEqual('UNK');
 
-        result = await CoreUserHelper.getUserInitialsFromParts({});
+        result = CoreUser.getUserInitials({});
 
         expect(result).toEqual('UNK');
     });
