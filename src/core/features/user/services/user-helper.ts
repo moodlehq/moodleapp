@@ -17,7 +17,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 
 import { makeSingleton, Translate } from '@singletons';
-import { CoreUser, CoreUserRole } from './user';
+import { CoreUserRole } from './user';
 import { CoreTime } from '@static/time';
 
 /**
@@ -70,10 +70,14 @@ export class CoreUserHelperProvider {
     /**
      * Get the user initials.
      *
-     * @param parts User name parts. Containing firstname, lastname, fullname and userId.
+     * @param userParts User name parts. Containing firstname, lastname, fullname and initials.
      * @returns User initials.
      */
-    async getUserInitialsFromParts(parts: CoreUserNameParts): Promise<string> {
+    getUserInitials(userParts: CoreUserNameParts): string {
+        if (userParts.initials) {
+            return userParts.initials;
+        }
+
         const nameFields = ['firstname', 'lastname'];
         const dummyUser = {
             firstname: 'firstname',
@@ -84,26 +88,30 @@ export class CoreUserHelperProvider {
             .filter((field) => nameFormat.indexOf(field) >= 0)
             .sort((a, b) => nameFormat.indexOf(a) - nameFormat.indexOf(b));
 
-        if (!parts.firstname && !parts.lastname) {
-            if (!parts.fullname && parts.userId) {
-                const user = await CoreUser.getProfile(parts.userId, undefined, true);
-                parts.fullname = user.fullname || '';
-            }
-
-            if (parts.fullname) {
-                // It's a complete workaround.
-                const split = parts.fullname.split(' ');
-                parts.firstname = split[0];
-                if (split.length > 1) {
-                    parts.lastname = split[split.length - 1];
-                }
+        if (!userParts.firstname && !userParts.lastname && userParts.fullname) {
+            // It's a complete workaround.
+            const split = userParts.fullname.split(' ');
+            userParts.firstname = split[0];
+            if (split.length > 1) {
+                userParts.lastname = split[split.length - 1];
             }
         }
 
         const initials = availableFieldsSorted.reduce((initials, fieldName) =>
-            initials + (parts[fieldName]?.charAt(0) ?? ''), '');
+            initials + (userParts[fieldName]?.charAt(0) ?? ''), '');
 
         return initials || 'UNK';
+    }
+
+    /**
+     * Get the user initials.
+     *
+     * @param userParts User name parts. Containing firstname, lastname, fullname and userId.
+     * @returns User initials.
+     * @deprecated since 5.3. Use getUserInitials instead.
+     */
+    async getUserInitialsFromParts(userParts: CoreUserNameParts & { userId?: number }): Promise<string> {
+        return this.getUserInitials(userParts);
     }
 
     /**
@@ -121,4 +129,9 @@ export class CoreUserHelperProvider {
 
 export const CoreUserHelper = makeSingleton(CoreUserHelperProvider);
 
-type CoreUserNameParts = { firstname?: string; lastname?: string; fullname?: string; userId?: number };
+type CoreUserNameParts = {
+    firstname?: string;
+    lastname?: string;
+    fullname?: string;
+    initials?: string;
+};

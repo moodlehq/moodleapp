@@ -185,11 +185,10 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
         this.courseId = this.courseId || user?.courseid;
 
         this.initials = this.initials ??
-            await CoreUserHelper.getUserInitialsFromParts({
+            CoreUserHelper.getUserInitials({
                 firstname: this.firstname ?? user?.firstname,
                 lastname: this.lastname ?? user?.lastname,
                 fullname: this.fullname,
-                userId: this.userId,
             });
     }
 

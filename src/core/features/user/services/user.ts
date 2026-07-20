@@ -37,6 +37,7 @@ import {
 } from '../constants';
 import { CoreUserPreferences } from './user-preferences';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreUserHelper } from './user-helper';
 
 declare module '@static/events' {
 
@@ -382,7 +383,14 @@ export class CoreUserProvider {
         if ('country' in user && user.country) {
             user.country = CoreCountries.getCountryName(user.country);
         }
-        this.storeUser(user.id, user.fullname, user.profileimageurl);
+        user.initials = CoreUserHelper.getUserInitials({
+            firstname: user.firstname,
+            lastname: user.lastname,
+            fullname: user.fullname,
+            initials: user.initials,
+        });
+
+        this.storeUser(user, siteId);
 
         return user;
     }
@@ -665,23 +673,30 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param userId User ID.
-     * @param fullname User full name.
-     * @param avatar User avatar URL.
+     * @param record User record.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        if (!userId) {
+    protected async storeUser(record: Partial<CoreUserDBRecord>, siteId?: string): Promise<void> {
+        if (!record.id) {
             return;
         }
 
         const site = await CoreSites.getSite(siteId);
 
         const userRecord: CoreUserDBRecord = {
-            id: userId,
-            fullname: fullname,
-            profileimageurl: avatar,
+            id: record.id,
+            fullname: record.fullname || '',
+            profileimageurl: record.profileimageurl,
+            initials: record.initials,
         };
+
+        if (!record.fullname || !record.profileimageurl || !record.initials) {
+            const localRecord = await this.getUserFromLocalDb(record.id, siteId);
+
+            record.fullname = record.fullname || localRecord.fullname;
+            record.profileimageurl = record.profileimageurl || localRecord.profileimageurl;
+            record.initials = record.initials || localRecord.initials;
+        }
 
         await site.getDb().insertRecord(USERS_TABLE_NAME, userRecord);
     }
@@ -692,9 +707,17 @@ export class CoreUserProvider {
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-        await Promise.all(users.map((user) =>
-            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
+    async storeUsers(users: CoreUserBasicDataForInitials[], siteId?: string): Promise<void> {
+        await Promise.all(users.map(async (user) => {
+            user.initials = CoreUserHelper.getUserInitials({
+                firstname: user.firstname,
+                lastname: user.lastname,
+                fullname: user.fullname,
+                initials: user.initials,
+            });
+
+            return this.storeUser(user, siteId);
+        }));
     }
 
     /**
@@ -768,6 +791,18 @@ export type CoreUserBasicData = {
     fullname: string; // The fullname of the user.
     profileimageurl?: string; // User image profile URL - big version.
     initials?: string; // @since 5.3 The initials of the user.
+};
+
+/**
+ * Basic data of a user.
+ */
+type CoreUserBasicDataForInitials = {
+    id: number; // ID of the user.
+    fullname: string; // The fullname of the user.
+    profileimageurl?: string; // User image profile URL - big version.
+    initials?: string; // @since 5.3 The initials of the user.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
 };
 
 /**
@@ -886,7 +921,6 @@ export type CoreUserParticipant = CoreUserBasicData & {
     username?: string; // Username policy is defined in Moodle security config.
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
-    initials?: string; // @since 5.3 The initials of the user.
     email?: string; // An email address - allow email as root@localhost.
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
