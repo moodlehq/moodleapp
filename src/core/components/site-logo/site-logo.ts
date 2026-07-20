@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, input, computed, signal, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, input, computed, signal, effect, untracked } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@static/events';
-import { CoreSite } from '@classes/sites/site';
+import { CoreSite, CoreSiteConfig } from '@classes/sites/site';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
@@ -51,13 +51,16 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
         const showLogo = this.showLogo();
         const logoError = this.logoError();
         const hideOnError = this.hideOnError();
+        const siteConfig = this.siteConfig();
 
-        if (!showLogo || (logoType === CoreSiteLogoType.TOP && site.getShowTopLogo() === 'hidden')) {
+        if (!showLogo || (logoType === CoreSiteLogoType.TOP && site.getShowTopLogo(siteConfig) === 'hidden')) {
             return false;
         }
 
         return !logoError || !hideOnError;
     });
+
+    protected readonly siteConfig = signal<CoreSiteConfig | undefined>(undefined);
 
     protected readonly siteEffective = computed<CoreSite | CoreUnauthenticatedSite>(() =>
         this.site() ?? CoreSites.getRequiredCurrentSite());
@@ -88,7 +91,11 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
 
     constructor() {
         effect(async () => {
-            await this.loadInfo(this.siteEffective());
+            const site = this.siteEffective();
+            untracked(() => {
+                void this.updateSiteConfig(site);
+                void this.loadInfo(site);
+            });
         });
 
     }
@@ -98,7 +105,12 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
      */
     async ngOnInit(): Promise<void> {
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
-            await this.loadInfo(this.siteEffective());
+            const site = this.siteEffective();
+
+            untracked(() => {
+                void this.updateSiteConfig(site);
+                void this.loadInfo(site);
+            });
         }, this.siteId());
     }
 
@@ -112,6 +124,17 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Update the site config.
+     *
+     * @param site The site to update the config from.
+     */
+    protected async updateSiteConfig(site: CoreSite | CoreUnauthenticatedSite): Promise<void> {
+        if (site instanceof CoreSite && this.logoType() === CoreSiteLogoType.TOP) {
+            this.siteConfig.set(await CorePromiseUtils.ignoreErrors(site.getConfig()));
+        }
+    }
+
+    /**
      * Load the site name, config and logo.
      *
      * @param site The site to load the info from.
@@ -120,7 +143,7 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
         const siteName = await site.getSiteName();
         this.siteName.set(siteName || '');
 
-        if (!this.showLogo() || (this.logoType() === CoreSiteLogoType.TOP && site.getShowTopLogo() === 'hidden')) {
+        if (!this.showLogo() || (this.logoType() === CoreSiteLogoType.TOP && site.getShowTopLogo(this.siteConfig()) === 'hidden')) {
             return;
         }
 

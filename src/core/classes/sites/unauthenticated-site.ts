@@ -23,6 +23,7 @@ import { CorePath } from '@static/path';
 import { CoreJsonPatch, JsonPatchOperation } from '@static/json-patch';
 import { CoreUtils } from '@static/utils';
 import { CoreLogger } from '@static/logger';
+import { CoreSiteConfig } from './site';
 
 /**
  * Class that represents a Moodle site where the user still hasn't authenticated.
@@ -187,22 +188,20 @@ export class CoreUnauthenticatedSite {
      * @param config Site public config.
      * @returns Logo URL.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getLogoUrl(config?: CoreSitePublicConfigResponse): string | undefined {
-        config = config ?? this.publicConfig;
-        if (!config || this.forcesLocalLogo()) {
-            return;
-        }
-
-        return config.logourl || config.compactlogourl || undefined;
+        return undefined;
     }
 
     /**
      * Check show top logo mode.
      *
+     * @param config Site config.
      * @returns The top logo mode.
      */
-    getShowTopLogo(): 'online' | 'offline' | 'hidden' {
-        return this.isDemoModeSite() ? 'hidden' : CoreConstants.CONFIG.showTopLogo;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getShowTopLogo(config?: CoreSiteConfig): 'online' | 'offline' | 'hidden' {
+        return 'hidden';
     }
 
     /**
