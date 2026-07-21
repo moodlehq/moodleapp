@@ -32,7 +32,27 @@ import { CORE_USER_PROFILE_PICTURE_UPDATED } from '@features/user/constants';
 /**
  * Component to display a "user avatar".
  *
- * Example: <core-user-avatar [user]="participant"></core-user-avatar>
+ * Main inputs:
+ * - url: URL of the avatar image. If not provided, initials will be shown.
+ * - userId: User ID. It will be used to link the image to the profile if linkProfile is true.
+ * - siteId: Site ID. It will be used to link image external content. Current site will be used if not provided.
+ * - fullname: User's full name. It will be used as alt text for the image and to calculate initials if needed.
+ * - courseId: Course ID. If linkProfile is true, it will be used to link the image to the profile in that course.
+ *
+ * Initials calculation inputs (if image url is not provided or fails to load):
+ * - initials: User's initials. It will be used if provided, otherwise it will be calculated from the name.
+ * - firstname: User's first name. It will be used to calculate initials if needed.
+ * - lastname: User's last name. It will be used to calculate initials if needed.
+ *
+ * Online status inputs:
+ * - checkOnline: Whether to check if the user is online or not. If true, it will show an online status.
+ * - isOnline: Whether the user is online or not. It will be used together with lastAccess to determine the online status.
+ * - lastAccess: User's last access time. It will be used together with isOnline to determine if the user is considered online.
+ *
+ * Deprecated inputs:
+ * - profileUrl: URL of the avatar image. Deprecated, use url instead.
+ * - site: Site info. It can contain user info, so it can be used to get the avatar URL and full name if not provided separately.
+ * - user: User data. It can be used to get the avatar URL and full name if not provided separately.
  */
 @Component({
     selector: 'core-user-avatar',
@@ -46,19 +66,33 @@ import { CORE_USER_PROFILE_PICTURE_UPDATED } from '@features/user/constants';
 })
 export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
 
-    @Input() user?: CoreUserWithAvatar; // @todo Fix the accepted type and restrict it a bit.
-    @Input() site?: CoreSiteBasicInfo | CoreSiteInfo; // Site info contains user info.
-    // The following params will override the ones in user object.
-    @Input() profileUrl?: string;
-    @Input({ transform: toBoolean }) linkProfile = true; // Avoid linking to the profile if wanted.
-    @Input() fullname?: string;
+    // Main inputs.
+    @Input() url?: string; // URL of the avatar image. If not provided, initials will be shown.
     @Input() userId?: number; // If provided or found it will be used to link the image to the profile.
-    @Input() courseId?: number;
-    @Input({ transform: toBoolean }) checkOnline = false; // If want to check and show online status.
     @Input() siteId?: string;
+    @Input() fullname?: string;
+    @Input() courseId?: number;
+    @Input({ transform: toBoolean }) linkProfile = true; // Avoid linking to the profile if wanted.
+
+    // Initials calculation inputs.
+    @Input() initials?: string;
+    @Input() firstname?: string;
+    @Input() lastname?: string;
+
+    // Online status inputs.
+    @Input({ transform: toBoolean }) checkOnline = false; // If want to check and show online status.
+    @Input() isOnline?: boolean;
+    @Input() lastAccess?: number;
+
+    // Deprecated inputs.
+    /** @deprecated since 5.3 Use url instead. */
+    @Input() profileUrl?: string;
+    /** @deprecated since 5.3 Pass data using separate inputs instead. */
+    @Input() site?: CoreSiteBasicInfo | CoreSiteInfo;
+    /** @deprecated since 5.3 Use separate data inputs instead. */
+    @Input() user?: CoreUserWithAvatar;
 
     avatarUrl?: string;
-    initials = '';
     imageError = false;
 
     // Variable to check if we consider this user online or not.
@@ -85,20 +119,23 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        this.siteId = this.siteId ?? (this.site && 'id' in this.site
-            ? this.site.id
+        const site = this.site; // eslint-disable-line @typescript-eslint/no-deprecated
+        const user = this.user; // eslint-disable-line @typescript-eslint/no-deprecated
+
+        this.siteId = this.siteId ?? (site && 'id' in site
+            ? site.id
             : CoreSites.getCurrentSiteId());
 
-        if (this.site && !this.user) {
-            this.user = {
-                id: ('userid' in this.site
-                    ? this.site.userid
-                    : this.site.userId)
+        if (site && !user) {
+            this.user = { // eslint-disable-line @typescript-eslint/no-deprecated
+                id: ('userid' in site
+                    ? site.userid
+                    : site.userId)
                     ?? (await CoreSites.getSite(this.siteId)).getUserId(),
-                fullname: this.site.fullname ?? '',
-                firstname: this.site.firstname ?? '',
-                lastname: this.site.lastname ?? '',
-                profileimageurl: this.site.userpictureurl ?? '',
+                fullname: site.fullname ?? '',
+                firstname: site.firstname ?? '',
+                lastname: site.lastname ?? '',
+                profileimageurl: site.userpictureurl ?? '',
             };
         }
 
@@ -128,29 +165,32 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      * Set fields from user.
      */
     protected async setFields(): Promise<void> {
-        const profileUrl = this.profileUrl || this.user?.profileimageurl || this.user?.userprofileimageurl ||
-            this.user?.userpictureurl || this.user?.profileimageurlsmall || this.user?.urls?.profileimage;
+        const user = this.user; // eslint-disable-line @typescript-eslint/no-deprecated
+
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        const profileUrl = this.url || this.profileUrl || user?.profileimageurl || user?.userprofileimageurl ||
+            user?.userpictureurl || user?.profileimageurlsmall || user?.urls?.profileimage;
 
         if (typeof profileUrl === 'string') {
             this.avatarUrl = profileUrl;
         }
 
-        this.fullname = this.fullname || this.user?.fullname || this.user?.userfullname;
+        this.fullname = this.fullname || user?.fullname || user?.userfullname;
 
         if (this.avatarUrl && CoreUrl.isThemeImageUrl(this.avatarUrl)) {
             this.avatarUrl = undefined;
         }
 
-        this.userId = this.userId || this.user?.userid || this.user?.id;
-        this.courseId = this.courseId || this.user?.courseid;
+        this.userId = this.userId || user?.userid || user?.id;
+        this.courseId = this.courseId || user?.courseid;
 
-        this.initials =
+        this.initials = this.initials ??
             await CoreUserHelper.getUserInitialsFromParts({
-                firstname: this.user?.firstname,
-                lastname: this.user?.lastname,
+                firstname: this.firstname ?? user?.firstname,
+                lastname: this.lastname ?? user?.lastname,
                 fullname: this.fullname,
                 userId: this.userId,
-        });
+            });
     }
 
     /**
@@ -158,23 +198,23 @@ export class CoreUserAvatarComponent implements OnInit, OnChanges, OnDestroy {
      *
      * @returns boolean
      */
-    isOnline(): boolean {
-        if (!this.user) {
+    computeIsOnline(): boolean {
+        const user = this.user; // eslint-disable-line @typescript-eslint/no-deprecated
+        const isOnline = this.isOnline ?? user?.isonline;
+        const lastaccess = this.lastAccess ?? user?.lastaccess;
+
+        if (CoreUtils.isFalseOrZero(isOnline)) {
             return false;
         }
 
-        if (CoreUtils.isFalseOrZero(this.user.isonline)) {
-            return false;
-        }
-
-        if (this.user.lastaccess) {
+        if (lastaccess) {
             // If the time has passed, don't show the online status.
             const time = Date.now() - this.timetoshowusers;
 
-            return this.user.lastaccess * 1000 >= time;
+            return lastaccess * 1000 >= time;
         } else {
             // You have to have Internet access first.
-            return !!this.user.isonline && CoreNetwork.isOnline();
+            return !!isOnline && CoreNetwork.isOnline();
         }
     }
 
