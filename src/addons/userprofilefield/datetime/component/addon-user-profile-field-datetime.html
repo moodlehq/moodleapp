@@ -45,6 +45,6 @@
                 </ion-datetime>
             </ng-template>
         </ion-modal>
-        <core-input-errors [control]="form.controls[modelName]" />
+        <core-input-errors [control]="form.controls[modelName]" [hideRequiredError]="signup" />
     </ion-item>
 }

@@ -1,14 +1,16 @@
 :host {
     display: contents;
+
     &.has-errors {
         display: block;
         width: 100%;
     }
 
     .core-input-error {
-        padding: 4px;
+        padding: 2px 0 6px;
         color: var(--danger);
         font: var(--mdl-typography-body-font-sm);
+        line-height: 1.3;
         display: none;
 
         &:first-child {

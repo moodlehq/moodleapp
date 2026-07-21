@@ -24,6 +24,6 @@
                     [courseId]="courseId" [wsNotFiltered]="true" />
             </div>
         </ion-input>
-        <core-input-errors [control]="form.controls[modelName]" />
+        <core-input-errors [control]="form.controls[modelName]" [hideRequiredError]="signup" />
     </ion-item>
 }

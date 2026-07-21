@@ -25,6 +25,6 @@
         </ion-label>
         <core-rich-text-editor [control]="control" [placeholder]="field.name" [autoSave]="true" [contextLevel]="contextLevel"
             [contextInstanceId]="contextInstanceId" [elementId]="modelName" />
-        <core-input-errors [control]="control" />
+        <core-input-errors [control]="control" [hideRequiredError]="signup" />
     </ion-item>
 }

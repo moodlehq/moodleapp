@@ -1,0 +1,107 @@
+@use "theme/globals" as *;
+
+:host {
+    --signup-section-gap: 20px;
+    --signup-field-gap: 4px;
+
+    form {
+        padding-bottom: 24px;
+    }
+
+    .core-signup-site-header {
+        text-align: center;
+        padding: 8px 16px 20px;
+
+        .item-heading {
+            margin: 0;
+            font: var(--mdl-typography-heading5-font);
+        }
+
+        .core-signup-siteurl {
+            margin: 6px 0 0;
+            color: var(--text-color);
+            opacity: 0.7;
+            font: var(--mdl-typography-body-font-sm);
+        }
+    }
+
+    .core-signup-summary-error {
+        margin: 0 16px 12px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: rgba(var(--ion-color-danger-rgb, 235, 68, 90), 0.08);
+        color: var(--danger);
+        font: var(--mdl-typography-body-font-sm);
+        border: 1px solid rgba(var(--ion-color-danger-rgb, 235, 68, 90), 0.25);
+    }
+
+    ion-item-divider {
+        margin-top: var(--signup-section-gap);
+        --background: transparent;
+        min-height: 40px;
+
+        .item-heading,
+        h2 {
+            font: var(--mdl-typography-subtitle-font-md);
+            margin: 0;
+        }
+    }
+
+    form > ion-item,
+    form core-user-profile-field ion-item {
+        --inner-padding-end: 12px;
+        --padding-start: 16px;
+        margin-bottom: var(--signup-field-gap);
+
+        &.ion-invalid.ion-touched,
+        &.ion-invalid.ion-dirty {
+            --border-color: var(--danger);
+            --highlight-color-invalid: var(--danger);
+        }
+    }
+
+    // Keep invalid profile fields highlighted when required message is hidden.
+    ::ng-deep core-user-profile-field {
+        ion-item.ion-invalid.ion-touched,
+        ion-item.ion-invalid.ion-dirty {
+            --border-color: var(--danger);
+            --highlight-color-invalid: var(--danger);
+        }
+    }
+
+    .core-signup-policy {
+        margin: var(--signup-section-gap) 12px 8px;
+        padding: 12px 4px 4px;
+        border-radius: 12px;
+        background: var(--ion-color-light, #f4f5f8);
+
+        ion-item-divider,
+        ion-item {
+            --background: transparent;
+        }
+
+        .core-signup-policy-link a {
+            font: var(--mdl-typography-body-font-md);
+        }
+
+        ion-checkbox {
+            margin: 4px 0;
+            align-items: flex-start;
+
+            p {
+                margin: 0;
+                line-height: 1.35;
+            }
+        }
+    }
+
+    .core-signup-submit {
+        margin-top: 8px;
+    }
+
+    .core-input-footnote {
+        margin: 4px 0 0;
+        opacity: 0.7;
+        font: var(--mdl-typography-body-font-sm);
+    }
+}

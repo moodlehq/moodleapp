@@ -48,7 +48,7 @@ import { CoreUserProfileFieldComponent } from '@features/user/components/user-pr
 @Component({
     selector: 'page-core-login-email-signup',
     templateUrl: 'email-signup.html',
-    styleUrl: '../../login.scss',
+    styleUrls: ['email-signup.scss', '../../login.scss'],
     imports: [
         CoreSharedModule,
         CoreUserProfileFieldComponent,
@@ -295,8 +295,9 @@ export default class CoreLoginEmailSignupPage implements OnInit {
         this.formSubmitClicked = true;
 
         if (!this.signupForm.valid || (this.settings?.recaptchapublickey && !this.captcha.recaptcharesponse)) {
-            // Form not valid. Mark all controls as dirty to display errors.
+            // Form not valid. Mark controls so field highlights and non-required errors appear.
             for (const name in this.signupForm.controls) {
+                this.signupForm.controls[name].markAsTouched();
                 this.signupForm.controls[name].markAsDirty();
             }
             this.changeDetector.detectChanges();

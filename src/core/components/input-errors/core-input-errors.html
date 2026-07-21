@@ -1,18 +1,13 @@
-@if (control && control.dirty && !control.valid) {
+@if (control && (control.dirty || control.touched) && !control.valid) {
 
     @for (error of errorKeys; track error) {
 
-        @if (control.hasError(error)) {
+        @if (control.hasError(error) && shouldShowError(error)) {
             <div class="core-input-error">
                 @if (error !== 'pattern') {
 
                     @if (errorMessages && errorMessages[error]) {
-                        <span>
-                            @if (error === 'required') {
-                                <ion-icon name="fas-circle-exclamation" aria-hidden="true" />
-                            }
-                            {{ errorMessages[error] | translate }}
-                        </span>
+                        <span>{{ errorMessages[error] | translate }}</span>
                     } @else if ((!errorMessages || !errorMessages[error]) && error === 'max' && control.errors?.max) {
                         <span>
                             {{ 'core.login.invalidvaluemax' | translate:{$a: control.errors!.max.max} }}

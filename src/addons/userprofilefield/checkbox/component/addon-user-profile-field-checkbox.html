@@ -28,6 +28,6 @@
                     [courseId]="courseId" [wsNotFiltered]="true" />
             </span>
         </ion-checkbox>
-        <core-input-errors [control]="form.controls[modelName]" />
+        <core-input-errors [control]="form.controls[modelName]" [hideRequiredError]="signup" />
     </ion-item>
 }

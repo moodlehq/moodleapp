@@ -15,7 +15,6 @@
 import { Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, inject } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { CoreBaseModule } from '@/core/base.module';
-import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Component to show errors if an input isn't valid.
@@ -41,10 +40,9 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     styleUrl: 'input-errors.scss',
     imports: [
         CoreBaseModule,
-        CoreFaIconDirective,
     ],
     host: {
-        '[class.has-errors]': '(control && control.dirty && !control.valid) || !!errorText',
+        '[class.has-errors]': 'hasVisibleErrors',
         '[role]': '"alert"',
     },
 })
@@ -53,9 +51,34 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
     @Input() control?: FormControl<unknown>; // Needed to be able to check the validity of the input.
     @Input() errorMessages: CoreInputErrorsMessages = {}; // Error messages to show. Keys must be the name of the error.
     @Input() errorText = ''; // Set other non automatic errors.
+    /**
+     * When true, skip required/requiredTrue messages (use label asterisk + field highlight instead).
+     * Other validation errors (pattern, email mismatch, ...) are still shown.
+     */
+    @Input() hideRequiredError = false;
     errorKeys: string[] = [];
 
     protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
+
+    /**
+     * Whether there is a visible error message to render.
+     */
+    get hasVisibleErrors(): boolean {
+        if (this.errorText) {
+            return true;
+        }
+
+        if (!this.control || (!this.control.dirty && !this.control.touched) || this.control.valid) {
+            return false;
+        }
+
+        const errors = this.control.errors;
+        if (!errors) {
+            return false;
+        }
+
+        return Object.keys(errors).some((error) => this.shouldShowError(error) && this.errorKeys.includes(error));
+    }
 
     /**
      * Initialize some common errors if they aren't set.
@@ -137,6 +160,20 @@ export class CoreInputErrorsComponent implements OnInit, OnChanges {
         }
 
         return this.errorMessages.pattern[patternError.requiredPattern];
+    }
+
+    /**
+     * Whether a given error key should be rendered.
+     *
+     * @param error Error key.
+     * @returns Whether to show it.
+     */
+    shouldShowError(error: string): boolean {
+        if (this.hideRequiredError && (error === 'required' || error === 'requiredTrue')) {
+            return false;
+        }
+
+        return true;
     }
 
 }
