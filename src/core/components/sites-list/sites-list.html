@@ -50,7 +50,9 @@
     <ion-item [attr.button]="isSiteClickable(isCurrentSite) ? true : null" (click)="siteClicked($event, site, isCurrentSite)"
         [attr.detail]="isSiteClickable(isCurrentSite) ? 'true' : 'false'" [class.item-current]="isCurrentSite">
 
-        <core-user-avatar [site]="site" slot="start" [linkProfile]="false" [siteId]="site.id" />
+        <core-user-avatar [userId]="site.userId" [url]="site.userpictureurl"
+            [firstname]="site.firstname" [lastname]="site.lastname" [fullname]="site.fullname"
+            slot="start" [linkProfile]="false" [siteId]="site.id" />
 
         <ion-label class="ion-text-nowrap">
             <p class="item-heading">{{site.fullname}}</p>

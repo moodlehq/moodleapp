@@ -4,7 +4,11 @@
             <!-- User data. -->
             @if (messageValue.showUserData) {
                 <div class="message-user">
-                    <core-user-avatar slot="start" [user]="user()" [courseId]="courseId()" [linkProfile]="false" aria-hidden="true" />
+                    @let messageUser = user();
+                    <core-user-avatar slot="start" [userId]="userId()" [url]="messageUser?.profileimageurl"
+                        [initials]="messageUser?.initials" [fullname]="userFullname()"
+                        [firstname]="messageUser?.firstname" [lastname]="messageUser?.lastname"
+                        [linkProfile]="false" aria-hidden="true" />
                     <div>{{ userFullname() }}</div>
                 </div>
             } @else {

@@ -24,11 +24,13 @@
                     [courseId]="courseId" />
 
                 <!-- List of submissions. -->
-                <ng-container *ngFor="let submission of submissions.items">
+                @for (submission of submissions.items; track submission.id) {
                     <ion-item class="ion-text-wrap" (click)="submissions.select(submission)" button
                         [attr.aria-current]="submissions.getItemAriaCurrent(submission)" [detail]="true">
                         @if (submission.userfullname) {
-                            <core-user-avatar [user]="submission" [linkProfile]="false" slot="start" />
+                            <core-user-avatar [userId]="submission.userid" [url]="submission.userprofileimageurl"
+                                [fullname]="submission.userfullname"
+                                [linkProfile]="false" slot="start" />
                         } @else {
                             <core-user-avatar [linkProfile]="false" slot="start" />
                         }
@@ -81,7 +83,7 @@
                             }
                         </ion-label>
                     </ion-item>
-                </ng-container>
+                }
             </ion-list>
 
             @if (!submissions || submissions.empty) {

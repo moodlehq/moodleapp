@@ -28,7 +28,9 @@
             @if (user) {
                 <ion-card>
                     <ion-item core-user-link [userId]="user.id" [courseId]="courseId" button [detail]="true">
-                        <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                        <core-user-avatar [userId]="user.id" [url]="user.profileimageurl" [initials]="user.initials"
+                            [fullname]="user.fullname" [firstname]="user.firstname" [lastname]="user.lastname"
+                            slot="start" [linkProfile]="false" />
                         <ion-label>{{ user.fullname }}</ion-label>
                     </ion-item>
                 </ion-card>

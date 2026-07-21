@@ -1,15 +1,20 @@
-<ion-card *ngFor="let item of items">
-    <ion-item class="ion-text-wrap" [href]="item.url" core-link [capture]="true">
-        @if (item.avatarUrl) {
-            <core-user-avatar [profileUrl]="item.avatarUrl" [fullname]="item.fullname" slot="start" [linkProfile]="false" />
-        }
+@for (item of items(); track item) {
+    <ion-card>
+        <ion-item class="ion-text-wrap" [href]="item.url" core-link [capture]="true">
+            @if (item.avatarUrl || item.initials) {
+                <core-user-avatar [url]="item.avatarUrl" [fullname]="item.fullname" [initials]="item.initials"
+                    slot="start" [linkProfile]="false" />
+            }
 
-        @if (item.iconUrl) {
-            <core-mod-icon [modicon]="item.iconUrl" slot="start" [showAlt]="false" [isBranded]="item.branded" />
-        }
-        <ion-label>
-            <p class="item-heading">{{ item.heading }}</p>
-            <p *ngFor="let text of item.details">{{ text }}</p>
-        </ion-label>
-    </ion-item>
-</ion-card>
+            @if (item.iconUrl) {
+                <core-mod-icon [modicon]="item.iconUrl" slot="start" [showAlt]="false" />
+            }
+            <ion-label>
+                <p class="item-heading">{{ item.heading }}</p>
+                @for (text of item.details; track text) {
+                    <p>{{ text }}</p>
+                }
+            </ion-label>
+        </ion-item>
+    </ion-card>
+}

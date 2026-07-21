@@ -15,18 +15,16 @@
 import { Injectable } from '@angular/core';
 
 import { CoreFilepool } from '@services/filepool';
-import { CoreSites } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreCountries } from '@static/countries';
 import { CoreLogger } from '@static/logger';
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData, CoreEventUserDeletedData, CoreEventUserSuspendedData } from '@static/events';
-import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';
+import { CoreStatusWithWarningsWSResponse } from '@services/ws';
 import { CoreError } from '@classes/errors/error';
 import { USERS_TABLE_NAME, CoreUserDBRecord } from './database/user';
 import { CoreUrl } from '@static/url';
-import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
-import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreTextFormat } from '@static/text';
 import {
@@ -37,6 +35,8 @@ import {
 } from '../constants';
 import { CoreUserPreferences } from './user-preferences';
 import { CoreWSError } from '@classes/errors/wserror';
+import { CoreUserHelper } from './user-helper';
+import { CoreUserWS } from './user-ws';
 
 declare module '@static/events' {
 
@@ -57,8 +57,6 @@ declare module '@static/events' {
  */
 @Injectable({ providedIn: 'root' })
 export class CoreUserProvider {
-
-    protected static readonly ROOT_CACHE_KEY = 'mmUser:';
 
     /**
      * @deprecated since 5.0. Use CORE_USER_PARTICIPANTS_LIST_LIMIT.
@@ -85,7 +83,7 @@ export class CoreUserProvider {
     async canSearchParticipants(siteId?: string): Promise<boolean> {
         const site = await CoreSites.getSite(siteId);
 
-        return this.canSearchParticipantsInSite(site);
+        return CoreUserWS.isEnrolSearchUsersAvailable(site);
     }
 
     /**
@@ -96,9 +94,7 @@ export class CoreUserProvider {
      * @since 3.8
      */
     canSearchParticipantsInSite(site?: CoreSite): boolean {
-        site = site || CoreSites.getCurrentSite();
-
-        return !!site?.wsAvailable('core_enrol_search_users');
+        return CoreUserWS.isEnrolSearchUsersAvailable(site);
     }
 
     /**
@@ -107,18 +103,10 @@ export class CoreUserProvider {
      * @param draftItemId New picture draft item id.
      * @param userId User ID.
      * @param siteId Site ID. If not defined, current site.
-     * @returns Promise resolve with the new profileimageurl
+     * @returns Promise resolve with the new profileimageurl.
      */
     async changeProfilePicture(draftItemId: number, userId: number, siteId?: string): Promise<string> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreUserUpdatePictureWSParams = {
-            draftitemid: draftItemId,
-            delete: false,
-            userid: userId,
-        };
-
-        const result = await site.write<CoreUserUpdatePictureWSResponse>('core_user_update_picture', params);
+        const result = await CoreUserWS.updatePicture(userId, draftItemId, { siteId });
 
         if (!result.success || !result.profileimageurl) {
             return Promise.reject(null);
@@ -182,58 +170,19 @@ export class CoreUserProvider {
     async getParticipants(
         courseId: number,
         limitFrom = 0,
-        limitNumber: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
+        limitNumber = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
         ignoreCache?: boolean,
     ): Promise<{ participants: CoreUserParticipant[]; canLoadMore: boolean }> {
-
-        const site = await CoreSites.getSite(siteId);
-
         this.logger.debug(`Get participants for course '${courseId}' starting at '${limitFrom}'`);
 
-        const params: CoreEnrolGetEnrolledUsersWSParams = {
-            courseid: courseId,
-            options: [
-                {
-                    name: 'limitfrom',
-                    value: String(limitFrom),
-                },
-                {
-                    name: 'limitnumber',
-                    value: String(limitNumber),
-                },
-                {
-                    name: 'sortby',
-                    value: 'siteorder',
-                },
-            ],
-        };
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getParticipantsListCacheKey(courseId),
-            updateFrequency: CoreCacheUpdateFrequency.RARELY,
-        };
-
-        if (ignoreCache) {
-            preSets.getFromCache = false;
-            preSets.emergencyCache = false;
-        }
-
-        const users = await site.read<CoreEnrolGetEnrolledUsersWSResponse>('core_enrol_get_enrolled_users', params, preSets);
+        const readingStrategy = ignoreCache ? CoreSitesReadingStrategy.ONLY_NETWORK : undefined;
+        const users = await CoreUserWS.getEnrolledUsers(courseId, limitFrom, limitNumber, 'siteorder', { siteId, readingStrategy });
 
         const canLoadMore = users.length >= limitNumber;
         this.storeUsers(users, siteId);
 
         return { participants: users, canLoadMore: canLoadMore };
-    }
-
-    /**
-     * Get cache key for participant list WS calls.
-     *
-     * @param courseId Course ID.
-     * @returns Cache key.
-     */
-    protected getParticipantsListCacheKey(courseId: number): string {
-        return `${CoreUserProvider.ROOT_CACHE_KEY}list:${courseId}`;
     }
 
     /**
@@ -287,16 +236,6 @@ export class CoreUserProvider {
     }
 
     /**
-     * Get cache key for a user WS call.
-     *
-     * @param userId User ID.
-     * @returns Cache key.
-     */
-    protected getUserCacheKey(userId: number): string {
-        return `${CoreUserProvider.ROOT_CACHE_KEY}data:${userId}`;
-    }
-
-    /**
      * Get user basic information from local DB.
      *
      * @param userId User ID.
@@ -342,36 +281,19 @@ export class CoreUserProvider {
         siteId?: string,
     ): Promise<CoreUserCourseProfile | CoreUserDescriptionExporter> {
         const site = await CoreSites.getSite(siteId);
+        siteId ??= site.getId();
 
-        const preSets: CoreSiteWSPreSets = {
-            cacheKey: this.getUserCacheKey(userId),
-            updateFrequency: CoreCacheUpdateFrequency.RARELY,
-        };
         let users: CoreUserDescriptionExporter[] | CoreUserCourseProfile[] | undefined;
 
         // Determine WS and data to use.
         if (courseId && courseId !== site.getSiteHomeId()) {
             this.logger.debug(`Get participant with ID '${userId}' in course '${courseId}'`);
 
-            const params: CoreUserGetCourseUserProfilesWSParams = {
-                userlist: [
-                    {
-                        userid: userId,
-                        courseid: courseId,
-                    },
-                ],
-            };
-
-            users = await site.read<CoreUserGetCourseUserProfilesWSResponse>('core_user_get_course_user_profiles', params, preSets);
+            users = await CoreUserWS.getCourseUserProfiles(userId, courseId, { siteId });
         } else {
             this.logger.debug(`Get user with ID '${userId}'`);
 
-            const params: CoreUserGetUsersByFieldWSParams = {
-                field: 'id',
-                values: [String(userId)],
-            };
-
-            users = await site.read<CoreUserGetUsersByFieldWSResponse>('core_user_get_users_by_field', params, preSets);
+            users = await CoreUserWS.getUsersByField(userId, { siteId });
         }
 
         if (users.length === 0) {
@@ -382,7 +304,14 @@ export class CoreUserProvider {
         if ('country' in user && user.country) {
             user.country = CoreCountries.getCountryName(user.country);
         }
-        this.storeUser(user.id, user.fullname, user.profileimageurl);
+        user.initials = CoreUserHelper.getUserInitials({
+            firstname: user.firstname,
+            lastname: user.lastname,
+            fullname: user.fullname,
+            initials: user.initials,
+        });
+
+        this.storeUser(user, siteId);
 
         return user;
     }
@@ -418,9 +347,7 @@ export class CoreUserProvider {
      * @param siteId Site Id. If not defined, use current site.
      */
     async invalidateUserCache(userId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getUserCacheKey(userId));
+        await CoreUserWS.invalidateUserCache(userId, siteId);
     }
 
     /**
@@ -431,9 +358,7 @@ export class CoreUserProvider {
      * @returns Promise resolved when the list is invalidated.
      */
     async invalidateParticipantsList(courseId: number, siteId?: string): Promise<void> {
-        const site = await CoreSites.getSite(siteId);
-
-        await site.invalidateWsCacheForKey(this.getParticipantsListCacheKey(courseId));
+        await CoreUserWS.invalidateParticipantsList(courseId, siteId);
     }
 
     /**
@@ -508,17 +433,7 @@ export class CoreUserProvider {
      * @returns Promise resolved when done.
      */
     async logView(userId: number, courseId?: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreUserViewUserProfileWSParams = {
-            userid: userId,
-        };
-
-        if (courseId) {
-            params.courseid = courseId;
-        }
-
-        return site.write('core_user_view_user_profile', params);
+        return CoreUserWS.logView(userId, courseId, siteId);
     }
 
     /**
@@ -529,13 +444,7 @@ export class CoreUserProvider {
      * @returns Promise resolved when done.
      */
     async logParticipantsView(courseId: number, siteId?: string): Promise<CoreStatusWithWarningsWSResponse> {
-        const site = await CoreSites.getSite(siteId);
-
-        const params: CoreUserViewUserListWSParams = {
-            courseid: courseId,
-        };
-
-        return site.write('core_user_view_user_list', params);
+        return CoreUserWS.logParticipantsView(courseId, siteId);
     }
 
     /**
@@ -638,23 +547,12 @@ export class CoreUserProvider {
         search: string,
         searchAnywhere = true,
         page = 0,
-        perPage: number = CORE_USER_PARTICIPANTS_LIST_LIMIT,
+        perPage = CORE_USER_PARTICIPANTS_LIST_LIMIT,
         siteId?: string,
     ): Promise<{ participants: CoreUserDescriptionExporter[]; canLoadMore: boolean }> {
-        const site = await CoreSites.getSite(siteId);
+        siteId ??= CoreSites.getCurrentSiteId();
 
-        const params: CoreEnrolSearchUsersWSParams = {
-            courseid: courseId,
-            search: search,
-            searchanywhere: !!searchAnywhere,
-            page: page,
-            perpage: perPage,
-        };
-        const preSets: CoreSiteWSPreSets = {
-            getFromCache: false, // Always try to get updated data. If it fails, it will get it from cache.
-        };
-
-        const participants = await site.read<CoreEnrolSearchUsersWSResponse>('core_enrol_search_users', params, preSets);
+        const participants = await CoreUserWS.enrolSearchUsers(courseId, search, searchAnywhere, page, perPage, { siteId });
 
         const canLoadMore = participants.length >= perPage;
         this.storeUsers(participants, siteId);
@@ -665,23 +563,30 @@ export class CoreUserProvider {
     /**
      * Store user basic information in local DB to be retrieved if the WS call fails.
      *
-     * @param userId User ID.
-     * @param fullname User full name.
-     * @param avatar User avatar URL.
+     * @param record User record.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    protected async storeUser(userId: number, fullname: string, avatar?: string, siteId?: string): Promise<void> {
-        if (!userId) {
+    protected async storeUser(record: Partial<CoreUserDBRecord>, siteId?: string): Promise<void> {
+        if (!record.id) {
             return;
         }
 
         const site = await CoreSites.getSite(siteId);
 
         const userRecord: CoreUserDBRecord = {
-            id: userId,
-            fullname: fullname,
-            profileimageurl: avatar,
+            id: record.id,
+            fullname: record.fullname || '',
+            profileimageurl: record.profileimageurl,
+            initials: record.initials,
         };
+
+        if (!record.fullname || !record.profileimageurl || !record.initials) {
+            const localRecord = await this.getUserFromLocalDb(record.id, siteId);
+
+            record.fullname = record.fullname || localRecord.fullname;
+            record.profileimageurl = record.profileimageurl || localRecord.profileimageurl;
+            record.initials = record.initials || localRecord.initials;
+        }
 
         await site.getDb().insertRecord(USERS_TABLE_NAME, userRecord);
     }
@@ -692,9 +597,17 @@ export class CoreUserProvider {
      * @param users Users to store.
      * @param siteId ID of the site. If not defined, use current site.
      */
-    async storeUsers(users: CoreUserBasicData[], siteId?: string): Promise<void> {
-        await Promise.all(users.map((user) =>
-            this.storeUser(Number(user.id), user.fullname, user.profileimageurl, siteId)));
+    async storeUsers(users: CoreUserBasicDataForInitials[], siteId?: string): Promise<void> {
+        await Promise.all(users.map(async (user) => {
+            user.initials = CoreUserHelper.getUserInitials({
+                firstname: user.firstname,
+                lastname: user.lastname,
+                fullname: user.fullname,
+                initials: user.initials,
+            });
+
+            return this.storeUser(user, siteId);
+        }));
     }
 
     /**
@@ -767,6 +680,19 @@ export type CoreUserBasicData = {
     id: number; // ID of the user.
     fullname: string; // The fullname of the user.
     profileimageurl?: string; // User image profile URL - big version.
+    initials?: string; // @since 5.3 The initials of the user.
+};
+
+/**
+ * Basic data of a user.
+ */
+type CoreUserBasicDataForInitials = {
+    id: number; // ID of the user.
+    fullname: string; // The fullname of the user.
+    profileimageurl?: string; // User image profile URL - big version.
+    initials?: string; // @since 5.3 The initials of the user.
+    firstname?: string; // The first name(s) of the user.
+    lastname?: string; // The family name of the user.
 };
 
 /**
@@ -830,6 +756,7 @@ export type CoreUserDescriptionExporter = {
     firstname?: string; // The first name(s) of the user.
     lastname?: string; // The family name of the user.
     fullname: string; // The fullname of the user.
+    initials?: string; // @since 5.3 The initials of the user.
     email?: string; // An email address - allow email as root@localhost.
     address?: string; // Postal address.
     phone1?: string; // Phone 1.
@@ -926,96 +853,3 @@ export type CoreUserCourseProfile = CoreUserDescriptionExporter & {
  * User data returned by getProfile.
  */
 export type CoreUserProfile = (CoreUserBasicData & Partial<CoreUserDescriptionExporter>) | CoreUserCourseProfile;
-
-/**
- * Params of core_user_update_picture WS.
- */
-type CoreUserUpdatePictureWSParams = {
-    draftitemid: number; // Id of the user draft file to use as image.
-    delete?: boolean; // If we should delete the user picture.
-    userid?: number; // Id of the user, 0 for current user.
-};
-
-/**
- * Data returned by core_user_update_picture WS.
- */
-type CoreUserUpdatePictureWSResponse = {
-    success: boolean; // True if the image was updated, false otherwise.
-    profileimageurl?: string; // New profile user image url.
-    warnings?: CoreWSExternalWarning[];
-};
-
-/**
- * Params of core_enrol_get_enrolled_users WS.
- */
-type CoreEnrolGetEnrolledUsersWSParams = {
-    courseid: number; // Course id.
-    options?: {
-        name: string; // Option name.
-        value: string; // Option value.
-    }[];
-};
-
-/**
- * Data returned by core_enrol_get_enrolled_users WS.
- */
-type CoreEnrolGetEnrolledUsersWSResponse = CoreUserParticipant[];
-
-/**
- * Params of core_user_get_course_user_profiles WS.
- */
-type CoreUserGetCourseUserProfilesWSParams = {
-    userlist: {
-        userid: number; // Userid.
-        courseid: number; // Courseid.
-    }[];
-};
-
-/**
- * Data returned by core_user_get_course_user_profiles WS.
- */
-type CoreUserGetCourseUserProfilesWSResponse = CoreUserCourseProfile[];
-
-/**
- * Params of core_user_get_users_by_field WS.
- */
-type CoreUserGetUsersByFieldWSParams = {
-    field: string; // The search field can be 'id' or 'idnumber' or 'username' or 'email'.
-    values: string[];
-};
-/**
- * Data returned by core_user_get_users_by_field WS.
- */
-type CoreUserGetUsersByFieldWSResponse = CoreUserDescriptionExporter[];
-
-/**
- * Params of core_user_view_user_list WS.
- */
-type CoreUserViewUserListWSParams = {
-    courseid: number; // Id of the course, 0 for site.
-};
-
-/**
- * Params of core_user_view_user_profile WS.
- */
-type CoreUserViewUserProfileWSParams = {
-    userid: number; // Id of the user, 0 for current user.
-    courseid?: number; // Id of the course, default site course.
-};
-
-/**
- * Params of core_enrol_search_users WS.
- */
-type CoreEnrolSearchUsersWSParams = {
-    courseid: number; // Course id.
-    search: string; // Query.
-    searchanywhere: boolean; // Find a match anywhere, or only at the beginning.
-    page: number; // Page number.
-    perpage: number; // Number per page.
-    contextid?: number; // @since 4.4. Context ID.
-};
-
-/**
- * Data returned by core_enrol_search_users WS.
- */
-type CoreEnrolSearchUsersWSResponse = CoreUserDescriptionExporter[];

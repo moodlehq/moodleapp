@@ -24,24 +24,26 @@
             </ion-item-divider>
 
             @if (total > 0) {
-                <ion-item *ngFor="let user of users" class="ion-text-wrap">
-                    <core-user-avatar [user]="user" slot="start" />
-                    <ion-label>
-                        <p class="item-heading">{{ user.fullname }}</p>
-                        <p>
-                            @if (user.started) {
-                                <ion-badge color="success">
-                                    {{ 'addon.mod_feedback.started' | translate}}
-                                </ion-badge>
-                            } @else {
-                                <ion-badge color="danger">
-                                    {{ 'addon.mod_feedback.not_started' | translate}}
-                                </ion-badge>
-                            }
-                        </p>
-                    </ion-label>
-                </ion-item>
-
+                @for (user of users; track user.userid) {
+                    <ion-item class="ion-text-wrap">
+                        <core-user-avatar [userId]="user.userid" [url]="user.profileimageurl"
+                            [fullname]="user.fullname" [courseId]="user.courseid" slot="start" />
+                        <ion-label>
+                            <p class="item-heading">{{ user.fullname }}</p>
+                            <p>
+                                @if (user.started) {
+                                    <ion-badge color="success">
+                                        {{ 'addon.mod_feedback.started' | translate}}
+                                    </ion-badge>
+                                } @else {
+                                    <ion-badge color="danger">
+                                        {{ 'addon.mod_feedback.not_started' | translate}}
+                                    </ion-badge>
+                                }
+                            </p>
+                        </ion-label>
+                    </ion-item>
+                }
             }
 
             <core-infinite-loading [enabled]="canLoadMore" (action)="loadAttempts(undefined, $event)" [error]="loadMoreError" />

@@ -64,7 +64,8 @@
         @if (user) {
             <ion-card>
                 <ion-item class="ion-text-wrap">
-                    <core-user-avatar [user]="user" slot="start" />
+                    <core-user-avatar [userId]="user.id" [url]="user.profileimageurl" [initials]="user.initials"
+                        [firstname]="user.firstname" [lastname]="user.lastname" [fullname]="user.fullname" slot="start" />
                     <ion-label>
                         <p class="item-heading">{{ user.fullname }}</p>
                     </ion-label>

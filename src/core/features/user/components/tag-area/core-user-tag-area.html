@@ -1,9 +1,13 @@
-<ion-card *ngFor="let item of items">
-    <ion-item class="ion-text-wrap" core-user-link [userId]="item.user.id">
-        <core-user-avatar [user]="item.user" slot="start" [linkProfile]="false" />
-        <ion-label>
-            <p class="item-heading">{{ item.heading }}</p>
-        </ion-label>
-    </ion-item>
+@for (item of items(); track item) {
+    <ion-card>
+        <ion-item class="ion-text-wrap" core-user-link [userId]="item.user.id">
+            @let user = item.user;
+            <core-user-avatar [userId]="user.id" [url]="user.profileimageurl" [fullname]="user.fullname" [initials]="user.initials"
+                slot="start" [linkProfile]="false" />
+            <ion-label>
+                <p class="item-heading">{{ item.heading }}</p>
+            </ion-label>
+        </ion-item>
 
-</ion-card>
+    </ion-card>
+}

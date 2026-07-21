@@ -37,7 +37,9 @@
                     }
                     <div class="addon-mod-forum-post-info">
                         @if (post.author && post.author.fullname) {
-                            <core-user-avatar [user]="post.author" slot="start" [courseId]="courseId" />
+                            @let author = post.author;
+                            <core-user-avatar [userId]="author.id" [url]="author.urls?.profileimage" [fullname]="author.fullname"
+                                slot="start" [courseId]="courseId" />
                         }
                         <div class="addon-mod-forum-post-author">
                             @if (post.author && post.author.fullname) {

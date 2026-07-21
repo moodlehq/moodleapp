@@ -14,18 +14,21 @@
     <core-loading [hideUntil]="loaded">
         @if (ratings.length > 0) {
             <ion-list>
-                <ion-item class="ion-text-wrap" *ngFor="let rating of ratings">
-                    <core-user-avatar [user]="rating" [courseId]="courseId" slot="start" />
-                    <ion-label>
-                        <p class="item-heading">{{ rating.userfullname }}</p>
-                        <p>{{ rating.rating }}</p>
-                    </ion-label>
-                    @if (rating.timemodified) {
-                        <ion-note slot="end">
-                            {{ rating.timemodified | coreDateDayOrTime }}
-                        </ion-note>
-                    }
-                </ion-item>
+                @for (rating of ratings; track rating.id) {
+                    <ion-item class="ion-text-wrap">
+                        <core-user-avatar [userId]="rating.userid" [url]="rating.userpictureurl"
+                            [fullname]="rating.userfullname" [courseId]="courseId" slot="start" />
+                        <ion-label>
+                            <p class="item-heading">{{ rating.userfullname }}</p>
+                            <p>{{ rating.rating }}</p>
+                        </ion-label>
+                        @if (rating.timemodified) {
+                            <ion-note slot="end">
+                                {{ rating.timemodified | coreDateDayOrTime }}
+                            </ion-note>
+                        }
+                    </ion-item>
+                }
             </ion-list>
         } @else {
             <core-empty-box icon="fas-star-half-stroke" [message]="'core.rating.noratings' | translate" />

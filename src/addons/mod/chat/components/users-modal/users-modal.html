@@ -12,24 +12,27 @@
 </ion-header>
 <ion-content>
     <core-loading [hideUntil]="usersLoaded">
-        <ion-item class="ion-text-wrap" *ngFor="let user of users" [class.addon-mod-chat-user]="currentUserId !== user.id && isOnline()">
+        @for (user of users; track user.id) {
+            <ion-item class="ion-text-wrap" [class.addon-mod-chat-user]="currentUserId !== user.id && isOnline()">
 
-            <core-user-avatar [user]="user" slot="start" [linkProfile]="false" />
-            <ion-label>
-                <p class="item-heading">{{ user.fullname }}</p>
-                @if (currentUserId !== user.id && isOnline()) {
+                <core-user-avatar [userId]="user.id" [url]="user.profileimageurl"
+                    [fullname]="user.fullname" slot="start" [linkProfile]="false" />
+                <ion-label>
+                    <p class="item-heading">{{ user.fullname }}</p>
+                    @if (currentUserId !== user.id && isOnline()) {
 
-                    <ion-button fill="clear" (click)="talkTo(user)">
-                        <ion-icon name="fas-comments" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_chat.talk' | translate }}
-                    </ion-button>
-                    <ion-button fill="clear" (click)="beepTo(user)">
-                        <ion-icon name="fas-bell" slot="start" aria-hidden="true" />
-                        {{ 'addon.mod_chat.beep' | translate }}
-                    </ion-button>
+                        <ion-button fill="clear" (click)="talkTo(user)">
+                            <ion-icon name="fas-comments" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_chat.talk' | translate }}
+                        </ion-button>
+                        <ion-button fill="clear" (click)="beepTo(user)">
+                            <ion-icon name="fas-bell" slot="start" aria-hidden="true" />
+                            {{ 'addon.mod_chat.beep' | translate }}
+                        </ion-button>
 
-                }
-            </ion-label>
-        </ion-item>
+                    }
+                </ion-label>
+            </ion-item>
+        }
     </core-loading>
 </ion-content>

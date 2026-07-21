@@ -88,93 +88,98 @@
                 </core-empty-box>
             }
 
-            <div *ngFor="let discussion of discussionsItems" class="ion-activatable ripple-parent">
-                <ion-item class="addon-mod-forum-discussion" [detail]="true" [lines]="discussion.groupname && 'none'"
-                    [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)" (click)="discussions?.select(discussion)" tappable>
-                    <ion-label>
-                        <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
-                            @if (discussion.pinned) {
-                                <ion-icon name="fas-map-pin" [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
-                            }
-                            @if (discussion.starred) {
-                                <ion-icon name="fas-star" class="addon-forum-star"
-                                    [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
-                            }
-                            <span (ariaButtonClick)="discussions?.select(discussion)">
-                                <core-format-text [text]="discussion.subject" [courseId]="courseId" contextLevel="module"
-                                    [contextInstanceId]="module && module.id" [sanitize]="isOfflineDiscussion(discussion)" />
-                            </span>
-                            @if (discussion.locked) {
-                                <ion-icon name="fas-lock" class="addon-mod-forum-locked-icon"
-                                    [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate" />
-                            }
-                        </p>
-                        <div class="addon-mod-forum-discussion-info">
-                            @if (discussion.userfullname) {
-                                <core-user-avatar [user]="discussion" slot="start" [courseId]="courseId" [linkProfile]="false" />
-                            }
-                            <div class="addon-mod-forum-discussion-author">
-                                @if (discussion.userfullname) {
-                                    <span class="core-discussionusername">{{discussion.userfullname}}</span>
+            @for (discussion of discussionsItems; track 'id' in discussion ? 'on_'+discussion.id : 'off_'+discussion.timecreated) {
+                <div class="ion-activatable ripple-parent">
+                    <ion-item class="addon-mod-forum-discussion" [detail]="true" [lines]="discussion.groupname && 'none'" tappable
+                        [attr.aria-current]="discussions?.getItemAriaCurrent(discussion)" (click)="discussions?.select(discussion)">
+                        <ion-label>
+                            <p class="addon-mod-forum-discussion-title ion-text-wrap item-heading">
+                                @if ('pinned' in discussion && discussion.pinned) {
+                                    <ion-icon name="fas-map-pin" [attr.aria-label]="'addon.mod_forum.discussionpinned' | translate" />
                                 }
-                                @if (discussion.groupname) {
-                                    <p class="core-groupname">
-                                        <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
-                                        <core-format-text [text]="discussion.groupname" contextLevel="course" [contextInstanceId]="courseId"
-                                            [wsNotFiltered]="true" />
-                                    </p>
+                                @if ('starred' in discussion && discussion.starred) {
+                                    <ion-icon name="fas-star" class="addon-forum-star"
+                                        [attr.aria-label]="'addon.mod_forum.favourites' | translate" />
                                 }
-                                @if (isOnlineDiscussion(discussion)) {
-                                    <p>
-                                        {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
-                                    </p>
+                                <span (ariaButtonClick)="discussions?.select(discussion)">
+                                    <core-format-text [text]="discussion.subject" [courseId]="courseId" contextLevel="module"
+                                        [contextInstanceId]="module && module.id" [sanitize]="isOfflineDiscussion(discussion)" />
+                                </span>
+                                @if ('locked' in discussion && discussion.locked) {
+                                    <ion-icon name="fas-lock" class="addon-mod-forum-locked-icon"
+                                        [attr.aria-label]="'addon.mod_forum.discussionlocked' | translate" />
                                 }
-                                @if (isOfflineDiscussion(discussion)) {
-                                    <p>
-                                        <ion-icon name="fas-clock" aria-hidden="true" />
-                                        {{ 'core.notsent' | translate }}
-                                    </p>
+                            </p>
+                            <div class="addon-mod-forum-discussion-info">
+                                @if ('userfullname' in discussion && discussion.userfullname) {
+                                    <core-user-avatar [userId]="discussion.userid" [url]="discussion.userpictureurl"
+                                        [initials]="discussion.userinitials" [fullname]="discussion.userfullname"
+                                        slot="start" [linkProfile]="false" />
                                 }
+                                <div class="addon-mod-forum-discussion-author">
+                                    @if ('userfullname' in discussion && discussion.userfullname) {
+                                        <span class="core-discussionusername">{{discussion.userfullname}}</span>
+                                    }
+                                    @if ('groupname' in discussion && discussion.groupname) {
+                                        <p class="core-groupname">
+                                            <ion-icon name="fas-users" [attr.aria-label]="'addon.mod_forum.group' | translate" />
+                                            <core-format-text [text]="discussion.groupname" contextLevel="course"
+                                                [contextInstanceId]="courseId" [wsNotFiltered]="true" />
+                                        </p>
+                                    }
+                                    @if (isOnlineDiscussion(discussion)) {
+                                        <p>
+                                            {{discussion.created * 1000 | coreFormatDate: "strftimerecentfull"}}
+                                        </p>
+                                    }
+                                    @if (isOfflineDiscussion(discussion)) {
+                                        <p>
+                                            <ion-icon name="fas-clock" aria-hidden="true" />
+                                            {{ 'core.notsent' | translate }}
+                                        </p>
+                                    }
+                                </div>
                             </div>
-                        </div>
-                        @if (isOnlineDiscussion(discussion)) {
-                            <ion-row class="ion-text-center addon-mod-forum-discussion-more-info">
-                                <ion-col class="ion-text-start">
-                                    <ion-note>
-                                        <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'addon.mod_forum.lastpost' | translate }}
-                                        @if (discussion.timemodified > discussion.created) {
-                                            {{ discussion.timemodified | coreTimeAgo }}
-                                        } @else {
-                                            {{ discussion.created | coreTimeAgo }}
-                                        }
-                                    </ion-note>
-                                </ion-col>
-                                <ion-col class="ion-text-end">
-                                    <ion-note>
-                                        <ion-icon name="fas-comments" aria-hidden="true" />
-                                        {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
-                                        @if (discussion.numunread) {
-                                            <ion-badge class="ion-text-center">
-                                                <span aria-hidden="true">{{ discussion.numunread }}</span>
-                                                <span class="sr-only">
-                                                    {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}
-                                                </span>
-                                            </ion-badge>
-                                        }
-                                    </ion-note>
-                                </ion-col>
-                            </ion-row>
+                            @if (isOnlineDiscussion(discussion)) {
+                                <ion-row class="ion-text-center addon-mod-forum-discussion-more-info">
+                                    <ion-col class="ion-text-start">
+                                        <ion-note>
+                                            <ion-icon name="fas-clock" aria-hidden="true" /> {{ 'addon.mod_forum.lastpost' | translate }}
+                                            @if (discussion.timemodified > discussion.created) {
+                                                {{ discussion.timemodified | coreTimeAgo }}
+                                            } @else {
+                                                {{ discussion.created | coreTimeAgo }}
+                                            }
+                                        </ion-note>
+                                    </ion-col>
+                                    <ion-col class="ion-text-end">
+                                        <ion-note>
+                                            <ion-icon name="fas-comments" aria-hidden="true" />
+                                            {{ 'addon.mod_forum.numreplies' | translate:{numreplies: discussion.numreplies} }}
+                                            @if (discussion.numunread) {
+                                                <ion-badge class="ion-text-center">
+                                                    <span aria-hidden="true">{{ discussion.numunread }}</span>
+                                                    <span class="sr-only">
+                                                        {{ 'addon.mod_forum.unreadpostsnumber' | translate:{ '$a' : discussion.numunread} }}
+                                                    </span>
+                                                </ion-badge>
+                                            }
+                                        </ion-note>
+                                    </ion-col>
+                                </ion-row>
+                            }
+                        </ion-label>
+                        @if (canPin || ('canlock' in discussion && discussion.canlock) ||
+                            ('canfavourite' in discussion && discussion.canfavourite)) {
+                            <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
+                                (click)="showOptionsMenu($event, discussion)" slot="end">
+                                <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
                         }
-                    </ion-label>
-                    @if (canPin || discussion.canlock || discussion.canfavourite) {
-                        <ion-button fill="clear" [ariaLabel]="('core.displayoptions' | translate)"
-                            (click)="showOptionsMenu($event, discussion)" slot="end">
-                            <ion-icon name="ellipsis-vertical" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    }
-                </ion-item>
-                <ion-ripple-effect />
-            </div>
+                    </ion-item>
+                    <ion-ripple-effect />
+                </div>
+            }
 
 
             <core-infinite-loading [enabled]="discussions && discussions.loaded && !discussions.completed" [error]="fetchFailed"

@@ -31,9 +31,11 @@
     <core-loading [hideUntil]="notesLoaded">
         @if (user) {
             <ion-item class="ion-text-wrap">
-                <core-user-avatar [user]="user" [courseId]="courseId" slot="start" [linkProfile]="false" />
+                <core-user-avatar [userId]="user.id" [url]="user.profileimageurl" [initials]="user.initials"
+                    [fullname]="user.fullname" [firstname]="user.firstname" [lastname]="user.lastname"
+                    slot="start" [linkProfile]="false" />
                 <ion-label>
-                    <p class="item-heading">{{user!.fullname}}</p>
+                    <p class="item-heading">{{user.fullname}}</p>
                 </ion-label>
             </ion-item>
         }
@@ -58,52 +60,55 @@
         @if (notes && notes.length === 0) {
             <core-empty-box icon="fas-receipt" [message]="'addon.notes.nonotes' | translate" />
         } @else {
-            <ion-card *ngFor="let note of notes">
-                <ion-item class="ion-text-wrap">
-                    @if (!userId) {
-                        <core-user-avatar [user]="note" [courseId]="courseId" slot="start" />
-                    }
-                    <ion-label>
+            @for (note of notes; track note.id) {
+                <ion-card>
+                    <ion-item class="ion-text-wrap">
                         @if (!userId) {
-                            <p class="item-heading">{{note.userfullname}}</p>
+                            <core-user-avatar [userId]="note.userid" [url]="note.userprofileimageurl"
+                                [fullname]="note.userfullname" [courseId]="courseId" slot="start" />
                         }
-                        @if (!note.deleted && !note.offline) {
+                        <ion-label>
+                            @if (!userId) {
+                                <p class="item-heading">{{note.userfullname}}</p>
+                            }
+                            @if (!note.deleted && !note.offline) {
+                                <p slot="end">
+                                    <span class="ion-text-wrap">{{note.lastmodified | coreDateDayOrTime}}</span>
+                                </p>
+                            }
+                        </ion-label>
+                        @if (note.offline) {
                             <p slot="end">
-                                <span class="ion-text-wrap">{{note.lastmodified | coreDateDayOrTime}}</span>
+                                <ion-icon name="fas-clock" aria-hidden="true" /> <span class="ion-text-wrap">
+                                    {{ 'core.notsent' | translate }}
+                                </span>
                             </p>
                         }
-                    </ion-label>
-                    @if (note.offline) {
-                        <p slot="end">
-                            <ion-icon name="fas-clock" aria-hidden="true" /> <span class="ion-text-wrap">
-                                {{ 'core.notsent' | translate }}
-                            </span>
-                        </p>
-                    }
-                    @if (note.deleted) {
-                        <p slot="end">
-                            <ion-icon name="fas-trash" aria-hidden="true" /> <span class="ion-text-wrap">
-                                {{ 'core.deletedoffline' | translate }}
-                            </span>
-                        </p>
-                        <ion-button slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
-                            [ariaLabel]="'core.restore' | translate">
-                            <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    }
-                    @if (showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)) {
-                        <ion-button slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
-                            fill="clear" color="danger" (click)="deleteNote($event, note)" [ariaLabel]="'core.delete' | translate">
-                            <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
-                        </ion-button>
-                    }
-                </ion-item>
-                <ion-item class="ion-text-wrap">
-                    <ion-label>
-                        <core-format-text [text]="note.content" [filter]="false" [sanitize]="note.offline" />
-                    </ion-label>
-                </ion-item>
-            </ion-card>
+                        @if (note.deleted) {
+                            <p slot="end">
+                                <ion-icon name="fas-trash" aria-hidden="true" /> <span class="ion-text-wrap">
+                                    {{ 'core.deletedoffline' | translate }}
+                                </span>
+                            </p>
+                            <ion-button slot="end" fill="clear" color="danger" (click)="undoDeleteNote($event, note)"
+                                [ariaLabel]="'core.restore' | translate">
+                                <ion-icon name="fas-rotate-left" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        }
+                        @if (showDelete && !note.deleted && (type !== 'personal' || note.usermodified === currentUserId)) {
+                            <ion-button slot="end" animate.enter="slide-in-right-animation" animate.leave="slide-out-right-animation"
+                                fill="clear" color="danger" (click)="deleteNote($event, note)" [ariaLabel]="'core.delete' | translate">
+                                <ion-icon name="fas-trash" slot="icon-only" aria-hidden="true" />
+                            </ion-button>
+                        }
+                    </ion-item>
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <core-format-text [text]="note.content" [filter]="false" [sanitize]="note.offline" />
+                        </ion-label>
+                    </ion-item>
+                </ion-card>
+            }
 
         }
     </core-loading>

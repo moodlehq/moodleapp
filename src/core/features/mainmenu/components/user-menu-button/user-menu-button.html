@@ -1,4 +1,7 @@
 @if (showButton()) {
-    <core-user-avatar [site]="siteInfo()" class="core-bar-button-image clickable" [linkProfile]="false"
-        (ariaButtonClick)="openUserMenu($event)" [attr.aria-label]="'core.user.useraccount' | translate" />
+    @let info = siteInfo();
+    <core-user-avatar [userId]="info?.userid" [url]="info?.userpictureurl"
+        [firstname]="info?.firstname" [lastname]="info?.lastname" [fullname]="info?.fullname"
+        [linkProfile]="false" class="core-bar-button-image clickable" (ariaButtonClick)="openUserMenu($event)"
+        [attr.aria-label]="'core.user.useraccount' | translate" />
 }

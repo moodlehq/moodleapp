@@ -15,7 +15,9 @@
     <core-loading [hideUntil]="loaded()">
         @if (user(); as userDisplay) {
             <ion-item class="ion-text-wrap">
-                <core-user-avatar [user]="userDisplay" [courseId]="courseId()" slot="start" [linkProfile]="false" />
+                <core-user-avatar [userId]="userDisplay?.id" [url]="userDisplay?.profileimageurl" [initials]="userDisplay?.initials"
+                    [firstname]="userDisplay?.firstname" [lastname]="userDisplay?.lastname" [fullname]="userDisplay?.fullname"
+                    slot="start" [linkProfile]="false" />
                 <ion-label>
                     <p class="item-heading">{{userDisplay.fullname}}</p>
                 </ion-label>

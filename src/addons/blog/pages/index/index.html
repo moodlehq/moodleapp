@@ -76,7 +76,10 @@
 
                 <div class="entry-creation-info flex ion-align-items-center">
                     <div class="entry-avatar">
-                        <core-user-avatar [user]="entry.user" [courseId]="entry.courseid" />
+                        @let user = entry.user;
+                        <core-user-avatar [userId]="user?.id" [url]="user?.profileimageurl" [initials]="user?.initials"
+                            [firstname]="user?.firstname" [lastname]="user?.lastname" [fullname]="user?.fullname"
+                            [courseId]="entry.courseid" />
                     </div>
 
                     @if (entry.user?.fullname && entry.created) {

@@ -35,7 +35,7 @@ export class CoreTagHelperProvider {
         Array.from(element.querySelectorAll('ul.tag_feed > li')).forEach((itemElement) => {
             const item: CoreTagFeedElement = { details: [] };
 
-            Array.from(itemElement.querySelectorAll('div.media-body > div, div.flex-grow-1 > div')).forEach((div: HTMLElement) => {
+            Array.from(itemElement.querySelectorAll<HTMLElement>('div.media-body > div, div.flex-grow-1 > div')).forEach((div) => {
                 if (div.classList.contains('media-heading') || div.classList.contains('item-heading')) {
                     item.heading = div.innerText.trim();
                     const link = div.querySelector('a');
@@ -57,7 +57,7 @@ export class CoreTagHelperProvider {
                             }
                         }
                     });
-                    item.details.push(...lines.map((line) => line.trim()).filter((line) => line != ''));
+                    item.details.push(...lines.map((line) => line.trim()).filter((line) => line));
                 }
             });
 
@@ -70,10 +70,11 @@ export class CoreTagHelperProvider {
                     item.iconUrl = image.getAttribute('src');
                 }
             } else {
-                const initials = itemElement.querySelector('div.itemimage .userinitials, div.flex-shrink-0 .userinitials');
+                const initials = itemElement.querySelector<HTMLSpanElement>
+                    ('div.itemimage .userinitials, div.flex-shrink-0 .userinitials');
                 if (initials) {
-                    item.avatarUrl = 'error'; // Use 'error' to show the default avatar.
-                    item.fullname = initials.getAttribute('title');
+                    item.fullname = initials.getAttribute('title') ?? item.fullname;
+                    item.initials = initials.innerText.trim();
                 }
             }
 
@@ -99,4 +100,5 @@ export type CoreTagFeedElement = {
     avatarUrl?: string | null;
     url?: string | null;
     fullname?: string | null;
+    initials?: string | null;
 };

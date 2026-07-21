@@ -134,7 +134,8 @@
                                         @for (user of result.userresponses; track user.userid) {
                                             <ion-item core-user-link [courseId]="courseId"
                                                 [userId]="user.userid" [attr.aria-label]="user.fullname" class="ion-text-wrap">
-                                                <core-user-avatar [user]="user" slot="start" [courseId]="courseId" [linkProfile]="false" />
+                                                <core-user-avatar [userId]="user.userid" [url]="user.profileimageurl"
+                                                    [fullname]="user.fullname" slot="start" [linkProfile]="false" />
                                                 <ion-label>
                                                     <p>{{user.fullname}}</p>
                                                 </ion-label>

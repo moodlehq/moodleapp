@@ -12,31 +12,81 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { overrideTranslations } from '@/testing/utils';
 import { CoreUserHelper } from '../services/user-helper';
 
-describe('getUserInitialsFromParts', () => {
-  it('should return initials based on firstname and lastname', async () => {
+describe('getUserInitials', () => {
+  beforeEach(() => {
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.firstname}} {{$a.lastname}}',
+    });
+  });
+
+  it('should return initials based on firstname and lastname', () => {
     const parts = {
       firstname: 'John',
       lastname: 'Doe',
       fullname: '',
-      userId: 123,
     };
 
-    const result = await CoreUserHelper.getUserInitialsFromParts(parts);
+    let result = CoreUserHelper.getUserInitials(parts);
 
     expect(result).toEqual('JD');
+
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.lastname}} {{$a.firstname}}',
+    });
+
+    result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('DJ');
+
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.lastname}}',
+    });
+
+    result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('D');
+
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.firstname}}',
+    });
+
+    result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('J');
+
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.noname}}',
+    });
+
+    result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('UNK');
   });
 
-  it('should return initials based on fullname if firstname and lastname are missing', async () => {
-    let parts = {
+  it('should return initials directly if initials field is provided', () => {
+    const parts = {
+      firstname: 'John',
+      lastname: 'Doe',
+      fullname: 'John Doe',
+      initials: 'AB',
+    };
+
+    const result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('AB');
+  });
+
+  it('should return initials based on fullname if firstname and lastname are missing', () => {
+    let parts: { firstname?: string; lastname?: string; fullname?: string } = {
       firstname: '',
       lastname: '',
       fullname: 'John Doe',
-      userId: 123,
     };
 
-    let result = await CoreUserHelper.getUserInitialsFromParts(parts);
+    let result = CoreUserHelper.getUserInitials(parts);
 
     expect(result).toEqual('JD');
 
@@ -44,26 +94,33 @@ describe('getUserInitialsFromParts', () => {
         firstname: '',
         lastname: '',
         fullname: 'John Fitzgerald Doe',
-        userId: 123,
     };
 
-    result = await CoreUserHelper.getUserInitialsFromParts(parts);
+    result = CoreUserHelper.getUserInitials(parts);
 
     expect(result).toEqual('JD');
+
+    overrideTranslations({
+      'core.user.fullnamedisplay': '{{$a.lastname}} {{$a.firstname}}',
+    });
+
+    result = CoreUserHelper.getUserInitials(parts);
+
+    expect(result).toEqual('DJ');
   });
 
-  it('should return UNK string if empty parts', async () => {
+  it('should return UNK string if empty parts', () => {
     const parts = {
       firstname: '',
       lastname: '',
       fullname: '',
     };
 
-    let result = await CoreUserHelper.getUserInitialsFromParts(parts);
+    let result = CoreUserHelper.getUserInitials(parts);
 
     expect(result).toEqual('UNK');
 
-    result = await CoreUserHelper.getUserInitialsFromParts({});
+    result = CoreUserHelper.getUserInitials({});
 
     expect(result).toEqual('UNK');
   });

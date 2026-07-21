@@ -20,7 +20,10 @@
                             [attr.aria-current]="participants.getItemAriaCurrent(participant)" [attr.aria-label]="participant.fullname"
                             (click)="participants.select(participant)" button [detail]="true">
 
-                            <core-user-avatar [user]="participant" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                            <core-user-avatar [userId]="participant.id" [url]="participant.profileimageurl"
+                                [initials]="participant.initials" [firstname]="participant.firstname" [lastname]="participant.lastname"
+                                [fullname]="participant.fullname" [linkProfile]="false" [lastAccess]="participant.lastaccess"
+                                [checkOnline]="true" slot="start" />
 
                             <ion-label>
                                 @if (!searchQuery) {

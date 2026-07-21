@@ -243,14 +243,16 @@
                                     <ion-card-title>{{ 'addon.mod_lesson.overview' | translate }}</ion-card-title>
                                 </ion-card-header>
 
-                                <ion-item class="ion-text-wrap" *ngFor="let student of overview.students" button
-                                    (click)="openRetake(student.id)" [detail]="true">
-                                    <core-user-avatar [user]="student" slot="start" [userId]="student.id" [courseId]="courseId" />
-                                    <ion-label>
-                                        <p class="item-heading">{{ student.fullname }}</p>
-                                        <core-progress-bar [progress]="student.bestgrade" a11yText="core.gradenoun" />
-                                    </ion-label>
-                                </ion-item>
+                                @for (student of overview.students; track student.id) {
+                                    <ion-item class="ion-text-wrap" button (click)="openRetake(student.id)" [detail]="true">
+                                        <core-user-avatar [userId]="student.id" [url]="student.profileimageurl"
+                                            [fullname]="student.fullname" [courseId]="courseId" slot="start" />
+                                        <ion-label>
+                                            <p class="item-heading">{{ student.fullname }}</p>
+                                            <core-progress-bar [progress]="student.bestgrade" a11yText="core.gradenoun" />
+                                        </ion-label>
+                                    </ion-item>
+                                }
                             </ion-card>
                         }
                     </core-loading>
