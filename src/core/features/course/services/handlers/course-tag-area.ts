@@ -42,8 +42,8 @@ export class CoreCourseTagAreaHandlerService implements CoreTagAreaHandler {
      * @param content Rendered content.
      * @returns Area items (or promise resolved with the items).
      */
-    parseContent(content: string): CoreCouseTagItems[] {
-        const items: CoreCouseTagItems[] = [];
+    parseContent(content: string): CoreCourseTagItems[] {
+        const items: CoreCourseTagItems[] = [];
         const element = convertTextToHTMLElement(content);
 
         Array.from(element.querySelectorAll('div.coursebox')).forEach((coursebox) => {
@@ -76,7 +76,7 @@ export class CoreCourseTagAreaHandlerService implements CoreTagAreaHandler {
 
 export const CoreCourseTagAreaHandler = makeSingleton(CoreCourseTagAreaHandlerService);
 
-export type CoreCouseTagItems = {
+export type CoreCourseTagItems = {
     courseId: number;
     courseName: string;
     categoryName: string | null;
