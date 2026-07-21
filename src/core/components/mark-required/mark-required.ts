@@ -18,7 +18,6 @@ import { Component, AfterViewInit, ElementRef, input, effect, inject } from '@an
 import { CoreText } from '@singletons/text';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
-import { CoreFaIconDirective } from '@directives/fa-icon';
 
 /**
  * Directive to add a red asterisk for required input fields.
@@ -36,7 +35,6 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
     styleUrl: 'mark-required.scss',
     imports: [
         CoreBaseModule,
-        CoreFaIconDirective,
     ],
 })
 export class CoreMarkRequiredComponent implements AfterViewInit {

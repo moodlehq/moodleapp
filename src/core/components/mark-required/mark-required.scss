@@ -2,6 +2,8 @@
 
 :host {
     .core-input-required-asterisk {
+        color: var(--danger);
+        font-weight: bold;
         vertical-align: top;
         @include padding-horizontal(4px, null);
     }
