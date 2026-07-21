@@ -25,6 +25,7 @@ import {
     viewChild,
     computed,
     effect,
+    signal,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
@@ -49,6 +50,14 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 import { BackButtonEvent } from '@ionic/angular';
 import { BackButtonPriority } from '@/core/constants';
 
+/**
+ * Component to render an iframe, handling auto-login if needed, fixing iOS cookies, check if content should be opened
+ * with an external app, etc.
+ * It's recommended to always use this component instead of a normal iframe.
+ *
+ * The "allow" attribute set to this component will be transferred to the iframe element. But it must be static, changing the
+ * attribute once the iframe has been created won't have any effect for security reasons.
+ */
 @Component({
     selector: 'core-iframe',
     templateUrl: 'core-iframe.html',
@@ -79,8 +88,14 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     @Input({ transform: toBoolean }) addSiteReferer = false;
     @Output() loaded = new EventEmitter<HTMLIFrameElement>();
 
+    readonly allowHasBeenSet = signal(false);
+    readonly candidateSafeUrl = signal<SafeResourceUrl | undefined>(undefined);
+    // allow attribute must be set before src.
+    readonly safeUrl = computed(() => this.allowHasBeenSet() ?
+        this.candidateSafeUrl() :
+        DomSanitizer.bypassSecurityTrustResourceUrl('')); // Empty string also needs to be sanitized to avoid Angular errors.
+
     loading?: boolean;
-    safeUrl?: SafeResourceUrl;
     displayHelp = false;
     fullscreen = false;
     launchExternalLabel?: string; // Text to set to the button to launch external app.
@@ -200,6 +215,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             return;
         }
 
+        this.setIframeAllowAttribute(iframe);
         CoreIframe.treatFrame(iframe, false);
 
         iframe.addEventListener('load', () => {
@@ -285,7 +301,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             await CoreIframe.fixIframeCookies(url);
         }
 
-        this.safeUrl = url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined;
+        this.candidateSafeUrl.set(url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined);
 
         // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
         setTimeout(() => {
@@ -315,6 +331,23 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             // between clicking back button and some code toggling the fullscreen on.
             this.toggleFullscreen(false);
         }
+    }
+
+    /**
+     * Set the iframe allow attribute.
+     *
+     * Angular doesn't allow binding this attribute dynamically for security reasons,
+     * and it should be set before setting iframe src.
+     *
+     * @param iframe Iframe element.
+     */
+    protected setIframeAllowAttribute(iframe: HTMLIFrameElement): void {
+        const allow = this.element.getAttribute('allow')?.trim();
+        if (allow) {
+            iframe.setAttribute('allow', allow);
+        }
+
+        this.allowHasBeenSet.set(true);
     }
 
     /**
