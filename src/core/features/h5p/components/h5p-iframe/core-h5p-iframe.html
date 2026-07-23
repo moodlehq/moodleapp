@@ -1,6 +1,7 @@
 <core-loading [hideUntil]="!!iframeSrc" [fullscreen]="false">
     @if (iframeSrc) {
         <core-iframe [src]="iframeSrc" iframeHeight="auto" [allowFullscreen]="true" (loaded)="iframeLoaded()"
-            [showFullscreenOnToolbar]="enableInAppFullscreen" [autoFullscreenOnRotate]="enableInAppFullscreen" />
+            [showFullscreenOnToolbar]="enableInAppFullscreen" [autoFullscreenOnRotate]="enableInAppFullscreen"
+            allow="camera; microphone" />
     }
 </core-loading>

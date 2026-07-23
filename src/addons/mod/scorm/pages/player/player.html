@@ -25,7 +25,7 @@
     <core-loading [hideUntil]="loaded">
         @if (loaded) {
             <core-iframe id="scorm_object" [src]="src" [iframeWidth]="scormWidth" [iframeHeight]="scormHeight"
-                [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" />
+                [showFullscreenOnToolbar]="true" [autoFullscreenOnRotate]="true" allow="camera; microphone" />
         }
 
         @if (!src && errorMessage) {
