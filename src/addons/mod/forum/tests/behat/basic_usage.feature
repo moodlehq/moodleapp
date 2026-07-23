@@ -160,7 +160,7 @@ Feature: Test basic usage of forum activity in app
       | Message | Auto-test message |
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    And I press "Display options" near "Reply" in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     Then I should find "Edit" in the app
 
     When I press "Edit" in the app
@@ -172,12 +172,11 @@ Feature: Test basic usage of forum activity in app
     When I press "OK" in the app
     And I press "Cancel" in the app
     And I press "OK" in the app
-    And I press "Display options" near "Reply" in the app
-    And I press "Edit" in the app
-    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
+    And I should not find "Edit" in the app
 
     When I switch network connection to wifi
-    And I press "OK" in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     And I press "Edit" in the app
     And I set the field "Message" to "Auto-test message edited" in the app
     And I press "Save changes" in the app
@@ -191,22 +190,17 @@ Feature: Test basic usage of forum activity in app
       | Message | Auto-test message |
     And I press "Post to forum" in the app
     And I press "Auto-test" in the app
-    And I press "Display options" near "Reply" in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     Then I should find "Delete" in the app
 
     When I press "Delete" in the app
     And I press "Cancel" in the app
     And I switch network connection to offline
-    And I press "Display options" near "Reply" in the app
-    Then I should find "Delete" in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
+    Then I should not find "Delete" in the app
 
-    When I press "Delete" in the app
-    Then I should find "There was a problem connecting to the site. Please check your connection and try again." in the app
-
-    When I press "OK" in the app
-    And I close the popup in the app
     And I switch network connection to wifi
-    And I press "Display options" near "Reply" in the app
+    And I press "Display options" within "Auto-test" "ion-card-header" in the app
     And I press "Delete" in the app
     And I press "Delete" in the app
     Then I should not find "Auto-test" in the app

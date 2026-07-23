@@ -22,6 +22,7 @@ import {
     OnInit,
     Output,
     SimpleChange,
+    effect,
     inject,
     viewChild,
 } from '@angular/core';
@@ -67,6 +68,9 @@ import { CoreTagListComponent } from '@features/tag/components/list/list';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreRatingAggregateComponent } from '@features/rating/components/aggregate/aggregate';
 import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
+import { AddonModForumPostOptionsMenuAction } from '../post-options-menu/post-options-menu';
+import { AddonModForumWS } from '../../services/forum-ws';
+import { CoreNetwork } from '@services/network';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).
@@ -103,6 +107,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     @Output() onPostChange: EventEmitter<void> = new EventEmitter<void>(); // Event emitted when a reply is posted or modified.
 
     readonly formElement = viewChild<ElementRef>('replyFormEl');
+    readonly isOnline = CoreNetwork.onlineSignal;
 
     messageControl = new FormControl<string | null>(null);
 
@@ -115,6 +120,12 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
     protected preparePostData?: AddonModForumPrepareDraftAreaForPostWSResponse;
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+
+    constructor() {
+        effect(() => {
+            this.setOptionsMenuEnabled(this.isOnline());
+        });
+    }
 
     get showForm(): boolean {
         return this.post.id > 0
@@ -140,14 +151,31 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
 
         this.defaultReplySubject = this.post.subject;
 
+        this.setOptionsMenuEnabled(this.isOnline());
+    }
+
+    /**
+     * Sets the options menu enabled or disabled based on the post capabilities and online status.
+     *
+     * @param isOnline Whether the app is online. If not provided, it will be determined from the CoreNetwork service.
+     */
+    protected setOptionsMenuEnabled(isOnline: boolean): void {
         if (this.post.id < 0) {
+            // Offline post, always display the menu to allow discarding it.
             this.optionsMenuEnabled = true;
         } else if (this.post.capabilities.delete !== undefined) {
-            this.optionsMenuEnabled = this.post.capabilities.delete === true || this.post.capabilities.edit === true;
+            // Capabilities are loaded, check if the user can edit/delete/setreadstate and is online.
+            this.optionsMenuEnabled = AddonModForumHelper.canDeletePost(this.post) ||
+                AddonModForumHelper.canUpdatePost(this.post) ||
+                (AddonModForumHelper.canSetReadState(this.post) && isOnline);
         } else {
-            // Cannot know if the user can edit/delete or not, display the menu if the WebServices are available.
-            this.optionsMenuEnabled = this.post.id < 0 || (AddonModForum.isGetDiscussionPostAvailable() &&
-                        (AddonModForum.isDeletePostAvailable() || AddonModForum.isUpdatePostAvailable()));
+            // Cannot know if the user can edit/delete/setreadstate or not, display the menu if the WebServices are available.
+            this.optionsMenuEnabled = AddonModForum.isGetDiscussionPostAvailable() && isOnline &&
+            (
+                AddonModForumWS.isDeletePostAvailable() ||
+                AddonModForumWS.isUpdatePostAvailable() ||
+                AddonModForum.isSetReadStateAvailable()
+            );
         }
     }
 
@@ -252,7 +280,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     /**
-     * Show the context menu.
+     * Show the post options menu.
      *
      * @param event Click Event.
      */
@@ -260,7 +288,7 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         const { AddonModForumPostOptionsMenuComponent } =
             await import('../post-options-menu/post-options-menu');
 
-        const popoverData = await CorePopovers.open<{ action?: string }>({
+        const popoverData = await CorePopovers.open<{ action?: AddonModForumPostOptionsMenuAction }>({
             component: AddonModForumPostOptionsMenuComponent,
             componentProps: {
                 post: this.post,
@@ -271,16 +299,22 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
             waitForDismissCompleted: true,
         });
 
-        if (popoverData && popoverData.action) {
+        if (popoverData?.action) {
             switch (popoverData.action) {
-                case 'edit':
+                case AddonModForumPostOptionsMenuAction.EDIT:
                     this.editPost();
                     break;
-                case 'delete':
+                case AddonModForumPostOptionsMenuAction.DELETE:
                     this.deletePost();
                     break;
-                case 'deleteoffline':
+                case AddonModForumPostOptionsMenuAction.DELETE_OFFLINE:
                     this.discardOfflineReply();
+                    break;
+                case AddonModForumPostOptionsMenuAction.MARKREAD:
+                    this.setReadState(true);
+                    break;
+                case AddonModForumPostOptionsMenuAction.MARKUNREAD:
+                    this.setReadState(false);
                     break;
             }
         }
@@ -500,6 +534,17 @@ export class AddonModForumPostComponent implements OnInit, OnDestroy, OnChanges 
         } finally {
             modal.dismiss();
         }
+    }
+
+    async setReadState(read: boolean): Promise<void> {
+        const success = await AddonModForum.setReadState(this.post.id, read);
+
+        if (success) {
+            // Invalidate the discussion posts to update the read state.
+            AddonModForum.invalidateDiscussionPosts(this.discussionId, this.forum.id);
+        }
+
+        this.post.unread = !read;
     }
 
     /**
