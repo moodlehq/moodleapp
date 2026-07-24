@@ -316,6 +316,7 @@ export class CoreOpener {
             enableViewPortScale: otherOptions?.enableViewPortScale ?? 'yes', // Enable zoom on iOS by default.
             allowInlineMediaPlayback: options?.allowInlineMediaPlayback ?? 'yes', // Allow playing inline videos in iOS.
             toolbartranslucent: options?.toolbartranslucent ?? 'no', // Make toolbar opaque in iOS by default.
+            zoomcontrols: options?.zoomcontrols ?? 'no', // Disable zoom controls in Android by default.
             ...CoreOpener.calculateInAppBrowserToolbarColors(options || {}),
         };
 
