@@ -31,7 +31,7 @@
                 <ion-label>{{ 'core.settings.accessstatement' | translate }}</ion-label>
             </ion-item>
         }
-        @if (currentSite && feedbackFormUrl && showSurvey) {
+        @if (feedbackFormUrl && showSurvey) {
             <ion-item class="ion-text-wrap" button core-link [href]="feedbackFormUrl" [detail]="true" detailIcon="open-outline">
                 <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'core.settings.helpusimprove' | translate }}</ion-label>
