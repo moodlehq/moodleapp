@@ -36,6 +36,7 @@ export default class CoreSettingsAboutPage {
 
     appName: string;
     versionName: string;
+    versionCode = CoreConstants.CONFIG.versioncode;
     privacyPolicy: string;
     feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
     a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?policyid=5';
