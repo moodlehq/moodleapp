@@ -31,7 +31,7 @@
                 <ion-label>{{ 'core.settings.accessstatement' | translate }}</ion-label>
             </ion-item>
         }
-        @if (currentSite && feedbackFormUrl && showSurvey) {
+        @if (feedbackFormUrl && showSurvey) {
             <ion-item class="ion-text-wrap" button core-link [href]="feedbackFormUrl" [detail]="true" detailIcon="open-outline">
                 <ion-icon name="fas-bullhorn" slot="start" aria-hidden="true" />
                 <ion-label>{{ 'core.settings.helpusimprove' | translate }}</ion-label>
@@ -50,7 +50,7 @@
 <ion-footer class="ion-no-border">
     <ion-item button class="ion-text-wrap ion-text-center core-about-deviceinfo" [detail]="false" (click)="openDeviceInfoPage()">
         <ion-label>
-            <p class="item-heading">{{ appName }} {{ versionName }}</p>
+            <p class="item-heading">{{ appName }} {{ versionName }} ({{ versionCode }})</p>
         </ion-label>
     </ion-item>
 </ion-footer>

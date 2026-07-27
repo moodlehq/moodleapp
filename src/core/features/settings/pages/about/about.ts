@@ -17,7 +17,6 @@ import { Component } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreSites } from '@services/sites';
 import { CoreNavigator } from '@services/navigator';
-import { CoreSite } from '@classes/sites/site';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_SETTINGS_DEVICEINFO_PAGE_NAME, CORE_SETTINGS_LICENSES_PAGE_NAME } from '@features/settings/constants';
 
@@ -34,25 +33,23 @@ import { CORE_SETTINGS_DEVICEINFO_PAGE_NAME, CORE_SETTINGS_LICENSES_PAGE_NAME } 
 })
 export default class CoreSettingsAboutPage {
 
-    appName: string;
-    versionName: string;
-    privacyPolicy: string;
-    feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
-    a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?policyid=5';
-    currentSite?: CoreSite;
-    showSurvey: boolean | undefined = false;
-    legalDisclaimer = CoreConstants.CONFIG.legalDisclaimer;
+    readonly appName = CoreConstants.CONFIG.appname;
+    readonly versionName = CoreConstants.CONFIG.versionname;
+    readonly versionCode = CoreConstants.CONFIG.versioncode;
+
+    readonly privacyPolicy: string;
+    readonly a11yStatement = CoreConstants.CONFIG.a11yStatement ?? 'https://apps.moodle.com/admin/tool/policy/view.php?policyid=5';
+    readonly showSurvey: boolean;
+    readonly feedbackFormUrl = CoreConstants.CONFIG.feedbackFormUrl ?? 'https://feedback.moodle.org/mobileapp';
+    readonly legalDisclaimer = CoreConstants.CONFIG.legalDisclaimer;
 
     constructor() {
-        this.currentSite = CoreSites.getCurrentSite();
-
-        this.appName = CoreConstants.CONFIG.appname;
-        this.versionName = CoreConstants.CONFIG.versionname;
+        const site = CoreSites.getCurrentSite();
 
         // Calculate the privacy policy to use.
-        this.privacyPolicy = (this.currentSite && (this.currentSite.getStoredConfig('tool_mobile_apppolicy') ||
-        this.currentSite.getStoredConfig('sitepolicy'))) || CoreConstants.CONFIG.privacypolicy;
-        this.showSurvey = this.currentSite?.isAdmin();
+        this.privacyPolicy = (site && (site.getStoredConfig('tool_mobile_apppolicy') || site.getStoredConfig('sitepolicy'))) ||
+            CoreConstants.CONFIG.privacypolicy;
+        this.showSurvey = !!site?.isAdmin();
     }
 
     /**
