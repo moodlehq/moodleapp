@@ -67,7 +67,10 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            flex-direction: column;
+            flex-direction: row;
+            ion-button {
+                margin: 0px;
+            }
         }
 
     }

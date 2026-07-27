@@ -159,7 +159,7 @@ export class AddonModForumHelperProvider {
 
         await Promise.all(promises);
 
-        if (errors.length == groupIds.length) {
+        if (errors.length === groupIds.length) {
             // All requests have failed.
             for (let i = 0; i < errors.length; i++) {
                 if (CoreWSError.isWebServiceError(errors[i]) || (attachments && attachments.length > 0)) {
@@ -547,6 +547,36 @@ export class AddonModForumHelperProvider {
         }
 
         return CoreFileUploader.uploadOrReuploadFiles(files, ADDON_MOD_FORUM_COMPONENT_LEGACY, forumId, siteId);
+    }
+
+    /**
+     * Check if the user can set the read state of a post.
+     *
+     * @param post Post to check.
+     * @returns Whether the user can set the read state of the post.
+     */
+    canSetReadState(post: AddonModForumPost): boolean {
+        return post.capabilities.controlreadstatus === true && AddonModForum.isSetReadStateAvailable();
+    }
+
+    /**
+     * Check if the user can update a post.
+     *
+     * @param post Post to check.
+     * @returns Whether the user can update the post.
+     */
+    canUpdatePost(post: AddonModForumPost): boolean {
+        return post.capabilities.edit === true && AddonModForum.isUpdatePostAvailable();
+    }
+
+    /**
+     * Check if the user can delete a post.
+     *
+     * @param post Post to check.
+     * @returns Whether the user can delete the post.
+     */
+    canDeletePost(post: AddonModForumPost): boolean {
+        return post.capabilities.delete === true && AddonModForum.isDeletePostAvailable();
     }
 
 }
