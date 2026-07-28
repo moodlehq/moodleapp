@@ -15,23 +15,6 @@ fi
 
 REPO_PATH="/tmp/local_moodleappbehat"
 
-# Clone plugin repository.
-print_title "Cloning Behat plugin repository..."
-
-git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git "${REPO_PATH}" -b $GITHUB_REF_NAME
-
-build_behat_plugin $GITHUB_REF_NAME $BEHAT_PLUGIN_EXCLUDE_FEATURES
-
-# Update the ci branch with the same content as latest but with feature files.
-if [[ $GITHUB_REF_NAME == "latest" ]]; then
-    pushd "${REPO_PATH}"
-    print_title "Checking out ci branch of Behat plugin repository..."
-    git checkout ci
-    popd
-
-    build_behat_plugin ci
-fi
-
 
 function build_behat_plugin() {
     branchname=$1
@@ -88,3 +71,20 @@ Check out the commits that caused these changes: https://github.com/$GITHUB_REPO
 
     echo "Behat plugin branch ${branchname} updated!"
 }
+
+# Clone plugin repository.
+print_title "Cloning Behat plugin repository..."
+
+git clone https://$GIT_TOKEN@github.com/$BEHAT_PLUGIN_GITHUB_REPOSITORY.git "${REPO_PATH}" -b $GITHUB_REF_NAME
+
+build_behat_plugin $GITHUB_REF_NAME $BEHAT_PLUGIN_EXCLUDE_FEATURES
+
+# Update the ci branch with the same content as latest but with feature files.
+if [[ $GITHUB_REF_NAME == "latest" ]]; then
+    pushd "${REPO_PATH}"
+    print_title "Checking out ci branch of Behat plugin repository..."
+    git checkout ci
+    popd
+
+    build_behat_plugin ci
+fi
