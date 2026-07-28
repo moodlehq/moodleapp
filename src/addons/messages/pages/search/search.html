@@ -50,7 +50,7 @@
          @for (result of item.results; track result.userid ?? result.id) {
             <ion-item class="addon-message-discussion ion-text-wrap" [attr.aria-label]="result.fullname" (click)="openConversation(result)"
                 [attr.aria-current]="result === selectedResult ? 'page' : 'false'" [detail]="true" button>
-                <core-user-avatar slot="start" [user]="result" [checkOnline]="true" [linkProfile]="false" />
+                <core-user-avatar slot="start" [user]="result" [checkOnline]="result.showonlinestatus" [linkProfile]="false" />
                 <ion-label>
                     <p class="item-heading">
                         <core-format-text [text]="result.fullname" [highlight]="result.highlightName" [filter]="false" />

@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, effect } f
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 import { CoreNetwork } from '@services/network';
-import { CoreSiteBasicInfo, CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSite } from '@classes/sites/site';
@@ -39,6 +39,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSiteLogoComponent } from '../../../../components/site-logo/site-logo';
 import { CoreLoginExceededAttemptsComponent } from '../../components/exceeded-attempts/exceeded-attempts';
 import { CoreLoginIdentityProviderComponent } from '../../components/identity-provider/identity-provider';
+import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 
 /**
  * Page to enter the user password to reconnect to a site.
@@ -69,7 +70,7 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
     currentLogin?: CoreLoginMethodsCurrentLogin;
     isLoggedOut: boolean;
     siteId!: string;
-    siteInfo?: CoreSiteBasicInfo;
+    user?: CoreUserWithAvatar;
     showLoading = true;
     reconnectAttempts = 0;
     supportConfig?: CoreUserSupportConfig;
@@ -136,16 +137,12 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
                 throw new CoreError('Invalid site');
             }
 
-            this.siteInfo = {
-                id: this.siteId,
-                siteUrl: this.site.getURL(),
-                siteUrlWithoutProtocol: this.site.getURL().replace(/^https?:\/\//, '').toLowerCase(),
-                fullname: this.site.infos.fullname,
+            this.user = {
+                id: this.site.getUserId(),
                 firstname: this.site.infos.firstname,
                 lastname: this.site.infos.lastname,
-                siteName: await this.site.getSiteName(),
-                userpictureurl: this.site.infos.userpictureurl,
-                loggedOut: true, // Not used.
+                fullname: this.site.infos.fullname,
+                profileimageurl: this.site.infos.userpictureurl,
             };
 
             this.displaySiteUrl = this.site.shouldDisplayInformativeLinks();

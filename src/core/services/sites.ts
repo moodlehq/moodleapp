@@ -1642,7 +1642,7 @@ export class CoreSitesProvider {
 
                 const basicInfo: CoreSiteBasicInfo = {
                     id: site.id,
-                    userId: siteInfo?.userid,
+                    userid: siteInfo?.userid,
                     siteUrl: site.siteUrl,
                     siteUrlWithoutProtocol: site.siteUrl.replace(/^https?:\/\//, '').toLowerCase(),
                     fullname: siteInfo?.fullname,
@@ -2592,7 +2592,7 @@ export type CoreSiteUserTokenResponse = {
  */
 export type CoreSiteBasicInfo = {
     id: string; // Site ID.
-    userId?: number; // User ID.
+    userid?: number; // User ID.
     siteUrl: string; // Site URL.
     siteUrlWithoutProtocol: string; // Site URL without protocol.
     fullname?: string; // User's full name.

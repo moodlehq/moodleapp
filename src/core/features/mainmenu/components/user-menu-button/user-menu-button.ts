@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, inject, input, linkedSignal, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, linkedSignal, signal } from '@angular/core';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
@@ -41,6 +41,18 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
     readonly siteInfo = signal<CoreSiteInfo | undefined>(undefined);
     readonly showButton = linkedSignal(() => this.shouldShowButton());
+
+    readonly user = computed(() => {
+        const site = this.siteInfo();
+
+        return site ? {
+            id: site.userid,
+            profileimageurl: site.userpictureurl,
+            firstname: site.firstname,
+            lastname: site.lastname,
+            fullname: site.fullname,
+        } : undefined;
+    });
 
     protected routerOutlet = inject(IonRouterOutlet);
     protected menuPage = inject(CoreMainMenuPage, { optional: true });

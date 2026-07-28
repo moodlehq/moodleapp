@@ -37,11 +37,11 @@
                     <div class="core-login-user">
                         <!-- Show user avatar. -->
                         @if (showUserAvatar) {
-                            <core-user-avatar class="large-avatar" [site]="siteInfo" [linkProfile]="false" [siteId]="siteId" />
+                            <core-user-avatar class="large-avatar" [user]="user" [linkProfile]="false" [siteId]="siteId" />
                         }
-                        @if (siteInfo?.fullname) {
+                        @if (user?.fullname) {
                             <p class="core-login-fullname">
-                                <core-format-text [text]="siteInfo?.fullname" [filter]="false" />
+                                <core-format-text [text]="user?.fullname" [filter]="false" />
                             </p>
                         }
                     </div>

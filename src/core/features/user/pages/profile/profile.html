@@ -57,7 +57,7 @@
         @if (userInfo && !isDeleted() && isEnrolled()) {
             <ion-list>
                 <ion-item class="core-user-profile-maininfo ion-text-wrap" collapsible>
-                    <core-user-avatar [user]="userInfo" [userId]="userInfo.id" [linkProfile]="false" [checkOnline]="true" slot="start" />
+                    <core-user-avatar [user]="userInfo" [linkProfile]="false" [checkOnline]="true" slot="start" />
                     <ion-label>
                         <h1>{{ userInfo.fullname }}</h1>
                         @if (rolesFormatted()) {

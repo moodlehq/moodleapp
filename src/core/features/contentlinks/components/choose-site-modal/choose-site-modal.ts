@@ -23,6 +23,7 @@ import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { NO_SITE_ID } from '@features/login/constants';
+import { CoreUserWithAvatar } from '@components/user-avatar/user-avatar';
 
 /**
  * Page to display the list of sites to choose one to perform a content link action.
@@ -38,7 +39,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
     readonly url = input.required<string>();
 
-    readonly sites = signal<CoreSiteBasicInfo[]>([]);
+    readonly sites = signal<CoreSiteInfoWithUserAvatar[]>([]);
     readonly loaded = signal(false);
     readonly siteUrl = computed(() => {
         if (!this.sites().length) {
@@ -94,7 +95,18 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
 
             // Get the sites that can perform the action.
             const sites = await CoreSites.getSites(siteIds);
-            this.sites.set(sites);
+            const sitesWithUserAvatar = sites.map<CoreSiteInfoWithUserAvatar>((site) => ({
+                    ...site,
+                    user: {
+                        id: site.userid ?? 0,
+                        firstname: site.firstname,
+                        lastname: site.lastname,
+                        fullname: site.fullname ?? '',
+                        profileimageurl: site.userpictureurl,
+                    },
+                }));
+
+            this.sites.set(sitesWithUserAvatar);
         } catch (error) {
             CoreAlerts.showError(error, { default: Translate.instant('core.contentlinks.errornosites') });
             this.closeModal();
@@ -158,3 +170,7 @@ export class CoreContentLinksChooseSiteModalComponent implements OnInit {
     }
 
 }
+
+type CoreSiteInfoWithUserAvatar = CoreSiteBasicInfo & {
+    user: CoreUserWithAvatar;
+};

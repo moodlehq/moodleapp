@@ -18,7 +18,7 @@ import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { CoreText, CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
 import { CoreTime } from '@static/time';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreLogger } from '@static/logger';
 import { Translate, makeSingleton } from '@singletons';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
@@ -161,10 +161,7 @@ export class AddonNotificationsProvider {
             if (notification.useridfrom > 0) {
                 // Try to get the profile picture of the user.
                 try {
-                    const user = await CoreUser.getProfile(notification.useridfrom, notification.courseid, true);
-
-                    notification.profileimageurlfrom = user.profileimageurl;
-                    notification.userfromfullname = user.fullname;
+                    notification.userFrom = await CoreUser.getProfile(notification.useridfrom, notification.courseid, true);
                 } catch {
                     // Error getting user. This can happen if device is offline or the user is deleted.
                 }
@@ -541,10 +538,9 @@ export type AddonNotificationsNotificationCalculatedData = {
     notification: number; // Calculated in the app in some cases. Whether it's a notification.
     read: boolean; // Calculated in the app. Whether the notifications is read.
     courseid?: number; // Calculated in the app. Course the notification belongs to.
-    profileimageurlfrom?: string; // Calculated in the app. Avatar of user that sent the notification.
-    userfromfullname?: string; // Calculated in the app in some cases. User from full name.
     customdata?: Record<string, string|number>; // Parsed custom data.
     imgUrl?: string; // Calculated in the app. URL of the image to use if the notification has no real user from.
+    userFrom?: CoreUserProfile; // Calculated in the app. User profile of the user from.
 };
 
 /**

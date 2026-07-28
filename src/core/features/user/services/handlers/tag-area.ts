@@ -48,7 +48,7 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
         const items: CoreUserTagFeedElement[] = [];
         const element = convertTextToHTMLElement(content);
 
-        Array.from(element.querySelectorAll('div.user-box')).forEach((userbox: HTMLElement) => {
+        Array.from(element.querySelectorAll<HTMLElement>('div.user-box')).forEach((userbox) => {
             const avatarLink = userbox.querySelector('a:first-child');
             if (!avatarLink) {
                 return;
@@ -62,16 +62,26 @@ export class CoreUserTagAreaHandlerService implements CoreTagAreaHandler {
 
             const avatarImg = avatarLink.querySelector('img.userpicture');
             const avatarUrl = avatarImg ? avatarImg.getAttribute('src') : '';
+            let fullname = userbox.innerText.trim();
+            let initials: string | undefined = undefined;
+
+            if (!avatarUrl) {
+                const initialsSpan = avatarLink.querySelector<HTMLSpanElement>('.userinitials');
+                if (initialsSpan) {
+                    fullname = initialsSpan.getAttribute('title') ?? fullname;
+                    initials = initialsSpan.innerText.trim();
+                }
+            }
 
             items.push({
-                avatarUrl,
-                heading: userbox.innerText,
+                heading: fullname,
                 details: [],
                 url: profileUrl,
                 user: {
                     id: Number(match[1]),
                     profileimageurl: avatarUrl || '',
-                    fullname: userbox.innerText,
+                    initials,
+                    fullname,
                 },
             });
         });
