@@ -1,5 +1,5 @@
 ## BUILD STAGE
-FROM node:lts-jod AS build-stage
+FROM node:lts-krypton AS build-stage
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN npm run prod --prefix cordova-plugin-moodleapp
 # Prepare node dependencies
 COPY package*.json ./
 COPY patches ./patches
-RUN echo "unsafe-perm=true" > ./.npmrc
+COPY .npmrc ./
 RUN npm ci --no-audit
 
 # Build source
