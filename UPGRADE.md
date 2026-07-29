@@ -6,6 +6,7 @@ For more information about upgrading, read the official documentation: https://m
 =====
 
 - The CoreLoginHelper functions openBrowserForSSOLogin, openBrowserForOAuthLogin and prepareForSSOLogin have been modified to group all optional parameters in a single object.
+- CoreSiteBasicInfo userId attribute has changed to userid to match user fields.
 
 5.2.1
 =====

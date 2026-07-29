@@ -2373,6 +2373,7 @@ type AddonMessagesGetConversationMembersWSParams = {
 export type AddonMessagesConversationMember = {
     id: number; // The user id.
     fullname: string; // The user's name.
+    initials?: string; // @since 5.3 The initials of the user.
     profileurl: string; // The link to the user's profile page.
     profileimageurl: string; // User picture URL.
     profileimageurlsmall: string; // Small user picture URL.
@@ -2482,6 +2483,7 @@ export type AddonMessagesMessagePreferencesNotificationProcessor = {
 export type AddonMessagesMessageAreaContact = {
     userid: number; // The user's id.
     fullname: string; // The user's name.
+    initials?: string; // @since 5.3 The initials of the user.
     profileimageurl: string; // User picture URL.
     profileimageurlsmall: string; // Small user picture URL.
     ismessaging: boolean; // If we are messaging the user.
@@ -2805,6 +2807,7 @@ type AddonMessagesGetUserContactsWSParams = {
 export type AddonMessagesGetUserContactsWSResponse = {
     id: number; // The user id.
     fullname: string; // The user's name.
+    initials?: string; // @since 5.3 The initials of the user.
     profileurl: string; // The link to the user's profile page.
     profileimageurl: string; // User picture URL.
     profileimageurlsmall: string; // Small user picture URL.
@@ -2845,6 +2848,7 @@ type AddonMessagesGetContactRequestsWSParams = {
 export type AddonMessagesGetContactRequestsWSResponse = {
     id: number; // The user id.
     fullname: string; // The user's name.
+    initials?: string; // @since 5.3 The initials of the user.
     profileurl: string; // The link to the user's profile page.
     profileimageurl: string; // User picture URL.
     profileimageurlsmall: string; // Small user picture URL.

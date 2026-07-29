@@ -15,7 +15,7 @@
 import { Component, Input } from '@angular/core';
 
 import { CoreCourseHelper } from '@features/course/services/course-helper';
-import { CoreCouseTagItems } from '@features/course/services/handlers/course-tag-area';
+import { CoreCourseTagItems } from '@features/course/services/handlers/course-tag-area';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -30,7 +30,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 })
 export class CoreCourseTagAreaComponent {
 
-    @Input() items?: CoreCouseTagItems[]; // Area items to render.
+    @Input() items?: CoreCourseTagItems[]; // Area items to render.
 
     /**
      * Open a course.

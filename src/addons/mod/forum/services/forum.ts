@@ -1452,7 +1452,9 @@ export type AddonModForumDiscussion = {
     totalscore: number; // The post message total score.
     mailnow: number; // Mail now?.
     userfullname: string | boolean; // Post author full name.
+    userinitials?: string; // @since 5.3 Post author initials.
     usermodifiedfullname: string; // Post modifier full name.
+    usermodifiedinitials?: string; // @since 5.3 Post modifier initials.
     userpictureurl?: string; // Post author picture.
     usermodifiedpictureurl: string; // Post modifier picture.
     numreplies: number; // The number of replies in the discussion.
@@ -1648,6 +1650,7 @@ export type AddonModForumWSPost = {
     author: {
         id?: number; // Id.
         fullname?: string; // Fullname.
+        initials?: string; // @since 5.3 The initials of the user.
         isdeleted?: boolean; // Isdeleted.
         groups?: { // Groups.
             id: number; // Id.

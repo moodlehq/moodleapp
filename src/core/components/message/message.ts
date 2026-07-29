@@ -50,8 +50,8 @@ import { CoreFormatDatePipe } from '@pipes/format-date';
 })
 export class CoreMessageComponent {
 
-    readonly message = input<CoreMessageData>(); // The message object.
-    readonly user = input<CoreUserWithAvatar>(); // The user object.
+    readonly message = input.required<CoreMessageData>(); // The message object.
+    readonly user = input.required<CoreUserWithAvatar>(); // The user object.
 
     readonly text = input(''); // Message text.
     readonly time = input(0); // Message time.

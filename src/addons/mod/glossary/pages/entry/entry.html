@@ -29,7 +29,7 @@
             <div core-reading-mode>
                 @if (showAuthor) {
                     <ion-item class="ion-text-wrap">
-                        <core-user-avatar [user]="entry" slot="start" />
+                        <core-user-avatar [user]="entry" [courseId]="courseId" slot="start" />
                         <ion-label>
                             <h2>
                                 <core-format-text [text]="entry.concept" contextLevel="module" [contextInstanceId]="componentId"

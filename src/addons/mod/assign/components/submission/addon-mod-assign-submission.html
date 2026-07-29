@@ -209,7 +209,7 @@
                         </ion-label>
                     </ion-item-divider>
                     @if (!blindMarking) {
-                        <ng-container *ngFor="let member of membersToSubmit">
+                        @for (member of membersToSubmit; track member.id) {
                             <ion-item class="ion-text-wrap" core-user-link [userId]="member.id" [courseId]="courseId"
                                 [attr.aria-label]="member.fullname">
                                 <core-user-avatar [user]="member" slot="start" [linkProfile]="false" />
@@ -217,13 +217,13 @@
                                     <p class="item-heading">{{ member.fullname }}</p>
                                 </ion-label>
                             </ion-item>
-                        </ng-container>
+                        }
                     } @else {
-                        <ng-container *ngFor="let blindId of membersToSubmitBlind">
+                        @for (blindId of membersToSubmitBlind; track blindId) {
                             <ion-item class="ion-text-wrap">
                                 <ion-label>{{ 'addon.mod_assign.hiddenuser' | translate }} {{ blindId }}</ion-label>
                             </ion-item>
-                        </ng-container>
+                        }
                     }
                 }
 

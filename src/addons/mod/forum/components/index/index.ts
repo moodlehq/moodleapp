@@ -628,7 +628,7 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
      * @param event Click Event.
      * @param discussion Discussion.
      */
-    async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion): Promise<void> {
+    async showOptionsMenu(event: Event, discussion: AddonModForumDiscussion | AddonModForumOfflineDiscussion): Promise<void> {
         if (!this.forum) {
             return;
         }
@@ -652,13 +652,19 @@ export class AddonModForumIndexComponent extends CoreCourseModuleMainActivityCom
         if (popoverData && popoverData.action) {
             switch (popoverData.action) {
                 case 'lock':
-                    discussion.locked = popoverData.value;
+                    if ('locked' in discussion) {
+                        discussion.locked = popoverData.value;
+                    }
                     break;
                 case 'pin':
-                    discussion.pinned = popoverData.value;
+                    if ('pinned' in discussion) {
+                        discussion.pinned = popoverData.value;
+                    }
                     break;
                 case 'star':
-                    discussion.starred = popoverData.value;
+                    if ('starred' in discussion) {
+                        discussion.starred = popoverData.value;
+                    }
                     break;
                 default:
                     break;

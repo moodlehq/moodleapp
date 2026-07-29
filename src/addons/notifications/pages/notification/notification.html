@@ -35,8 +35,7 @@
 
                 <ion-item class="ion-text-wrap core-notification-title" lines="full">
                     @if (notification.useridfrom > 0) {
-                        <core-user-avatar slot="start" [userId]="notification.useridfrom" [profileUrl]="notification.profileimageurlfrom"
-                            [fullname]="notification.userfromfullname">
+                        <core-user-avatar slot="start" [user]="notification.userFrom" [courseId]="notification.courseid">
                             @if (notification.iconurl) {
                                 <div class="core-avatar-extra-img">
                                     <img [url]="notification.iconurl" alt="" role="presentation" core-external-content>

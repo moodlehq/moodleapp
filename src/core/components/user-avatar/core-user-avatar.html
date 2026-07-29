@@ -1,23 +1,27 @@
+@let avatarUrl = imageUrl();
+@let error = imageError();
+@let fullname = fullnameEffective();
 @if (avatarUrl) {
 
-    @if (linkProfile) {
+    @if (linkProfile()) {
         <img class="userpicture" [url]="avatarUrl" [alt]="fullname" core-external-content (onLoad)="imageLoaded($event)"
-            (ariaButtonClick)="gotoProfile($event)" [siteId]="siteId" [hidden]="imageError">
+            (ariaButtonClick)="gotoProfile($event)" [siteId]="siteIdEffective()" [hidden]="error">
     } @else {
         <img class="userpicture" [url]="avatarUrl" [alt]="'core.pictureof' | translate:{$a: fullname}" core-external-content
-            (onLoad)="imageLoaded($event)" aria-hidden="true" [siteId]="siteId" [hidden]="imageError">
+            (onLoad)="imageLoaded($event)" aria-hidden="true" [siteId]="siteIdEffective()" [hidden]="error">
     }
 
 }
-@if (!avatarUrl || imageError){
-    @if (initials) {
-        @if (linkProfile) {
+@if (!avatarUrl || error){
+    @let initialsValue = initials();
+    @if (initialsValue) {
+        @if (linkProfile()) {
             <div class="userinitials" [attr.aria-label]="fullname" [title]="fullname" (ariaButtonClick)="gotoProfile($event)"
-                [attr.data-initials]="initials">
+                [attr.data-initials]="initialsValue">
             </div>
         } @else {
             <div class="userinitials" [attr.aria-label]="'core.pictureof' | translate:{$a: fullname}"
-                [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initials" aria-hidden="true">
+                [title]="'core.pictureof' | translate:{$a: fullname}" role="img" [attr.data-initials]="initialsValue" aria-hidden="true">
             </div>
         }
     } @else {
@@ -26,7 +30,7 @@
     }
 }
 
-@if (checkOnline && isOnline()) {
+@if (showIsOnlineBadge()) {
     <span class="contact-status online" role="status" [attr.aria-label]="'core.online' | translate">
     </span>
 }

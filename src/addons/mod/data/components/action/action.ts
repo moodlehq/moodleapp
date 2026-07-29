@@ -15,7 +15,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Params } from '@angular/router';
 import { CoreTag } from '@features/tag/services/tag';
-import { CoreUser } from '@features/user/services/user';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CoreEvents } from '@static/events';
@@ -64,8 +64,8 @@ export class AddonModDataActionComponent implements OnInit {
     @Input() sortDirection?: string; // Sort direction used to calculate the offset.
 
     siteId: string;
-    userPicture?: string;
     tagsEnabled = false;
+    profile?: CoreUserProfile;
 
     constructor() {
         this.siteId = CoreSites.getCurrentSiteId();
@@ -77,8 +77,7 @@ export class AddonModDataActionComponent implements OnInit {
      */
     async ngOnInit(): Promise<void> {
         if (this.action === AddonModDataAction.USERPICTURE) {
-            const profile = await CoreUser.getProfile(this.entry.userid, this.database.course);
-            this.userPicture = profile.profileimageurl;
+            this.profile = await CoreUser.getProfile(this.entry.userid, this.database.course);
         }
     }
 

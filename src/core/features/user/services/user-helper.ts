@@ -70,31 +70,12 @@ export class CoreUserHelperProvider {
     /**
      * Get the user initials.
      *
-     * @param parts User name parts. Containing firstname, lastname, fullname and userId.
+     * @param userParts User name parts. Containing firstname, lastname, fullname and userId.
      * @returns User initials.
+     * @deprecated since 5.3. Use CoreUser.getUserInitials instead.
      */
-    async getUserInitialsFromParts(parts: CoreUserNameParts): Promise<string> {
-        if (!parts.firstname && !parts.lastname) {
-            if (!parts.fullname && parts.userId) {
-                const user = await CoreUser.getProfile(parts.userId, undefined, true);
-                parts.fullname = user.fullname || '';
-            }
-
-            if (parts.fullname) {
-                const split = parts.fullname.split(' ');
-
-                parts.firstname = split[0];
-                if (split.length > 1) {
-                    parts.lastname = split[split.length - 1];
-                }
-            }
-        }
-
-        if (!parts.firstname && !parts.lastname) {
-            return 'UNK';
-        }
-
-        return (parts.firstname?.charAt(0) || '') + (parts.lastname?.charAt(0) || '');
+    async getUserInitialsFromParts(userParts: CoreUserNameParts & { userId?: number }): Promise<string> {
+        return CoreUser.getUserInitials(userParts);
     }
 
     /**
@@ -112,4 +93,9 @@ export class CoreUserHelperProvider {
 
 export const CoreUserHelper = makeSingleton(CoreUserHelperProvider);
 
-type CoreUserNameParts = { firstname?: string; lastname?: string; fullname?: string; userId?: number };
+type CoreUserNameParts = {
+    firstname?: string;
+    lastname?: string;
+    fullname?: string;
+    initials?: string;
+};
