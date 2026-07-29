@@ -283,7 +283,6 @@ export class CoreCompileProvider {
         instance['CoreCompileProvider'] = this;
 
         // Add some final classes.
-        instance['injector'] = injector;
         instance['Validators'] = Validators;
         instance['CoreEventsProvider'] = CoreEvents;
         instance['CoreLoggerProvider'] = CoreLogger;
