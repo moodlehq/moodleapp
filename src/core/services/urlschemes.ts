@@ -72,7 +72,7 @@ export class CoreCustomURLSchemesProvider {
     protected async createSiteIfNeeded(token: string, data: CoreCustomURLSchemesParams): Promise<string> {
         const currentSite = CoreSites.getCurrentSite();
 
-        if (!currentSite || currentSite.getToken() !== token || currentSite.isLoggedOut()) {
+        if (!this.tokenBelongsToCurrentSite(token, data) || currentSite?.isLoggedOut()) {
             // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
             if (!data.siteUrl.match(/^https?:\/\//)) {
                 // URL doesn't have a protocol and it's required to be able to create the site. Check which one to use.
@@ -99,6 +99,19 @@ export class CoreCustomURLSchemesProvider {
             // Token belongs to current site, no need to create it.
             return CoreSites.getCurrentSiteId();
         }
+    }
+
+    /**
+     * Check if a token received in a custom URL belongs to the current site.
+     *
+     * @param token Token to check.
+     * @param data URL data.
+     * @returns True if the token belongs to the current site, false otherwise.
+     */
+    protected tokenBelongsToCurrentSite(token: string, data: CoreCustomURLSchemesParams): boolean {
+        const currentSite = CoreSites.getCurrentSite();
+
+        return !!currentSite && currentSite.getToken() === token && currentSite.containsUrl(data.siteUrl);
     }
 
     /**
