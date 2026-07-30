@@ -1,0 +1,58 @@
+workflows:
+  ios-workflow:
+    name: iOS Workflow
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: com.lumhs.moodlemobile
+      vars:
+        XCODE_WORKSPACE: "platforms/ios/Moodle.xcworkspace"
+        XCODE_SCHEME: "Moodle"
+      node: latest
+      xcode: latest
+      cocoapods: default
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install npm dependencies
+        script: |
+          npm install
+      - name: Install Cordova CLI
+        script: |
+          npm install -g cordova
+      - name: Build web assets
+        script: |
+          npm run build:prod || npm run build
+      - name: Add iOS platform
+        script: |
+          cordova platform add ios || echo "iOS platform already added"
+      - name: Prepare iOS platform
+        script: |
+          cordova prepare ios
+      - name: Install CocoaPods dependencies
+        script: |
+          cd platforms/ios && pod install
+      - name: Set up code signing settings
+        script: |
+          xcode-project use-profiles
+      - name: Build ipa for distribution
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      email:
+        recipients:
+          - aliayyan.98k@gmail.com
+        notify:
+          success: true
+          failure: true
