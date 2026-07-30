@@ -62,6 +62,10 @@ class behat_app extends behat_app_helper {
         $this->scenariolaststep = $steps[count($steps) - 1];
         $this->featurepath = dirname($feature->getFile());
         $this->coveragepath = get_config('local_moodleappbehat', 'coverage_path') ?: ($this->featurepath . DIRECTORY_SEPARATOR . 'coverage' . DIRECTORY_SEPARATOR);
+
+        // By default, enable deep link logins in the app for Behat tests since some steps rely on this.
+        // Specific scenarios can change this value to verify that the feature works as expected.
+        set_config('enabledeeplinkautologin', 1, 'tool_mobile');
     }
 
     /**

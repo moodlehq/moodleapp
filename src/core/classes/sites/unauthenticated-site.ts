@@ -695,6 +695,8 @@ export type CoreSitePublicConfigResponse = {
     tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
     warnings?: CoreWSExternalWarning[];
     showloginform?: number; // @since 4.5. Display default login form.
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_enabledeeplinkautologin?: boolean; // @since 5.3. Whether to allow login automatic if a deep link contains token.
 };
 
 /**
