@@ -189,3 +189,38 @@ Feature: It navigates properly using deep links.
     When I go back to the root page in the app
     And I press the user menu button in the app
     Then I should find "pau student2" in the app
+
+  @lms_from5.3
+  Scenario: Cannot authenticate automatically with deep link if admin setting is disabled
+    Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
+      | enabledeeplinkautologin | 0 | tool_mobile |
+    When I launch the app
+    And I open a custom link in the app for:
+      | discussion  | user     | includetoken |
+      | Forum topic | student1 | 1            |
+    Then I should find "Only continue if you trust this site." in the app
+
+    When I press "Open site" in the app
+    Then the header should be "Log in" in the app
+    And I should not find "Forum topic" in the app
+
+    When I set the field "Password" to "student1" in the app
+    And I press "Log in" "ion-button" in the app
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
+
+  @lms_from5.3
+  Scenario: Can authenticate automatically with deep link if admin setting is enabled
+    Given the Moodle site is compatible with this feature
+    And the following config values are set as admin:
+      | enabledeeplinkautologin | 1 | tool_mobile |
+    When I launch the app
+    And I open a custom link in the app for:
+      | discussion  | user     | includetoken |
+      | Forum topic | student1 | 1            |
+    Then I should find "Only continue if you trust this site." in the app
+
+    When I press "Open site" in the app
+    Then I should find "Forum topic" in the app
+    And I should find "Forum message" in the app
