@@ -335,7 +335,7 @@ export class CoreCustomURLSchemesProvider {
 
             if (!error || !CoreErrorHelper.getErrorMessageFromError(error)) {
                 // Use a default error.
-                this.createInvalidSchemeError(url, data);
+                throw this.createInvalidSchemeError(url, data);
             } else {
                 throw new CoreCustomURLSchemesHandleError(error, data);
             }
