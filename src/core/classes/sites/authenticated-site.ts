@@ -1618,7 +1618,7 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
         eventName: Event,
         data?: CoreEventData<Event, Fallback>,
     ): void {
-        CoreEvents.trigger(eventName, data);
+        // To be overridden. If it's not a valid site it shouldn't trigger events because it can be mistaken with current site.
     }
 
     /**
