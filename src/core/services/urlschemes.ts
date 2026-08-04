@@ -81,11 +81,9 @@ export class CoreCustomURLSchemesProvider {
         }
 
         // Token belongs to a different site or site is logged out, create it. It doesn't matter if it already exists.
-        // The autologin admin setting only applies to certain deep links and to sites that don't exist yet.
-        const shouldCheckAutoLoginSetting = this.shouldCheckAutoLoginSetting(data);
         let isExistingSite = isCurrentSite;
 
-        if (shouldCheckAutoLoginSetting && !isCurrentSite && data.siteUrl.match(/^https?:\/\//)) {
+        if (!isExistingSite && data.siteUrl.match(/^https?:\/\//)) {
             // Check if site already exists in the app, using only the URL and the token.
             // Don't use username or userId because we can't be sure they'll match the token.
             const siteId = await this.checkSiteExistsByUrlAndToken(data.siteUrl, token);
@@ -95,6 +93,9 @@ export class CoreCustomURLSchemesProvider {
                 isCurrentSite = siteId === CoreSites.getCurrentSiteId();
             }
         }
+
+        // The autologin admin setting only applies to certain deep links and to sites that don't exist yet.
+        const shouldCheckAutoLoginSetting = this.shouldCheckAutoLoginSetting(data);
 
         if (!isExistingSite && (shouldCheckAutoLoginSetting || !data.siteUrl.match(/^https?:\/\//))) {
             // Validate the URL and get the public config.
@@ -112,7 +113,8 @@ export class CoreCustomURLSchemesProvider {
             }
         }
 
-        if (!data.isSSOToken && !isCurrentSite) {
+        const showConfirm = await this.shouldShowConfirmBeforeCreatingSite(data, isCurrentSite, isExistingSite);
+        if (showConfirm) {
             // Confirm before creating the site.
             await CoreContentLinksHelper.confirmLinkToSite({ url: data.siteUrl });
         }
@@ -178,6 +180,45 @@ export class CoreCustomURLSchemesProvider {
                 return siteIdsByUserId[0];
             }
         }
+    }
+
+    /**
+     * Check if the a confirm needs to be shown before creating a site via deep link.
+     *
+     * @param data Deep link data.
+     * @param isCurrentSite Whether the site is the current site.
+     * @param isExistingSite Whether the site already exists in the app.
+     * @returns True if a confirm should be shown, false otherwise.
+     */
+    protected async shouldShowConfirmBeforeCreatingSite(
+        data: CoreCustomURLSchemesParams,
+        isCurrentSite: boolean,
+        isExistingSite: boolean,
+    ): Promise<boolean> {
+        if (isCurrentSite) {
+            // Not changing site and site is trusted, no need to confirm.
+            return false;
+        }
+
+        if (data.isSSOToken) {
+            // SSO login started in the app, no need to confirm.
+            return false;
+        }
+
+        if (!CoreSites.getCurrentSite()) {
+            // No current site, so not changing site.
+            // If entering an existing site or app has a list of allowed sites, don't confirm because site is trusted.
+            if (isExistingSite) {
+                return false;
+            }
+
+            const hasSiteAllowlist = await CoreLoginHelper.hasSiteAllowlist();
+            if (hasSiteAllowlist) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
