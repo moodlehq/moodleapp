@@ -329,7 +329,7 @@ export class CoreCustomURLSchemesProvider {
             }
 
         } catch (error) {
-            if (CoreErrorHelper.isCanceledError(error)) {
+            if (CoreErrorHelper.isSilentError(error)) {
                 return;
             }
 

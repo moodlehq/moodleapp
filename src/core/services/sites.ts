@@ -72,6 +72,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from './overlays/alerts';
 import { CoreErrorLogs } from '@static/error-logs';
+import { CoreSilentError } from '@classes/errors/silenterror';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -1234,7 +1235,8 @@ export class CoreSitesProvider {
                 }
             });
 
-            throw new CoreError('Current app version is lower than required version.');
+            // Throw a silent error since this function is already displaying a modal.
+            throw new CoreSilentError('Current app version is lower than required version.');
         }
     }
 
