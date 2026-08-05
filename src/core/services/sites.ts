@@ -1206,34 +1206,37 @@ export class CoreSitesProvider {
             const siteId = this.getCurrentSiteId();
             const siteCheckIsCurrentSite = !!site && site.getId() === siteId;
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
-            let promise: Promise<unknown>;
 
             if (downloadUrl) {
                 // Do not block interface.
-                promise = CoreAlerts.confirm(
-                    Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                    {
-                        header: Translate.instant('core.updaterequired'),
-                        okText: Translate.instant('core.download'),
-                        cancelText: Translate.instant(siteCheckIsCurrentSite ? 'core.mainmenu.logout' : 'core.cancel'),
-                    },
-                ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
-                    // Do nothing.
-                });
+                try {
+                    await CoreAlerts.confirm(
+                        Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                        {
+                            header: Translate.instant('core.updaterequired'),
+                            okText: Translate.instant('core.download'),
+                            cancelText: Translate.instant(siteCheckIsCurrentSite ? 'core.mainmenu.logout' : 'core.cancel'),
+                        },
+                    );
+
+                    CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false });
+                } catch {
+                    // User canceled.
+                }
             } else {
                 // Do not block interface.
-                promise = CoreAlerts.show({
+                const alert = await CoreAlerts.show({
                     header: Translate.instant('core.updaterequired'),
                     message: Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                }).then((alert) => alert.onWillDismiss());
+                });
+
+                await alert.onWillDismiss();
             }
 
-            promise.finally(() => {
-                if (siteCheckIsCurrentSite && siteId) {
-                    // Logout the current site and mark it as logged out.
-                    this.logout({ forceLogout: true });
-                }
-            });
+            // Logout the current site and mark it as logged out.
+            if (siteCheckIsCurrentSite && siteId) {
+                this.logout({ forceLogout: true });
+            }
 
             // Throw a silent error since this function is already displaying a modal.
             throw new CoreSilentError('Current app version is lower than required version.');
