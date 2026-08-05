@@ -16,7 +16,7 @@ import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { Md5 } from 'ts-md5';
 import { timeout } from 'rxjs/operators';
 
-import { CoreApp, CoreStoreConfig } from '@services/app';
+import { CoreApp } from '@services/app';
 import { CoreEvents } from '@static/events';
 import { CoreWS } from '@services/ws';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
@@ -73,6 +73,7 @@ import { CoreOpener } from '@static/opener';
 import { CoreAlerts } from './overlays/alerts';
 import { CoreErrorLogs } from '@static/error-logs';
 import { CoreSilentError } from '@classes/errors/silenterror';
+import { CorePlatform } from './platform';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -1178,16 +1179,66 @@ export class CoreSitesProvider {
      *             It's important to pass the site if it's known, otherwise the app might not log out the user when it should.
      */
     async checkApplication(config: CoreSitePublicConfigResponse, site: CoreSite | null): Promise<void> {
-        await this.checkRequiredMinimumVersion(config, site);
+        const siteId = this.getCurrentSiteId();
+        const shouldLogout = !!site && site.getId() === siteId;
+
+        try {
+            // Do the checks one by one to avoid showing multiple messages if more than one check fails.
+            await this.checkSiteAppId(config, shouldLogout);
+            await this.checkRequiredMinimumVersion(config, shouldLogout);
+        } catch (error) {
+            if (shouldLogout && siteId) {
+                // Logout the current site and mark it as logged out.
+                this.logout({ forceLogout: true });
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Check the app ID configured in the site is valid for the current app. If it isn't, show dialog and logout.
+     *
+     * @param config Config object of the site.
+     * @param shouldLogout Whether the current site should be logged out if the check fails.
+     */
+    protected async checkSiteAppId(config: CoreSitePublicConfigResponse, shouldLogout: boolean): Promise<void> {
+        if (this.isValidAppId(config)) {
+            return;
+        }
+
+       await this.showDownloadAppAlert(
+            config,
+            shouldLogout,
+            Translate.instant('core.login.connecttoworkplaceapp'),
+            { useSetupLink: false },
+        );
+
+        // Throw a silent error so the caller can stop the flow and optionally logout.
+        throw new CoreSilentError('Site app ID is not valid for the current app.');
+    }
+
+    /**
+     * Check if an app ID from site config is valid for the current app.
+     *
+     * @param config Config object of the site.
+     * @returns Whether it's valid.
+     */
+    protected isValidAppId(config: CoreSitePublicConfigResponse): boolean {
+        // Don't allow accessing site that require the Workplace app, because that means that the site is a Workplace site.
+        // This is the only way to detect if it's WP site before login. After login we'll check again if it's a WP site.
+        return CorePlatform.isIOS() ?
+            config.tool_mobile_iosappid !== '1470929705' :
+            config.tool_mobile_androidappid !== 'com.moodle.workplace';
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
      * @param config Config object of the site.
-     * @param site The site instance if the check belongs to an existing site, or null if there is no site context.
+     * @param shouldLogout Whether the current site should be logged out if the check fails.
      */
-    protected async checkRequiredMinimumVersion(config: CoreSitePublicConfigResponse, site: CoreSite | null): Promise<void> {
+    protected async checkRequiredMinimumVersion(config: CoreSitePublicConfigResponse, shouldLogout: boolean): Promise<void> {
         if (!config.tool_mobile_minimumversion) {
             return;
         }
@@ -1196,50 +1247,63 @@ export class CoreSitesProvider {
         const appVersion = this.convertVersionName(CoreConstants.CONFIG.versionname);
 
         if (requiredVersion > appVersion) {
-            const storesConfig: CoreStoreConfig = {
-                android: config.tool_mobile_androidappid,
-                ios: config.tool_mobile_iosappid,
-                mobile: config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/',
-                default: config.tool_mobile_setuplink,
-            };
-
-            const siteId = this.getCurrentSiteId();
-            const siteCheckIsCurrentSite = !!site && site.getId() === siteId;
-            const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
-
-            if (downloadUrl) {
-                // Do not block interface.
-                try {
-                    await CoreAlerts.confirm(
-                        Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                        {
-                            header: Translate.instant('core.updaterequired'),
-                            okText: Translate.instant('core.download'),
-                            cancelText: Translate.instant(siteCheckIsCurrentSite ? 'core.mainmenu.logout' : 'core.cancel'),
-                        },
-                    );
-
-                    CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false });
-                } catch {
-                    // User canceled.
-                }
-            } else {
-                // Do not block interface.
-                const alert = await CoreAlerts.show({
-                    header: Translate.instant('core.updaterequired'),
-                    message: Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
-                });
-
-                await alert.onWillDismiss();
-            }
-
-            // Logout the current site and mark it as logged out.
-            if (siteCheckIsCurrentSite && siteId) {
-                this.logout({ forceLogout: true });
-            }
+            await this.showDownloadAppAlert(
+                config,
+                shouldLogout,
+                Translate.instant('core.updaterequireddesc', { $a: config.tool_mobile_minimumversion }),
+                { title: Translate.instant('core.updaterequired') },
+            );
 
             // Throw a silent error since this function is already displaying a modal.
             throw new CoreSilentError('Current app version is lower than required version.');
+        }
+    }
+
+    /**
+     * Show a confirm to download an app. If cannot obtain the download URL, show a simple alert instead.
+     *
+     * @param config Site config.
+     * @param shouldLogout Whether the current site should be logged out.
+     * @param message Message to display in the alert or confirm.
+     * @param options Optional options.
+     * @param options.title Title of the alert or confirm.
+     * @param options.useSetupLink Whether to use the setup link for the mobile URL. Set it to false to only use app store URLs.
+     */
+    protected async showDownloadAppAlert(
+        config: CoreSitePublicConfigResponse,
+        shouldLogout: boolean,
+        message: string,
+        options: { title?: string; useSetupLink?: boolean } = {},
+    ): Promise<void> {
+        const downloadUrl = CoreApp.getAppStoreUrl({
+            android: config.tool_mobile_androidappid,
+            ios: config.tool_mobile_iosappid,
+            mobile: options.useSetupLink ? (config.tool_mobile_setuplink || 'https://download.moodle.org/mobile/') : undefined,
+            default: options.useSetupLink ? config.tool_mobile_setuplink : undefined,
+        });
+
+        if (downloadUrl) {
+            try {
+                await CoreAlerts.confirm(
+                    message,
+                    {
+                        header: options.title,
+                        okText: Translate.instant('core.download'),
+                        cancelText: Translate.instant(shouldLogout ? 'core.mainmenu.logout' : 'core.cancel'),
+                    },
+                );
+
+                CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false });
+            } catch {
+                // User canceled.
+            }
+        } else {
+            const alert = await CoreAlerts.show({
+                header: options.title,
+                message,
+            });
+
+            await alert.onWillDismiss();
         }
     }
 
