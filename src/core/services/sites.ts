@@ -1173,19 +1173,21 @@ export class CoreSitesProvider {
      * Check the app for a site and show a download dialogs if necessary.
      *
      * @param config Config object of the site.
+     * @param site The site instance if the check belongs to an existing site, or null if there is no site context.
+     *             It's important to pass the site if it's known, otherwise the app might not log out the user when it should.
      */
-    async checkApplication(config?: CoreSitePublicConfigResponse): Promise<void> {
-        await this.checkRequiredMinimumVersion(config);
+    async checkApplication(config: CoreSitePublicConfigResponse, site: CoreSite | null): Promise<void> {
+        await this.checkRequiredMinimumVersion(config, site);
     }
 
     /**
      * Check the required minimum version of the app for a site and shows a download dialog.
      *
      * @param config Config object of the site.
-     * @returns Resolved if meets the requirements, rejected otherwise.
+     * @param site The site instance if the check belongs to an existing site, or null if there is no site context.
      */
-    protected async checkRequiredMinimumVersion(config?: CoreSitePublicConfigResponse): Promise<void> {
-        if (!config || !config.tool_mobile_minimumversion) {
+    protected async checkRequiredMinimumVersion(config: CoreSitePublicConfigResponse, site: CoreSite | null): Promise<void> {
+        if (!config.tool_mobile_minimumversion) {
             return;
         }
 
@@ -1201,6 +1203,7 @@ export class CoreSitesProvider {
             };
 
             const siteId = this.getCurrentSiteId();
+            const siteCheckIsCurrentSite = !!site && site.getId() === siteId;
             const downloadUrl = CoreApp.getAppStoreUrl(storesConfig);
             let promise: Promise<unknown>;
 
@@ -1211,7 +1214,7 @@ export class CoreSitesProvider {
                     {
                         header: Translate.instant('core.updaterequired'),
                         okText: Translate.instant('core.download'),
-                        cancelText: Translate.instant(siteId ? 'core.mainmenu.logout' : 'core.cancel'),
+                        cancelText: Translate.instant(siteCheckIsCurrentSite ? 'core.mainmenu.logout' : 'core.cancel'),
                     },
                 ).then(() => CoreOpener.openInBrowser(downloadUrl, { showBrowserWarning: false })).catch(() => {
                     // Do nothing.
@@ -1225,10 +1228,9 @@ export class CoreSitesProvider {
             }
 
             promise.finally(() => {
-                if (siteId) {
-                    // Logout the currentSite and expire the token.
-                    this.internalLogout();
-                    this.setSiteLoggedOut(siteId);
+                if (siteCheckIsCurrentSite && siteId) {
+                    // Logout the current site and mark it as logged out.
+                    this.logout({ forceLogout: true });
                 }
             });
 
@@ -1321,7 +1323,7 @@ export class CoreSitesProvider {
                 readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
             });
 
-            await this.checkApplication(config);
+            await this.checkApplication(config, site);
         } catch {
             // Ignore errors, maybe the user is offline.
         }

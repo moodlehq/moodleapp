@@ -224,7 +224,7 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
 
-        await CoreSites.checkApplication(this.siteConfig);
+        await CoreSites.checkApplication(this.siteConfig, this.site);
     }
 
     /**
