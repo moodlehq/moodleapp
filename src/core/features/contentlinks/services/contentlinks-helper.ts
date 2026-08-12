@@ -21,6 +21,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreLinkSource } from '@/core/constants';
 
 /**
  * Service that provides some features regarding content links.
@@ -216,20 +217,43 @@ export class CoreContentLinksHelperProvider {
      * @param data Data.
      * @param data.url Site URL.
      * @param data.siteId Site ID.
+     * @param source Source of the deep link.
      */
-    async confirmLinkToSite(data: { url: string; siteId?: string }): Promise<void>;
-    async confirmLinkToSite(data: { siteId: string; url?: string }): Promise<void>;
-    async confirmLinkToSite(data: { url?: string; siteId?: string }): Promise<void> {
-        let siteUrl = data.url;
+    async confirmLinkToSite(data: { url: string; siteId?: string }, source?: CoreLinkSource): Promise<void>;
+    async confirmLinkToSite(data: { siteId: string; url?: string }, source?: CoreLinkSource): Promise<void>;
+
+    async confirmLinkToSite(data: { url?: string; siteId?: string }, source?: CoreLinkSource): Promise<void> {
+        let siteUrl = data.url ?? '';
         if (data.siteId) {
             const site = await CoreSites.getSite(data.siteId);
             siteUrl = site.getURL();
         }
 
-        await CoreAlerts.confirm(Translate.instant('core.contentlinks.confirmlinktosite', { url: siteUrl }), {
-            header: Translate.instant('core.contentlinks.confirmlinktositetitle'),
+        const { header, message, okText } = this.getConfirmStrings(siteUrl, source);
+
+        await CoreAlerts.confirm(message, { header, okText });
+    }
+
+    /**
+     * Get the strings to use in a confirmation modal when opening a link to a site.
+     * This function can be overridden by subclasses to provide different strings for different sources.
+     *
+     * @param siteUrl Site URL being accessed.
+     * @param source Source of the deep link.
+     * @returns Strings to use.
+     */
+    protected getConfirmStrings(
+        siteUrl: string,
+        source?: CoreLinkSource,
+    ): { header: string; message: string; okText: string } {
+        const title = CoreSites.isLoggedIn() ? 'confirmlinktositetitle' : 'confirmlinktothissitetitle';
+        const message = source === CoreLinkSource.QR_CODE ? 'confirmqrsiteurltologin' : 'confirmlinktosite';
+
+        return {
+            header: Translate.instant(`core.contentlinks.${title}`),
+            message: Translate.instant(`core.contentlinks.${message}`, { url: siteUrl }),
             okText: Translate.instant('core.contentlinks.opensite'),
-        });
+        };
     }
 
     /**
@@ -279,7 +303,7 @@ export class CoreContentLinksHelperProvider {
         if (shouldConfirmSiteChange && CoreSites.getCurrentSiteId() !== site.getId()) {
             try {
                 // Ask the user before changing site.
-                await this.confirmLinkToSite({ url: site.getURL() });
+                await this.confirmLinkToSite({ url: site.getURL() }, options.urlSource);
             } catch {
                 return;
             }
@@ -351,6 +375,10 @@ type HandleRootURLOptions = {
      * Whether to ask for confirmation before changing site. Defaults to true.
      */
     confirmSiteChange?: boolean;
+    /**
+     * Source of the deep link. By default, CoreLinkSource.LINK.
+     */
+    urlSource?: CoreLinkSource;
 };
 
 /**

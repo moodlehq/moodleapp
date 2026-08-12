@@ -215,6 +215,25 @@ export const enum DataAppAltUrlType {
 };
 
 /**
+ * Constants and types to identify the source of a link.
+ * Since the possible sources can be extended and used by subclasses of the services, we cannot use an enum.
+ * Instead, we use an interface (which can be extended) along with a type and a constant to hold the values.
+ * The constant is used to access the values, while the type is used to type variables and parameters.
+ * The interface values must be the exact values of the constant so the type can be inferred. Do not use string type.
+ */
+export interface CoreLinkSourceRegistry {
+    LINK: 'link'; // eslint-disable-line @typescript-eslint/naming-convention
+    QR_CODE: 'qr_code'; // eslint-disable-line @typescript-eslint/naming-convention
+}
+
+export type CoreLinkSource = CoreLinkSourceRegistry[keyof CoreLinkSourceRegistry];
+
+export const CoreLinkSource = {
+    LINK: 'link', // eslint-disable-line @typescript-eslint/naming-convention
+    QR_CODE: 'qr_code', // eslint-disable-line @typescript-eslint/naming-convention
+} as const satisfies Pick<CoreLinkSourceRegistry, 'LINK' | 'QR_CODE'>;
+
+/**
  * Static class to contain all the core constants.
  */
 export class CoreConstants {
