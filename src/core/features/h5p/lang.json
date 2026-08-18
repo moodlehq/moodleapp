@@ -171,6 +171,8 @@
     "thumbnail": "Thumbnail",
     "title": "Title",
     "undisclosed": "Undisclosed",
+    "unsupportedinteractivevideomessage": "This is an interactive video that needs a browser to work. Open it to use all its features.",
+    "unsupportedinteractivevideotitle": "This interactive video opens in a browser",
     "width": "width",
     "year": "Year",
     "years": "Year(s)",

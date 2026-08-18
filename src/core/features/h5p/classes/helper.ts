@@ -24,6 +24,7 @@ import { CorePath } from '@static/path';
 import { CorePluginFileTreatDownloadedFileOptions } from '@services/plugin-file-delegate';
 import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreH5PUnsupportedPackageError } from './errors/unsupported-package-error';
 
 /**
  * Equivalent to Moodle's H5P helper class.
@@ -228,6 +229,18 @@ export class CoreH5PHelper {
                 await CorePromiseUtils.ignoreErrors(CoreH5P.h5pFramework.storeMissingDependencies(
                     fileUrl,
                     error.missingDependencies,
+                    {
+                        component: options.component,
+                        componentId: options.componentId,
+                        fileTimemodified: options.timemodified,
+                        siteId: options.siteId,
+                    },
+                ));
+            } else if (error instanceof CoreH5PUnsupportedPackageError) {
+                // Store unsupported package reasons to avoid re-downloading the file every time.
+                await CorePromiseUtils.ignoreErrors(CoreH5P.h5pFramework.storeUnsupportedPackage(
+                    fileUrl,
+                    error.reason,
                     {
                         component: options.component,
                         componentId: options.componentId,
