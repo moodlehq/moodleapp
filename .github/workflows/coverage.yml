@@ -66,6 +66,12 @@ jobs:
             tags_json=$(.github/scripts/print_behat_tags_json.sh)
             printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
           else
+            # Validate that BEHAT_TAGS only contains safe characters
+            # Allow: @ (tag prefix), letters/numbers/_/- (tag names), & and ~ (operators), space (for multiple tags)
+            if ! echo "$BEHAT_TAGS" | grep -qE '^[@a-zA-Z0-9_&~ -]*$'; then
+              echo "Error: behat_tags contains invalid characters. Allowed: @, a-z, A-Z, 0-9, _, -, &, ~, space" >&2
+              exit 1
+            fi
             tags_json=$(jq -cn --arg tag "$BEHAT_TAGS" '[$tag]')
             printf 'tags=%s\n' "$tags_json" >> "$GITHUB_OUTPUT"
           fi
