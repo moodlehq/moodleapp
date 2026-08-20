@@ -133,6 +133,8 @@ export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
         await import('@features/course/components/module-completion-legacy/module-completion-legacy');
     const { CoreCourseModuleInfoComponent } = await import('@features/course/components/module-info/module-info');
     const { CoreCourseModuleNavigationComponent } = await import('@features/course/components/module-navigation/module-navigation');
+    const { CoreCourseSectionNavButtonsComponent } =
+        await import('@features/course/components/section-nav-buttons/section-nav-buttons');
 
     const { CoreCourseDownloadModuleMainFileDirective } = await import('@features/course/directives/download-module-main-file');
 
@@ -149,6 +151,7 @@ export async function getCourseExportedDirectives(): Promise<Type<unknown>[]> {
         CoreCourseModuleCompletionLegacyComponent,
         CoreCourseModuleInfoComponent,
         CoreCourseModuleNavigationComponent,
+        CoreCourseSectionNavButtonsComponent,
         CoreCourseDownloadModuleMainFileDirective,
     ];
 }

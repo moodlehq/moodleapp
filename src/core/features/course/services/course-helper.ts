@@ -201,6 +201,16 @@ export class CoreCourseHelperProvider {
     }
 
     /**
+     * Check whether a section can be shown in a course
+     *
+     * @param section The section to check.
+     * @returns Whether the section can be viewed.
+     */
+    canDisplaySectionOnCourse(section: CoreCourseSection): boolean {
+        return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
+    }
+
+    /**
      * Calculate the status of a section.
      *
      * @param section Section to calculate its status. It can't be "All sections".

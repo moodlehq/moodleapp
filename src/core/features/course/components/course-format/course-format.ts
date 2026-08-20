@@ -63,6 +63,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { CoreInfiniteLoadingComponent } from '@components/infinite-loading/infinite-loading';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseSectionComponent, CoreCourseSectionToDisplay } from '../course-section/course-section';
+import { CoreCourseSectionNavButtonsComponent } from '../section-nav-buttons/section-nav-buttons';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleHelper } from '@features/course/services/course-module-helper';
 import { ADDON_STORAGE_MANAGER_PAGE_NAME } from '@addons/storagemanager/constants';
@@ -86,6 +87,7 @@ import { CoreCourseFormatDynamicComponent } from '@features/course/classes/base-
         CoreSharedModule,
         CoreCourseSectionComponent,
         CoreBlockSideBlocksButtonComponent,
+        CoreCourseSectionNavButtonsComponent,
     ],
 })
 export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
@@ -119,8 +121,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
     displayBlocks = false;
     hasBlocks = false;
     selectedSection?: CoreCourseSectionToDisplay;
-    previousSection?: CoreCourseSectionToDisplay;
-    nextSection?: CoreCourseSectionToDisplay;
     allSectionsId = CORE_COURSE_ALL_SECTIONS_ID;
     stealthModulesSectionId = CORE_COURSE_STEALTH_MODULES_SECTION_ID;
     loaded = false;
@@ -333,7 +333,7 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
             // Don't load the section if it cannot be viewed by the user.
             const sectionToLoad = parents[0] ?? section;
-            if (sectionToLoad && this.canViewSection(sectionToLoad)) {
+            if (sectionToLoad && CoreCourseHelper.canDisplaySectionOnCourse(sectionToLoad)) {
                 this.loaded = true;
                 this.sectionChanged(sectionToLoad);
             }
@@ -562,28 +562,8 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
 
         if (newSection.id !== this.allSectionsId) {
             this.setSectionExpanded(newSection);
-
-            // Select next and previous sections to show the arrows.
-            const i = this.sections.findIndex((value) => this.compareSections(value, newSection));
-
-            let j: number;
-            for (j = i - 1; j >= 1; j--) {
-                if (this.canViewSection(this.sections[j])) {
-                    break;
-                }
-            }
-            this.previousSection = j >= 1 ? this.sections[j] : undefined;
-
-            for (j = i + 1; j < this.sections.length; j++) {
-                if (this.canViewSection(this.sections[j])) {
-                    break;
-                }
-            }
-            this.nextSection = j < this.sections.length ? this.sections[j] : undefined;
             this.setAllSectionsPreferred(false);
         } else {
-            this.previousSection = undefined;
-            this.nextSection = undefined;
             this.lastShownSectionIndex = -1;
             this.showMoreActivities();
             this.setAllSectionsPreferred(true);
@@ -709,16 +689,6 @@ export class CoreCourseFormatComponent implements OnInit, OnChanges, OnDestroy {
         this.dynamicComponents()?.forEach((component) => {
             component.callComponentMethod('ionViewDidLeave');
         });
-    }
-
-    /**
-     * Check whether a section can be viewed.
-     *
-     * @param section The section to check.
-     * @returns Whether the section can be viewed.
-     */
-    canViewSection(section: CoreCourseSection): boolean {
-        return CoreCourseHelper.canUserViewSection(section) && !CoreCourseHelper.isSectionStealth(section);
     }
 
     /**

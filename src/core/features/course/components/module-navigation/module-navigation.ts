@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy, OnInit, input, signal } from '@angular/core';
+import { Component, OnDestroy, effect, input, signal, untracked } from '@angular/core';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreEventObserver, CoreEvents } from '@static/events';
@@ -40,7 +40,9 @@ import { CorePromiseUtils } from '@static/promise-utils';
         '[class.empty]': '(!nextModule() && !previousModule())',
     },
 })
-export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
+export class CoreCourseModuleNavigationComponent implements OnDestroy {
+
+    protected static readonly FEATURE_NAME = 'NoDelegate_CoreCourseModuleNavigation';
 
     readonly courseId = input.required<number>(); // Course ID.
     readonly currentModuleId = input.required<number>(); // Current module Id.
@@ -49,42 +51,78 @@ export class CoreCourseModuleNavigationComponent implements OnInit, OnDestroy {
     readonly previousModule = signal<CoreCourseModuleData | undefined>(undefined);
     readonly loaded = signal(false);
 
-    protected completionObserver: CoreEventObserver;
+    protected readonly enabled = signal(false);
+
+    protected completionObserver?: CoreEventObserver;
+    protected updateSiteObserver: CoreEventObserver;
 
     constructor() {
         const siteId = CoreSites.getCurrentSiteId();
 
-        this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
-            if (data?.courseId === this.courseId()) {
-                // Check if now there's a next module.
-                await this.setNextAndPreviousModules(
-                    !this.nextModule(),
-                    !this.previousModule(),
-                    {
-                        readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
-                        siteId,
-                    },
-                );
-            }
+        effect(() => {
+            const enabled = this.enabled();
+
+            untracked(async () => {
+                if (enabled) {
+                    this.loaded.set(false);
+                    this.completionObserver?.off();
+
+                    this.completionObserver = CoreEvents.on(CoreEvents.COMPLETION_MODULE_VIEWED, async (data) => {
+                        if (data?.courseId === this.courseId()) {
+                            // Check if now there's a next module.
+                            await this.setNextAndPreviousModules(
+                                !this.nextModule(),
+                                !this.previousModule(),
+                                {
+                                    readingStrategy: CoreSitesReadingStrategy.PREFER_NETWORK,
+                                    siteId,
+                                },
+                            );
+                        }
+                    }, siteId);
+
+                    try {
+                        await this.setNextAndPreviousModules(
+                            true,
+                            true,
+                            { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE },
+                        );
+                    } finally {
+                        this.loaded.set(true);
+                    }
+                } else {
+                    this.nextModule.set(undefined);
+                    this.previousModule.set(undefined);
+                    this.completionObserver?.off();
+
+                    this.loaded.set(true);
+                }
+            });
+        });
+
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.checkFeatureEnabled();
         }, siteId);
+
+        this.checkFeatureEnabled();
     }
 
     /**
-     * @inheritdoc
+     * Check if the feature is enabled.
      */
-    async ngOnInit(): Promise<void> {
-        try {
-            await this.setNextAndPreviousModules(true, true, { readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE });
-        } finally {
-            this.loaded.set(true);
-        }
+    checkFeatureEnabled(): void {
+        const site = CoreSites.getRequiredCurrentSite();
+
+        const disabled = site.isFeatureDisabled(CoreCourseModuleNavigationComponent.FEATURE_NAME);
+        this.enabled.set(!disabled);
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.completionObserver.off();
+        this.completionObserver?.off();
+        this.updateSiteObserver.off();
     }
 
     /**
