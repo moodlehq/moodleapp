@@ -8,8 +8,8 @@ Feature: Main menu override config
     Given the following config values are set as admin:
       | enablemycourses | 1 |
     And the following "users" exist:
-      | username |
-      | student  |
+      | username | firsname | lastname |
+      | student  | Elba     | Kero     |
     And the following "courses" exist:
       | fullname | shortname |
       | Course 1 | C1        |
