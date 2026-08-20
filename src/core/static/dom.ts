@@ -1175,9 +1175,12 @@ export class CoreDom {
         const element = convertTextToHTMLElement(html);
 
         // Treat elements with src (img, audio, video, ...).
-        const media = Array.from(element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed'));
-        media.forEach((media: HTMLElement) => {
-            const currentSrc = media.getAttribute('src');
+        const srcElements = Array.from(
+            element.querySelectorAll<HTMLElement>('img, video, audio, source, track, iframe, embed, script'),
+        );
+
+        srcElements.forEach((element: HTMLElement) => {
+            const currentSrc = element.getAttribute('src');
             const newSrc = currentSrc ?
                 paths[CoreUrl.removeUrlParts(
                     CoreUrl.decodeURIComponent(currentSrc),
@@ -1186,15 +1189,15 @@ export class CoreDom {
                 undefined;
 
             if (newSrc !== undefined) {
-                media.setAttribute('src', newSrc);
+                element.setAttribute('src', newSrc);
             }
 
             // Treat video posters.
-            const currentPoster = media.getAttribute('poster');
-            if (media.tagName === 'VIDEO' && currentPoster) {
+            const currentPoster = element.getAttribute('poster');
+            if (element.tagName === 'VIDEO' && currentPoster) {
                 const newPoster = paths[CoreUrl.decodeURIComponent(currentPoster)];
                 if (newPoster !== undefined) {
-                    media.setAttribute('poster', newPoster);
+                    element.setAttribute('poster', newPoster);
                 }
             }
         });

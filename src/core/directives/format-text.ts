@@ -669,7 +669,7 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
         const site = await this.getSite();
         const allowedScriptUrls = site?.getContentAllowedScriptUrls() ?? [];
 
-        scripts.forEach((script) => {
+        await CorePromiseUtils.allPromisesIgnoringErrors(scripts.map(async (script) => {
             const url = script.dataset.originalSrc ?? '';
 
             // For now, only absolute URLs are supported to keep it simple. If a script uses a relative URL it won't be loaded.
@@ -684,13 +684,18 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                         newScript.setAttribute(attr.name, attr.value);
                     }
                 });
-                newScript.src = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
+
+                let scriptUrl = CoreUrl.resolveProtocolRelativeUrl(url, site?.getURL());
+                if (site?.isSitePluginFileUrl(scriptUrl)) {
+                    scriptUrl = await site.checkAndFixPluginfileURL(scriptUrl);
+                }
+                newScript.src = scriptUrl;
 
                 script.replaceWith(newScript);
             } else {
                 script.remove();
             }
-        });
+        }));
     }
 
     /**
