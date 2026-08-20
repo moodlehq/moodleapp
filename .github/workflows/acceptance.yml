@@ -207,6 +207,7 @@ jobs:
               env:
                   BEHAT_TAGS: ${{ matrix.tags }}
                   MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest
+                  PHP_CLI_SERVER_WORKERS: 4
 
             - name: Rename snapshot failure files
               id: filename

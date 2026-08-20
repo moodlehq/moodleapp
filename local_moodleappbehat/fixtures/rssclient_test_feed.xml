@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Moodle RSS test file</title>
+    <link>https://www.moodle.org/</link>
+    <description>Deterministic RSS fixture for Moodle app Behat tests.</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 29 Jul 2026 10:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Fixture item one</title>
+      <link>https://www.moodle.org/index.html</link>
+      <description>Static item used to avoid flaky external RSS dependencies.</description>
+      <pubDate>Wed, 29 Jul 2026 09:00:00 GMT</pubDate>
+      <guid>moodleapp-rss-fixture-item-1</guid>
+    </item>
+  </channel>
+</rss>
