@@ -1,4 +1,4 @@
 @if (showButton()) {
-    <core-user-avatar [site]="user()" class="core-bar-button-image clickable" [linkProfile]="false"
+    <core-user-avatar [user]="user()" class="core-bar-button-image clickable" [linkProfile]="false"
         (ariaButtonClick)="openUserMenu($event)" [attr.aria-label]="'core.user.useraccount' | translate" />
 }
