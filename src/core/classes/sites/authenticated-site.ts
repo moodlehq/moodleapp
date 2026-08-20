@@ -422,10 +422,12 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
     requestObservable<T = unknown>(method: string, data: any, preSets: CoreSiteWSPreSets): WSObservable<T> {
         if (this.isLoggedOut() && !CoreAuthenticatedSite.ALLOWED_LOGGEDOUT_WS.includes(method)) {
             // Site is logged out, it cannot call WebServices.
-            this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
-
-            // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
-            throw new CoreSilentError(Translate.instant('core.lostconnection'));
+            if (this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {})) {
+                // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
+                throw new CoreSilentError(Translate.instant('core.lostconnection'));
+            } else {
+                throw new CoreError(Translate.instant('core.lostconnection'));
+            }
         }
 
         data = data || {};
@@ -707,10 +709,10 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
 
             if (CoreWSError.isExpiredTokenError(error)) {
                 // Session expired, trigger event.
-                this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
+                // Use a silent error if the event is triggered, the SESSION_EXPIRED event will display a message if needed.
+                useSilentError = this.triggerSiteEvent(CoreEvents.SESSION_EXPIRED, {});
                 // Change error message. Try to get data from cache, the event will handle the error.
                 error.message = Translate.instant('core.lostconnection');
-                useSilentError = true; // Use a silent error, the SESSION_EXPIRED event will display a message if needed.
             } else if (error.errorcode === 'userdeleted' || error.errorcode === 'wsaccessuserdeleted') {
                 // User deleted, trigger event.
                 this.triggerSiteEvent(CoreEvents.USER_DELETED, { params: data });
@@ -731,14 +733,14 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
                 throw new CoreWSError(error);
             } else if (error.errorcode === 'forcepasswordchangenotice') {
                 // Password Change Forced, trigger event. Try to get data from cache, the event will handle the error.
-                this.triggerSiteEvent(CoreEvents.PASSWORD_CHANGE_FORCED, {});
+                // Use a silent error if the event is triggered, the change password page already displays the appropiate info.
+                useSilentError = this.triggerSiteEvent(CoreEvents.PASSWORD_CHANGE_FORCED, {});
                 error.message = Translate.instant('core.forcepasswordchangenotice');
-                useSilentError = true; // Use a silent error, the change password page already displays the appropiate info.
             } else if (error.errorcode === 'usernotfullysetup') {
                 // User not fully setup, trigger event. Try to get data from cache, the event will handle the error.
-                this.triggerSiteEvent(CoreEvents.USER_NOT_FULLY_SETUP, {});
+                // Use a silent error if the event is triggered, the complete profile page already displays the appropiate info.
+                useSilentError = this.triggerSiteEvent(CoreEvents.USER_NOT_FULLY_SETUP, {});
                 error.message = Translate.instant('core.usernotfullysetup');
-                useSilentError = true; // Use a silent error, the complete profile page already displays the appropiate info.
             } else if (error.errorcode === 'sitepolicynotagreed') {
                 // Site policy not agreed, trigger event.
                 this.triggerSiteEvent(CoreEvents.SITE_POLICY_NOT_AGREED, {});
@@ -1613,12 +1615,14 @@ export class CoreAuthenticatedSite extends CoreUnauthenticatedSite {
      *
      * @param eventName Event name.
      * @param data Event data.
+     * @returns Whether the event was triggered.
      */
     protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
-        eventName: Event,
-        data?: CoreEventData<Event, Fallback>,
-    ): void {
-        CoreEvents.trigger(eventName, data);
+        eventName: Event, // eslint-disable-line @typescript-eslint/no-unused-vars
+        data?: CoreEventData<Event, Fallback>, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ): boolean {
+        // To be overridden. If it's not a valid site it shouldn't trigger events because it can be mistaken with current site.
+        return false;
     }
 
     /**

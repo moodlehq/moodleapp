@@ -2077,28 +2077,32 @@ export class CoreSitesProvider {
         const userId = typeof prioritizeOrOptions === 'boolean' ? undefined : prioritizeOrOptions.userId;
         username = typeof prioritizeOrOptions === 'boolean' ? username : prioritizeOrOptions.username;
 
-        // If prioritize is true, check current site first.
-        if (prioritize && this.currentSite?.containsUrl(url)) {
-            if (!username && !userId) {
-                return [this.currentSite.getId()];
-            } else {
-                const info = this.currentSite?.getInfo();
-                if (info?.username === username || info?.userid === userId) {
-                    return [this.currentSite.getId()];
-                }
+        // Check if a certain site matches the different optional parameters.
+        const siteMatchesOptionalParams = (site: CoreSite): boolean => {
+            if (username && site.getInfo()?.username !== username) {
+                return false;
             }
+
+            if (userId && site.getInfo()?.userid !== userId) {
+                return false;
+            }
+
+            return true;
+        };
+
+        // If prioritize is true, check current site first.
+        if (prioritize && this.currentSite?.containsUrl(url) && siteMatchesOptionalParams(this.currentSite)) {
+            return [this.currentSite.getId()];
         }
 
-        // Check if URL has http(s) protocol.
         if (!url.match(/^https?:\/\//i)) {
-            // URL doesn't have http(s) protocol. Check if it has any protocol.
             if (CoreUrl.isAbsoluteURL(url)) {
                 // It has some protocol. Return empty array.
                 return [];
             }
 
             // No protocol, probably a relative URL. Return current site.
-            if (this.currentSite) {
+            if (this.currentSite && siteMatchesOptionalParams(this.currentSite)) {
                 return [this.currentSite.getId()];
             }
 
@@ -2114,16 +2118,8 @@ export class CoreSitesProvider {
 
                 await this.addSiteFromSiteListEntry(site);
 
-                if (this.sites[site.id].containsUrl(url)) {
-                    if (!username && !userId) {
-                        ids.push(site.id);
-                    } else {
-                        const info = this.sites[site.id].getInfo();
-
-                        if (info?.username === username || info?.userid === userId) {
-                            ids.push(site.id);
-                        }
-                    }
+                if (this.sites[site.id].containsUrl(url) && siteMatchesOptionalParams(this.sites[site.id])) {
+                    ids.push(site.id);
                 }
             }));
 
@@ -2562,9 +2558,9 @@ export type CoreSiteCheckResponse = {
     service: string;
 
     /**
-     * Site public config (if available).
+     * Site public config.
      */
-    config?: CoreSitePublicConfigResponse;
+    config: CoreSitePublicConfigResponse;
 };
 
 /**

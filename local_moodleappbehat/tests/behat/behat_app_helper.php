@@ -412,6 +412,60 @@ class behat_app_helper extends behat_base {
      * @param string $successXPath If a path is declared, the XPath of the element to lookat after redirect.
      */
     protected function open_moodleapp_custom_login_url($username, $path = '', string $successXPath = '') {
+        [$token, $privatetoken] = $this->get_user_tokens($username);
+
+        $url = $this->generate_custom_url([
+            'username' => $username,
+            'token' => $token,
+            'privatetoken' => $privatetoken,
+            'redirect' => $path,
+        ]);
+
+        if (empty($path)) {
+            $successXPath = '//page-core-mainmenu';
+        }
+
+        $this->i_log_out_in_app(false);
+
+        $this->handle_url($url, $successXPath, true);
+    }
+
+    /**
+     * Opens a custom URL on the Moodle App (and waits to finish.)
+     *
+     * @param string $path To navigate.
+     * @param string $successXPath The XPath of the element to lookat after navigation.
+     * @param string $username The username to use.
+     */
+    protected function open_moodleapp_custom_url(
+        string $path,
+        string $successXPath = '',
+        string $username = '',
+        bool $includetoken = false,
+    ) {
+        $urldata = [
+            'username' => $username,
+            'redirect' => $path,
+        ];
+
+        if ($includetoken) {
+            [$token, $privatetoken] = $this->get_user_tokens($username);
+
+            $urldata['token'] = $token;
+            $urldata['privatetoken'] = $privatetoken;
+        }
+
+        $url = $this->generate_custom_url($urldata);
+
+        $this->handle_url($url, $successXPath);
+    }
+
+    /**
+     * Gets user tokens for a certain user. If no tokens exist yet, create them.
+     *
+     * @param string $username The username to get the tokens for.
+     */
+    protected function get_user_tokens(string $username): array {
         global $CFG, $DB;
 
         require_once($CFG->libdir.'/externallib.php');
@@ -441,38 +495,7 @@ class behat_app_helper extends behat_base {
             $privatetoken = $usertoken->privatetoken;
         }
 
-        $url = $this->generate_custom_url([
-            'username' => $username,
-            'token' => $token,
-            'privatetoken' => $privatetoken,
-            'redirect' => $path,
-        ]);
-
-        if (empty($path)) {
-            $successXPath = '//page-core-mainmenu';
-        }
-
-        $this->i_log_out_in_app(false);
-
-        $this->handle_url($url, $successXPath, true);
-    }
-
-    /**
-     * Opens a custom URL on the Moodle App (and waits to finish.)
-     *
-     * @param string $path To navigate.
-     * @param string $successXPath The XPath of the element to lookat after navigation.
-     * @param string $username The username to use.
-     */
-    protected function open_moodleapp_custom_url(string $path, string $successXPath = '', string $username = '') {
-        global $CFG;
-
-        $url = $this->generate_custom_url([
-            'username' => $username,
-            'redirect' => $path,
-        ]);
-
-        $this->handle_url($url, $successXPath);
+        return [$token, $privatetoken];
     }
 
     /**

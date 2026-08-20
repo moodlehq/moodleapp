@@ -656,8 +656,10 @@ export class CoreSite extends CoreAuthenticatedSite {
     protected triggerSiteEvent<Fallback = unknown, Event extends string = string>(
         eventName: Event,
         data?: CoreEventData<Event, Fallback>,
-    ): void {
+    ): boolean {
         CoreEvents.trigger(eventName, data, this.id);
+
+        return true;
     }
 
     /**
