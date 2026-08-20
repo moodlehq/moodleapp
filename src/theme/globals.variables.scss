@@ -87,6 +87,7 @@ $core-text-hightlight-background-color: color.adjust($blue, $lightness: 40%) !de
 
 $core-fixed-url: false !default;
 $core-always-show-main-menu: false !default;
+// Deprecated in 5.3, use the new per-site disabled feature instead.
 $core-format-text-never-shorten: false !default;
 
 $core-hide-courseimage-on-course: false !default;

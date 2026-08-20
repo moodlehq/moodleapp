@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Directive, ElementRef, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
@@ -21,10 +21,11 @@ import { Translate } from '@singletons';
 import { CoreColors } from '@static/colors';
 import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreDom } from '@static/dom';
-import { CoreEventObserver } from '@static/events';
+import { CoreEventObserver, CoreEvents } from '@static/events';
 import { Subscription } from 'rxjs';
 import { CoreFormatTextDirective } from './format-text';
 import { CoreConstants } from '../constants';
+import { CoreSites } from '@services/sites';
 
 const defaultMaxHeight = 80;
 const minMaxHeight = 56;
@@ -38,8 +39,16 @@ const minMaxHeight = 56;
  */
 @Directive({
     selector: '[collapsible-item]',
+    host: {
+        '[class.collapsible-enabled]': 'collapseEnabled()',
+        '[class.collapsible-item]': 'maxHeight() > 0',
+        '[class.collapsible-collapsed]': '!expanded()',
+        '[id]': 'uniqueId()',
+    },
 })
 export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
+
+    protected static readonly FEATURE_NAME = 'NoDelegate_CoreFormatTextShortenText';
 
     /**
      * Max height in pixels to render the content box. It should be 56 at least to make sense.
@@ -49,50 +58,81 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     readonly height = input<number | string>(defaultMaxHeight, { alias: 'collapsible-item' });
 
     protected element: HTMLElement = inject(ElementRef).nativeElement;
-    protected toggleExpandEnabled = false;
-    protected expanded = false;
-    protected maxHeight = defaultMaxHeight;
+    protected readonly heightShouldBeCollapsed = signal(false);
+    protected readonly expanded = signal(CoreConstants.CONFIG.collapsibleItemsExpanded);
+    protected readonly uniqueId = signal(`collapsible-item-${CoreUtils.getUniqueId('CoreCollapsibleItemDirective')}`);
+    protected readonly maxHeight = computed(() => {
+        let height = this.height();
+
+        if (typeof height === 'string') {
+            height = height === ''
+                ? defaultMaxHeight
+                : parseInt(height, 10);
+        }
+
+        return height < minMaxHeight ? defaultMaxHeight : height;
+    });
+
+    protected readonly featureEnabled = signal(false);
+    protected readonly collapseEnabled = computed(() => this.featureEnabled() && this.heightShouldBeCollapsed());
+
     protected expandedHeight = 0;
+    protected toggleButton?: HTMLIonButtonElement;
     protected resizeListener?: CoreEventObserver;
     protected darkModeListener?: Subscription;
     protected domPromise?: CoreCancellablePromise<void>;
     protected visiblePromise?: CoreCancellablePromise<void>;
-    protected uniqueId: string;
     protected loadingHeight = false;
     protected pageDidEnterListener?: EventListener;
     protected page?: HTMLElement;
 
+    protected updateSiteObserver: CoreEventObserver;
+
     constructor() {
+        const siteId = CoreSites.getCurrentSiteId();
+
+        this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, () => {
+            this.checkFeatureEnabled();
+        }, siteId);
+
+        this.checkFeatureEnabled();
+
         this.element.addEventListener('click', (event) => this.elementClicked(event));
-        this.uniqueId = `collapsible-item-${CoreUtils.getUniqueId('CoreCollapsibleItemDirective')}`;
-        this.element.id = this.uniqueId;
+
+        effect(() => {
+            const expand = this.expanded() && this.collapseEnabled();
+
+            untracked(() => {
+                // Reset scroll inside the element to show always the top part.
+                this.element.scrollTo(0, 0);
+                this.setHeight(!expand ? this.maxHeight() : undefined);
+
+                const toggleButton = this.toggleButton;
+                const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
+                if (!toggleButton || !toggleText) {
+                    return;
+                }
+                toggleText.textContent = expand ? Translate.instant('core.showless') : Translate.instant('core.showmore');
+                toggleButton.setAttribute('aria-expanded', expand ? 'true' : 'false');
+            });
+        });
+
+        // Add toggle button if needed.
+        effect(() => {
+            const enable = this.collapseEnabled();
+
+            this.addExpandButtonEnabled(enable);
+        });
     }
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        const height = this.height();
-        if (height === null) {
-            return;
-        }
-
-        if (typeof height === 'string') {
-            this.maxHeight = height === ''
-                ? defaultMaxHeight
-                : parseInt(height, 10);
-        } else {
-            this.maxHeight = height;
-        }
-        this.maxHeight = this.maxHeight < minMaxHeight ? defaultMaxHeight : this.maxHeight;
-
-        if (!this.maxHeight) {
+        if (!this.maxHeight()) {
             // Do not collapse.
             return;
         }
-
-        this.element.classList.add('collapsible-item');
-        this.expanded = CoreConstants.CONFIG.collapsibleItemsExpanded;
 
         await this.waitLoadingsDone();
 
@@ -163,9 +203,8 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.element.classList.remove('collapsible-loading-height');
 
         // If cannot calculate height, shorten always.
-        const enable = !this.expandedHeight || this.expandedHeight >= this.maxHeight;
-        this.setExpandButtonEnabled(enable);
-        this.setGradientColor();
+        const enable = !this.expandedHeight || this.expandedHeight >= this.maxHeight();
+        this.heightShouldBeCollapsed.set(enable);
 
         this.loadingHeight = false;
     }
@@ -174,10 +213,6 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
      * Sets the gradient color based on the background.
      */
     protected setGradientColor(): void {
-        if (!this.toggleExpandEnabled) {
-            return;
-        }
-
         let coloredElement: HTMLElement | null = this.element;
         let backgroundColor = [0, 0, 0, 0];
         let background = '';
@@ -195,38 +230,34 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Sets if expand button is enabled or not.
+     * Add expand/collapse button if needed.
      *
      * @param enable Whether enable or disable.
      */
-    protected setExpandButtonEnabled(enable: boolean): void {
-        this.toggleExpandEnabled = enable;
-        this.element.classList.toggle('collapsible-enabled', enable);
-
-        if (!enable || this.element.querySelector('ion-button.collapsible-toggle')) {
-            this.setHeight(!enable || this.expanded ? undefined : this.maxHeight);
-
+    protected addExpandButtonEnabled(enable: boolean): void {
+        if (!enable || this.toggleButton !== undefined) {
             return;
         }
 
         // Add expand/collapse buttons
-        const toggleButton = document.createElement('ion-button');
-        toggleButton.classList.add('collapsible-toggle');
-        toggleButton.setAttribute('fill', 'clear');
-        toggleButton.setAttribute('aria-controls', this.uniqueId);
+        this.toggleButton = document.createElement('ion-button');
+        this.toggleButton.classList.add('collapsible-toggle');
+        this.toggleButton.setAttribute('fill', 'clear');
+        this.toggleButton.setAttribute('aria-controls', this.uniqueId());
+        this.toggleButton.setAttribute('aria-expanded', 'false');
 
         const toggleText = document.createElement('span');
         toggleText.classList.add('collapsible-toggle-text');
         toggleText.classList.add('sr-only');
-        toggleButton.appendChild(toggleText);
+        toggleText.textContent = Translate.instant('core.showmore');
+
+        this.toggleButton.appendChild(toggleText);
 
         const expandArrow = document.createElement('span');
         expandArrow.classList.add('collapsible-toggle-arrow');
-        toggleButton.appendChild(expandArrow);
+        this.toggleButton.appendChild(expandArrow);
 
-        this.element.append(toggleButton);
-
-        this.toggleExpand(this.expanded);
+        this.element.append(this.toggleButton);
     }
 
     /**
@@ -246,31 +277,6 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
     }
 
     /**
-     * Expand or collapse text.
-     *
-     * @param expand Whether expand or collapse text. If undefined, will toggle.
-     */
-    protected toggleExpand(expand?: boolean): void {
-        if (expand === undefined) {
-            expand = !this.expanded;
-        }
-        this.expanded = expand;
-
-        // Reset scroll inside the element to show always the top part.
-        this.element.scrollTo(0, 0);
-        this.element.classList.toggle('collapsible-collapsed', !expand);
-        this.setHeight(!expand ? this.maxHeight: undefined);
-
-        const toggleButton = this.element.querySelector('ion-button.collapsible-toggle');
-        const toggleText = toggleButton?.querySelector('.collapsible-toggle-text');
-        if (!toggleButton || !toggleText) {
-            return;
-        }
-        toggleText.innerHTML = expand ? Translate.instant('core.showless') : Translate.instant('core.showmore');
-        toggleButton.setAttribute('aria-expanded', expand ? 'true' : 'false');
-    }
-
-    /**
      * Listener to call when the element is clicked.
      *
      * @param e Click event.
@@ -281,7 +287,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.toggleExpandEnabled) {
+        if (!this.collapseEnabled()) {
             // Nothing to do on click, just stop.
             return;
         }
@@ -289,7 +295,17 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         e.preventDefault();
         e.stopPropagation();
 
-        this.toggleExpand();
+        this.expanded.update((value) => !value);
+    }
+
+    /**
+     * Check if the feature is enabled.
+     */
+    protected checkFeatureEnabled(): void {
+        const site = CoreSites.getCurrentSite();
+
+        const disabled = site?.isFeatureDisabled(CoreCollapsibleItemDirective.FEATURE_NAME);
+        this.featureEnabled.set(!disabled);
     }
 
     /**
@@ -300,6 +316,7 @@ export class CoreCollapsibleItemDirective implements OnInit, OnDestroy {
         this.darkModeListener?.unsubscribe();
         this.domPromise?.cancel();
         this.visiblePromise?.cancel();
+        this.updateSiteObserver.off();
 
         if (this.page && this.pageDidEnterListener) {
             this.page.removeEventListener('ionViewDidEnter', this.pageDidEnterListener);
