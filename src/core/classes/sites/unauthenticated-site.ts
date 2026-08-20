@@ -216,7 +216,8 @@ export class CoreUnauthenticatedSite {
             return;
         }
 
-        return config.logourl || config.compactlogourl || undefined;
+        // Use compact logo if available, otherwise use normal logo.
+        return config.compactlogourl || config.logourl || undefined;
     }
 
     /**
