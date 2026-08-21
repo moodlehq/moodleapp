@@ -1,9 +1,8 @@
 os: linux
 dist: noble
 language: java
-node_js: 24
-jdk:
-  - openjdk17
+node_js: lts/krypton
+jdk: openjdk17
 
 git:
   depth: 3
@@ -11,7 +10,7 @@ git:
 if: env(DEPLOY) = 1 OR (env(DEPLOY) = 2 AND tag IS NOT blank)
 
 env:
-  - ANDROID_PLATFORM_VERSION=36 ANDROID_BUILD_TOOLS_VERSION="36.1.0"
+  - ANDROID_PLATFORM_VERSION=37.0 ANDROID_BUILD_TOOLS_VERSION="36.1.0"
 
 addons:
   apt:
