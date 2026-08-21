@@ -1,0 +1,19 @@
+.addon-mod-h5pactivity-admin-restrictions {
+    background: #CFE2F2;
+    margin: 16px 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.5rem 1.2rem 0.5rem 0.5rem;
+    color: #00343C;
+
+    a {
+        color: #00343C;
+        font-weight: 500;
+    }
+
+    ion-icon {
+        font-size: 32px;
+    }
+}
