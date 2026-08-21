@@ -43,7 +43,7 @@ export class CoreLoginCronHandlerService implements CoreCronHandler {
             readingStrategy: CoreSitesReadingStrategy.ONLY_NETWORK,
         }));
 
-        CorePromiseUtils.ignoreErrors(CoreSites.checkApplication(config));
+        config && CorePromiseUtils.ignoreErrors(CoreSites.checkApplication(config, site));
     }
 
     /**

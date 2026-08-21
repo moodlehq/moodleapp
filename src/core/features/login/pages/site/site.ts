@@ -365,7 +365,7 @@ export default class CoreLoginSitePage implements OnInit {
      */
     protected async login(siteCheck: CoreSiteCheckResponse): Promise<void> {
         try {
-            await CoreSites.checkApplication(siteCheck.config);
+            await CoreSites.checkApplication(siteCheck.config, null);
 
             CoreForms.triggerFormSubmittedEvent(this.formElement(), true);
 
@@ -576,7 +576,7 @@ export default class CoreLoginSitePage implements OnInit {
             // Check if site uses SSO.
             const siteCheck = await CoreSites.checkSite(siteUrl, undefined, 'Site URL page');
 
-            await CoreSites.checkApplication(siteCheck.config);
+            await CoreSites.checkApplication(siteCheck.config, null);
 
             if (!CoreLoginHelper.isSSOLoginNeeded(siteCheck.code)) {
                 // No SSO, go to credentials page.

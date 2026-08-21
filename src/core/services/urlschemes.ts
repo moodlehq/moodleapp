@@ -102,7 +102,7 @@ export class CoreCustomURLSchemesProvider {
 
             data.siteUrl = result.siteUrl;
 
-            await CoreSites.checkApplication(result.config);
+            await CoreSites.checkApplication(result.config, null);
 
             if (shouldCheckAutoLoginSetting && result.config.tool_mobile_enabledeeplinkautologin === false) {
                 // The site doesn't allow automatic login from deep links, don't create the site.
@@ -329,7 +329,7 @@ export class CoreCustomURLSchemesProvider {
             }
 
         } catch (error) {
-            if (CoreErrorHelper.isCanceledError(error)) {
+            if (CoreErrorHelper.isSilentError(error)) {
                 return;
             }
 

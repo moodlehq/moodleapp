@@ -13,7 +13,7 @@
     "connect": "Connect!",
     "connecttomoodle": "Connect to Moodle",
     "connecttomoodleapp": "You are trying to connect to a regular Moodle site. Please download the official Moodle app to access this site.",
-    "connecttoworkplaceapp": "You are trying to connect to a Moodle Workplace site. Please download the Moodle Workplace app to access this site.",
+    "connecttoworkplaceapp": "This is a Moodle Workplace site. To access it, you need the Moodle Workplace app.",
     "createaccount": "Create my new account",
     "credentialsdescription": "Please provide your username and password to log in.",
     "credentialshelp": "If you have problems logging in, try again later or contact your school or learning provider.",

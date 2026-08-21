@@ -224,7 +224,9 @@ export default class CoreLoginReconnectPage implements OnInit, OnDestroy {
 
         this.isBrowserSSO = CoreLoginHelper.isSSOLoginNeeded(this.siteConfig.typeoflogin);
 
-        await CoreSites.checkApplication(this.siteConfig);
+        // Ignore errors to avoid leaving the page if the check fails.
+        // In that case, we want to logout after the user has dismissed the modal.
+        await CorePromiseUtils.ignoreErrors(CoreSites.checkApplication(this.siteConfig, this.site));
     }
 
     /**
