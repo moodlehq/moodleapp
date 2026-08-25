@@ -294,7 +294,7 @@
                     @if (feedback) {
                         <!-- Only display grader if there's a gradeddate, otherwise it's displayed when anonymous and not revealed. -->
                         @if (feedback.gradeddate) {
-                            @if (!grader) {
+                            @if (!grader || hasMultipleMarkersWithFeedback()) {
                                 <!-- Grader is hidden, display only the grade date. -->
                                 <ion-item class="ion-text-wrap">
                                     <ion-label>
@@ -324,6 +324,20 @@
 
                         <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
                             [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" />
+
+                        @if (hasMultipleMarkersWithFeedback()) {
+                            <!-- Info multiple markers not supported. -->
+                            <core-alert-card type="info" [message]="'addon.mod_assign.multiplemarkersnotsupportedfeedback' | translate" >
+                                @if (modUrl) {
+                                    <div buttons>
+                                        <ion-button fill="outline" [href]="modUrl" core-link [showBrowserWarning]="false">
+                                            {{ 'core.openinbrowser' | translate }}
+                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                                        </ion-button>
+                                    </div>
+                                }
+                            </core-alert-card>
+                        }
                     }
                 </ion-card>
             }
@@ -423,6 +437,22 @@
 
                                         <addon-mod-assign-feedback-plugin *ngFor="let plugin of attempt.feedbackplugins" [assign]="assign"
                                             [submission]="attempt.submission" [userId]="submitId" [plugin]="plugin" />
+
+                                        @if (hasMultipleMarkersWithFeedback()) {
+                                            <!-- Info multiple markers not supported. -->
+                                            <core-alert-card type="info"
+                                                [message]="'addon.mod_assign.multiplemarkersnotsupportedfeedback' | translate" >
+                                                @if (modUrl) {
+                                                    <div buttons>
+                                                        <ion-button fill="outline" [href]="modUrl" core-link [showBrowserWarning]="false">
+                                                            {{ 'core.openinbrowser' | translate }}
+                                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+                                                        </ion-button>
+                                                    </div>
+                                                }
+                                            </core-alert-card>
+                                        }
+
                                     }
                                 </div>
                             </ion-accordion>
@@ -451,7 +481,7 @@
                         <core-alert-card type="warning"
                             [message]="message | translate" >
                             @if (gradeUrl) {
-                                <ion-button expand="block" [href]="gradeUrl" core-link [showBrowserWarning]="false">
+                                <ion-button fill="outline" [href]="gradeUrl" core-link [showBrowserWarning]="false">
                                     {{ 'core.openinbrowser' | translate }}
                                     <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
                                 </ion-button>
