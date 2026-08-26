@@ -41,6 +41,9 @@ jobs:
                   echo "tagname=${TAGNAME}" >> $GITHUB_OUTPUT
                   echo "${TAGNAME}, ${TAGNAME}-dev, ${TAGNAME}-test" >> $GITHUB_STEP_SUMMARY
 
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v4
+
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v4
 
