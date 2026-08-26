@@ -46,7 +46,7 @@ function copy_lang {
     name=$(jq -r .\""$lang"\".name "$LANGPACKS_PATH"/languages.json)
     local=$(jq -r .\""$lang"\".local "$LANGPACKS_PATH"/languages.json)
     translated=$(jq -r '. | length' "$langfilepath")
-    percentage=$(echo "($translated * 100) /$LANGINDEX_STRINGS" | bc)
+    percentage=$(( (translated * 100) / LANGINDEX_STRINGS ))
     progressbar "$percentage"
     echo -e "Generated $hyphenlang\t $translated of $LANGINDEX_STRINGS\t $bar ($local local)"
 
