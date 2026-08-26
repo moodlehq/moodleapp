@@ -51,6 +51,7 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}
+                  platforms: linux/amd64,linux/arm64/v8
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 
@@ -61,6 +62,7 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}-dev
+                  platforms: linux/amd64,linux/arm64/v8
                   build-args: build_command=npm run build
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
@@ -72,6 +74,7 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}-test
+                  platforms: linux/amd64,linux/arm64/v8
                   build-args: build_command=npm run build:test
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
