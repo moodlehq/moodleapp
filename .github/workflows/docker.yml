@@ -41,9 +41,6 @@ jobs:
                   echo "tagname=${TAGNAME}" >> $GITHUB_OUTPUT
                   echo "${TAGNAME}, ${TAGNAME}-dev, ${TAGNAME}-test" >> $GITHUB_STEP_SUMMARY
 
-            - name: Set up QEMU
-              uses: docker/setup-qemu-action@v4
-
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v4
 
@@ -54,7 +51,6 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}
-                  platforms: linux/amd64,linux/arm64/v8
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
 
@@ -65,7 +61,6 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}-dev
-                  platforms: linux/amd64,linux/arm64/v8
                   build-args: build_command=npm run build
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
@@ -77,7 +72,6 @@ jobs:
                   file: ./Dockerfile
                   push: true
                   tags: ${{ github.repository }}:${{ steps.meta.outputs.tagname }}-test
-                  platforms: linux/amd64,linux/arm64/v8
                   build-args: build_command=npm run build:test
                   cache-from: type=gha
                   cache-to: type=gha,mode=max
