@@ -78,9 +78,6 @@ Feature: It navigates properly using deep links.
     And I open a custom link in the app for:
       | forum      |
       | Test forum |
-    Then I should find "Only continue if you trust this site." in the app
-
-    When I press "Open site" in the app
     And I wait the app to restart
     Then I should find "Reconnect" in the app
 

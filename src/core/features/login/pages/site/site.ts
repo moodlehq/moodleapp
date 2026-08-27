@@ -24,7 +24,7 @@ import {
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
-import { CoreConstants } from '@/core/constants';
+import { CoreConstants, CoreLinkSource } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreNavigator } from '@services/navigator';
@@ -524,7 +524,7 @@ export default class CoreLoginSitePage implements OnInit {
 
         if (CoreCustomURLSchemes.isCustomURL(text)) {
             try {
-                await CoreCustomURLSchemes.handleCustomURL(text);
+                await CoreCustomURLSchemes.handleCustomURL(text, { source: CoreLinkSource.QR_CODE });
             } catch (error) {
                 if (error && error.data && error.data.isAuthenticationURL && error.data.siteUrl) {
                     // An error occurred, but it's an authentication URL and we have the site URL.

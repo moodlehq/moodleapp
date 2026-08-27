@@ -550,7 +550,9 @@ class behat_app_helper extends behat_base {
             throw new DriverException('Error handling url - ' . $customurl . ' - '.$result);
         }
 
-        if ($confirm) {
+        // Confirm is not always shown, depends on several factors. If not found, continue without confirming.
+        $shouldclickconfirm = $confirm && $this->runtime_js("find({ text: '$texttofind' })") === 'OK';
+        if ($shouldclickconfirm) {
             $this->i_press_in_the_app('"Open site"');
         }
 
@@ -568,7 +570,7 @@ class behat_app_helper extends behat_base {
 
         $this->wait_for_pending_js();
 
-        if ($confirm) {
+        if ($shouldclickconfirm) {
             $this->i_wait_the_app_to_restart();
         }
     }

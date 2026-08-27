@@ -24,6 +24,7 @@ import { CoreCustomURLSchemes } from './urlschemes';
 import { QRScannerCamera, QRScannerErrorCode } from '@features/native/plugins/qrscanner';
 import { CoreAlerts } from './overlays/alerts';
 import { CoreHTMLClasses } from '@static/html-classes';
+import { CoreLinkSource } from '@/core/constants';
 
 /**
  * Handles qr scan services.
@@ -78,7 +79,7 @@ export class CoreQRScanService {
         if (CoreCustomURLSchemes.isCustomURL(text)) {
             // Is a custom URL scheme, handle it.
             try {
-                await CoreCustomURLSchemes.handleCustomURL(text);
+                await CoreCustomURLSchemes.handleCustomURL(text, { source: CoreLinkSource.QR_CODE });
             } catch (error) {
                 CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreQRScanService');
             }
