@@ -3,10 +3,10 @@
 
 <!--The iframe needs to be outside of core-loading, otherwise the request is canceled while loading. -->
 <!-- Don't add the iframe until safeUrl is set, adding an iframe with null as src causes the iframe to load the whole app. -->
-@if (candidateSafeUrl() && !launchExternalLabel) {
-    <div [style.min-width]="'min('+iframeWidth+', 100%)'" [style.min-height]="'min('+iframeHeight+', 100%)'"
+@if (safeUrl() && !launchExternalLabel) {
+    <div [style.min-width]="'min('+formattedWidth()+', 100%)'" [style.min-height]="'min('+formattedHeight()+', 100%)'"
         class="core-iframe-container">
-        @if (initialized && showFullscreenOnToolbar && !loading) {
+        @if (initialized && showFullscreenOnToolbar() && !loading) {
             <core-navbar-buttons slot="end" prepend>
                 <ion-button fill="clear" (click)="toggleFullscreen()"
                     [ariaLabel]="(fullscreen ? 'core.disablefullscreen' : 'core.fullscreen') | translate">
@@ -15,18 +15,8 @@
             </core-navbar-buttons>
         }
 
-        <!-- allow and allowfullscreen cannot be set dynamically using attribute binding. -->
-        <!-- allowfullscreen is handled by defining 2 iframe elements. -->
-        <!-- This is not feasible for allow, so it is applied programmatically in the JS code. -->
-        @if (allowFullscreen) {
-            <iframe #iframe class="core-iframe" [attr.id]="id" [style.width]="iframeWidth" [style.height]="iframeHeight" [src]="safeUrl()"
-                allowfullscreen="true" [class.core-iframe-loading]="loading">
-            </iframe>
-        } @else {
-            <iframe #iframe class="core-iframe" [attr.id]="id" [style.width]="iframeWidth" [style.height]="iframeHeight" [src]="safeUrl()"
-                [class.core-iframe-loading]="loading">
-            </iframe>
-        }
+        <!-- The iframe tag itself is created and updated reactively from the component class. -->
+        <div #iframeHost [class.core-iframe-loading]="loading"></div>
 
         @if (!loading && displayHelp) {
             <ion-button expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"

@@ -14,18 +14,17 @@
 
 import {
     Component,
-    Input,
     Output,
     ElementRef,
     EventEmitter,
-    OnChanges,
-    SimpleChange,
     OnDestroy,
     inject,
     viewChild,
     computed,
     effect,
     signal,
+    input,
+    SecurityContext,
 } from '@angular/core';
 import { SafeResourceUrl } from '@angular/platform-browser';
 
@@ -70,30 +69,30 @@ import { BackButtonPriority } from '@/core/constants';
         CoreFaIconDirective,
     ],
 })
-export class CoreIframeComponent implements OnChanges, OnDestroy {
+export class CoreIframeComponent implements OnDestroy {
 
     static loadingTimeout = 15000;
 
-    readonly iframeRef = viewChild<ElementRef<HTMLIFrameElement>>('iframe');
-    readonly iframe = computed(() => this.iframeRef()?.nativeElement);
+    readonly iframeHostRef = viewChild<ElementRef<HTMLDivElement>>('iframeHost');
+    protected readonly iframeElement = signal<HTMLIFrameElement | undefined>(undefined);
 
-    @Input() src?: string;
-    @Input() id: string | null = null;
-    @Input() iframeWidth = '100%';
-    @Input() iframeHeight = '100%';
-    @Input({ transform: toBoolean }) allowFullscreen = false;
-    @Input({ transform: toBoolean }) showFullscreenOnToolbar = false;
-    @Input({ transform: toBoolean }) autoFullscreenOnRotate = false;
-    @Input({ transform: toBoolean }) allowAutoLogin = true;
-    @Input({ transform: toBoolean }) addSiteReferer = false;
+    readonly src = input<string>();
+    readonly id = input<string | null>(null);
+    readonly iframeWidth = input('100%');
+    readonly iframeHeight = input('100%');
+    readonly allowFullscreen = input(false, { transform: toBoolean });
+    readonly showFullscreenOnToolbar = input(false, { transform: toBoolean });
+    readonly autoFullscreenOnRotate = input(false, { transform: toBoolean });
+    readonly allowAutoLogin = input(true, { transform: toBoolean });
+    readonly addSiteReferer = input(false, { transform: toBoolean });
     @Output() loaded = new EventEmitter<HTMLIFrameElement>();
 
-    readonly allowHasBeenSet = signal(false);
-    readonly candidateSafeUrl = signal<SafeResourceUrl | undefined>(undefined);
-    // allow attribute must be set before src.
-    readonly safeUrl = computed(() => this.allowHasBeenSet() ?
-        this.candidateSafeUrl() :
-        DomSanitizer.bypassSecurityTrustResourceUrl('')); // Empty string also needs to be sanitized to avoid Angular errors.
+    readonly safeUrl = signal<SafeResourceUrl | undefined>(undefined);
+    // Attributes normalised from their raw inputs, applied reactively to the iframe created in initIframeElement().
+    readonly formattedWidth = computed(() => (this.iframeWidth() && CoreDom.formatSizeUnits(this.iframeWidth())) || '100%');
+    readonly formattedHeight = computed(
+        () => (this.iframeHeight() && CoreDom.formatSizeUnits(this.iframeHeight())) || '100%',
+    );
 
     loading?: boolean;
     displayHelp = false;
@@ -108,22 +107,64 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     protected messageListenerFunction: (event: MessageEvent) => Promise<void>;
     protected backButtonListener?: EventListener;
     protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected srcUpdateId = 0;
+    protected loadingTimeout?: ReturnType<typeof setTimeout>;
 
     constructor() {
         // Listen for messages from the iframe.
         window.addEventListener('message', this.messageListenerFunction = (event) => this.onIframeMessage(event));
 
         effect(() => {
-            this.initIframeElement(this.iframe());
+            const host = this.iframeHostRef();
+            const iframe = this.iframeElement();
+            if (!host || (iframe && host.nativeElement.contains(iframe))) {
+                return;
+            }
+
+            this.initIframeElement(host);
+        });
+
+        effect(() => {
+            const iframe = this.iframeElement();
+            if (!iframe) {
+                return;
+            }
+
+            // The "allow" attribute is excluded on purpose: browsers only read it once, when the iframe is created.
+            iframe.style.width = this.formattedWidth();
+            iframe.style.height = this.formattedHeight();
+            iframe.toggleAttribute('allowfullscreen', this.allowFullscreen());
+
+            const id = this.id();
+            if (id) {
+                iframe.id = id;
+            } else {
+                iframe.removeAttribute('id');
+            }
+
+            const url = this.safeUrl();
+            iframe.src = url ? (DomSanitizer.sanitize(SecurityContext.RESOURCE_URL, url) ?? '') : '';
         });
 
         effect(() => {
             const orientation = CoreScreen.orientationSignal();
-            if (!this.autoFullscreenOnRotate || this.isInHiddenPage()) {
+            if (!this.autoFullscreenOnRotate() || this.isInHiddenPage()) {
                 return;
             }
 
             this.toggleFullscreen(orientation === CoreScreenOrientation.LANDSCAPE);
+        });
+
+        effect(() => {
+            this.updateSrc(this.src());
+        });
+
+        effect(() => {
+            // Track the signals so this reruns whenever either of them changes.
+            this.showFullscreenOnToolbar();
+            this.autoFullscreenOnRotate();
+
+            this.configureFullScreen();
         });
     }
 
@@ -138,11 +179,24 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
         this.initialized = true;
 
         // Show loading only with external URLs.
-        this.loading = !this.src || !CoreUrl.isLocalFileUrl(this.src);
+        const src = this.src();
+        this.loading = !src || !CoreUrl.isLocalFileUrl(src);
+        this.setLoadingTimeout();
+    }
+
+    /**
+     * Start or reset the loading timeout for the current iframe URL.
+     */
+    protected setLoadingTimeout(): void {
+        if (this.loadingTimeout) {
+            clearTimeout(this.loadingTimeout);
+            this.loadingTimeout = undefined;
+        }
 
         if (this.loading) {
-            setTimeout(() => {
+            this.loadingTimeout = setTimeout(() => {
                 this.loading = false;
+                this.loadingTimeout = undefined;
             }, CoreIframeComponent.loadingTimeout);
         }
     }
@@ -151,14 +205,9 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Configure fullscreen based on the inputs.
      */
     protected configureFullScreen(): void {
-        if (!this.showFullscreenOnToolbar && !this.autoFullscreenOnRotate) {
-            // Full screen disabled, stop watchers if enabled.
-            this.navSubscription?.unsubscribe();
-            this.style?.remove();
-            this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
-            this.navSubscription = undefined;
-            this.style = undefined;
-            this.backButtonListener = undefined;
+        const autoFullscreenOnRotate = this.autoFullscreenOnRotate();
+        if (!this.showFullscreenOnToolbar() && !autoFullscreenOnRotate) {
+            this.disableFullScreen();
             this.fullScreenInitialized = true;
 
             return;
@@ -201,7 +250,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             }
         }
 
-        if (!this.fullScreenInitialized && this.autoFullscreenOnRotate) {
+        if (!this.fullScreenInitialized && autoFullscreenOnRotate) {
             // Only change full screen value if it's being initialized.
             this.toggleFullscreen(CoreScreen.isLandscape);
         }
@@ -212,15 +261,20 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     /**
      * Initialize things related to the iframe element.
      *
-     * @param iframe Iframe element.
+     * @param host Host element to add the iframe.
      */
-    protected initIframeElement(iframe?: HTMLIFrameElement): void {
-        if (!iframe) {
-            return;
+    protected initIframeElement(host: ElementRef<HTMLDivElement>): void {
+        const iframe = document.createElement('iframe');
+        iframe.className = 'core-iframe';
+
+        const allow = this.element.getAttribute('allow')?.trim();
+        if (allow) {
+            iframe.setAttribute('allow', allow);
         }
 
-        this.setIframeAllowAttribute(iframe);
         CoreIframe.treatFrame(iframe, false);
+
+        host.nativeElement.appendChild(iframe);
 
         iframe.addEventListener('load', () => {
             this.loading = false;
@@ -231,6 +285,8 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             this.loading = false;
             CoreAlerts.showError(Translate.instant('core.errorloadingcontent'));
         });
+
+        this.iframeElement.set(iframe);
     }
 
     /**
@@ -244,25 +300,19 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
     }
 
     /**
-     * Detect changes on input properties.
+     * React to changes on the src input, resolving the final URL to load in the iframe.
+     *
+     * @param src Src input value.
      */
-    async ngOnChanges(changes: { [name: string]: SimpleChange }): Promise<void> {
-        if (changes.iframeWidth) {
-            this.iframeWidth = (this.iframeWidth && CoreDom.formatSizeUnits(this.iframeWidth)) || '100%';
-        }
-        if (changes.iframeHeight) {
-            this.iframeHeight = (this.iframeHeight && CoreDom.formatSizeUnits(this.iframeHeight)) || '100%';
-        }
+    protected async updateSrc(src?: string): Promise<void> {
+        // Discard outdated resolutions if src changes again before this one finishes.
+        const updateId = ++this.srcUpdateId;
+        let url = src;
 
-        if (!changes.src) {
-            if (changes.showFullscreenOnToolbar || changes.autoFullscreenOnRotate) {
-                this.configureFullScreen();
-            }
-
-            return;
-        }
-
-        let url = this.src;
+        this.safeUrl.set(undefined);
+        this.displayHelp = false;
+        this.loading = !src || !CoreUrl.isLocalFileUrl(src);
+        this.setLoadingTimeout();
 
         if (url) {
             const { launchExternal, label } = CoreIframe.frameShouldLaunchExternal(url);
@@ -270,6 +320,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             if (launchExternal) {
                 this.launchExternalLabel = label;
                 this.loading = false;
+                this.setLoadingTimeout();
 
                 return;
             }
@@ -284,7 +335,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             const currentSite = CoreSites.getCurrentSite();
             if (currentSite?.containsUrl(url)) {
                 // Format the URL to add auto-login if needed and add the lang parameter.
-                const autoLoginUrl = this.allowAutoLogin ?
+                const autoLoginUrl = this.allowAutoLogin() ?
                     await currentSite.getAutoLoginUrl(url, false) :
                     url;
 
@@ -292,7 +343,7 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
                 url = CoreUrl.addParamsToUrl(autoLoginUrl, { lang }, {
                     checkAutoLoginUrl: autoLoginUrl !== url,
                 });
-            } else if (this.addSiteReferer || CoreUrl.urlNeedsReferer(url)) {
+            } else if (this.addSiteReferer() || CoreUrl.urlNeedsReferer(url)) {
                 url = currentSite?.fixRefererForUrl(url) || url;
             }
 
@@ -305,15 +356,14 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             await CoreIframe.fixIframeCookies(url);
         }
 
-        this.candidateSafeUrl.set(url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined);
+        if (updateId !== this.srcUpdateId) {
+            return;
+        }
 
-        // Now that the URL has been set, initialize the iframe. Wait for the iframe to the added to the DOM.
-        setTimeout(() => {
-            this.init();
-            if (changes.showFullscreenOnToolbar || changes.autoFullscreenOnRotate) {
-                this.configureFullScreen();
-            }
-        });
+        this.safeUrl.set(url ? DomSanitizer.bypassSecurityTrustResourceUrl(CoreFile.convertFileSrc(url)) : undefined);
+
+        // Now that the URL has been set, initialize the iframe. Wait for the iframe to be added to the DOM.
+        this.init();
     }
 
     /**
@@ -327,31 +377,26 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        this.navSubscription?.unsubscribe();
         window.removeEventListener('message', this.messageListenerFunction);
-
-        if (this.fullscreen) {
-            // Make sure to leave fullscreen mode when the iframe is destroyed. This can happen if there's a race condition
-            // between clicking back button and some code toggling the fullscreen on.
-            this.toggleFullscreen(false);
-        }
+        this.loadingTimeout && clearTimeout(this.loadingTimeout);
+        this.disableFullScreen();
     }
 
     /**
-     * Set the iframe allow attribute.
-     *
-     * Angular doesn't allow binding this attribute dynamically for security reasons,
-     * and it should be set before setting iframe src.
-     *
-     * @param iframe Iframe element.
+     * Disable fullscreen mode and remove any listeners or styles related to it.
      */
-    protected setIframeAllowAttribute(iframe: HTMLIFrameElement): void {
-        const allow = this.element.getAttribute('allow')?.trim();
-        if (allow) {
-            iframe.setAttribute('allow', allow);
+    protected disableFullScreen(): void {
+        // Full screen disabled, stop watchers if enabled.
+        if (this.fullscreen) {
+            this.toggleFullscreen(false);
         }
 
-        this.allowHasBeenSet.set(true);
+        this.navSubscription?.unsubscribe();
+        this.style?.remove();
+        this.backButtonListener && document.removeEventListener('ionBackButton', this.backButtonListener);
+        this.navSubscription = undefined;
+        this.style = undefined;
+        this.backButtonListener = undefined;
     }
 
     /**
@@ -377,13 +422,13 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
             // Done this way because of the shadow DOM.
             this.style.textContent = this.fullscreen
                 ? '@media screen and (orientation: landscape) {\
-                    .core-iframe-fullscreen .toolbar-container { flex-direction: column-reverse !important; height: 100%; } }'
+                    .toolbar-container { flex-direction: column-reverse !important; height: 100%; } }'
                 : '';
         }
 
         document.body.classList.toggle('core-iframe-fullscreen', this.fullscreen);
 
-        const iframe = this.iframe();
+        const iframe = this.iframeElement();
         if (notifyIframe && iframe) {
             iframe.contentWindow?.postMessage(
                 this.fullscreen ? 'enterFullScreen' : 'exitFullScreen',
@@ -398,7 +443,11 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * @param event Event.
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
-        if (event.data === 'enterFullScreen' && this.showFullscreenOnToolbar && !this.fullscreen) {
+        if (event.source !== this.iframeElement()?.contentWindow) {
+            return;
+        }
+
+        if (event.data === 'enterFullScreen' && this.showFullscreenOnToolbar() && !this.fullscreen) {
             this.toggleFullscreen(true, false);
         } else if (event.data === 'exitFullScreen' && this.fullscreen) {
             this.toggleFullscreen(false, false);
@@ -409,11 +458,12 @@ export class CoreIframeComponent implements OnChanges, OnDestroy {
      * Launch content in an external app.
      */
     launchExternal(): void {
-        if (!this.src) {
+        const src = this.src();
+        if (!src) {
             return;
         }
 
-        CoreIframe.frameLaunchExternal(this.src, {
+        CoreIframe.frameLaunchExternal(src, {
             site: CoreSites.getCurrentSite(),
         });
     }
