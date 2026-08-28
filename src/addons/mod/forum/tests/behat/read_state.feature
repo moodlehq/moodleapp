@@ -1,4 +1,4 @@
-@app_parallel_run_forum @addon_mod_forum @app @mod @mod_forum @javascript @lms_from5.3
+
 Feature: Test mark as read/unread forum posts in app
   In order to manage unread forum posts while using the mobile app
   As a student

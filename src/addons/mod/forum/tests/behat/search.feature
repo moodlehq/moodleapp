@@ -1,4 +1,4 @@
-@app_parallel_run_search @addon_mod_forum @app @mod @mod_forum @javascript @lms_from4.3
+
 Feature: Test Forum Search
 
   Background:

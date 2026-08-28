@@ -1,4 +1,4 @@
-@app_parallel_run_choice @addon_mod_choice @app @mod @mod_choice @javascript @lms_upto5.1
+
 Feature: Restrict availability of the choice module to a deadline
   In order to limit the time a student can mace a selection
   As a teacher

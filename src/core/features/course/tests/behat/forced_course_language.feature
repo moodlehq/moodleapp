@@ -1,4 +1,4 @@
-@app_parallel_run_course @core_course @app @core @javascript @forced_language @lms_from5.2
+
 
 Feature: Forced course language is applied in the app
   In order to ensure users see the course in the correct language

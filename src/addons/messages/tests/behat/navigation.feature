@@ -1,4 +1,4 @@
-@app_parallel_run_messages @addon_messages @app @core @core_message @javascript
+
 Feature: Test messages navigation in the app
 
   Background:

@@ -1,4 +1,4 @@
-@app_parallel_run_core @core_lang @app @javascript @lms_upto5.1
+
 Feature: Test language changes
 
   Background:

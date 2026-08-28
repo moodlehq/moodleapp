@@ -1,4 +1,4 @@
-@app_parallel_run_feedback @addon_mod_feedback @app @mod @mod_feedback @javascript @lms_from5.1
+
 Feature: Activities overview for feedback activity
 
   Background:

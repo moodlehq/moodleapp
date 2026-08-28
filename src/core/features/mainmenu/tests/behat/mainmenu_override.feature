@@ -1,4 +1,4 @@
-@app_parallel_run_core @core_mainmenu @app @javascript
+
 Feature: Main menu override config
   In order to customize the main menu
   As an admin

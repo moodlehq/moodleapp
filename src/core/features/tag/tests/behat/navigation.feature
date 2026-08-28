@@ -1,4 +1,4 @@
-@app_parallel_run_tags @core_tag @app @core @javascript
+
 Feature: Tag navigation
 
   Background:

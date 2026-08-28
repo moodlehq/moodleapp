@@ -1,4 +1,4 @@
-@app_parallel_run_notifications @addon_notifications @app @core @core_message @javascript
+
 Feature: Notifications
 
   Background:

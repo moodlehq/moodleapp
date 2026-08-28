@@ -1,4 +1,4 @@
-@app_parallel_run_feedback @addon_mod_feedback @app @mod @mod_feedback @javascript @forced_language
+
 
 Feature: Forced activity language is applied in the app
   In order to ensure users see the activity in the correct language

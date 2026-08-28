@@ -1,4 +1,4 @@
-@app_parallel_run_grades @core_grades @app @core @javascript @lms_upto4.1
+
 Feature: Grades navigation
 
   Background:

@@ -203,7 +203,7 @@ jobs:
 
             - name: Run Behat tests
               id: run-behat-tests
-              run: moodle-plugin-ci behat --auto-rerun 3 --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
+              run: moodle-plugin-ci behat --profile chrome --tags="@app&&~@local&&$BEHAT_TAGS"
               env:
                   BEHAT_TAGS: ${{ matrix.tags }}
                   MOODLE_BEHAT_SELENIUM_IMAGE: selenium/standalone-chrome:latest

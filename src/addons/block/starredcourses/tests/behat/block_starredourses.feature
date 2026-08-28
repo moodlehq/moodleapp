@@ -1,4 +1,4 @@
-@app_parallel_run_courses @addon_block_starredcourses @app @block @block_starredcourses @javascript
+
 Feature: Basic tests of starred courses block
 
   Background:

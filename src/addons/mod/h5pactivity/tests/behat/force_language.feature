@@ -1,4 +1,4 @@
-@app_parallel_run_h5p @addon_mod_h5pactivity @app @mod @mod_h5pactivity @javascript @forced_language
+
 
 Feature: Forced activity language is applied in the app
   In order to ensure users see the activity in the correct language

@@ -1,4 +1,4 @@
-@app_parallel_run_core @core_usertours @app @javascript
+
 Feature: User Tours work properly.
 
   Background:

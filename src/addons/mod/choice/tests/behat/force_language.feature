@@ -1,4 +1,4 @@
-@app_parallel_run_choice @addon_mod_choice @app @mod @mod_choice @javascript @forced_language
+
 
 Feature: Forced activity language is applied in the app
   In order to ensure users see the activity in the correct language

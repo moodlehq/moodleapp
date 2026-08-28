@@ -1,4 +1,4 @@
-@app_parallel_run_feedback @addon_mod_feedback @app @mod @mod_feedback @javascript @chartjs
+
 Feature: Feedback charts in responses analysis
 
   Background:

@@ -1,4 +1,4 @@
-@app_parallel_run_siteplugins @core_siteplugins @app @javascript
+
 Feature: Plugins work properly.
 
   Background:

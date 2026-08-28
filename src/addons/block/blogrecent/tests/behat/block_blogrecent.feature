@@ -1,4 +1,4 @@
-@app_parallel_run_blog @addon_block_blog_recent @app @block @block_blog_recent @javascript
+
 Feature: Basic tests of blog recent block
 
   Background:

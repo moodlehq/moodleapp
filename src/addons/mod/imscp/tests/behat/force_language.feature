@@ -1,4 +1,4 @@
-@app_parallel_run_imscp @addon_mod_imscp @app @mod @mod_imscp @javascript @forced_language
+
 
 Feature: Forced activity language is applied in the app
   In order to ensure users see the activity in the correct language

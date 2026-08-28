@@ -1,4 +1,4 @@
-@app_parallel_run_grades @core_grades @app @core @javascript
+
 Feature: View grades
 
   Background:

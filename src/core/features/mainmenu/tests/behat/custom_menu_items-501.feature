@@ -1,4 +1,4 @@
-@app_parallel_run_core @core_mainmenu @app @javascript @custom_menu_items @lms_upto5.1
+
 Feature: Custom user menu items display
   In order to access custom links in the user menu
   As a user

@@ -1,4 +1,4 @@
-@app_parallel_run_notifications @core_reminders @app @javascript
+
 Feature: Set a new reminder on activity
 
   Background:

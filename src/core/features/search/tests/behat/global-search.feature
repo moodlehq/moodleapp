@@ -1,4 +1,4 @@
-@app_parallel_run_search @core_search @app @core @javascript @lms_from4.3
+
 Feature: Test Global Search
 
   Background:

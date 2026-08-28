@@ -1,4 +1,4 @@
-@app_parallel_run_forum @addon_mod_forum @app @mod @mod_forum @javascript
+
 Feature: Test forum navigation
 
   Background:

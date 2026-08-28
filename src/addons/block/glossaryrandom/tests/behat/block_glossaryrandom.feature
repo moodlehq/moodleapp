@@ -1,4 +1,4 @@
-@app_parallel_run_glossary @addon_block_glossary_random @app @block @block_glossary_random @javascript
+
 Feature: Basic tests of glossay random block
 
   Background:

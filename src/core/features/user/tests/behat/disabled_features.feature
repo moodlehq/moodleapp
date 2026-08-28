@@ -1,4 +1,4 @@
-@app_parallel_run_user @core_user @app @javascript @lms_from5.0
+
 Feature: Test user menu disabled features
 
   Background:

@@ -1,5 +1,5 @@
 
-@app_parallel_run_quiz @addon_mod_quiz @app @mod @mod_quiz @javascript @singleactivity @forced_language
+
 Feature: Test single activity of quiz type in app
   In order to view a quiz while using the mobile app
   As a student

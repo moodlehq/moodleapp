@@ -1,4 +1,4 @@
-@app_parallel_run_user @core_user @app @core @javascript
+
 Feature: Test basic usage of user features
 
   Background:
