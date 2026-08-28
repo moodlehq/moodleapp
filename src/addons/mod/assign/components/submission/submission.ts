@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input, OnInit, OnDestroy, inject, viewChildren, signal } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject, viewChildren, signal, computed } from '@angular/core';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import {
@@ -125,6 +125,20 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
     readonly hasMultipleMarkers = signal(false); // Whether the assignment has multiple markers.
+
+    readonly hasMultipleMarkersWithFeedback = computed(() => {
+        if (!this.hasMultipleMarkers()) {
+            return false;
+        }
+
+        // In Moodle 5.2 there can be multiple markers but no feedback for markers, so we support that case for students.
+        // In Moodle 5.3 is when we don't support it.
+        const site = CoreSites.getRequiredCurrentSite();
+
+        return site.isVersionGreaterEqualThan('5.3');
+    });
+
+    modUrl?: string; // URL to the module in browser.
     gradeUrl?: string; // URL to grade in browser.
     submissionUrl?: string; // URL to add/edit a submission in browser.
     isPreviousAttemptEmpty = true; // Whether the previous attempt contains an empty submission.
@@ -451,6 +465,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // Get the assignment.
             this.assign = await AddonModAssign.getAssignment(this.courseId, this.moduleId);
 
+            // Load the URL to grade it in browser.
+            const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
+            this.modUrl = mod.url;
+
             if (this.submitId !== this.currentUserId && sync) {
                 // Teacher viewing a student submission. Try to sync the assign, there could be offline grades stored.
                 try {
@@ -481,7 +499,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             this.hasMultipleMarkers.set(!!this.assign.markingworkflow && !!this.assign.markingallocation &&
                 this.assign.markercount !== undefined && this.assign.markercount > 1);
 
-            if (!this.blindMarking && this.submitId != this.currentUserId) {
+            if (!this.blindMarking && this.submitId !== this.currentUserId) {
                 promises.push(this.loadSubmissionUserProfile());
             }
 
@@ -647,9 +665,10 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         }
 
         if (!this.canSaveGrades || this.hasMultipleMarkers()) {
-            // User cannot save grades in the app. Load the URL to grade it in browser.
-            const mod = await CoreCourse.getModule(this.moduleId, this.courseId, undefined, true);
-            this.gradeUrl = `${mod.url}&action=grader&userid=${this.submitId}`;
+            // User cannot save grades in the app.
+            if (this.modUrl) {
+                this.gradeUrl = `${this.modUrl}&action=grader&userid=${this.submitId}`;
+            }
 
             return;
         }
@@ -875,7 +894,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         this.isRemoveAvailable = AddonModAssign.isRemoveSubmissionAvailable();
 
         // Get submission statement if needed.
-        if (this.assign.requiresubmissionstatement && this.assign.submissiondrafts && this.submitId == this.currentUserId) {
+        if (this.assign.requiresubmissionstatement && this.assign.submissiondrafts && this.submitId === this.currentUserId) {
             this.submissionStatement = this.assign.submissionstatement;
             this.acceptStatement = false;
         } else {
@@ -885,7 +904,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         // Show error if submission statement should be shown but it couldn't be retrieved.
         this.showErrorStatementEdit = submissionStatementMissing && !this.assign.submissiondrafts &&
-            this.submitId == this.currentUserId;
+            this.submitId === this.currentUserId;
 
         this.showErrorStatementSubmit = submissionStatementMissing && !!this.assign.submissiondrafts;
 

@@ -64,6 +64,7 @@
     "markingworkflowstatereleased": "Released",
     "modulenameplural": "Assignments",
     "multiplemarkersnotsupported": "Multiple markers are not yet supported by the app and cannot be modified.",
+    "multiplemarkersnotsupportedfeedback": "This assignment can have multiple markers. Any feedback from them is only available in the browser.",
     "multipleteams": "Member of more than one group",
     "multipleteams_desc": "The assignment requires submission in groups. You are a member of more than one group. To be able to submit you must be a member of only one group. Please contact your teacher to change your group membership.",
     "noattempt": "No attempt",

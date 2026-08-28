@@ -442,7 +442,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                             promises.push(
                                 AddonModAssignSubmissionDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
                                     .then((files) =>
-                                        CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id))
+                                        CoreFilepool.addFilesToQueue(siteId, files, this.component, moduleId))
                                     .catch(() => {
                                         // Ignore errors.
                                     }),
@@ -491,7 +491,7 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
                         // Prefetch the plugin files.
                         promises.push(
                             AddonModAssignFeedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId)
-                                .then((files) => CoreFilepool.addFilesToQueue(siteId, files, this.component, module.id))
+                                .then((files) => CoreFilepool.addFilesToQueue(siteId, files, this.component, moduleId))
                                 .catch(() => {
                                     // Ignore errors.
                                 }),

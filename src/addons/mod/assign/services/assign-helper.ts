@@ -288,7 +288,7 @@ export class AddonModAssignHelperProvider {
         const configs: AddonModAssignPluginConfig = {};
 
         assign.configs.forEach((config) => {
-            if (config.subtype == subtype && config.plugin == type) {
+            if (config.subtype === subtype && config.plugin === type) {
                 configs[config.name] = config.value;
             }
         });
@@ -307,7 +307,7 @@ export class AddonModAssignHelperProvider {
         const enabled: AddonModAssignPlugin[] = [];
 
         assign.configs.forEach((config) => {
-            if (config.subtype == subtype && config.name === 'enabled' && parseInt(config.value, 10) === 1) {
+            if (config.subtype === subtype && config.name === 'enabled' && parseInt(config.value, 10) === 1) {
                 // Format the plugin objects.
                 enabled.push({
                     type: config.plugin,
@@ -416,7 +416,7 @@ export class AddonModAssignHelperProvider {
 
         if (teamsubmission) {
             // On team submission discard user submissions.
-            submissions = submissions.filter((submission) => submission.userid == 0);
+            submissions = submissions.filter((submission) => submission.userid === 0);
         }
 
         return participants.map((participant) => {
@@ -425,12 +425,12 @@ export class AddonModAssignHelperProvider {
 
             const foundSubmission = submissions.find((submission) => {
                 if (teamsubmission) {
-                    return submission.groupid == groupId;
+                    return submission.groupid === groupId;
                 }
 
                 const submitId = submission.userid && submission.userid > 0 ? submission.userid : submission.blindid;
 
-                return participant.id == submitId;
+                return participant.id === submitId;
             });
 
             let submission: AddonModAssignSubmissionFormatted | undefined;

@@ -85,7 +85,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
 
         optionsList.unshift('');
 
-        const index = options.indexOf(selected) || 0;
+        const index = optionsList.indexOf(selected) || 0;
         if (index < 0) {
             return 0;
         }
@@ -368,7 +368,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
             }
 
             // Submission data sent, update cached data. No need to block the user for this.
-            AddonModAssign.getSubmissionStatus(assign, options);
+            void AddonModAssign.getSubmissionStatus(assign, options);
         } catch (error) {
             if (!CoreWSError.isWebServiceError(error)) {
                 // Local error, reject.
@@ -483,7 +483,7 @@ export class AddonModAssignSyncProvider extends CoreCourseActivitySyncBaseProvid
                     }
                 } else if (gradeInfo && grade.outcomeid && gradeInfo.outcomes) {
                     gradeInfo.outcomes.forEach((outcome, index) => {
-                        if (outcome.scale && grade.itemnumber == index) {
+                        if (outcome.scale && grade.itemnumber === index) {
                             offlineData.outcomes[grade.itemnumber] = this.getSelectedScaleId(
                                 outcome.scale,
                                 grade.grade || '',
