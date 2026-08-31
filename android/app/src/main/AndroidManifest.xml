@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <manifest
     android:versionCode="53000"
     android:versionName="5.3.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -13,7 +12,6 @@
         android:theme="@style/AppTheme"
         android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config">
-
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
@@ -22,7 +20,6 @@
             android:launchMode="singleTask"
             android:exported="true"
             android:enableOnBackInvokedCallback="false">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -46,7 +43,6 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:host=" " android:pathPrefix="/" android:scheme=" " />
             </intent-filter>
-
         </activity>
 
         <provider
@@ -54,9 +50,7 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
 
         <provider
@@ -66,7 +60,8 @@
             android:name="org.apache.cordova.camera.FileProvider">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/camera_provider_paths" />
+                android:resource="@xml/camera_provider_paths"
+            />
         </provider>
 
         <provider
@@ -74,9 +69,7 @@
             android:exported="false"
             android:grantUriPermissions="true"
             android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/opener_paths" />
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
         </provider>
 
         <provider
@@ -84,9 +77,7 @@
             android:exported="false"
             android:grantUriPermissions="true"
             android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
+            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
         </provider>
 
         <provider
@@ -96,13 +87,15 @@
             android:name="de.appplant.cordova.plugin.localnotification.util.PluginFileProvider">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/shared_files_provider_paths" />
+                android:resource="@xml/shared_files_provider_paths"
+            />
         </provider>
 
         <activity
             android:exported="true"
             android:name="com.adobe.phonegap.push.PushHandlerActivity"
-            android:permission="${applicationId}.permission.PushHandlerActivity" />
+            android:permission="${applicationId}.permission.PushHandlerActivity"
+        />
 
         <activity
             android:exported="true"
@@ -118,7 +111,8 @@
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
             android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+        />
 
         <receiver android:name="com.adobe.phonegap.push.BackgroundActionButtonHandler" />
 
@@ -126,11 +120,13 @@
 
         <receiver
             android:exported="false"
-            android:name="de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver" />
+            android:name="de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver"
+        />
 
         <receiver
             android:exported="false"
-            android:name="de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver" />
+            android:name="de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver"
+        />
 
         <receiver
             android:exported="false"
@@ -142,9 +138,7 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:exported="true"
-            android:name="com.adobe.phonegap.push.FCMService">
+        <service android:exported="true" android:name="com.adobe.phonegap.push.FCMService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -175,7 +169,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <permission android:name="${applicationId}.permission.PushHandlerActivity" android:protectionLevel="signature" />
-    <permission android:name="${applicationId}.permission.BackgroundHandlerActivity" android:protectionLevel="signature" />
+    <permission
+        android:name="${applicationId}.permission.BackgroundHandlerActivity"
+        android:protectionLevel="signature"
+    />
 
     <!-- Other apps that this app can interact with. -->
     <queries>
