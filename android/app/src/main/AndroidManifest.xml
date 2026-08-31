@@ -1,25 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    android:versionCode="53000"
+    android:versionName="5.3.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config">
 
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
             android:name=".MainActivity"
-            android:label="@string/title_activity_main"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
-            android:exported="true">
+            android:exported="true"
+            android:enableOnBackInvokedCallback="false">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.darryncampbell.cordova.plugin.intent.ACTION" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="moodlemobile" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host=" " android:pathPrefix="/" android:scheme=" " />
             </intent-filter>
 
         </activity>
@@ -31,11 +56,141 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
+        <provider
+            android:authorities="${applicationId}.cordova.plugin.camera.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="org.apache.cordova.camera.FileProvider">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/camera_provider_paths" />
+        </provider>
+
+        <provider
+            android:authorities="${applicationId}.fileOpener2.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/opener_paths" />
+        </provider>
+
+        <provider
+            android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <provider
+            android:authorities="${applicationId}.localnotifications.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            android:name="de.appplant.cordova.plugin.localnotification.util.PluginFileProvider">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/shared_files_provider_paths" />
+        </provider>
+
+        <activity
+            android:exported="true"
+            android:name="com.adobe.phonegap.push.PushHandlerActivity"
+            android:permission="${applicationId}.permission.PushHandlerActivity" />
+
+        <activity
+            android:exported="true"
+            android:name="com.adobe.phonegap.push.BackgroundHandlerActivity"
+            android:permission="${applicationId}.permission.BackgroundHandlerActivity">
+            <intent-filter>
+                <action android:name="com.adobe.phonegap.push.background.MESSAGING_EVENT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:name="de.appplant.cordova.plugin.localnotification.ClickActivity"
+            android:taskAffinity="" />
+
+        <receiver android:name="com.adobe.phonegap.push.BackgroundActionButtonHandler" />
+
+        <receiver android:name="com.adobe.phonegap.push.PushDismissedHandler" />
+
+        <receiver
+            android:exported="false"
+            android:name="de.appplant.cordova.plugin.localnotification.receiver.TriggerReceiver" />
+
+        <receiver
+            android:exported="false"
+            android:name="de.appplant.cordova.plugin.localnotification.receiver.ClearReceiver" />
+
+        <receiver
+            android:exported="false"
+            android:name="de.appplant.cordova.plugin.localnotification.receiver.RestoreReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:exported="true"
+            android:name="com.adobe.phonegap.push.FCMService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
     </application>
 
     <!-- Permissions -->
 
+    <uses-feature android:name="android.hardware.bluetooth" android:required="false" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:maxSdkVersion="32" android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:maxSdkVersion="32" android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.CAMERA" android:required="false" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="${applicationId}.permission.PushHandlerActivity" />
+    <uses-permission android:name="${applicationId}.permission.BackgroundHandlerActivity" />
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <permission android:name="${applicationId}.permission.PushHandlerActivity" android:protectionLevel="signature" />
+    <permission android:name="${applicationId}.permission.BackgroundHandlerActivity" android:protectionLevel="signature" />
+
+    <!-- Other apps that this app can interact with. -->
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.PICK" />
+        </intent>
+        <intent>
+            <action android:name="com.android.camera.action.CROP" />
+            <data android:mimeType="image/*" android:scheme="content" />
+        </intent>
+    </queries>
 </manifest>
