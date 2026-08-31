@@ -5,6 +5,7 @@ on:
         branches:
             - main
             - latest
+            - latest-test
         tags:
             - "v[0-9]*"
 
@@ -34,17 +35,24 @@ jobs:
                     TAGNAME="${GITHUB_REF_NAME#v}"
                   elif [[ "${{ github.ref_name }}" == "main" ]]; then
                     TAGNAME="next"
-                  elif [[ "${{ github.ref_name }}" == "latest" ]]; then
+                  elif [[ "${{ github.ref_name }}" == "latest" || "${{ github.ref_name }}" == "latest-test" ]]; then
                     TAGNAME="latest"
                   fi
 
                   echo "tagname=${TAGNAME}" >> $GITHUB_OUTPUT
-                  echo "${TAGNAME}, ${TAGNAME}-dev, ${TAGNAME}-test" >> $GITHUB_STEP_SUMMARY
+                  if [[ "${{ github.ref_name }}" == "latest-test" ]]; then
+                    echo "${TAGNAME}-test" >> $GITHUB_STEP_SUMMARY
+                  elif [[ "${{ github.ref_name }}" == "latest" ]]; then
+                    echo "${TAGNAME}, ${TAGNAME}-dev" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "${TAGNAME}, ${TAGNAME}-dev, ${TAGNAME}-test" >> $GITHUB_STEP_SUMMARY
+                  fi
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v4
 
             - name: Build and push production image
+              if: github.ref_name != 'latest-test'
               uses: docker/build-push-action@v7
               with:
                   context: .
@@ -55,6 +63,7 @@ jobs:
                   cache-to: type=gha,mode=max
 
             - name: Build and push dev image
+              if: github.ref_name != 'latest-test'
               uses: docker/build-push-action@v7
               with:
                   context: .
@@ -66,6 +75,7 @@ jobs:
                   cache-to: type=gha,mode=max
 
             - name: Build and push test image
+              if: github.ref_name != 'latest'
               uses: docker/build-push-action@v7
               with:
                   context: .
