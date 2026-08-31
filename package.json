@@ -133,6 +133,7 @@
         "@angular/cli": "^20.3.22",
         "@angular/compiler-cli": "^20.3.18",
         "@angular/language-service": "^20.3.18",
+        "@capacitor/assets": "^3.0.5",
         "@capacitor/cli": "^8.5.2",
         "@eslint/js": "^9.39.4",
         "@faker-js/faker": "^9.9.0",
