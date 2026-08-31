@@ -73,6 +73,7 @@
         "@awesome-cordova-plugins/web-intent": "^9.2.0",
         "@capacitor/android": "^8.5.2",
         "@capacitor/core": "^8.5.2",
+        "@capacitor/ios": "^8.5.2",
         "@ionic/angular": "^8.8.19",
         "@ionic/cordova-builders": "^12.3.0",
         "@moodlehq/cordova-plugin-advanced-http": "3.3.1-moodle.3",
