@@ -22,7 +22,7 @@ import { CoreBytesConstants, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@static/logger';
-import { makeSingleton, File, WebView } from '@singletons';
+import { makeSingleton, File } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@static/text';
 import { CorePlatform } from '@services/platform';
@@ -30,6 +30,7 @@ import { CorePath } from '@static/path';
 import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { Capacitor } from '@capacitor/core';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -1327,7 +1328,7 @@ export class CoreFileProvider {
      * @returns Converted src.
      */
     convertFileSrc(src: string): string {
-        return CorePlatform.isMobile() ? WebView.convertFileSrc(src) : src;
+        return CorePlatform.isMobile() ? Capacitor.convertFileSrc(src) : src;
     }
 
     /**
@@ -1341,11 +1342,10 @@ export class CoreFileProvider {
             return src;
         }
 
-        if (CorePlatform.isIOS()) {
-            return src.replace(`${CoreConstants.CONFIG.ioswebviewscheme}://localhost/_app_file_`, 'file://');
-        }
+        const scheme = CorePlatform.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
 
-        return src.replace('http://localhost/_app_file_', 'file://');
+        return src.replace(`${scheme}://localhost/_capacitor_file_`, 'file://')
+            .replace(`${scheme}://localhost/_app_file_`, 'file://'); // @deprecated since 6.0. Keep Cordova value for now.
     }
 
     /**
