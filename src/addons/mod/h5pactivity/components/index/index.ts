@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, effect, signal } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -66,6 +66,7 @@ import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
+    styleUrls: ['index.scss'],
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -105,6 +106,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     saveFreq?: number;
     contentState?: string;
     readonly isOnline = CoreNetwork.onlineSignal;
+    readonly isAdmin = signal(false);
     triedToPlay = false;
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
@@ -160,6 +162,7 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         super.ngOnInit();
 
         this.loadContent(false, true);
+        this.isAdmin.set(this.site.isAdmin());
     }
 
     /**
@@ -775,6 +778,20 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
         await CorePromiseUtils.ignoreErrors(CoreXAPIOffline.deleteStates(ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT, {
             itemId: this.h5pActivity.context,
         }));
+    }
+
+    /**
+     * Open features restrictions info modal.
+     */
+    async openFeaturesRestrictionsInfoModal(): Promise<void> {
+        const message = `<p>${Translate.instant('core.user.signedinasadmin')}</p>
+        <p>${Translate.instant('core.user.useappwithoutlimits')}</p>`;
+
+        await CoreAlerts.show({
+            header: Translate.instant('core.user.adminrestrictions'),
+            message: message,
+            buttons: [Translate.instant('core.ok')],
+        });
     }
 
     /**
