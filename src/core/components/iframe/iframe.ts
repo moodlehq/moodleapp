@@ -26,7 +26,6 @@ import {
     input,
     untracked,
 } from '@angular/core';
-import { SafeResourceUrl } from '@angular/platform-browser';
 
 import { CoreUrl } from '@static/url';
 import { CoreIframe } from '@static/iframe';
@@ -47,6 +46,7 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 import { BackButtonEvent } from '@ionic/angular';
 import { BackButtonPriority } from '@/core/constants';
+import { CoreFile } from '@services/file';
 
 /**
  * Component to render an iframe, handling auto-login if needed, fixing iOS cookies, check if content should be opened
@@ -91,7 +91,7 @@ export class CoreIframeComponent implements OnDestroy {
     readonly addSiteReferer = input(false, { transform: toBoolean });
     @Output() loaded = new EventEmitter<HTMLIFrameElement>();
 
-    readonly safeUrl = signal<SafeResourceUrl | undefined>(undefined);
+    readonly effectiveUrl = signal<string | undefined>(undefined);
     // Attributes normalised from their raw inputs, applied reactively to the iframe created in createIframeElement().
     readonly formattedWidth = computed(() => (this.iframeWidth() && CoreDom.formatSizeUnits(this.iframeWidth())) || '100%');
     readonly formattedHeight = computed(() => (this.iframeHeight() && CoreDom.formatSizeUnits(this.iframeHeight())) || '100%');
@@ -145,10 +145,8 @@ export class CoreIframeComponent implements OnDestroy {
                 iframe.removeAttribute('id');
             }
 
-            const url = this.safeUrl();
-            const src = url?.toString() ?? '';
+            const src = this.effectiveUrl() ?? '';
             if (src !== iframe.src) {
-
                 iframe.src = src;
                 untracked(() => {
                     const originalSrc = this.src();
@@ -348,7 +346,7 @@ export class CoreIframeComponent implements OnDestroy {
         const updateId = ++this.srcUpdateId;
         let url = src;
 
-        this.safeUrl.set(undefined);
+        this.effectiveUrl.set(undefined);
         this.displayHelp.set(false);
         this.clearLoadingTimeout();
 
@@ -397,7 +395,7 @@ export class CoreIframeComponent implements OnDestroy {
             return;
         }
 
-        this.safeUrl.set(url);
+        this.effectiveUrl.set(url ? CoreFile.convertFileSrc(url) : '');
     }
 
     /**
