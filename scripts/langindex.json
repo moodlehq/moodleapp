@@ -2204,6 +2204,7 @@
   "core.login.missingemail": "moodle",
   "core.login.missingfirstname": "moodle",
   "core.login.missinglastname": "moodle",
+  "core.login.mobileaccessnotenabled": "local_moodlemobileapp",
   "core.login.mobileservicesnotenabled": "local_moodlemobileapp",
   "core.login.morewaystologin": "local_moodlemobileapp",
   "core.login.mustconfirm": "moodle",
