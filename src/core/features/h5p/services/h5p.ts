@@ -33,6 +33,7 @@ import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CoreFilepool } from '@services/filepool';
 import { CoreCacheUpdateFrequency, DownloadStatus } from '@/core/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreH5PUnsupportedPackageDBRecord } from './database/h5p';
 
 /**
  * Service to provide H5P functionalities.
@@ -258,6 +259,33 @@ export class CoreH5PProvider {
         }
 
         return CoreUrl.removeUrlParts(url, [CoreUrlPartNames.Query, CoreUrlPartNames.Fragment]);
+    }
+
+    /**
+     * Get unsupported package record for a certain file and drop stale records if package timemodified changed.
+     *
+     * @param fileUrl File URL.
+     * @param timemodified File timemodified.
+     * @returns Unsupported package record that still applies to the file.
+     */
+    async getUnsupportedPackageForFile(
+        fileUrl: string,
+        timemodified?: number,
+    ): Promise<CoreH5PUnsupportedPackageDBRecord | undefined> {
+        const unsupportedPackage = await CoreH5P.h5pFramework.getUnsupportedPackagesForFile(fileUrl);
+        if (!unsupportedPackage) {
+            return undefined;
+        }
+
+        if (timemodified) {
+            if (unsupportedPackage.filetimemodified !== timemodified) {
+                await CorePromiseUtils.ignoreErrors(CoreH5P.h5pFramework.deleteUnsupportedPackagesForFile(fileUrl));
+
+                return undefined;
+            }
+        }
+
+        return unsupportedPackage;
     }
 
 }

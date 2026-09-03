@@ -1,0 +1,6 @@
+:host {
+    core-empty-box {
+        // Add padding bottom to align it more to the vertical center.
+        padding-bottom: calc(var(--root-safe-area-bottom) + 104px);
+    }
+}

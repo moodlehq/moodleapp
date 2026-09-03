@@ -34,7 +34,10 @@ import {
 import { CoreCacheUpdateFrequency } from '@/core/constants';
 import { CoreFileHelper } from '@services/file-helper';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreH5PMissingDependencyDBRecord } from '@features/h5p/services/database/h5p';
+import {
+    CoreH5PMissingDependencyDBRecord,
+    CoreH5PUnsupportedPackageDBRecord,
+} from '@features/h5p/services/database/h5p';
 import { CoreCourseModuleHelper, CoreCourseModuleStandardElements } from '@features/course/services/course-module-helper';
 
 /**
@@ -596,7 +599,7 @@ export class AddonModH5PActivityProvider {
 
         // The activity had missing dependencies, but the package could have changed (e.g. the teacher fixed it).
         // Check which of the dependencies apply to the current package.
-        const fileId = await CoreH5P.h5pFramework.getFileIdForMissingDependencies(fileUrl, siteId);
+        const fileId = await CoreH5P.h5pFramework.getIdentifierFromUrl(fileUrl, siteId);
 
         const filteredMissingDependencies = missingDependencies.filter(dependency =>
             dependency.fileid === fileId && dependency.filetimemodified === deployedFile.timemodified);
@@ -610,6 +613,48 @@ export class AddonModH5PActivityProvider {
         );
 
         return [];
+    }
+
+    /**
+     * Get unsupported package record for a certain H5P activity (if any).
+     *
+     * @param componentId Component ID.
+     * @param deployedFile File to check.
+     * @param siteId Site ID. If not defined, current site.
+     * @returns Unsupported package record, undefined if no unsupported record is stored.
+     */
+    async getUnsupportedPackage(
+        componentId: number,
+        deployedFile: CoreWSFile,
+        siteId?: string,
+    ): Promise<CoreH5PUnsupportedPackageDBRecord | undefined> {
+        // We need to use the legacy component because it's the one used when downloading/saving the package.
+        const unsupportedPackages = await CoreH5P.h5pFramework.getUnsupportedPackagesForComponent(
+            ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY,
+            componentId,
+            siteId,
+        );
+        if (!unsupportedPackages.length) {
+            return;
+        }
+
+        // The activity had unsupported package records, but the package could have changed (e.g. the teacher changed it).
+        // Check if any of the records apply to the current package.
+        const fileUrl = CoreFileHelper.getFileUrl(deployedFile);
+        const fileId = await CoreH5P.h5pFramework.getIdentifierFromUrl(fileUrl, siteId);
+
+        const unsupportedPackage = unsupportedPackages.find(pkg =>
+            pkg.fileid === fileId && pkg.filetimemodified === deployedFile.timemodified);
+        if (unsupportedPackage) {
+            return unsupportedPackage;
+        }
+
+        // Package has changed, delete previous unsupported records.
+        await CorePromiseUtils.ignoreErrors(
+            CoreH5P.h5pFramework.deleteUnsupportedPackagesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, componentId, siteId),
+        );
+
+        return undefined;
     }
 
     /**

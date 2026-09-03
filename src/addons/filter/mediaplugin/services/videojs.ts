@@ -24,6 +24,7 @@ import { CoreEvents } from '@static/events';
 import type videojs from 'video.js';
 import type { VideoJSOptions, VideoJSPlayer } from 'video.js';
 import { CoreSites } from '@services/sites';
+import { CorePlatform } from '@services/platform';
 
 declare module '@static/events' {
 
@@ -114,7 +115,7 @@ export class AddonFilterMediaPluginVideoJSService {
 
         const iframe = document.createElement('iframe');
         iframe.id = video.id;
-        iframe.src = CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl) || youtubeUrl;
+        iframe.src = (CorePlatform.isIOS() && CoreSites.getCurrentSite()?.fixRefererForUrl(youtubeUrl)) || youtubeUrl;
         iframe.setAttribute('frameborder', '0');
         iframe.setAttribute('allowfullscreen', '1');
         iframe.width = '100%';

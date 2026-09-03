@@ -1,4 +1,20 @@
-@if (showPackage) {
+@let error = unsupportedPackageError();
+@if (error) {
+    <!-- If a package is playing but we detect it's unsupported, stop playing and show this message instead. -->
+    <!-- This means the user might be able to view the package for a while, but it shouldn't work as expected. -->
+    <core-empty-box icon="fas-globe">
+        @if (error.title) {
+            <p class="core-h5p-unsupported-error-title ion-margin"><strong>{{ error.title }}</strong></p>
+        }
+
+        <p class="core-h5p-unsupported-error-message">{{ error.message }}</p>
+
+        <ion-button class="ion-text-wrap ion-margin" [href]="src" core-link [showBrowserWarning]="false">
+            {{ 'core.openinbrowser' | translate }}
+            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+        </ion-button>
+    </core-empty-box>
+} @else if (showPackage) {
     <core-h5p-iframe [fileUrl]="urlParams?.url" [displayOptions]="displayOptions" [onlinePlayerUrl]="src" [component]="component"
         [componentId]="componentId" [fileTimemodified]="fileTimemodified" />
 } @else if (urlParams) {

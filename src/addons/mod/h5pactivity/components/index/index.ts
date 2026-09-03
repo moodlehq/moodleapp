@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, OnDestroy, Output, EventEmitter, effect } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, effect, signal } from '@angular/core';
 import { DownloadStatus } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
 import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/main-activity-component';
@@ -50,6 +50,7 @@ import {
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
 import { CoreH5PMissingDependenciesError } from '@features/h5p/classes/errors/missing-dependencies-error';
+import { CoreH5PUnsupportedPackageError } from '@features/h5p/classes/errors/unsupported-package-error';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
@@ -66,6 +67,7 @@ import { CoreH5PIframeComponent } from '@features/h5p/components/h5p-iframe/h5p-
 @Component({
     selector: 'addon-mod-h5pactivity-index',
     templateUrl: 'addon-mod-h5pactivity-index.html',
+    styleUrl: 'index.scss',
     imports: [
         CoreSharedModule,
         CoreCourseModuleInfoComponent,
@@ -106,6 +108,8 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
     contentState?: string;
     readonly isOnline = CoreNetwork.onlineSignal;
     triedToPlay = false;
+
+    readonly unsupportedPackageError = signal<CoreH5PUnsupportedPackageError|undefined>(undefined);
 
     protected fetchContentDefaultError = 'addon.mod_h5pactivity.errorgetactivity';
     protected syncEventName = ADDON_MOD_H5PACTIVITY_AUTO_SYNCED;
@@ -205,7 +209,9 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             );
         }
 
-        if (!this.siteCanDownload || this.state === DownloadStatus.DOWNLOADED || this.hasMissingDependencies) {
+        if (this.unsupportedPackageError()) {
+            return;
+        } else if (!this.siteCanDownload || this.state === DownloadStatus.DOWNLOADED || this.hasMissingDependencies) {
             // Cannot download the file or already downloaded, play the package directly.
             this.play();
 
@@ -265,8 +271,16 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
             siteId: this.siteId,
         });
 
-        this.hasMissingDependencies = await AddonModH5PActivity.hasMissingDependencies(this.module.id, deployedFile);
-        if (this.hasMissingDependencies) {
+        const [hasMissingDependencies, unsupportedPackage] = await Promise.all([
+            AddonModH5PActivity.hasMissingDependencies(this.module.id, deployedFile),
+            AddonModH5PActivity.getUnsupportedPackage(this.module.id, deployedFile),
+        ]);
+
+        this.hasMissingDependencies = hasMissingDependencies;
+        this.unsupportedPackageError.set(
+            unsupportedPackage ? new CoreH5PUnsupportedPackageError(unsupportedPackage.reason) : undefined,
+        );
+        if (this.hasMissingDependencies || this.unsupportedPackageError()) {
             return;
         }
 
@@ -426,7 +440,13 @@ export class AddonModH5PActivityIndexComponent extends CoreCourseModuleMainActiv
 
             // Cannot download the file, use online player.
             this.hasMissingDependencies = error instanceof CoreH5PMissingDependenciesError;
+            this.unsupportedPackageError.set(error instanceof CoreH5PUnsupportedPackageError ? error : undefined);
             this.fileUrl = undefined;
+
+            if (this.unsupportedPackageError()) {
+                return;
+            }
+
             this.play();
 
             CoreToasts.show({

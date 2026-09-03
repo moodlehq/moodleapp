@@ -39,6 +39,7 @@ import {
     ADDON_MOD_H5PACTIVITY_STATE_ID,
     ADDON_MOD_H5PACTIVITY_TRACK_COMPONENT,
 } from '../../constants';
+import { CoreH5PUnsupportedPackageError } from '@features/h5p/classes/errors/unsupported-package-error';
 
 /**
  * Handler to prefetch h5p activity.
@@ -149,6 +150,11 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
         const missingDependencies = await AddonModH5PActivity.getMissingDependencies(module.id, deployedFile, siteId);
         if (missingDependencies.length > 0) {
             throw CoreH5P.h5pFramework.buildMissingDependenciesErrorFromDBRecords(missingDependencies);
+        }
+
+        const unsupportedPackage = await AddonModH5PActivity.getUnsupportedPackage(module.id, deployedFile, siteId);
+        if (unsupportedPackage) {
+            throw new CoreH5PUnsupportedPackageError(unsupportedPackage.reason);
         }
 
         if (AddonModH5PActivity.isSaveStateEnabled(h5pActivity)) {
@@ -265,11 +271,14 @@ export class AddonModH5PActivityPrefetchHandlerService extends CoreCourseActivit
      * @inheritdoc
      */
     async removeFiles(module: CoreCourseAnyModuleData, courseId: number): Promise<void> {
-        // Remove files and delete any missing dependency stored to force recalculating them.
+        // Remove files and delete any stored issue to force recalculating them.
         await Promise.all([
             super.removeFiles(module, courseId),
             CorePromiseUtils.ignoreErrors(
                 CoreH5P.h5pFramework.deleteMissingDependenciesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, module.id),
+            ),
+            CorePromiseUtils.ignoreErrors(
+                CoreH5P.h5pFramework.deleteUnsupportedPackagesForComponent(ADDON_MOD_H5PACTIVITY_COMPONENT_LEGACY, module.id),
             ),
         ]);
     }

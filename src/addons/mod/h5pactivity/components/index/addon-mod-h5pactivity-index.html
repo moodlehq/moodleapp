@@ -30,60 +30,82 @@
     <core-course-module-info [module]="module" [description]="description" [component]="component" [componentId]="componentId"
         [courseId]="courseId" [hasDataToSync]="hasOffline" (completionChanged)="onCompletionChange()" />
 
-    <!-- User tried to play in offline a package that must be played in online. -->
-    @if (triedToPlay && !isOnline() && (!siteCanDownload || hasMissingDependencies)) {
-        <core-alert-card type="warning"
-            [message]="!siteCanDownload
-                ? ('core.h5p.offlinedisabled' | translate) + ' ' + ('addon.mod_h5pactivity.offlinedisabledwarning' | translate)
-                : ('core.course.activitynotavailableoffline' | translate) + ' ' + ('core.needinternettoaccessit' | translate)" />
-    }
-
-    <!-- Preview mode. -->
-    @if (accessInfo && !accessInfo.cansubmit) {
-        <core-alert-card
-            type="info"
-            [message]="'addon.mod_h5pactivity.previewmode' | translate" />
-    }
-
-    <!-- TODO: Once MDL-85566 is fixed, display trackingdisabled warning if user cannot submit and tracking is disabled. -->
-
-    @if (deployedFile && !playing) {
-        <ion-list>
-            @if (stateMessage) {
-                <ion-item class="ion-text-wrap">
-                    <ion-label>{{ stateMessage | translate }}</ion-label>
-                </ion-item>
+    @let error = unsupportedPackageError();
+    @if (error) {
+        <core-empty-box icon="fas-globe">
+            @if (error.title) {
+                <p class="core-h5p-unsupported-error-title"><strong>{{ error.title }}</strong></p>
             }
 
-            <!-- Button to download the package. -->
-            @if (!downloading && needsDownload) {
-                <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="downloadAndPlayManually($event)">
-                    {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
-                </ion-button>
-            }
+            <p class="core-h5p-unsupported-error-message">{{ error.message }}</p>
+        </core-empty-box>
+    } @else {
 
-            <!-- Download progress. -->
-            @if (downloading) {
-                <ion-item class="ion-text-center">
-                    <ion-label>
-                        <ion-spinner [attr.aria-label]="'core.loading' | translate" />
-                        @if (progressMessage) {
-                            <p class="item-heading">{{ progressMessage | translate }}</p>
-                        }
-                        @if (showPercentage) {
-                            <core-progress-bar [progress]="percentage" [a11yText]="progressMessage" />
-                        }
-                    </ion-label>
-                </ion-item>
-            }
-        </ion-list>
-    }
+        <!-- User tried to play in offline a package that must be played in online. -->
+        @if (triedToPlay && !isOnline() && (!siteCanDownload || hasMissingDependencies)) {
+            <core-alert-card type="warning"
+                [message]="!siteCanDownload
+                    ? ('core.h5p.offlinedisabled' | translate) + ' ' + ('addon.mod_h5pactivity.offlinedisabledwarning' | translate)
+                    : ('core.course.activitynotavailableoffline' | translate) + ' ' + ('core.needinternettoaccessit' | translate)" />
+        }
 
-    @if (playing) {
-        <core-h5p-iframe [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
-            [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
-            [state]="contentState" [component]="component" [componentId]="componentId" [fileTimemodified]="deployedFile?.timemodified" />
+        <!-- Preview mode. -->
+        @if (accessInfo && !accessInfo.cansubmit) {
+            <core-alert-card
+                type="info"
+                [message]="'addon.mod_h5pactivity.previewmode' | translate" />
+        }
+
+        <!-- TODO: Once MDL-85566 is fixed, display trackingdisabled warning if user cannot submit and tracking is disabled. -->
+
+        @if (deployedFile && !playing) {
+            <ion-list>
+                @if (stateMessage) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>{{ stateMessage | translate }}</ion-label>
+                    </ion-item>
+                }
+
+                <!-- Button to download the package. -->
+                @if (!downloading && needsDownload) {
+                    <ion-button class="ion-text-wrap ion-margin" expand="block" (click)="downloadAndPlayManually($event)">
+                        {{ 'addon.mod_h5pactivity.downloadh5pfile' | translate }}
+                    </ion-button>
+                }
+
+                <!-- Download progress. -->
+                @if (downloading) {
+                    <ion-item class="ion-text-center">
+                        <ion-label>
+                            <ion-spinner [attr.aria-label]="'core.loading' | translate" />
+                            @if (progressMessage) {
+                                <p class="item-heading">{{ progressMessage | translate }}</p>
+                            }
+                            @if (showPercentage) {
+                                <core-progress-bar [progress]="percentage" [a11yText]="progressMessage" />
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+            </ion-list>
+        }
+
+        @if (playing) {
+            <core-h5p-iframe [fileUrl]="fileUrl" [displayOptions]="displayOptions" [onlinePlayerUrl]="onlinePlayerUrl"
+                [trackComponent]="trackComponent" [contextId]="h5pActivity?.context" [enableInAppFullscreen]="true" [saveFreq]="saveFreq"
+                [state]="contentState" [component]="component" [componentId]="componentId"
+                [fileTimemodified]="deployedFile?.timemodified" />
+        }
     }
 </core-loading>
 
-<core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
+
+<div collapsible-footer slot="fixed">
+    @if (unsupportedPackageError()) {
+        <ion-button expand="block" class="ion-text-wrap ion-margin" [href]="module.url" core-link [showBrowserWarning]="false">
+            {{ 'core.openinbrowser' | translate }}
+            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
+        </ion-button>
+    }
+    <core-course-module-navigation [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
+</div>

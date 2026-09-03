@@ -2097,6 +2097,8 @@
   "core.h5p.thumbnail": "h5p",
   "core.h5p.title": "h5p",
   "core.h5p.undisclosed": "h5p",
+  "core.h5p.unsupportedinteractivevideomessage": "local_moodlemobileapp",
+  "core.h5p.unsupportedinteractivevideotitle": "local_moodlemobileapp",
   "core.h5p.width": "h5p",
   "core.h5p.year": "h5p",
   "core.h5p.years": "h5p",

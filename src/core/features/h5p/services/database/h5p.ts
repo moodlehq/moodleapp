@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreH5PUnsupportedPackageReason } from '@features/h5p/constants';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
@@ -26,10 +27,12 @@ export const CONTENTS_LIBRARIES_TABLE_NAME = 'h5p_contents_libraries'; // Which 
 export const LIBRARIES_CACHEDASSETS_TABLE_NAME = 'h5p_libraries_cachedassets'; // H5P cached library assets.
 export const MISSING_DEPENDENCIES_TABLE_NAME = 'h5p_missing_dependencies'; // Information about missing dependencies.
 export const MISSING_DEPENDENCIES_PRIMARY_KEYS = ['fileid', 'machinename', 'majorversion', 'minorversion'] as const;
+export const UNSUPPORTED_PACKAGES_TABLE_NAME = 'h5p_unsupported_packages'; // Unsupported H5P packages.
+export const UNSUPPORTED_PACKAGES_PRIMARY_KEY = 'fileid';
 
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'CoreH5PProvider',
-    version: 3,
+    version: 4,
     canBeCleared: [
         CONTENT_TABLE_NAME,
         LIBRARIES_TABLE_NAME,
@@ -37,6 +40,7 @@ export const SITE_SCHEMA: CoreSiteSchema = {
         CONTENTS_LIBRARIES_TABLE_NAME,
         LIBRARIES_CACHEDASSETS_TABLE_NAME,
         MISSING_DEPENDENCIES_TABLE_NAME,
+        UNSUPPORTED_PACKAGES_TABLE_NAME,
     ],
     tables: [
         {
@@ -287,6 +291,34 @@ export const SITE_SCHEMA: CoreSiteSchema = {
             ],
             primaryKeys: [...MISSING_DEPENDENCIES_PRIMARY_KEYS],
         },
+        {
+            name: UNSUPPORTED_PACKAGES_TABLE_NAME,
+            columns: [
+                {
+                    name: 'fileid',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'reason',
+                    type: 'TEXT',
+                    notNull: true,
+                },
+                {
+                    name: 'filetimemodified',
+                    type: 'INTEGER',
+                    notNull: true,
+                },
+                {
+                    name: 'component',
+                    type: 'TEXT',
+                },
+                {
+                    name: 'componentId',
+                    type: 'TEXT',
+                },
+            ],
+            primaryKeys: [UNSUPPORTED_PACKAGES_PRIMARY_KEY],
+        },
     ],
     async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
         if (oldVersion >= 2) {
@@ -380,3 +412,16 @@ export type CoreH5PMissingDependencyDBRecord = {
 };
 
 export type CoreH5PMissingDependencyDBPrimaryKeys = typeof MISSING_DEPENDENCIES_PRIMARY_KEYS[number];
+
+/**
+ * Structure of unsupported H5P package data stored in DB.
+ */
+export type CoreH5PUnsupportedPackageDBRecord = {
+    fileid: string; // Identifier of the package that has an unsupported condition. It will be part of the file url.
+    reason: CoreH5PUnsupportedPackageReason; // Unsupported reason.
+    filetimemodified: number; // Time when the file was last modified.
+    component?: string; // Component related to the package.
+    componentId?: string | number; // Component ID related to the package.
+};
+
+export type CoreH5PUnsupportedPackageDBPrimaryKeys = typeof UNSUPPORTED_PACKAGES_PRIMARY_KEY;

@@ -1087,7 +1087,7 @@ export class CoreUrl {
      * @returns Whether the URL needs a referer.
      */
     static urlNeedsReferer(url: string): boolean {
-        return CoreUrl.isYoutubeURL(url) || CoreUrl.isVimeoVideoUrl(url);
+        return (CorePlatform.isIOS() && CoreUrl.isYoutubeURL(url)) || CoreUrl.isVimeoVideoUrl(url);
     }
 
     /**

@@ -17,9 +17,13 @@ import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { Translate } from '@singletons';
 import { CorePath } from '@static/path';
+import { CoreUrl } from '@static/url';
 import { CoreH5PSemantics } from './content-validator';
 import { CoreH5PCore, CoreH5PLibraryBasicData, CoreH5PMissingLibrary } from './core';
 import { CoreH5PFramework } from './framework';
+import { CorePlatform } from '@services/platform';
+import { CoreH5PUnsupportedPackageError } from './errors/unsupported-package-error';
+import { CoreH5PUnsupportedPackageReason } from '../constants';
 
 /**
  * Equivalent to H5P's H5PValidator class.
@@ -222,6 +226,127 @@ export class CoreH5PValidator {
     }
 
     /**
+     * Check if the package contains any Interactive Video that uses a YouTube source.
+     *
+     * @param mainJsonData Contents of h5p.json file.
+     * @param librariesJsonData JSON data about each library.
+     * @param contentJsonData Contents of content/content.json file.
+     * @returns Whether the package contains at least one Interactive Video with YouTube.
+     */
+    protected hasInteractiveVideoYouTube(
+        mainJsonData: CoreH5PMainJSONData,
+        librariesJsonData: CoreH5PLibrariesJsonData,
+        contentJsonData: unknown,
+    ): boolean {
+        if (!this.packageContainsInteractiveVideo(mainJsonData, librariesJsonData)) {
+            return false;
+        }
+
+        const interactiveVideoConfigs = this.findInteractiveVideoConfigs(contentJsonData);
+
+        return interactiveVideoConfigs.some((interactiveVideoConfig) =>
+            this.interactiveVideoHasYouTubeFile(interactiveVideoConfig));
+    }
+
+    /**
+     * Check whether the package declares Interactive Video as main library or dependency.
+     *
+     * @param mainJsonData Contents of h5p.json file.
+     * @param librariesJsonData JSON data about each library.
+     * @returns Whether the package declares Interactive Video.
+     */
+    protected packageContainsInteractiveVideo(
+        mainJsonData: CoreH5PMainJSONData,
+        librariesJsonData: CoreH5PLibrariesJsonData,
+    ): boolean {
+        if (mainJsonData.mainLibrary === 'H5P.InteractiveVideo') {
+            return true;
+        }
+
+        if (mainJsonData.preloadedDependencies?.some((dependency) => dependency.machineName === 'H5P.InteractiveVideo')) {
+            return true;
+        }
+
+        return Object.values(librariesJsonData).some((library) => library.machineName === 'H5P.InteractiveVideo');
+    }
+
+    /**
+     * Find all Interactive Video config nodes in the content JSON.
+     *
+     * @param contentNode Current node in content JSON.
+     * @returns List of Interactive Video config objects.
+     */
+    protected findInteractiveVideoConfigs(contentNode: unknown): Record<string, unknown>[] {
+        const interactiveVideoConfigs: Record<string, unknown>[] = [];
+
+        if (Array.isArray(contentNode)) {
+            contentNode.forEach((value) => {
+                interactiveVideoConfigs.push(...this.findInteractiveVideoConfigs(value));
+            });
+
+            return interactiveVideoConfigs;
+        }
+
+        if (!contentNode || typeof contentNode !== 'object') {
+            return interactiveVideoConfigs;
+        }
+
+        const node = contentNode as Record<string, unknown>;
+        const interactiveVideoConfig = node.interactiveVideo;
+        if (interactiveVideoConfig && typeof interactiveVideoConfig === 'object' && !Array.isArray(interactiveVideoConfig)) {
+            interactiveVideoConfigs.push(interactiveVideoConfig as Record<string, unknown>);
+        }
+
+        Object.values(node).forEach((value) => {
+            interactiveVideoConfigs.push(...this.findInteractiveVideoConfigs(value));
+        });
+
+        return interactiveVideoConfigs;
+    }
+
+    /**
+     * Check whether an Interactive Video config contains at least one YouTube file source.
+     *
+     * @param interactiveVideoConfig Interactive Video config object.
+     * @returns Whether there is at least one YouTube source.
+     */
+    protected interactiveVideoHasYouTubeFile(interactiveVideoConfig: Record<string, unknown>): boolean {
+        const videoConfig = interactiveVideoConfig.video;
+        if (!videoConfig || typeof videoConfig !== 'object' || Array.isArray(videoConfig)) {
+            return false;
+        }
+
+        const files = (videoConfig as Record<string, unknown>).files;
+        if (!Array.isArray(files)) {
+            return false;
+        }
+
+        return files.some((file) => this.isYouTubeVideoFile(file));
+    }
+
+    /**
+     * Check whether a video file definition points to YouTube.
+     *
+     * @param file Video file definition.
+     * @returns Whether this file points to YouTube.
+     */
+    protected isYouTubeVideoFile(file: unknown): boolean {
+        if (!file || typeof file !== 'object' || Array.isArray(file)) {
+            return false;
+        }
+
+        const fileData = file as Record<string, unknown>;
+        const mime = typeof fileData.mime === 'string' ? fileData.mime.toLowerCase() : '';
+        if (mime.includes('youtube')) {
+            return true;
+        }
+
+        const path = typeof fileData.path === 'string' ? fileData.path : '';
+
+        return !!path && CoreUrl.isYoutubeURL(path);
+    }
+
+    /**
      * Process libraries from an H5P library, getting the required data to save them.
      * This code is inspired on the isValidPackage function in Moodle's H5PValidator.
      * This function won't validate most things because it should've been done by the server already.
@@ -249,6 +374,10 @@ export class CoreH5PValidator {
         editorDependencies.forEach((libString) => {
             delete librariesJsonData[libString];
         });
+
+        if (CorePlatform.isIOS() && this.hasInteractiveVideoYouTube(mainJsonData, librariesJsonData, contentJsonData)) {
+            throw new CoreH5PUnsupportedPackageError(CoreH5PUnsupportedPackageReason.INTERACTIVE_VIDEO_YOUTUBE);
+        }
 
         // Check if there are missing libraries.
         const missingLibraries = this.getMissingLibraries(librariesJsonData);
