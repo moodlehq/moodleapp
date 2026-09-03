@@ -1,0 +1,94 @@
+#!/bin/bash
+#
+# Pre-push checks. Runs a fast subset of the CI pipeline on the code being pushed.
+#
+# Skip it with: git push --no-verify
+
+set -uo pipefail
+
+REMOTE_REF="${1:-origin}"
+
+# Work out the merge base against the upstream branch to know which files are being pushed.
+BASE_BRANCH="$(git symbolic-ref --quiet --short refs/remotes/"$REMOTE_REF"/HEAD 2>/dev/null || echo "$REMOTE_REF/main")"
+BASE="$(git merge-base HEAD "$BASE_BRANCH" 2>/dev/null || true)"
+
+if [ -z "$BASE" ]; then
+    echo "pre-push: could not resolve $BASE_BRANCH, skipping checks."
+    exit 0
+fi
+
+CHANGED_FILES="$(git diff --name-only --diff-filter=ACMR "$BASE" HEAD -- 'src/*' 'gulp/*' 'scripts/*')"
+LINT_FILES="$(echo "$CHANGED_FILES" | grep -E '\.(ts|html)$' || true)"
+
+if [ -z "$LINT_FILES" ]; then
+    echo "pre-push: no lintable changes found, nothing to do."
+    exit 0
+fi
+
+fail() {
+    echo ""
+    echo "❌ pre-push: $1"
+    echo "   Fix the problems above, or bypass with: git push --no-verify"
+    exit 1
+}
+
+# Get issue name from the current branch name.
+ISSUE_NAME="$(git rev-parse --abbrev-ref HEAD | grep -oE '[A-Z]+-[0-9]+')"
+if [ ! -z "$ISSUE_NAME" ]; then
+    # Check all commit messages of the commits to be merged have the following format in the first line:
+    # ISSUE_NAME component: Comment
+    # Max line length: 72 characters
+    COMMITS="$(git log --format=%s "$BASE"..HEAD)"
+    # Discard the commit messages behind after the first merge
+    COMMITS="$(echo "$COMMITS" | sed '/^Merge /,$d')"
+
+    echo "▶ Commits to be checked..."
+    echo "$COMMITS"
+    echo "▶ Checking commit message format for $ISSUE_NAME ..."
+    while IFS= read -r COMMIT; do
+        if [ "${#COMMIT}" -gt 72 ] || ! [[ "$COMMIT" =~ ^"$ISSUE_NAME"[[:space:]][^[:space:]:]+:[[:space:]].+$ ]]; then
+            fail "commit messages must match '$ISSUE_NAME component: Comment' and be at most 72 characters."
+        fi
+    done <<< "$COMMITS"
+fi
+
+echo "▶ Linting changed files..."
+npm run lint --silent -- --quiet $LINT_FILES || fail "lint failed."
+
+# If lang.json or langindex.json is included in the changed files, run the language check.
+if echo "$CHANGED_FILES" | grep -qE 'lang.json|langindex.json'; then
+    echo "▶ Running language check for lang.json..."
+
+    npx gulp lang > /dev/null
+    npm run lang:update-langpacks > /dev/null
+    npx gulp lang > /dev/null # Run language build again after updating langpacks
+    result=$(cat scripts/langindex.json | grep \"TBD\" | wc -l); test $result -eq 0
+    if [ $result -ne 0 ]; then
+        fail "There are lang strings to be decided on langindex.json"
+    fi
+    langcount=`jq -r '. | length' src/assets/lang/en.json`
+    langindexcount=`jq -r '. | length' scripts/langindex.json`
+    if [ $langcount -ne $langindexcount ]; then
+        fail "Lang file has $langcount while langindex $langindexcount"
+    fi
+
+    langkeys=`jq -r 'keys[]' src/assets/lang/en.json`
+    langindex=`jq -r 'keys[]' scripts/langindex.json`
+    found=0
+    for i in $langkeys; do
+        skip=
+        for j in $langindex; do
+            if [ "$i" == "$j" ]; then
+            skip=1
+            break;
+            fi
+        done
+        [[ -n $skip ]] || { echo "$i key not found"; found=$(($found + 1)); }
+    done
+    if [ $found -ne 0 ]; then
+        fail "Found $found missing langkeys"
+    fi
+fi
+
+
+echo "✅ pre-push checks passed."
