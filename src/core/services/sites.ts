@@ -657,9 +657,9 @@ export class CoreSitesProvider {
         }
 
         if (config.maintenanceenabled) {
-            let message = Translate.instant('core.sitemaintenance');
+            let message = `<p>${Translate.instant('core.sitemaintenance')}</p>`;
             if (config.maintenancemessage) {
-                message += config.maintenancemessage;
+                message += `<p>${config.maintenancemessage}</p>`;
             }
 
             throw new CoreLoginError({

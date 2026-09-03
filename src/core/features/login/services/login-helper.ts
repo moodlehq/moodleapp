@@ -804,7 +804,8 @@ export class CoreLoginHelperProvider {
         const siteName = await site?.getSiteName() ?? siteUrl;
 
         await CoreAlerts.show({
-            header: Translate.instant('core.login.unsupportedsite'),
+            header: Translate.instant('core.login.mobileaccessnotenabled'),
+            // The message has changed and site would not be needed, but we keep it for backwards compatibility.
             message: Translate.instant('core.login.unsupportedsitemessage', { site: siteName }),
             buttons: [
                 {
