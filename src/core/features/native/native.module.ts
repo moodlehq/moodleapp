@@ -18,7 +18,6 @@ import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
 import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
-import { Device } from '@awesome-cordova-plugins/device/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -40,6 +39,8 @@ import { Geolocation } from '@features/emulator/services/geolocation';
  * @returns Returns native services.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
+    const { Device } = await import('@services/native/device');
+
     return [
         Badge,
         Camera,
@@ -69,7 +70,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Camera,
         Chooser,
         Clipboard,
-        Device,
         File,
         FileOpener,
         Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
