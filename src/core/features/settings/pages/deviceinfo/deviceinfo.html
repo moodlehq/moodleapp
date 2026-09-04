@@ -120,14 +120,6 @@
                 </ion-label>
             </ion-item>
         }
-        @if (deviceInfo.deviceOs && deviceOsTranslated) {
-            <ion-item (longPress)="copyItemInfo($event)">
-                <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.deviceos' | translate}}</p>
-                    <p>{{ deviceOsTranslated }}</p>
-                </ion-label>
-            </ion-item>
-        }
         @if (deviceInfo.screen) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
@@ -156,18 +148,18 @@
                 }
             </ion-label>
         </ion-item>
-        @if (deviceInfo.cordovaVersion) {
+        @if (deviceInfo.deviceOs && deviceOsTranslated) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.cordovaversion' | translate }}</p>
-                    <p>{{ deviceInfo.cordovaVersion }}</p>
+                    <p class="item-heading">{{ 'core.settings.deviceos' | translate}}</p>
+                    <p>{{ deviceOsTranslated }}</p>
                 </ion-label>
             </ion-item>
         }
         @if (deviceInfo.platform) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.cordovadeviceplatform' | translate }}</p>
+                    <p class="item-heading">{{ 'core.settings.deviceplatform' | translate }}</p>
                     <p>{{ deviceInfo.platform }}</p>
                 </ion-label>
             </ion-item>
@@ -175,7 +167,7 @@
         @if (deviceInfo.osVersion) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.cordovadeviceosversion' | translate }}</p>
+                    <p class="item-heading">{{ 'core.settings.deviceosversion' | translate }}</p>
                     <p>{{ deviceInfo.osVersion }}</p>
                 </ion-label>
             </ion-item>
@@ -183,15 +175,23 @@
         @if (deviceInfo.model) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.cordovadevicemodel' | translate}}</p>
+                    <p class="item-heading">{{ 'core.settings.devicemodel' | translate}}</p>
                     <p>{{ deviceInfo.model }}</p>
+                </ion-label>
+            </ion-item>
+        }
+        @if (deviceInfo.webViewVersion) {
+            <ion-item (longPress)="copyItemInfo($event)">
+                <ion-label class="ion-text-wrap">
+                    <p class="item-heading">{{ 'core.settings.webviewversion' | translate }}</p>
+                    <p>{{ deviceInfo.webViewVersion }}</p>
                 </ion-label>
             </ion-item>
         }
         @if (deviceInfo.uuid) {
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
-                    <p class="item-heading">{{ 'core.settings.cordovadeviceuuid' | translate}}</p>
+                    <p class="item-heading">{{ 'core.settings.deviceuuid' | translate}}</p>
                     <p>{{ deviceInfo.uuid }}</p>
                 </ion-label>
             </ion-item>
