@@ -1214,8 +1214,9 @@ class behat_app extends behat_app_helper {
             case 'cellular':
                 $this->runtime_js("network.setForceConnectionMode('cellular')");
                 break;
-            case 'offline':
-                $this->runtime_js("network.setForceConnectionMode('offline')");
+            case 'offline': // Keeping offline naming for behat because it is clearer.
+            case 'none':
+                $this->runtime_js("network.setForceConnectionMode('none')");
                 break;
             default:
                 $this->runtime_js("network.setForceConnectionMode('unknown')");
