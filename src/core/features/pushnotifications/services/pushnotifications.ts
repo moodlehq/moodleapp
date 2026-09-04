@@ -25,7 +25,7 @@ import { CoreText } from '@static/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { makeSingleton, Badge, Device, Translate, ApplicationInit } from '@singletons';
+import { makeSingleton, Badge, Translate, ApplicationInit } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreEvents } from '@static/events';
 import {
@@ -58,6 +58,7 @@ import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/consta
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNative } from '@features/native/services/native';
+import { CoreNativeDevice } from '@services/native/device';
 
 /**
  * Service to handle push notifications.
@@ -327,19 +328,22 @@ export class CorePushNotificationsProvider {
      *
      * @returns Data.
      */
-    protected getRequiredRegisterData(): CoreUserAddUserDeviceWSParams {
+    protected async getRequiredRegisterData(): Promise<CoreUserAddUserDeviceWSParams> {
         if (!this.pushID) {
             throw new CoreError('Cannot get register data because pushID is not set.');
         }
 
+        const deviceInfo = await CoreNativeDevice.getInfo();
+        const deviceId = await CoreNativeDevice.getId();
+
         return {
             appid:      CoreConstants.CONFIG.app_id,
-            name:       Device.manufacturer || '',
-            model:      Device.model,
-            platform:   `${Device.platform}-fcm`,
-            version:    Device.version,
+            name:       deviceInfo.manufacturer ?? '',
+            model:      deviceInfo.model ?? '',
+            platform:   `${deviceInfo.platform}-fcm`,
+            version:    deviceInfo.osVersion ?? '',
             pushid:     this.pushID,
-            uuid:       Device.uuid,
+            uuid:       deviceId.identifier,
         };
     }
 
@@ -489,10 +493,11 @@ export class CorePushNotificationsProvider {
         }
 
         this.logger.debug(`Unregister device on Moodle: '${site.getId()}'`);
+        const deviceId = await CoreNativeDevice.getId();
 
         const data: CoreUserRemoveUserDeviceWSParams = {
             appid: CoreConstants.CONFIG.app_id,
-            uuid:  Device.uuid,
+            uuid:  deviceId.identifier,
         };
         let response: CoreUserRemoveUserDeviceWSResponse;
 
@@ -526,7 +531,7 @@ export class CorePushNotificationsProvider {
         }
 
         await CorePromiseUtils.ignoreErrors(Promise.all([
-            this.registeredDevicesTables[site.getId()].delete(this.getRequiredRegisterData()),
+            this.registeredDevicesTables[site.getId()].delete(await this.getRequiredRegisterData()),
             this.removePendingUnregister(site.getId()),
         ]));
     }
@@ -666,7 +671,7 @@ export class CorePushNotificationsProvider {
 
         try {
 
-            const data = this.getRequiredRegisterData();
+            const data = await this.getRequiredRegisterData();
             data.publickey = await this.getPublicKeyForSite(site);
 
             const neededActions = await this.getRegisterDeviceActions(data, site, forceUnregister);
