@@ -21,12 +21,17 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreNativeDevice } from '@services/native/device';
 
 /**
  * Initializes various core components asynchronously.
  */
 export default async function(): Promise<void> {
+    // Native plugins initializations.
+    await Promise.all([
+        CoreNativeDevice.initialize(),
+    ]);
+
     await Promise.all([
         CoreConfig.initialize(),
         CoreFilepool.initialize(),
@@ -36,7 +41,8 @@ export default async function(): Promise<void> {
         CoreNetwork.initialize(),
         CoreUpdateManager.initialize(),
         CoreTime.initialize(),
-        CoreKeyboard.initialize(),
+        // @todo Capacitor. Initialize CoreKeyboard when supported.
+        // CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
     ]);
 }
