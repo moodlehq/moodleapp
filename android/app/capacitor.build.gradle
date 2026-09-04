@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-clipboard')
     implementation project(':capacitor-device')
     implementation project(':capacitor-filesystem')
+    implementation project(':capacitor-network')
     implementation project(':capacitor-splash-screen')
     implementation "androidx.core:core:1.6.+"
     implementation "androidx.core:core:1.1.0"

@@ -14,50 +14,41 @@
 
 import { computed, effect, Injectable, Signal, signal } from '@angular/core';
 import { CorePlatform } from '@services/platform';
-import { Network } from '@awesome-cordova-plugins/network/ngx';
+import { ConnectionStatus, Network } from '@capacitor/network';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
 import { CoreHTMLClasses } from '@static/html-classes';
 
-enum CoreNetworkConnection {
-    UNKNOWN = 'unknown',
-    ETHERNET = 'ethernet',
-    WIFI = 'wifi',
-    CELL_2G = '2g',
-    CELL_3G = '3g',
-    CELL_4G = '4g',
-    CELL_5G = '5g',
-    CELL = 'cellular',
-    NONE = 'none',
-}
-
 export enum CoreNetworkConnectionType {
-    UNKNOWN = 'unknown',
+    UNKNOWN = 'unknown', // Considered online.
     WIFI = 'wifi', // Usually a non-metered connection.
     CELL = 'cellular', // Usually a metered connection.
-    OFFLINE = 'offline',
+    OFFLINE = 'none',
 }
 
 /**
  * Service to manage network connections.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreNetworkService extends Network {
+export class CoreNetworkService {
 
-    type!: string;
+    /**
+     * @deprecated Use `connectionType` instead. Type changed grouping CELL_* on CELL and ETHERNET on UNKNOWN.
+     */
+    type = CoreNetworkConnectionType.UNKNOWN;
 
     protected connectObservable = new Subject<'connected'>();
     protected connectStableObservable = new Subject<'connected'>();
     protected disconnectObservable = new Subject<'disconnected'>();
     protected forceConnectionMode?: CoreNetworkConnectionType;
     protected connectStableTimeout?: number;
-    protected readonly online = signal(false);
+    protected readonly online = computed(() => this._connectionType() !== CoreNetworkConnectionType.OFFLINE);
     private readonly _connectionType = signal(CoreNetworkConnectionType.UNKNOWN);
     protected readonly cellularSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.CELL);
     protected readonly wifiSignal = computed<boolean>(() => this.connectionTypeSignal() === CoreNetworkConnectionType.WIFI);
+    protected fireObservable = false;
 
     constructor() {
-        super();
 
         effect(() => {
             const isOnline = this.online();
@@ -76,50 +67,51 @@ export class CoreNetworkService extends Network {
                 CoreHTMLClasses.toggleModeClass('core-online', false);
             }
         });
+
+        effect(() => {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            this.type = this._connectionType();
+        });
+
+        // Fire observable when type or online status change.
+        effect(() => {
+            void this._connectionType();
+            const online = this.online();
+            if (!this.fireObservable) {
+                return;
+            }
+
+            clearTimeout(this.connectStableTimeout);
+
+            if (online) {
+                this.connectObservable.next('connected');
+                this.connectStableTimeout = window.setTimeout(() => {
+                    this.connectStableObservable.next('connected');
+                }, 5000);
+            } else {
+                this.disconnectObservable.next('disconnected');
+            }
+        });
     }
 
     get connectionType(): CoreNetworkConnectionType {
-        CoreNetwork.updateConnectionType();
-
         return this._connectionType();
     }
 
     /**
      * Initialize the service.
      */
-    initialize(): void {
-        this.updateOnline();
+    async initialize(): Promise<void> {
+        try {
+            const status = await Network.getStatus();
+            this.updateConnectionType(status);
 
-        if (CorePlatform.isMobile()) {
-            // We cannot directly listen to onChange because it depends on
-            // onConnect and onDisconnect that have been already overridden.
-            super.onConnect().subscribe(() => {
-                this.fireObservable();
+            await Network.addListener('networkStatusChange', (status: ConnectionStatus) => {
+                this.fireObservable = true; // Do not fire observable if it changes during startup.
+                this.updateConnectionType(status);
             });
-            super.onDisconnect().subscribe(() => {
-                this.fireObservable();
-            });
-        } else {
-            // Match the Cordova constants to the ones used in the app.
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (<any> window).Connection = {
-                UNKNOWN: CoreNetworkConnection.UNKNOWN, // eslint-disable-line @typescript-eslint/naming-convention
-                ETHERNET: CoreNetworkConnection.ETHERNET, // eslint-disable-line @typescript-eslint/naming-convention
-                WIFI: CoreNetworkConnection.WIFI, // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_2G: CoreNetworkConnection.CELL_2G, // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_3G: CoreNetworkConnection.CELL_3G, // eslint-disable-line @typescript-eslint/naming-convention
-                CELL_4G: CoreNetworkConnection.CELL_4G, // eslint-disable-line @typescript-eslint/naming-convention
-                CELL: CoreNetworkConnection.CELL, // eslint-disable-line @typescript-eslint/naming-convention
-                NONE: CoreNetworkConnection.NONE, // eslint-disable-line @typescript-eslint/naming-convention
-            };
-
-            window.addEventListener('online', () => {
-                this.fireObservable();
-            }, false);
-
-            window.addEventListener('offline', () => {
-                this.fireObservable();
-            }, false);
+        } catch {
+            // Ignore errors.
         }
 
         this.onPlaformReady();
@@ -141,8 +133,9 @@ export class CoreNetworkService extends Network {
      * @param value Value to set.
      */
     setForceConnectionMode(value: CoreNetworkConnectionType): void {
+        this.fireObservable = true;
         this.forceConnectionMode = value;
-        this.fireObservable();
+        this.updateConnectionType();
     }
 
     /**
@@ -155,75 +148,26 @@ export class CoreNetworkService extends Network {
     }
 
     /**
-     * Updates online status.
-     */
-    protected updateOnline(): void {
-        // Recalculate connection type.
-        CoreNetwork.updateConnectionType();
-
-        if (this.forceConnectionMode === CoreNetworkConnectionType.OFFLINE) {
-            this.online.set(false);
-
-            return;
-        }
-
-        // We cannot use navigator.onLine because it has issues in some devices.
-        // See https://bugs.chromium.org/p/chromium/issues/detail?id=811122
-        if (!CorePlatform.isAndroid()) {
-            this.online.set(navigator.onLine);
-
-            return;
-        }
-
-        const type = this._connectionType();
-        let online = type !== null && type !== CoreNetworkConnectionType.OFFLINE && type !== CoreNetworkConnectionType.UNKNOWN;
-
-        // Double check we are not online because we cannot rely 100% in Cordova APIs.
-        if (!online && navigator.onLine) {
-            online = true;
-        }
-
-        this.online.set(online);
-    }
-
-    /**
      * Check and update the connection type.
+     *
+     * @param status Connection status.
      */
-    protected updateConnectionType(): void {
+    protected updateConnectionType(status?: ConnectionStatus): void {
         if (this.forceConnectionMode !== undefined) {
             this._connectionType.set(this.forceConnectionMode);
 
             return;
         }
 
-        if (CorePlatform.isMobile()) {
-            switch (this.type) {
-                case CoreNetworkConnection.WIFI:
-                case CoreNetworkConnection.ETHERNET:
-                    this._connectionType.set(CoreNetworkConnectionType.WIFI);
+        if (status?.connected === false) {
+            this._connectionType.set(CoreNetworkConnectionType.OFFLINE);
 
-                    return;
-                case CoreNetworkConnection.CELL:
-                case CoreNetworkConnection.CELL_2G:
-                case CoreNetworkConnection.CELL_3G:
-                case CoreNetworkConnection.CELL_4G:
-                case CoreNetworkConnection.CELL_5G:
-                    this._connectionType.set(CoreNetworkConnectionType.CELL);
-
-                    return;
-                case CoreNetworkConnection.NONE:
-                    this._connectionType.set(CoreNetworkConnectionType.OFFLINE);
-
-                    return;
-                default:
-                case CoreNetworkConnection.UNKNOWN:
-                    this._connectionType.set(CoreNetworkConnectionType.UNKNOWN);
-
-                    return;
-            }
+            return;
         }
 
-        this._connectionType.set(this.online() ? CoreNetworkConnectionType.WIFI : CoreNetworkConnectionType.OFFLINE);
+        const type = status?.connectionType as CoreNetworkConnectionType ?? this._connectionType();
+
+        this._connectionType.set(type);
     }
 
     /**
@@ -241,7 +185,7 @@ export class CoreNetworkService extends Network {
      * @returns Signal.
      */
     get onlineSignal(): Signal<boolean> {
-        return this.online.asReadonly();
+        return this.online;
     }
 
     /**
@@ -283,23 +227,6 @@ export class CoreNetworkService extends Network {
      */
     onDisconnect(): Observable<'disconnected'> {
         return this.disconnectObservable;
-    }
-
-    /**
-     * Fires the correct observable depending on the connection status.
-     */
-    protected fireObservable(): void {
-        clearTimeout(this.connectStableTimeout);
-        this.updateOnline();
-
-        if (this.online()) {
-            this.connectObservable.next('connected');
-            this.connectStableTimeout = window.setTimeout(() => {
-                this.connectStableObservable.next('connected');
-            }, 5000);
-        } else {
-            this.disconnectObservable.next('disconnected');
-        }
     }
 
     /**
