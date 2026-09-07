@@ -7,6 +7,7 @@ For more information about upgrading, read the official documentation: https://m
 
 - The method CoreWS.sendHTTPRequest no longer supports 'upload' or 'download' HTTP methods. Because of that, the 'filePath' and 'name' options have been removed. To download or upload a file, use CoreWS.downloadFile or CoreWS.uploadFile.
 - The method CoreWS.sendHTTPRequest no longer supports 'utf8' and 'multipart' serializers. Data is always sent either in JSON format or in urlencoded format.
+ - Due to the Capacitor migration, navigator.splashcreen no longer exists. You can use the exported SplashScreen instance instead, but it's deprecated and will stop working in the future. Plugins shouldn't control the splash screen.
 
 5.3.0
 =====
