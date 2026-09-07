@@ -27,7 +27,6 @@ import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
-import { SplashScreen } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
@@ -56,7 +55,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         MediaCapture,
         Push,
         QRScanner,
-        SplashScreen,
         SQLite,
         StatusBar,
         WebIntent,
@@ -81,7 +79,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         MediaCapture,
         Push,
         QRScanner,
-        SplashScreen,
         SQLite,
         StatusBar,
         WebIntent,

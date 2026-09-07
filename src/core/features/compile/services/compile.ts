@@ -133,6 +133,7 @@ import {
     getSitePluginsServices,
 } from '@features/siteplugins/siteplugins.module';
 import { CoreError } from '@classes/errors/error';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 /**
  * Service to provide functionalities regarding compiling dynamic HTML and Javascript.
@@ -335,6 +336,8 @@ export class CoreCompileProvider {
         for (const name in this.exportedObjects) {
             instance[name] = this.exportedObjects[name];
         }
+
+        instance['SplashScreen'] = SplashScreen; // @deprecated since 6.0. Plugins shouldn't control the splash screen.
     }
 
     /**

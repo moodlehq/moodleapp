@@ -10,6 +10,11 @@ const config: CapacitorConfig = {
     androidScheme: 'http',
     iosScheme: 'moodleappfs',
   },
+  plugins: {
+    SplashScreen: {
+      launchAutoHide: false,
+    },
+  },
   cordova: {
     accessOrigins: ['*'],
     preferences: {

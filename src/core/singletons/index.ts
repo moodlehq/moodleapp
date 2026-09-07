@@ -48,7 +48,6 @@ import { Keyboard as KeyboardService } from '@awesome-cordova-plugins/keyboard/n
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture as MediaCaptureService } from '@awesome-cordova-plugins/media-capture/ngx';
 import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-bar/ngx';
-import { SplashScreen as SplashScreenService } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
 
@@ -178,10 +177,6 @@ export const StatusBar = makeSingleton(StatusBarService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
-/**
- * @deprecated since 5.2. Use navigator.splashscreen directly.
- */
-export const SplashScreen = makeSingleton(SplashScreenService);
 
 export const Camera = makeSingleton(CameraService);
 
