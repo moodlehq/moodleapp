@@ -9,7 +9,7 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-
+    implementation project(':capacitor-splash-screen')
     implementation "androidx.core:core:1.6.+"
     implementation "androidx.core:core:1.1.0"
     implementation "androidx.webkit:webkit:1.4.0"

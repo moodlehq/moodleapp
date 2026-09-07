@@ -28,6 +28,7 @@ import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@static/wait';
 import { CoreOpener } from '@static/opener';
 import { BackButtonPriority } from '@/core/constants';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 register();
 
@@ -134,7 +135,7 @@ export class AppComponent implements OnInit, AfterViewInit {
             await CorePlatform.ready();
 
             this.logger.debug('Hide splash screen');
-            navigator.splashscreen?.hide();
+            SplashScreen.hide();
             this.setSystemUIColorsAfterSplash();
         });
     }

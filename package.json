@@ -73,6 +73,7 @@
         "@capacitor/android": "^8.5.2",
         "@capacitor/core": "^8.5.2",
         "@capacitor/ios": "^8.5.2",
+        "@capacitor/splash-screen": "^8.0.2",
         "@ionic/angular": "^8.8.19",
         "@ionic/cordova-builders": "^12.3.0",
         "@moodlehq/cordova-plugin-camera": "7.0.0-moodle.1",
