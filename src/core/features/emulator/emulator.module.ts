@@ -17,7 +17,7 @@ import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreEmulatorHelper } from './services/emulator-helper';
 
 // Ionic Native services.
-import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camera';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
@@ -25,7 +25,7 @@ import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
-import { CameraMock } from './services/camera';
+import { createCameraMock } from './services/camera';
 import { FilesystemMock } from './services/filesystem';
 import { FileOpenerMock } from './services/file-opener';
 import { InAppBrowserMock } from './services/inappbrowser';
@@ -41,10 +41,10 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
 import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
 
 /**
- * This module handles the emulation of Cordova plugins in browser and desktop.
+ * This module handles the emulation of Capacitor plugins in browser and desktop.
  *
  * It includes the "mock" of all the Ionic Native services that should be supported in browser and desktop,
- * otherwise those features would only work in a Cordova environment.
+ * otherwise those features would only work in a Capacitor environment.
  *
  * This module also determines if the app should use the original service or the mock. In each of the "useFactory"
  * functions we check if the app is running in mobile or not, and then provide the right service to use.
@@ -52,8 +52,8 @@ import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/nati
 @NgModule({
     providers: [
         {
-            provide: Camera,
-            useFactory: (): Camera => CorePlatform.isMobile() ? new Camera() : new CameraMock(),
+            provide: CAPACITOR_CAMERA,
+            useFactory: () => CorePlatform.isMobile() ? resolveCapacitorCamera() : createCameraMock(),
         },
         {
             provide: CAPACITOR_FILESYSTEM,
