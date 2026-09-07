@@ -37,7 +37,6 @@ import {
 } from '@ionic/angular';
 
 import { Badge as BadgeService } from '@awesome-cordova-plugins/badge/ngx';
-import { Camera as CameraService } from '@awesome-cordova-plugins/camera/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
@@ -51,6 +50,7 @@ import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-inte
 import { TranslateService } from '@ngx-translate/core';
 
 import { CoreApplicationInitStatus } from '@classes/application-init-status';
+import { CAPACITOR_CAMERA } from '@services/native/camera';
 import { CAPACITOR_FILESYSTEM } from '@services/native/filesystem';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
@@ -174,9 +174,8 @@ export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
 
-export const Camera = makeSingleton(CameraService);
-
 // Convert Capacitor classes to singletons to be able to provide mocks for webapp.
+export const Camera = makeSingleton(CAPACITOR_CAMERA);
 export const Filesystem = makeSingleton(CAPACITOR_FILESYSTEM);
 
 // Convert some Angular and Ionic injectables to singletons.

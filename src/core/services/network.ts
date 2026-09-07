@@ -33,7 +33,7 @@ export enum CoreNetworkConnectionType {
 export class CoreNetworkService {
 
     /**
-     * @deprecated Use `connectionType` instead. Type changed grouping CELL_* on CELL and ETHERNET on UNKNOWN.
+     * @deprecated since 6.0. Use `connectionType` instead. Type changed grouping CELL_* on CELL and ETHERNET on UNKNOWN.
      */
     type = CoreNetworkConnectionType.UNKNOWN;
 
