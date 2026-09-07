@@ -13,9 +13,10 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { Camera, CoreMediaFile } from '@services/native/camera';
 
 import { CoreEmulatorCaptureHelper } from './capture-helper';
+import { RecordVideoOptions, TakePhotoOptions } from '@capacitor/camera';
 
 /**
  * Emulates the Cordova Camera plugin in browser.
@@ -24,24 +25,17 @@ import { CoreEmulatorCaptureHelper } from './capture-helper';
 export class CameraMock extends Camera {
 
     /**
-     * Remove intermediate image files that are kept in temporary storage after calling camera.getPicture.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cleanup(): Promise<any> {
-        // This function is iOS only, nothing to do.
-        return Promise.resolve();
+    async takePhoto(options: TakePhotoOptions): Promise<CoreMediaFile> {
+        return CoreEmulatorCaptureHelper.captureMedia('image', options);
     }
 
     /**
-     * Take a picture.
-     *
-     * @param options Options that you want to pass to the camera.
-     * @returns Promise resolved when captured.
+     * @inheritdoc
      */
-    getPicture(options: CameraOptions): Promise<string> {
-        return CoreEmulatorCaptureHelper.captureMedia('image', options);
+    async recordVideo(options: RecordVideoOptions): Promise<CoreMediaFile> {
+        return CoreEmulatorCaptureHelper.captureMedia('video', options);
     }
 
 }

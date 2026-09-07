@@ -13,12 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import {
-    MediaCapture,
-    CaptureImageOptions,
-    CaptureVideoOptions,
-    MediaFile,
-} from '@awesome-cordova-plugins/media-capture/ngx';
+import { MediaCapture, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreEmulatorCaptureHelper } from './capture-helper';
 
@@ -31,21 +26,43 @@ export class MediaCaptureMock extends MediaCapture {
     /**
      * Start the camera application and return information about captured image files.
      *
-     * @param options Options.
      * @returns Promise resolved when captured.
+     * @deprecated since 6.0. Use Camera.takePhoto instead.
      */
-    captureImage(options: CaptureImageOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.captureMedia('captureimage', options);
+    async captureImage(): Promise<MediaFile[]> {
+        const media = await CoreEmulatorCaptureHelper.captureMedia('image');
+
+        return [{
+            name: media.fullPath.split('/').pop() || '',
+            fullPath: media.fullPath,
+            type: media.format,
+            lastModifiedDate: new Date(),
+            size: media.size || 0,
+            getFormatData: (): void => {
+                // Nothing to do.
+            },
+        }];
     }
 
     /**
      * Start the video recorder application and return information about captured video clip files.
      *
-     * @param options Options.
      * @returns Promise resolved when captured.
+     * @deprecated since 6.0. Use Camera.recordVideo instead.
      */
-    captureVideo(options: CaptureVideoOptions): Promise<MediaFile[]> {
-        return CoreEmulatorCaptureHelper.captureMedia('video', options);
+    async captureVideo(): Promise<MediaFile[]> {
+        const media = await CoreEmulatorCaptureHelper.captureMedia('video');
+
+        return [{
+            name: media.fullPath.split('/').pop() || '',
+            fullPath: media.fullPath,
+            type: media.format,
+            lastModifiedDate: new Date(),
+            size: media.size || 0,
+            getFormatData: (): void => {
+                // Nothing to do.
+            },
+        }];
     }
 
 }

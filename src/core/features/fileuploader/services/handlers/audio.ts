@@ -20,7 +20,7 @@ import { CoreArray } from '@static/array';
 import { makeSingleton } from '@singletons';
 import { CoreFileUploaderHandler, CoreFileUploaderHandlerData, CoreFileUploaderHandlerResult } from '../fileuploader-delegate';
 import { CoreFileUploaderHelper } from '../fileuploader-helper';
-import { CoreFileUploader } from '../fileuploader';
+import { CoreCaptureMedia } from '../capture-media';
 
 /**
  * Handler to record an audio to upload it.
@@ -42,7 +42,7 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
      * @inheritdoc
      */
     getSupportedMimetypes(mimetypes: string[]): string[] {
-        if (CoreFileUploader.canUseInAppAudioRecorder()) {
+        if (CoreCaptureMedia.canUseInAppAudioRecorder()) {
             // The in-app audio recorder uses mp3.
             // Only accept mp3 mimetype to avoid displaying the handler if other audio types are accepted but mp3 is not.
             return CoreArray.filterByRegexp(mimetypes, /^audio\/mp3$/);
