@@ -1,7 +1,8 @@
 {
   "name": "moodlemobile",
   "integrations": {
-    "cordova": {}
+    "cordova": {},
+    "capacitor": {}
   },
   "type": "angular",
   "hooks": {
