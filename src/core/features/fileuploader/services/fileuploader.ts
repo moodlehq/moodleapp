@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { CameraOptions, CoreNativeCamera } from '@services/native/camera';
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { MediaFile, CaptureError, CaptureVideoOptions } from '@awesome-cordova-plugins/media-capture/ngx';
+import { MediaFile, CaptureError } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -26,16 +26,16 @@ import { CoreMimetype } from '@static/mimetype';
 import { CoreTime } from '@static/time';
 import { CoreUtils } from '@static/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
-import { makeSingleton, Translate, MediaCapture, Camera } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';
-import { CoreModals } from '@services/overlays/modals';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreBytesConstants } from '@/core/constants';
+import { CoreCaptureMedia } from './capture-media';
 
 /**
  * File upload options.
@@ -59,8 +59,17 @@ export class CoreFileUploaderProvider {
     protected logger: CoreLogger;
 
     // Observers to notify when a media file starts/stops being recorded/selected.
+    /**
+     * @deprecated since 6.0. Not used anymore.
+     */
     onGetPicture: Subject<boolean> = new Subject<boolean>();
+    /**
+     * @deprecated since 6.0. Not used anymore.
+     */
     onAudioCapture: Subject<boolean> = new Subject<boolean>();
+    /**
+     * @deprecated since 6.0. Not used anymore.
+     */
     onVideoCapture: Subject<boolean> = new Subject<boolean>();
 
     constructor() {
@@ -136,6 +145,7 @@ export class CoreFileUploaderProvider {
      * Check whether the in-app audio recorder can be used.
      *
      * @returns Whether the in-app audio recorder can be used.
+     * @deprecated since 6.0. Use CoreCaptureMedia.canUseInAppAudioRecorder instead.
      */
     canUseInAppAudioRecorder(): boolean {
         return CorePlatform.supportsMediaCapture() && CorePlatform.supportsWebAssembly();
@@ -145,21 +155,16 @@ export class CoreFileUploaderProvider {
      * Start the audio recorder application and return information about captured audio clip files.
      *
      * @returns Promise resolved with the result.
+     * @deprecated since 6.0. Use CoreCaptureMedia.captureAudio instead.
      */
     async captureAudio(): Promise<CoreFileUploaderAudioRecording[] | MediaFile[] | CaptureError> {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         this.onAudioCapture.next(true);
 
         try {
-            if (!this.canUseInAppAudioRecorder()) {
-                const media = await MediaCapture.captureAudio({ limit: 1 });
-
-                return media;
-            }
-
-            const recording = await this.captureAudioInApp();
-
-            return [recording];
+            return await CoreCaptureMedia.captureAudio();
         } finally {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             this.onAudioCapture.next(false);
         }
     }
@@ -168,32 +173,37 @@ export class CoreFileUploaderProvider {
      * Record an audio file without using an external app.
      *
      * @returns Promise resolved with the file.
+     * @deprecated since 6.0. Use CoreCaptureMedia.captureAudio instead.
      */
     async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
-        const { CoreFileUploaderAudioRecorderComponent } =
-            await import('@features/fileuploader/components/audio-recorder/audio-recorder.component');
-
-        const recording = await CoreModals.openSheet(CoreFileUploaderAudioRecorderComponent);
-
-        if (!recording) {
-            throw new Error('Recording missing from audio capture');
-        }
-
-        return recording;
+        return await CoreCaptureMedia.captureAudioInApp();
     }
 
     /**
      * Start the video recorder application and return information about captured video clip files.
      *
-     * @param options Options.
      * @returns Promise resolved with the result.
+     * @deprecated since 6.0. Use CoreCaptureMedia.captureVideo instead.
      */
-    async captureVideo(options: CaptureVideoOptions): Promise<MediaFile[] | CaptureError> {
+    async captureVideo(): Promise<MediaFile[] | CaptureError> {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         this.onVideoCapture.next(true);
 
         try {
-            return await MediaCapture.captureVideo(options);
+            const media = await CoreCaptureMedia.captureVideo();
+
+            return [{
+                name: media.fullPath.split('/').pop() || '',
+                fullPath: media.fullPath,
+                type: media.format,
+                lastModifiedDate: new Date(),
+                size: media.size || 0,
+                getFormatData: (): void => {
+                    // Nothing to do.
+                },
+            }];
         } finally {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             this.onVideoCapture.next(false);
         }
     }
@@ -346,29 +356,12 @@ export class CoreFileUploaderProvider {
      *
      * @param mediaFile File object to upload.
      * @returns Options.
+     *
+     * @deprecated since 6.0. Not to be used anymore.
      */
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     getMediaUploadOptions(mediaFile: MediaFile | CoreFileUploaderAudioRecording): CoreFileUploaderOptions {
-        const options: CoreFileUploaderOptions = {};
-        let filename = mediaFile.name;
-
-        if (!filename.match(/_\d{14}(\..*)?$/)) {
-            // Add a timestamp to the filename to make it unique.
-            const split = filename.split('.');
-            split[0] += `_${CoreTime.readableTimestamp()}`;
-            filename = split.join('.');
-        }
-
-        options.fileName = filename;
-        options.deleteAfterUpload = true;
-        if (mediaFile.type) {
-            options.mimeType = mediaFile.type;
-        } else {
-            options.mimeType = CoreMimetype.getMimeType(
-                CoreMimetype.getFileExtension(options.fileName),
-            );
-        }
-
-        return options;
+        return {};
     }
 
     /**
@@ -376,11 +369,15 @@ export class CoreFileUploaderProvider {
      *
      * @param options Options.
      * @returns Promise resolved with the result.
+     * @deprecated since 5.3. Use Camera.takePhoto or Camera.chooseFromGallery instead.
      */
     getPicture(options: CameraOptions): Promise<string> {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         this.onGetPicture.next(true);
 
-        return Camera.getPicture(options).finally(() => {
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        return CoreNativeCamera.getPicture(options).finally(() => {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
             this.onGetPicture.next(false);
         });
     }

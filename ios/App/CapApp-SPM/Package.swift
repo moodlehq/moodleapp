@@ -12,10 +12,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.2"),
+        .package(name: "CapacitorCamera", path: "../../../node_modules/@capacitor/camera"),
         .package(name: "CapacitorClipboard", path: "../../../node_modules/@capacitor/clipboard"),
         .package(name: "CapacitorDevice", path: "../../../node_modules/@capacitor/device"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/@capacitor/splash-screen"),
-        .package(name: "MoodlehqCordovaPluginCamera", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginCamera"),
         .package(name: "MoodlehqCordovaPluginChooser", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginChooser"),
         .package(name: "MoodlehqCordovaPluginFileOpener", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginFileOpener"),
         .package(name: "MoodlehqCordovaPluginFileTransfer", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginFileTransfer"),
@@ -41,10 +41,10 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorCamera", package: "CapacitorCamera"),
                 .product(name: "CapacitorClipboard", package: "CapacitorClipboard"),
                 .product(name: "CapacitorDevice", package: "CapacitorDevice"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
-                .product(name: "MoodlehqCordovaPluginCamera", package: "MoodlehqCordovaPluginCamera"),
                 .product(name: "MoodlehqCordovaPluginChooser", package: "MoodlehqCordovaPluginChooser"),
                 .product(name: "MoodlehqCordovaPluginFileOpener", package: "MoodlehqCordovaPluginFileOpener"),
                 .product(name: "MoodlehqCordovaPluginFileTransfer", package: "MoodlehqCordovaPluginFileTransfer"),

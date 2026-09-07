@@ -37,7 +37,6 @@ import {
 } from '@ionic/angular';
 
 import { Badge as BadgeService } from '@awesome-cordova-plugins/badge/ngx';
-import { Camera as CameraService } from '@awesome-cordova-plugins/camera/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -174,8 +173,6 @@ export const StatusBar = makeSingleton(StatusBarService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
-
-export const Camera = makeSingleton(CameraService);
 
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);
