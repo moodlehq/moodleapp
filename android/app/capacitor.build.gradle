@@ -12,11 +12,6 @@ dependencies {
 
     implementation "androidx.core:core:1.6.+"
     implementation "androidx.core:core:1.1.0"
-    implementation "androidx.core:core:1.6.+"
-    implementation "me.leolin:ShortcutBadger:1.1.22@aar"
-    implementation "com.google.firebase:firebase-messaging:23.+"
-    implementation "com.goterl:lazysodium-android:5.2.0@aar"
-    implementation "net.java.dev.jna:jna:5.17.0@aar"
     implementation "androidx.webkit:webkit:1.4.0"
     implementation "androidx.core:core:1.6.+"
     implementation "com.android.installreferrer:installreferrer:2.2"
