@@ -16,7 +16,7 @@ import { Injectable, Signal, signal } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 
-import { makeSingleton, StatusBar } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CorePlatform } from '@services/platform';
 
@@ -156,13 +156,14 @@ export class CoreScreenService {
             return;
         }
 
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                StatusBar.hide();
-            } else {
-                StatusBar.show();
-            }
-        });
+        // @todo Capacitor
+        // document.addEventListener('fullscreenchange', () => {
+        //     if (document.fullscreenElement) {
+        //         StatusBar.hide();
+        //     } else {
+        //         StatusBar.show();
+        //     }
+        // });
     }
 
     /**
