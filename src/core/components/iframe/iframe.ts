@@ -29,7 +29,7 @@ import {
 
 import { CoreUrl } from '@static/url';
 import { CoreIframe } from '@static/iframe';
-import { Router, StatusBar, Translate } from '@singletons';
+import { Router, Translate } from '@singletons';
 import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -444,11 +444,12 @@ export class CoreIframeComponent implements OnDestroy {
             this.fullscreen.set(!this.fullscreen());
         }
 
-        if (this.fullscreen()) {
-            StatusBar.hide();
-        } else {
-            StatusBar.show();
-        }
+        // @todo Capacitor
+        // if (this.fullscreen()) {
+        //     StatusBar.hide();
+        // } else {
+        //     StatusBar.show();
+        // }
 
         if (this.style) {
             // Done this way because of the shadow DOM.
