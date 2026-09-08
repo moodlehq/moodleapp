@@ -37,7 +37,6 @@ import {
 } from '@services/database/local-notifications';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { Push } from '@features/native/plugins';
 import { AsyncInstance, asyncInstance } from '@/core/utils/async-instance';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
@@ -45,7 +44,6 @@ import { CoreSites } from './sites';
 import { CoreNavigator } from './navigator';
 import { CoreWait } from '@static/wait';
 import { CoreAlerts } from './overlays/alerts';
-import { AndroidNotificationPriority } from '@features/native/constants';
 
 /**
  * Service to handle local notifications.
@@ -321,15 +319,16 @@ export class CoreLocalNotificationsProvider {
             return;
         }
 
+        // @todo Capacitor
         // @todo: The LocalNotification plugin now allows creating the channel, but the awesome-cordova-plugins
         // wrapper doesn't have the method yet. Continue using the Push plugin for now.
-        await Push.createChannel({
-            id: 'default-channel-id',
-            description: Translate.instant('addon.calendar.calendarreminders'),
-            importance: AndroidNotificationPriority.HIGH,
-        }).catch((error) => {
-            this.logger.error('Error changing channel name', error);
-        });
+        // await Push.createChannel({
+        //     id: 'default-channel-id',
+        //     description: Translate.instant('addon.calendar.calendarreminders'),
+        //     importance: AndroidNotificationPriority.HIGH,
+        // }).catch((error) => {
+        //     this.logger.error('Error changing channel name', error);
+        // });
     }
 
     /**
