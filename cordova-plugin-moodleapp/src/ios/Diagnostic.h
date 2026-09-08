@@ -6,7 +6,7 @@
  *  Copyright (c) 2012 AVANTIC ESTUDIO DE INGENIEROS
  */
 
-#import <Cordova/Cordova.h>
+#import <Cordova/CDV.h>
 #import <Cordova/CDVPlugin.h>
 #import <WebKit/WebKit.h>
 
