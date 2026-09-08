@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreAppDB, CoreAppSchema } from './app-db';
 import { CoreEvents } from '@static/events';
 import { SQLiteDB } from '@classes/sqlitedb';
-import { makeSingleton, StatusBar } from '@singletons';
+import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreColors } from '@static/colors';
 import { CoreRedirectPayload } from './navigator';
@@ -258,7 +258,8 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        StatusBar.backgroundColorByHexString(color);
+        // @todo Capacitor
+        // StatusBar.backgroundColorByHexString(color);
     }
 
     /**
@@ -278,8 +279,8 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
+        // @todo Capacitor
+        // (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
     }
 
     /**
