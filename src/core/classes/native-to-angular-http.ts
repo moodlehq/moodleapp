@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { HttpResponse as AngularHttpResponse, HttpHeaders } from '@angular/common/http';
-import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http/ngx';
+import { type HttpResponse as NativeHttpResponse } from '@capacitor/core';
 
-const HTTP_STATUS_MESSAGES = {
+const HTTP_STATUS_MESSAGES: Record<number, string> = {
     100: 'Continue',
     101: 'Switching Protocol',
     102: 'Processing',
@@ -82,7 +82,7 @@ const HTTP_STATUS_MESSAGES = {
 };
 
 /**
- * Class that adapts a Cordova plugin http response to an Angular http response.
+ * Class that adapts a native HTTP response to an Angular HTTP response.
  */
 export class CoreNativeToAngularHttpResponse<T> extends AngularHttpResponse<T> {
 
