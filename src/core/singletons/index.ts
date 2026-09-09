@@ -42,7 +42,6 @@ import { Clipboard as ClipboardService } from '@awesome-cordova-plugins/clipboar
 import { Device as DeviceService } from '@awesome-cordova-plugins/device/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
-import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Keyboard as KeyboardService } from '@awesome-cordova-plugins/keyboard/ngx';
@@ -175,7 +174,6 @@ export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
-export const NativeHttp = makeSingleton(HTTP);
 export const StatusBar = makeSingleton(StatusBarService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);

@@ -13,10 +13,15 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { HttpResponse, HttpParams, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
 import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-import { HTTPResponse as NativeHttpResponse } from '@awesome-cordova-plugins/http/ngx';
+import {
+    CapacitorHttp,
+    HttpResponse as NativeHttpResponse,
+    CapacitorException,
+    HttpOptions as NativeHttpOptions,
+} from '@capacitor/core';
 import { Md5 } from 'ts-md5';
 import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -29,7 +34,7 @@ import { CoreText } from '@static/text';
 import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, Http, NativeHttp } from '@singletons';
+import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -554,53 +559,59 @@ export class CoreWSProvider {
                 };
 
             if (CorePlatform.isMobile()) {
-                switch (data.status) {
-                    case NativeHttp.ErrorCode.SSL_EXCEPTION:
-                        options.debug = {
-                            code: 'invalidcertificate',
-                            details: Translate.instant('core.certificaterror', {
-                                details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
-                            }),
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
-                        options.debug = {
-                            code: 'servernotfound',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Server could not be found',
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.TIMEOUT:
-                        options.debug = {
-                            code: 'requesttimeout',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request timed out',
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.UNSUPPORTED_URL:
-                        options.debug = {
-                            code: 'unsupportedurl',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Url not supported',
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.NOT_CONNECTED:
-                        options.debug = {
-                            code: 'connectionerror',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error)
-                                ?? 'Connection error, is network available?',
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.ABORTED:
-                        options.debug = {
-                            code: 'requestaborted',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request aborted',
-                        };
-                        break;
-                    case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
-                        options.debug = {
-                            code: 'requestprocessingfailed',
-                            details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request processing failed',
-                        };
-                        break;
-                }
+                // @todo Capacitor. In Cordova we could easily detect the types of errors, but in Capacitor we receive the name
+                // of the class (Android) or the error domain (iOS). E.g. SSLHandshakeException for Android and NSURLErrorDomain
+                // for iOS. The iOS error can mean other network issues, not just certificate errors, so we cannot keep the
+                // error handling as simple as in Cordova. We opened a feature request, see:
+                // https://outsystems.canny.io/capacitor-feature-requests/p/expose-more-detailed-information-for-native-http-errors
+
+                // switch (data.status) {
+                //     case NativeHttp.ErrorCode.SSL_EXCEPTION:
+                //         options.debug = {
+                //             code: 'invalidcertificate',
+                //             details: Translate.instant('core.certificaterror', {
+                //                 details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Invalid certificate',
+                //             }),
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.SERVER_NOT_FOUND:
+                //         options.debug = {
+                //             code: 'servernotfound',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Server could not be found',
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.TIMEOUT:
+                //         options.debug = {
+                //             code: 'requesttimeout',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request timed out',
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.UNSUPPORTED_URL:
+                //         options.debug = {
+                //             code: 'unsupportedurl',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Url not supported',
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.NOT_CONNECTED:
+                //         options.debug = {
+                //             code: 'connectionerror',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error)
+                //                 ?? 'Connection error, is network available?',
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.ABORTED:
+                //         options.debug = {
+                //             code: 'requestaborted',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request aborted',
+                //         };
+                //         break;
+                //     case NativeHttp.ErrorCode.POST_PROCESSING_FAILED:
+                //         options.debug = {
+                //             code: 'requestprocessingfailed',
+                //             details: CoreErrorHelper.getErrorMessageFromError(data.error) ?? 'Request processing failed',
+                //         };
+                //         break;
+                // }
             }
 
             if (!options.debug) {
@@ -1182,7 +1193,7 @@ export class CoreWSProvider {
     }
 
     /**
-     * Send an HTTP request. In mobile devices it will use the cordova plugin.
+     * Send an HTTP request. In mobile devices it will use native requests.
      *
      * @param url URL of the request.
      * @param options Options for the request.
@@ -1194,7 +1205,7 @@ export class CoreWSProvider {
         options.timeout = options.timeout === undefined ? this.getRequestTimeout() : options.timeout;
 
         if (CorePlatform.isMobile()) {
-            // Use the cordova plugin.
+            // Use a native request.
             if (url.startsWith('file://')) {
                 // We cannot load local files using the http native plugin. Use file provider instead.
                 const content = options.responseType === 'json' ?
@@ -1210,67 +1221,108 @@ export class CoreWSProvider {
                 });
             }
 
-            let response: NativeHttpResponse;
+            const headers = {
+                ...options.headers,
+            };
+            if (!headers['User-Agent'] && !headers['user-agent']) {
+                headers['User-Agent'] = navigator.userAgent;
+            }
+
+            let response: NativeHttpResponse | undefined = undefined;
             let redirectUrl: string | null = null;
             let maxRedirects = 5;
             do {
                 try {
-                    response = await NativeHttp.sendRequest(redirectUrl ?? url, options);
+                    const { data: serializedData, contentType } = this.serializeHttpData(options);
+                    if (contentType) {
+                        headers['Content-Type'] = contentType;
+                    }
+
+                    const nativeRequestOptions: NativeHttpOptions = {
+                        url: redirectUrl ?? url,
+                        method: options.method.toUpperCase(),
+                        params: options.params,
+                        data: serializedData,
+                        headers,
+                        connectTimeout: options.timeout,
+                        readTimeout: options.timeout,
+                        disableRedirects: options.followRedirect === false,
+                        responseType: options.responseType,
+                    };
+
+                    response = await CapacitorHttp.request(nativeRequestOptions);
+
+                    if (response.status < 200 || response.status >= 300) {
+                        throw response;
+                    }
+
                     redirectUrl = null;
                 } catch (error) {
-                    // Error is a response object.
-                    response = error as NativeHttpResponse;
+                    const responseOrError = error as CapacitorException | NativeHttpResponse;
 
-                    const headers = new HttpHeaders(response.headers); // Convert to HttpHeaders because names are normalised.
+                    if ('headers' in responseOrError) {
+                        // Convert to HttpHeaders because names are normalised.
+                        const headers = new HttpHeaders(responseOrError.headers);
 
-                    // Redirections should have been handled by the platform,
-                    // but Android does not follow redirections between HTTP and HTTPS.
-                    // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                    redirectUrl = headers.get('Location');
-                    maxRedirects--;
+                        // Redirections should have been handled by the platform,
+                        // but Android does not follow redirections between HTTP and HTTPS.
+                        // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
+                        redirectUrl = headers.get('Location');
+                        maxRedirects--;
+                    }
+
                     if (!redirectUrl || maxRedirects < 0) {
-                        throw error;
+                        throw responseOrError;
                     }
                 }
             } while (redirectUrl);
+
+            if (!response) {
+                // Shouldn't happen, if the response failed the catch should have thrown an error.
+                throw new CoreError(Translate.instant('core.unexpectederror'));
+            }
 
             return new CoreNativeToAngularHttpResponse(response);
         } else {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             let observable: Observable<HttpResponse<any>>;
-            const angularOptions = <AngularHttpRequestOptions> options;
+            const headers = {
+                ...options.headers,
+            };
 
             // Use Angular's library.
-            switch (angularOptions.method) {
+            switch (options.method) {
                 case 'get':
                     observable = Http.get(url, {
-                        headers: angularOptions.headers,
-                        params: angularOptions.params,
+                        headers,
+                        params: options.params,
                         observe: 'response',
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> angularOptions.responseType,
+                        responseType: <any> options.responseType,
                     });
                     break;
 
-                case 'post':
-                    if (angularOptions.serializer === 'json') {
-                        angularOptions.data = JSON.stringify(angularOptions.data);
+                case 'post': {
+                    const { data: serializedData, contentType } = this.serializeHttpData(options);
+                    if (contentType) {
+                        headers['Content-Type'] = contentType;
                     }
 
-                    observable = Http.post(url, angularOptions.data, {
-                        headers: angularOptions.headers,
+                    observable = Http.post(url, serializedData, {
+                        headers,
                         observe: 'response',
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> angularOptions.responseType,
+                        responseType: <any> options.responseType,
                     });
                     break;
+                }
 
                 case 'head':
                     observable = Http.head(url, {
-                        headers: angularOptions.headers,
+                        headers,
                         observe: 'response',
                         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> angularOptions.responseType,
+                        responseType: <any> options.responseType,
                     });
                     break;
 
@@ -1278,12 +1330,36 @@ export class CoreWSProvider {
                     throw new CoreError('Method not implemented yet.');
             }
 
-            if (angularOptions.timeout) {
-                observable = observable.pipe(timeout(angularOptions.timeout));
+            if (options.timeout) {
+                observable = observable.pipe(timeout(options.timeout));
             }
 
             return await firstValueFrom(observable);
         }
+    }
+
+    /**
+     * Serialise HTTP data.
+     *
+     * @param options Request options.
+     * @returns Serialised request data and content type.
+     */
+    protected serializeHttpData(options: HttpRequestOptions): { data: unknown; contentType?: string } {
+        if (options.data === undefined || options.data === null) {
+            return { data: options.data };
+        }
+
+        if (options.serializer === 'json') {
+            return {
+                data: typeof options.data === 'string' ? options.data : JSON.stringify(options.data),
+                contentType: 'application/json',
+            };
+        }
+
+        return {
+            data: typeof options.data === 'string' ? options.data : CoreInterceptor.serialize(options.data),
+            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
+        };
     }
 
     /**
@@ -1547,7 +1623,7 @@ export type HttpRequestOptions = {
     /**
      * The HTTP method.
      */
-    method: 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options' | 'upload' | 'download';
+    method: 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options';
 
     /**
      * Payload to send to the server. Only applicable on post, put or patch methods.
@@ -1555,9 +1631,9 @@ export type HttpRequestOptions = {
     data?: Record<string, unknown>;
 
     /**
-     * Query params to be appended to the URL (only applicable on get, head, delete, upload or download methods).
+     * Query params to be appended to the URL (only applicable on get, head or delete methods).
      */
-    params?: Record<string, string | number>;
+    params?: Record<string, string>;
 
     /**
      * Response type. Defaults to json.
@@ -1570,9 +1646,9 @@ export type HttpRequestOptions = {
     timeout?: number;
 
     /**
-     * Serializer to use. Defaults to 'urlencoded'. Only for mobile environments.
+     * Serializer to use. Defaults to 'urlencoded'.
      */
-    serializer?: 'json' | 'urlencoded' | 'utf8' | 'multipart';
+    serializer?: 'json' | 'urlencoded';
 
     /**
      * Whether to follow redirects. Defaults to true. Only for mobile environments.
@@ -1583,27 +1659,6 @@ export type HttpRequestOptions = {
      * Headers. Only for mobile environments.
      */
     headers?: Record<string, string>;
-
-    /**
-     * File paths to use for upload or download. Only for mobile environments.
-     */
-    filePath?: string | string[];
-
-    /**
-     * Name to use during upload. Only for mobile environments.
-     */
-    name?: string | string[];
-};
-
-/**
- * Options for JSON HTTP requests using Angular Http.
- */
-type AngularHttpRequestOptions = Omit<HttpRequestOptions, 'data'|'params'> & {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data?: Record<string, any> | string;
-    params?: HttpParams | {
-        [param: string]: string | string[];
-    };
 };
 
 /**
