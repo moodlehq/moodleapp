@@ -5,7 +5,6 @@
 .core-logo-container {
     max-width: var(--core-site-logo-max-width, 100%);
 
-
     width: var(--core-site-logo-width, auto);
     margin: var(--core-site-logo-margin, 0px);
 }
@@ -18,4 +17,11 @@ img.core-logo {
     display: var(--core-site-logo-sitename-display, block);
     font: var(--core-site-logo-sitename-font);
     margin-bottom: var(--core-site-logo-sitename-margin-bottom, 0px);
+}
+
+
+:host-context(ion-header) {
+    .core-logo-container {
+        display: flex;
+    }
 }
