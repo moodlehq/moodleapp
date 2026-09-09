@@ -2,6 +2,12 @@ This file describes API changes in the Moodle App that affect site plugins, info
 
 For more information about upgrading, read the official documentation: https://moodledev.io/general/app/upgrading/
 
+6.0.0
+=====
+
+- The method CoreWS.sendHTTPRequest no longer supports 'upload' or 'download' HTTP methods. Because of that, the 'filePath' and 'name' options have been removed. To download or upload a file, use CoreWS.downloadFile or CoreWS.uploadFile.
+- The method CoreWS.sendHTTPRequest no longer supports 'utf8' and 'multipart' serializers. Data is always sent either in JSON format or in urlencoded format.
+
 5.3.0
 =====
 

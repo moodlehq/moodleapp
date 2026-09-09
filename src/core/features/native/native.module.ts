@@ -21,7 +21,6 @@ import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { Device } from '@awesome-cordova-plugins/device/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
-import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
@@ -51,7 +50,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         File,
         FileOpener,
         Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
-        HTTP,
         InAppBrowser,
         Keyboard,
         LocalNotifications,
@@ -77,7 +75,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         File,
         FileOpener,
         Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
-        HTTP,
         InAppBrowser,
         Keyboard,
         LocalNotifications,
