@@ -18,7 +18,6 @@ import { CoreEmulatorHelper } from './services/emulator-helper';
 
 // Ionic Native services.
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
-import { Clipboard } from '@awesome-cordova-plugins/clipboard/ngx';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -28,7 +27,6 @@ import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
 import { CameraMock } from './services/camera';
-import { ClipboardMock } from './services/clipboard';
 import { FileMock } from './services/file';
 import { FileOpenerMock } from './services/file-opener';
 import { InAppBrowserMock } from './services/inappbrowser';
@@ -56,10 +54,6 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
         {
             provide: Camera,
             useFactory: (): Camera => CorePlatform.isMobile() ? new Camera() : new CameraMock(),
-        },
-        {
-            provide: Clipboard,
-            useFactory: (): Clipboard => CorePlatform.isMobile() ? new Clipboard() : new ClipboardMock(),
         },
         {
             provide: File,

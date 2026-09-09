@@ -28,7 +28,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreNetwork, CoreNetworkConnectionType } from '@services/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { CoreText } from '@static/text';
+import { CoreClipboard } from '@services/clipboard';
 import { GestureDetail } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_SETTINGS_DEV_PAGE_NAME } from '@features/settings/constants';
@@ -218,13 +218,12 @@ export default class CoreSettingsDeviceInfoPage {
      * Copies device info into the clipboard.
      */
     copyInfo(): void {
-        CoreText.copyToClipboard(JSON.stringify(this.deviceInfo));
         const deviceInfo = {
             ...this.deviceInfo,
             isOnline: this.deviceInfo.isOnline(),
             wifiConnection: this.deviceInfo.wifiConnection(),
         };
-        CoreText.copyToClipboard(JSON.stringify(deviceInfo));
+        CoreClipboard.copy(JSON.stringify(deviceInfo));
     }
 
     /**
@@ -236,7 +235,7 @@ export default class CoreSettingsDeviceInfoPage {
         const el = <Element>e.event.target;
         const text = el?.closest('ion-item')?.textContent?.trim();
 
-        text && CoreText.copyToClipboard(text);
+        text && CoreClipboard.copy(text);
     }
 
     /**
