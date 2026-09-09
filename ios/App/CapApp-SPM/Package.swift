@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.2"),
+        .package(name: "CapacitorClipboard", path: "../../../node_modules/@capacitor/clipboard"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/@capacitor/splash-screen"),
         .package(name: "MoodlehqCordovaPluginCamera", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginCamera"),
         .package(name: "MoodlehqCordovaPluginChooser", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginChooser"),
@@ -22,7 +23,6 @@ let package = Package(
         .package(name: "MoodlehqCordovaPluginMediaCapture", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginMediaCapture"),
         .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
         .package(name: "MoodlehqCordovaPluginZip", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginZip"),
-        .package(name: "CordovaClipboard", path: "../../capacitor-cordova-ios-plugins/sources/CordovaClipboard"),
         .package(name: "CordovaPluginBadge", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginBadge"),
         .package(name: "CordovaPluginDevice", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginDevice"),
         .package(name: "CordovaPluginFile", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginFile"),
@@ -41,6 +41,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorClipboard", package: "CapacitorClipboard"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
                 .product(name: "MoodlehqCordovaPluginCamera", package: "MoodlehqCordovaPluginCamera"),
                 .product(name: "MoodlehqCordovaPluginChooser", package: "MoodlehqCordovaPluginChooser"),
@@ -51,7 +52,6 @@ let package = Package(
                 .product(name: "MoodlehqCordovaPluginMediaCapture", package: "MoodlehqCordovaPluginMediaCapture"),
                 .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
                 .product(name: "MoodlehqCordovaPluginZip", package: "MoodlehqCordovaPluginZip"),
-                .product(name: "CordovaClipboard", package: "CordovaClipboard"),
                 .product(name: "CordovaPluginBadge", package: "CordovaPluginBadge"),
                 .product(name: "CordovaPluginDevice", package: "CordovaPluginDevice"),
                 .product(name: "CordovaPluginFile", package: "CordovaPluginFile"),
