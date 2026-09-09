@@ -397,6 +397,25 @@ export class CoreLangProvider {
     }
 
     /**
+     * Get the language code without the app variant.
+     *
+     * @param lang Language code.
+     * @returns Language code without the app variant.
+     */
+    getLanguageWithoutAppVariant(lang: string): string {
+        const langSuffix = this.getLanguageSuffix();
+        if (langSuffix && lang.endsWith(`_${langSuffix}`)) {
+            return lang.replace(`_${langSuffix}`, '');
+        }
+
+        if (langSuffix && lang.endsWith(`-${langSuffix}`)) {
+            return lang.replace(`-${langSuffix}`, '');
+        }
+
+        return lang;
+    }
+
+    /**
      * Update a language code to the given format.
      *
      * @param lang Language code.
@@ -406,7 +425,9 @@ export class CoreLangProvider {
     formatLanguage(lang: string, format: CoreLangFormat): string {
         switch (format) {
             case CoreLangFormat.App:
-                return lang.replace('_', '-');
+                lang = lang.replace('_', '-');
+
+                return this.getLanguageWithoutAppVariant(lang);
             case CoreLangFormat.LMS:
                 lang = lang.replace('-', '_');
 
