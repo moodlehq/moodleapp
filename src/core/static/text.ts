@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Clipboard, Translate } from '@singletons';
-import { CoreToasts } from '@services/overlays/toasts';
+import { Translate } from '@singletons';
+import { CoreClipboard } from '@services/clipboard';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
@@ -125,25 +125,12 @@ export class CoreText {
     /**
      * Copies a text to clipboard and shows a toast message.
      *
-     * @param text Text to be copied
+     * @param text Text to be copied.
+     *
+     * @deprecated since 6.0. Use CoreClipboard.copy instead.
      */
     static async copyToClipboard(text: string): Promise<void> {
-        try {
-            await Clipboard.copy(text);
-        } catch {
-            // Use HTML Copy command.
-            const virtualInput = document.createElement('textarea');
-            virtualInput.innerHTML = text;
-            virtualInput.select();
-            virtualInput.setSelectionRange(0, 99999);
-            document.execCommand('copy'); // eslint-disable-line @typescript-eslint/no-deprecated
-        }
-
-        // Show toast using ionicLoading.
-        CoreToasts.show({
-                message: 'core.copiedtoclipboard',
-                translateMessage: true,
-        });
+        await CoreClipboard.copy(text);
     }
 
     /**

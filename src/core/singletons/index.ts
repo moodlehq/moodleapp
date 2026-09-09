@@ -38,7 +38,6 @@ import {
 
 import { Badge as BadgeService } from '@awesome-cordova-plugins/badge/ngx';
 import { Camera as CameraService } from '@awesome-cordova-plugins/camera/ngx';
-import { Clipboard as ClipboardService } from '@awesome-cordova-plugins/clipboard/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -165,7 +164,6 @@ export function makeSingleton<Service extends object = object>(
 
 // Convert ionic-native services to singleton.
 export const Badge = makeSingleton(BadgeService);
-export const Clipboard = makeSingleton(ClipboardService);
 export const File = makeSingleton(FileService);
 export const FileOpener = makeSingleton(FileOpenerService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);

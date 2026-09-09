@@ -24,6 +24,7 @@ import { CoreFormatTextDirective } from '@directives/format-text';
 import { CoreLongPressDirective } from '@directives/long-press';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 import { CoreFormatDatePipe } from '@pipes/format-date';
+import { CoreClipboard } from '@services/clipboard';
 
 /**
  * Component to handle a message in a conversation.
@@ -95,7 +96,7 @@ export class CoreMessageComponent {
      * Copy message to clipboard.
      */
     copyMessage(): void {
-        CoreText.copyToClipboard(CoreText.decodeHTMLEntities(this.text()));
+        CoreClipboard.copy(CoreText.decodeHTMLEntities(this.text()));
     }
 
 }
