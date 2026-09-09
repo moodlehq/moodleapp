@@ -18,7 +18,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreText } from '@static/text';
+import { CoreClipboard } from '@services/clipboard';
 import { ModalController } from '@singletons';
 
 /**
@@ -56,7 +56,7 @@ export class CoreViewerTextComponent {
      * Copy the text to clipboard.
      */
     copyText(): void {
-        CoreText.copyToClipboard(this.content || '');
+        CoreClipboard.copy(this.content || '');
     }
 
 }

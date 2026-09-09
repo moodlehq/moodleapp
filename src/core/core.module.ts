@@ -28,6 +28,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     const { CoreAppProvider } = await import('@services/app');
     const { CoreAppDBService } = await import('@services/app-db');
+    const { CoreClipboardService } = await import('@services/clipboard');
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
@@ -74,6 +75,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     return [
         CoreAppProvider,
         CoreAppDBService,
+        CoreClipboardService,
         CoreConfigProvider,
         CoreCronDelegateService,
         CoreCustomURLSchemesProvider,
