@@ -29,7 +29,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
-import { CoreText } from '@static/text';
+import { CoreClipboard } from '@services/clipboard';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreSharedModule } from '@/core/shared.module';
@@ -223,7 +223,7 @@ export default class CoreSettingsDevPage implements OnInit {
      * Copies site info.
      */
     copyInfo(): void {
-        CoreText.copyToClipboard(JSON.stringify({
+        CoreClipboard.copy(JSON.stringify({
             disabledFeatures: this.disabledFeatures,
             sitePlugins: this.sitePlugins,
             autoLoginTimeBetweenRequests: this.autoLoginTimeBetweenRequests,
