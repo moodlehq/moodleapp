@@ -5,7 +5,8 @@
         display: none;
     }
 
-    .core-iframe-container {
+    .core-iframe-container,
+    .core-iframe-host {
         display: flex;
         flex-direction: column;
         max-width: 100%;
