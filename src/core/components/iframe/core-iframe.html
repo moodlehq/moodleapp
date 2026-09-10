@@ -23,7 +23,7 @@
         }
 
         <!-- The iframe tag itself is created and updated reactively from the component class. -->
-        <div #iframeHost [class.core-iframe-loading]="loading()"></div>
+        <div #iframeHost [class.core-iframe-loading]="loading()" class="core-iframe-host"></div>
 
         @if (!loading() && displayHelp()) {
             <ion-button expand="block" fill="clear" (click)="openIframeHelpModal()" aria-haspopup="dialog"
