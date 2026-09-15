@@ -42,14 +42,12 @@ import { Clipboard as ClipboardService } from '@awesome-cordova-plugins/clipboar
 import { Device as DeviceService } from '@awesome-cordova-plugins/device/ngx';
 import { File as FileService } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
-import { HTTP } from '@awesome-cordova-plugins/http/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Keyboard as KeyboardService } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture as MediaCaptureService } from '@awesome-cordova-plugins/media-capture/ngx';
 import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-bar/ngx';
-import { SplashScreen as SplashScreenService } from '@awesome-cordova-plugins/splash-screen/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
 
@@ -175,15 +173,10 @@ export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const MediaCapture = makeSingleton(MediaCaptureService);
-export const NativeHttp = makeSingleton(HTTP);
 export const StatusBar = makeSingleton(StatusBarService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);
-/**
- * @deprecated since 5.2. Use navigator.splashscreen directly.
- */
-export const SplashScreen = makeSingleton(SplashScreenService);
 
 export const Camera = makeSingleton(CameraService);
 

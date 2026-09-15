@@ -4,15 +4,13 @@
   "types": "./types/index.d.ts",
   "version": "0.0.0",
   "scripts": {
-    "dev": "concurrently \"npm run dev:ts\" \"npm run dev:cordova\"",
-    "dev:ts": "scripts/build.js --watch",
-    "dev:cordova": "chokidar www/index.js -c scripts/copy-javascript.js",
+    "dev": "npm run dev:ts && npm run dev:cordova",
+    "dev:ts": "scripts/build.js",
+    "dev:cordova": "scripts/copy-javascript.js",
     "prod": "NODE_ENV=production scripts/build.js",
     "lint": "tsc --noEmit"
   },
   "devDependencies": {
-    "chokidar-cli": "^3.0.0",
-    "concurrently": "^9.2.1",
     "esbuild": "^0.28.0",
     "typescript": "5.9.3"
   }

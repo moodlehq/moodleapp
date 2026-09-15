@@ -23,7 +23,6 @@
     "types": [
       "@moodlehq/cordova-plugin-file-transfer",
       "@moodlehq/cordova-plugin-inappbrowser",
-      "@moodlehq/phonegap-plugin-push",
       "cordova-plugin-file",
       "cordova-plugin-moodleapp",
       "cordova",
