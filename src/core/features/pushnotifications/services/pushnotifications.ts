@@ -25,7 +25,7 @@ import { CoreText } from '@static/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { makeSingleton, Badge, Device, Translate, ApplicationInit } from '@singletons';
+import { makeSingleton, Badge, Translate, ApplicationInit } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreEvents } from '@static/events';
 import {
@@ -58,6 +58,7 @@ import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/consta
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNative } from '@features/native/services/native';
+import { NativeDevice } from '@services/native/device';
 
 /**
  * Service to handle push notifications.
@@ -334,12 +335,12 @@ export class CorePushNotificationsProvider {
 
         return {
             appid:      CoreConstants.CONFIG.app_id,
-            name:       Device.manufacturer || '',
-            model:      Device.model,
-            platform:   `${Device.platform}-fcm`,
-            version:    Device.version,
+            name:       NativeDevice.deviceInfo?.manufacturer ?? '',
+            model:      NativeDevice.deviceInfo?.model ?? '',
+            platform:   `${NativeDevice.deviceInfo?.platform}-fcm`,
+            version:    NativeDevice.deviceInfo?.osVersion ?? '',
             pushid:     this.pushID,
-            uuid:       Device.uuid,
+            uuid:       NativeDevice.uuid,
         };
     }
 
@@ -492,7 +493,7 @@ export class CorePushNotificationsProvider {
 
         const data: CoreUserRemoveUserDeviceWSParams = {
             appid: CoreConstants.CONFIG.app_id,
-            uuid:  Device.uuid,
+            uuid:  NativeDevice.uuid,
         };
         let response: CoreUserRemoveUserDeviceWSResponse;
 

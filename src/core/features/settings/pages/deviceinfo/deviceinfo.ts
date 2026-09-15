@@ -15,7 +15,7 @@
 import { Component, computed, Signal } from '@angular/core';
 import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { Device, Translate } from '@singletons';
+import { Translate } from '@singletons';
 import { CoreLang } from '@services/lang';
 import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
@@ -32,6 +32,7 @@ import { CoreText } from '@static/text';
 import { GestureDetail } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_SETTINGS_DEV_PAGE_NAME } from '@features/settings/constants';
+import { NativeDevice } from '@services/native/device';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -55,9 +56,9 @@ interface CoreSettingsDeviceInfo {
     screen?: string;
     isOnline: Signal<boolean>;
     wifiConnection: Signal<boolean>;
-    cordovaVersion?: string;
     platform?: string;
     osVersion?: string;
+    webViewVersion?: string;
     model?: string;
     uuid?: string;
     pushId?: string;
@@ -153,22 +154,6 @@ export default class CoreSettingsDeviceInfoPage {
             this.deviceInfo.browserLanguage = navigator.language;
         }
 
-        if (Device.cordova) {
-            this.deviceInfo.cordovaVersion = Device.cordova;
-        }
-        if (Device.platform) {
-            this.deviceInfo.platform = Device.platform;
-        }
-        if (Device.version) {
-            this.deviceInfo.osVersion = Device.version;
-        }
-        if (Device.model) {
-            this.deviceInfo.model = Device.model;
-        }
-        if (Device.uuid) {
-            this.deviceInfo.uuid = Device.uuid;
-        }
-
         const currentSite = CoreSites.getCurrentSite();
         this.deviceInfo.siteId = currentSite?.getId();
         this.deviceInfo.siteVersion = currentSite?.getInfo()?.release;
@@ -206,6 +191,27 @@ export default class CoreSettingsDeviceInfoPage {
             await CorePromiseUtils.ignoreErrors(CorePushNotifications.getPublicKey()) :
             undefined;
         this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
+
+        const capacitorDeviceInfo = await NativeDevice.getInfo();
+
+        if (capacitorDeviceInfo.platform) {
+            this.deviceInfo.platform = capacitorDeviceInfo.platform;
+        }
+        if (capacitorDeviceInfo.osVersion) {
+            this.deviceInfo.osVersion = capacitorDeviceInfo.osVersion;
+        }
+        if (capacitorDeviceInfo.webViewVersion) {
+            this.deviceInfo.webViewVersion = capacitorDeviceInfo.webViewVersion;
+        }
+        if (capacitorDeviceInfo.model) {
+            this.deviceInfo.model = capacitorDeviceInfo.model;
+        }
+
+        const capacitorDeviceId = await NativeDevice.getId();
+
+        if (capacitorDeviceId.identifier) {
+            this.deviceInfo.uuid = capacitorDeviceId.identifier;
+        }
     }
 
     /**

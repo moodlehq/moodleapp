@@ -22,11 +22,17 @@ import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreKeyboard } from '@static/keyboard';
+import { NativeDevice } from '@services/native/device';
 
 /**
  * Initializes various core components asynchronously.
  */
 export default async function(): Promise<void> {
+    // Native plugins initializations.
+    await Promise.all([
+        NativeDevice.initialize(),
+    ]);
+
     await Promise.all([
         CoreConfig.initialize(),
         CoreFilepool.initialize(),
