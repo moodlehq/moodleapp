@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Clipboard, Translate } from '@singletons';
+import { Translate } from '@singletons';
+import { NativeClipboard } from '@services/native/clipboard';
 import { CoreToasts } from '@services/overlays/toasts';
 import { Locutus } from './locutus';
 import { CoreError } from '@classes/errors/error';
@@ -129,7 +130,7 @@ export class CoreText {
      */
     static async copyToClipboard(text: string): Promise<void> {
         try {
-            await Clipboard.copy(text);
+            await NativeClipboard.copy(text);
         } catch {
             // Use HTML Copy command.
             const virtualInput = document.createElement('textarea');
