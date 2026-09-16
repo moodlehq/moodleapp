@@ -1,12 +1,11 @@
 diff --git a/node_modules/@angular/compiler/fesm2022/compiler.mjs b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-index e259cd3..78846f8 100755
+index 2db7428..d6f843c 100755
 --- a/node_modules/@angular/compiler/fesm2022/compiler.mjs
 +++ b/node_modules/@angular/compiler/fesm2022/compiler.mjs
-@@ -7174,13 +7174,41 @@ var R3NgModuleMetadataKind;
+@@ -7309,13 +7309,41 @@ var R3NgModuleMetadataKind;
      R3NgModuleMetadataKind[R3NgModuleMetadataKind["Global"] = 0] = "Global";
      R3NgModuleMetadataKind[R3NgModuleMetadataKind["Local"] = 1] = "Local";
  })(R3NgModuleMetadataKind || (R3NgModuleMetadataKind = {}));
-+
 +/**
 + * These are the only modules we're using to compile dynamic templates, we don't need to force JIT anywhere else.
 + *
@@ -17,6 +16,7 @@ index e259cd3..78846f8 100755
 + *   - ReactiveFormsModule -> ɵInternalFormsSharedModule -> RadioControlRegistryModule
 + *   - TranslateModule
 + */
++
 +const jitModules = [
 +    'CommonModule',
 +    'FormsModule',
