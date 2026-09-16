@@ -304,6 +304,12 @@ export function mock<Service>(
             continue;
         }
 
+        // Skip properties overridden as read-only accessors (e.g. signals), they cannot be reassigned.
+        const descriptor = Object.getOwnPropertyDescriptor(instance, property);
+        if (descriptor && descriptor.get && !descriptor.set) {
+            continue;
+        }
+
         instance[property] = jest.fn((...args) => value.call(instance, ...args)) as unknown as Service[typeof property];
     }
 
