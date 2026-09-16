@@ -8,5 +8,8 @@ project(':capacitor-clipboard').projectDir = new File('../node_modules/@capacito
 include ':capacitor-device'
 project(':capacitor-device').projectDir = new File('../node_modules/@capacitor/device/android')
 
+include ':capacitor-network'
+project(':capacitor-network').projectDir = new File('../node_modules/@capacitor/network/android')
+
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capacitor/splash-screen/android')

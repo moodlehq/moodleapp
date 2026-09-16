@@ -1,4 +1,4 @@
-@app_parallel_run_login @core_login @app @core @javascript @test
+@app_parallel_run_login @core_login @app @core @javascript
 Feature: Test login failures in app
 	I need login errors to be displayed when the site configuration prevents access
 
