@@ -14,7 +14,7 @@ on:
                 required: true
                 default: "https://github.com/moodle/moodle.git"
     pull_request:
-        branches: [main, v*.x]
+        branches: [capacitor, main, v*.x]
 
 concurrency:
     group: acceptance-${{ github.ref }}
