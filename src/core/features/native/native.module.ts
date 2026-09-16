@@ -30,7 +30,6 @@ import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Zip } from '@features/native/plugins/zip';
-import { Geolocation } from '@features/emulator/services/geolocation';
 
 /**
  * Get native services.
@@ -38,6 +37,8 @@ import { Geolocation } from '@features/emulator/services/geolocation';
  * @returns Returns native services.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { Geolocation } = await import('@features/emulator/services/geolocation');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Clipboard } = await import('@services/native/clipboard');
     const { Device } = await import('@services/native/device');
@@ -50,7 +51,7 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
+        Geolocation,
         InAppBrowser,
         Keyboard,
         LocalNotifications,
@@ -72,7 +73,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Chooser,
         File,
         FileOpener,
-        Geolocation, // eslint-disable-line @typescript-eslint/no-deprecated
         InAppBrowser,
         Keyboard,
         LocalNotifications,

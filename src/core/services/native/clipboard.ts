@@ -20,7 +20,7 @@ import { CoreClipboard, CoreClipboardService } from '@services/clipboard';
  *
  * @deprecated since 6.0. Use CoreClipboard instead.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class Clipboard extends CoreClipboardService {
 
     /**
