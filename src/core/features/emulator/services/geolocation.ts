@@ -22,7 +22,7 @@ import { CoreUrl } from '@static/url';
  *
  * @deprecated since 5.0. Geo location is no longer available in the app.
  */
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class Geolocation {
 
     /**
