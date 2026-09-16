@@ -14,17 +14,17 @@
 
 import { Injectable } from '@angular/core';
 import { ActionSheetButton } from '@ionic/core';
-import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { CoreMediaFile, CoreNativeCamera } from '@services/native/camera';
+import { ChooseFromGalleryOptions, EncodingType, MediaTypeSelection, TakePhotoOptions } from '@capacitor/camera';
 import { ChooserResult } from 'cordova-plugin-chooser';
 import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
-import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
 import { CoreArray } from '@static/array';
-import { makeSingleton, Translate, Camera, ActionSheetController } from '@singletons';
+import { makeSingleton, Translate, ActionSheetController } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
@@ -47,6 +47,9 @@ import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreCaptureMedia } from './capture-media';
+import { CoreTime } from '@static/time';
+import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 /**
  * Helper service to upload files.
@@ -552,14 +555,14 @@ export class CoreFileUploaderHelperProvider {
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         this.logger.debug(`Trying to record a ${isAudio ? 'audio' : 'video'  } file`);
 
-        let media: MediaFile | CoreFileUploaderAudioRecording;
+        let media: MediaFile | CoreFileUploaderAudioRecording | CoreMediaFile;
 
         try {
             const medias = isAudio
-                ? await CoreFileUploader.captureAudio()
-                : await CoreFileUploader.captureVideo({ limit: 1 });
+                ? await CoreCaptureMedia.captureAudio()
+                : await CoreCaptureMedia.captureVideo();
 
-            media = medias[0]; // We used limit 1, we only want 1 media.
+            media = isAudio ? medias[0] : medias; // We used limit 1, we only want 1 media.
         } catch (error) {
             const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
 
@@ -567,7 +570,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         let path = media.fullPath;
-        const error = CoreFileUploader.isInvalidMimetype(mimetypes, media.fullPath);
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, path);
 
         if (error) {
             throw new Error(error);
@@ -578,7 +581,7 @@ export class CoreFileUploaderHelperProvider {
             path = `file://${path}`;
         }
 
-        const options = CoreFileUploader.getMediaUploadOptions(media);
+        const options = this.getMediaUploadOptions(media);
 
         if (upload) {
             return this.uploadFile(path, maxSize || -1, true, options);
@@ -586,6 +589,40 @@ export class CoreFileUploaderHelperProvider {
             // Copy or move the file to our temporary folder.
             return this.copyToTmpFolder(path, true, maxSize, undefined, options);
         }
+    }
+
+    /**
+     * Get the upload options for a file taken with the media capture Cordova plugin.
+     *
+     * @param mediaFile File object to upload.
+     * @returns Options.
+     */
+    protected getMediaUploadOptions(
+        mediaFile: MediaFile | CoreFileUploaderAudioRecording | CoreMediaFile,
+    ): CoreFileUploaderOptions {
+        const options: CoreFileUploaderOptions = {};
+        let filename = 'name' in mediaFile
+            ? mediaFile.name
+            : mediaFile.fullPath.split('\\').pop()?.split('/').pop() ?? '';
+
+        if (!filename.match(/_\d{14}(\..*)?$/)) {
+            // Add a timestamp to the filename to make it unique.
+            const split = filename.split('.');
+            split[0] += `_${CoreTime.readableTimestamp()}`;
+            filename = split.join('.');
+        }
+
+        options.fileName = filename;
+        options.deleteAfterUpload = true;
+        if ('type' in mediaFile && mediaFile.type) {
+            options.mimeType = mediaFile.type;
+        } else {
+            options.mimeType = CoreMimetype.getMimeType(
+                CoreMimetype.getFileExtension(options.fileName),
+            );
+        }
+
+        return options;
     }
 
     /**
@@ -628,46 +665,10 @@ export class CoreFileUploaderHelperProvider {
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         this.logger.debug('Trying to capture an image with camera');
 
-        const options: CameraOptions = {
-            quality: 50,
-            destinationType: Camera.DestinationType.FILE_URI,
-            correctOrientation: true,
-        };
-
-        if (fromAlbum) {
-            const imageSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^image\//) > -1;
-            const videoSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^video\//) > -1;
-
-            options.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-            options.popoverOptions = {
-                x: 10,
-                y: 10,
-                width: CorePlatform.width() - 200,
-                height: CorePlatform.height() - 200,
-                arrowDir: Camera.PopoverArrowDirection.ARROW_ANY,
-            };
-
-            // Determine the mediaType based on the mimetypes.
-            if (imageSupported && !videoSupported) {
-                options.mediaType = Camera.MediaType.PICTURE;
-            } else if (!imageSupported && videoSupported) {
-                options.mediaType = Camera.MediaType.VIDEO;
-            } else if (CorePlatform.isIOS()) {
-                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
-                options.mediaType = Camera.MediaType.ALLMEDIA;
-            }
-        } else if (mimetypes) {
-            if (mimetypes.includes('image/jpeg')) {
-                options.encodingType = Camera.EncodingType.JPEG;
-            } else if (mimetypes.includes('image/png')) {
-                options.encodingType = Camera.EncodingType.PNG;
-            }
-        }
-
-        let path: string | undefined;
+        let path: string;
 
         try {
-            path = await CoreFileUploader.getPicture(options);
+            path = (await this.getPictureMedia(fromAlbum, mimetypes)).fullPath;
         } catch (error) {
             const defaultError = fromAlbum ? 'core.fileuploader.errorgettingimagealbum' : 'core.fileuploader.errorcapturingimage';
 
@@ -687,6 +688,52 @@ export class CoreFileUploaderHelperProvider {
             // Copy or move the file to our temporary folder.
             return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg', uploadOptions);
         }
+    }
+
+    /**
+     * Get the path of a picture, either from the album or taking it with the camera.
+     *
+     * @param fromAlbum True if the image should be selected from album, false if it should be taken with camera.
+     * @param mimetypes List of supported mimetypes. If undefined, all mimetypes supported.
+     * @returns Promise resolved with the path of the picture.
+     */
+    protected async getPictureMedia(fromAlbum: boolean, mimetypes?: string[]): Promise<CoreMediaFile> {
+        if (fromAlbum) {
+            const options: ChooseFromGalleryOptions = {
+                quality: 50,
+                correctOrientation: true,
+            };
+
+            const imageSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^image\//) > -1;
+            const videoSupported = !mimetypes || CoreArray.indexOfRegexp(mimetypes, /^video\//) > -1;
+
+            // Determine the mediaType based on the mimetypes.
+            if (imageSupported && !videoSupported) {
+                options.mediaType = MediaTypeSelection.Photo;
+            } else if (!imageSupported && videoSupported) {
+                options.mediaType = MediaTypeSelection.Video;
+            } else if (CorePlatform.isIOS()) {
+                // Only get all media in iOS because in Android using this option allows uploading any kind of file.
+                options.mediaType = MediaTypeSelection.All;
+            }
+
+            return CoreNativeCamera.chooseFromGallery(options);
+        }
+
+        const options: TakePhotoOptions = {
+            quality: 50,
+            correctOrientation: true,
+        };
+
+        if (mimetypes) {
+            if (mimetypes.includes('image/jpeg')) {
+                options.encodingType = EncodingType.JPEG;
+            } else if (mimetypes.includes('image/png')) {
+                options.encodingType = EncodingType.PNG;
+            }
+        }
+
+        return CoreNativeCamera.takePhoto(options);
     }
 
     /**

@@ -17,7 +17,7 @@ import { NgModule, provideAppInitializer } from '@angular/core';
 import { CoreEmulatorHelper } from './services/emulator-helper';
 
 // Ionic Native services.
-import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { Camera } from '@services/native/camera';
 import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
