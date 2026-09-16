@@ -14,7 +14,8 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import { Device, makeSingleton } from '@singletons';
+import { CoreNativeDevice } from '@services/native/device';
+import { makeSingleton } from '@singletons';
 
 /**
  * Extend Ionic's Platform service.
@@ -34,7 +35,7 @@ export class CorePlatformService extends Platform {
             return 0;
         }
 
-        return Number(Device.version?.split('.')[0]);
+        return Number(CoreNativeDevice.deviceInfo?.osVersion.split('.')[0]);
     }
 
     /**
