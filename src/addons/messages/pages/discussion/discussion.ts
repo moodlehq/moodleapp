@@ -57,6 +57,7 @@ import {
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
+import { CoreClipboard } from '@services/clipboard';
 
 /**
  * Page that displays a message discussion page.
@@ -762,7 +763,7 @@ export default class AddonMessagesDiscussionPage implements OnInit, OnDestroy, A
      */
     copyMessage(message: AddonMessagesConversationMessageFormatted): void {
         const text = 'smallmessage' in message ? message.smallmessage || message.text || '' : message.text || '';
-        CoreText.copyToClipboard(CoreText.decodeHTMLEntities(text));
+        CoreClipboard.copy(CoreText.decodeHTMLEntities(text));
     }
 
     /**
