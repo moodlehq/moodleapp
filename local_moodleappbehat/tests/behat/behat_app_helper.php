@@ -226,14 +226,11 @@ class behat_app_helper extends behat_base {
                 throw new DriverException('Behat API not found in window');
             }
 
-            $title = $context->getSession()->getPage()->find('xpath', '//title');
+            // Check if the app-root element is present.
+            $element = $context->getSession()->getPage()->find('xpath', "//app-root");
 
-            if ($title) {
-                $text = $title->getHtml();
-
-                if ($text === 'Moodle App') {
-                    return true;
-                }
+            if ($element) {
+                return true;
             }
 
             throw new DriverException('Moodle App not found in browser');
