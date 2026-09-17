@@ -19,6 +19,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CorePlatform } from '@services/platform';
+import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 /**
  * Screen breakpoints.
@@ -107,14 +108,7 @@ export class CoreScreenService {
     }
 
     get orientation(): CoreScreenOrientation {
-        if (!this.orientationDataExists()) {
-            // Not initialized yet, assume portrait.
-            return CoreScreenOrientation.PORTRAIT;
-        }
-
-        return screen.orientation.type?.startsWith(CoreScreenOrientation.LANDSCAPE)
-            ? CoreScreenOrientation.LANDSCAPE
-            : CoreScreenOrientation.PORTRAIT;
+        return this.orientationSignal();
     }
 
     get orientationSignal(): Signal<CoreScreenOrientation> {
@@ -130,17 +124,29 @@ export class CoreScreenService {
     }
 
     /**
+     * Helper method to set the current screen orientation.
+     */
+    protected async updateOrientation(): Promise<void> {
+        const screenOrientation = await ScreenOrientation.orientation();
+
+        const orientation = screenOrientation.type.startsWith(CoreScreenOrientation.LANDSCAPE)
+            ? CoreScreenOrientation.LANDSCAPE
+            : CoreScreenOrientation.PORTRAIT;
+
+        this._orientationSignal.set(orientation);
+    }
+
+    /**
      * Watch orientation changes.
      */
     async watchOrientation(): Promise<void> {
         await CorePlatform.ready();
 
-        screen.orientation.addEventListener('change', () => {
-            const orientation = this.orientation;
-            this._orientationSignal.set(orientation);
+        ScreenOrientation.addListener('screenOrientationChange', async () => {
+            await this.updateOrientation();
 
             // eslint-disable-next-line @typescript-eslint/no-deprecated
-            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation });
+            CoreEvents.trigger(CoreEvents.ORIENTATION_CHANGE, { orientation: this.orientation });
         });
     }
 
@@ -217,16 +223,7 @@ export class CoreScreenService {
     protected async initializeOrientation(): Promise<void> {
         await CorePlatform.ready();
 
-        this._orientationSignal.set(this.orientation);
-    }
-
-    /**
-     * Check if the orientation data exists.
-     *
-     * @returns Whether the orientation data exists.
-     */
-    protected orientationDataExists(): boolean {
-        return !!screen?.orientation;
+        await this.updateOrientation();
     }
 
 }
