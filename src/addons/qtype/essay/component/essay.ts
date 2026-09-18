@@ -14,7 +14,7 @@
 
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormControl } from '@angular/forms';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { AddonModQuizEssayQuestion, CoreQuestionBaseComponent } from '@features/question/classes/base-question-component';

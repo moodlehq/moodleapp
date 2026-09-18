@@ -28,7 +28,7 @@ import { CoreFileSession } from '@services/file-session';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import type { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { CorePromiseUtils } from '@static/promise-utils';

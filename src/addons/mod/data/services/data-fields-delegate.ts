@@ -22,7 +22,7 @@ import { AddonModDataEntryField,
     AddonModDataSubfieldData,
 } from './data';
 import { CoreFormFields } from '@static/form';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFileEntry } from '@services/file-helper';
 import type { AddonModDataFieldPluginBaseComponent } from '@addons/mod/data/classes/base-field-plugin-component';
 import { CoreSites } from '@services/sites';

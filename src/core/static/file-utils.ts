@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreFileEntry } from '@services/file-helper';
-import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { Translate } from '@singletons';
 
 /**
@@ -106,7 +106,8 @@ export class CoreFileUtils {
      * @param fileEntry File to transform.
      * @returns Promise resolved with the Blob.
      */
-    static filetoBlob(fileEntry: IFile): Promise<Blob> {
+    static filetoBlob(fileEntry: File): Promise<Blob> {
+        // @todo Capacitor: Still needed? File inherits from Blob. Check after remove cordova plugin.
         return new Promise((resolve, reject): void => {
             const reader = new FileReader();
             reader.onload = () => {

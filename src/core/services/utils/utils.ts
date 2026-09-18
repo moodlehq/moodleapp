@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreRedirects } from '@static/redirects';
 import { CoreMimetype } from '@static/mimetype';

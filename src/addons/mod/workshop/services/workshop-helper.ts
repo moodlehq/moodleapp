@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFile } from '@services/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
