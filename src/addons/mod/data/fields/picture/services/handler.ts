@@ -21,7 +21,7 @@ import {
 import { AddonModDataFieldHandler } from '@addons/mod/data/services/data-fields-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFileSession } from '@services/file-session';
 import { CoreFormFields } from '@static/form';
 import { makeSingleton, Translate } from '@singletons';

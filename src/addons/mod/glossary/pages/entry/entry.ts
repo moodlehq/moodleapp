@@ -23,7 +23,7 @@ import { CoreCommentsCommentsComponent } from '@features/comments/components/com
 import { CoreComments } from '@features/comments/services/comments';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreNavigator } from '@services/navigator';
 import { CoreNetwork } from '@services/network';
 import { CorePromiseUtils } from '@static/promise-utils';

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnDestroy, ElementRef, OnInit, inject, viewChild } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { FormControl } from '@angular/forms';
 import { CoreEvents, CoreEventObserver } from '@static/events';
 import { CoreGroup, CoreGroups, CoreGroupsProvider } from '@services/groups';

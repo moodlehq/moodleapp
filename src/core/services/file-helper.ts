@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreFileUtils } from '@static/file-utils';

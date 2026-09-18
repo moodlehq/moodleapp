@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
