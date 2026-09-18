@@ -20,7 +20,7 @@ import { CoreBytesConstants, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@static/logger';
-import { makeSingleton } from '@singletons';
+import { Filesystem, makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@static/text';
 import { CorePlatform } from '@services/platform';
@@ -29,7 +29,7 @@ import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Capacitor } from '@capacitor/core';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Directory, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
 
 /**

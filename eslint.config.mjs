@@ -224,10 +224,18 @@ const appConfig = {
         'no-eval': 'error',
         'no-invalid-this': 'error',
         'no-new-wrappers': 'error',
-        'no-restricted-imports': ['error', {
-            'name': 'dayjs',
-            'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
-        }],
+        'no-restricted-imports': [
+            'error',
+            {
+                'name': 'dayjs',
+                'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
+            },
+            {
+                'name': '@capacitor/filesystem',
+                'importNames': ['Filesystem'],
+                'message': 'Please use the Filesystem singleton from @singletons instead.',
+            },
+        ],
         'no-restricted-syntax': ['error', {
             selector: "NewExpression[callee.name='CoreDatabaseTableProxy']",
             message: 'Use CoreDatabaseTableProxy.createInstance instead of new CoreDatabaseTableProxy.',
