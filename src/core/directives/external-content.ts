@@ -545,7 +545,7 @@ export class CoreExternalContentDirective implements AfterViewInit, OnChanges, O
             fileEntry = await CoreWS.downloadFile(url, filePath, false);
         }
 
-        return CoreFile.convertFileSrc(CoreFile.getFileEntryURL(fileEntry));
+        return CoreFile.convertFileSrc(fileEntry.toURL());
     }
 
     /**

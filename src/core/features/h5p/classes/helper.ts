@@ -203,7 +203,7 @@ export class CoreH5PHelper {
         const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `h5p/${folderName}`);
 
         // Unzip the file.
-        await CoreFile.unzipFile(CoreFile.getFileEntryURL(file), destFolder, options.onProgress);
+        await CoreFile.unzipFile(file.toURL(), destFolder, options.onProgress);
 
         try {
             // Notify that the unzip is starting.

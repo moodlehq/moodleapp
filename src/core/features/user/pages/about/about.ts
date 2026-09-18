@@ -244,7 +244,7 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
 
             if (editedImageBlob) {
                 // Override the file entry with the edited image.
-                fileEntry = await CoreFile.writeFile(fileEntry.fullPath, editedImageBlob);
+                fileEntry = await CoreFile.writeFile(fileEntry.toURL(), editedImageBlob);
             } else {
                 return;
             }

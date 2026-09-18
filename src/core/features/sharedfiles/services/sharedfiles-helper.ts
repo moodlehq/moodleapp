@@ -164,13 +164,13 @@ export class CoreSharedFilesHelperProvider {
             throw new CoreCanceledError();
         }
 
-        const error = CoreFileUploader.isInvalidMimetype(mimetypes, file.fullPath);
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, file.toURL());
         if (error) {
             throw new CoreError(error);
         }
 
         return {
-            path: file.fullPath,
+            path: file.toURL(),
             treated: false,
         };
     }
@@ -210,7 +210,7 @@ export class CoreSharedFilesHelperProvider {
             let fileEntry: FileEntry | undefined;
             if (path) {
                 // The app was launched with the path to the file, get the file.
-                fileEntry = await CoreFile.getExternalFile(path);
+                fileEntry = await CoreFile.getFile(path);
             } else {
                 // No path received, search if there is any file in the Inbox folder.
                 fileEntry = await CoreSharedFiles.checkIOSNewFiles();
@@ -230,7 +230,7 @@ export class CoreSharedFilesHelperProvider {
             } else if (siteIds.length === 1) {
                 return this.storeSharedFileInSite(fileEntry, siteIds[0], !path);
             } else if (!this.isChoosingSite()) {
-                this.goToChooseSite(CoreFile.getFileEntryURL(fileEntry), !path);
+                this.goToChooseSite(fileEntry.toURL(), !path);
             }
         } catch (error) {
             if (error) {
