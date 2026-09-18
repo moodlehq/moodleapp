@@ -284,7 +284,7 @@ export class CoreWSProvider {
                 const responseHeaders = await new Promise<Record<string, string> | undefined>((resolve, reject) => {
                     transfer.download(
                         redirectUrl ?? url,
-                        CoreFile.getFileEntryURL(fileEntry),
+                        fileEntry.toURL(),
                         (result) => resolve(result.headers),
                         (error: FileTransferError) => reject(error),
                         true,

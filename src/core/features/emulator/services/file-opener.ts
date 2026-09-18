@@ -51,7 +51,7 @@ export class FileOpenerMock extends FileOpener {
 
         try {
             // Opening local files in browser just display a blank page. Convert the path to an object URL.
-            const fileEntry = await CoreFile.getExternalFile(filePath);
+            const fileEntry = await CoreFile.getFile(filePath);
 
             const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 

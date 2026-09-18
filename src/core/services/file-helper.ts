@@ -481,7 +481,7 @@ export class CoreFileHelperProvider {
      * @returns The file name.
      */
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
-        const path = CoreFileUtils.isFileEntry(file) ? file.fullPath : file.filepath;
+        const path = CoreFileUtils.isFileEntry(file) ? file.toURL() : file.filepath;
 
         if (path === undefined || path.length === 0) {
             return;

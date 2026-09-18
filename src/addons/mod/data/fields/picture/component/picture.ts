@@ -135,7 +135,7 @@ export class AddonModDataFieldPictureComponent extends AddonModDataFieldPluginBa
             setTimeout(() => {
                 if (this.image) {
                     this.imageUrl = 'name' in this.image
-                        ? CoreFile.convertFileSrc(CoreFile.getFileEntryURL(this.image)) // Is Offline.
+                        ? CoreFile.convertFileSrc(this.image.toURL()) // Is Offline.
                         : CoreFileHelper.getFileUrl(this.image);
                 }
             }, 1);
