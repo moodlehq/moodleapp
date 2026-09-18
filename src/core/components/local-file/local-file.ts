@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, Output, OnInit, EventEmitter, ElementRef, viewChild } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 
 import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { CoreFile } from '@services/file';

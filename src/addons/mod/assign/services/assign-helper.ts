@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
-import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
+import { DirectoryEntry, FileEntry } from '@classes/native/filesystem';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,

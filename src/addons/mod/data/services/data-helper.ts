@@ -17,7 +17,7 @@ import { Injectable, Type } from '@angular/core';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingOffline } from '@features/rating/services/rating-offline';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreDom } from '@static/dom';
 import { CoreFormFields } from '@static/form';

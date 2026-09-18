@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry, DirectoryEntry } from '@classes/native/filesystem';
 import { Md5 } from 'ts-md5';
 import { CoreLogger } from '@static/logger';
 import { CoreAppDB } from '@services/app-db';

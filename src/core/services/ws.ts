@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import {
     CapacitorHttp,
     HttpResponse as NativeHttpResponse,
