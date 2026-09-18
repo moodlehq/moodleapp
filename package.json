@@ -72,6 +72,7 @@
         "@capacitor/clipboard": "^8.0.1",
         "@capacitor/core": "^8.5.2",
         "@capacitor/device": "8.0.3",
+        "@capacitor/filesystem": "^8.1.3",
         "@capacitor/ios": "^8.5.2",
         "@capacitor/splash-screen": "^8.0.2",
         "@ionic/angular": "^8.8.19",
