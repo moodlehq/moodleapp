@@ -42,7 +42,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreText } from '@static/text';
 import { CoreArray } from '@static/array';
 import { CoreMimetype } from '@static/mimetype';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreWS } from '@services/ws';
 
 /**

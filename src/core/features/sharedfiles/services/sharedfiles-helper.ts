@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
