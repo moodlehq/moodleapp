@@ -334,7 +334,7 @@ export class CoreH5PFileStorage {
 
         const file = await CoreFile.getFile(this.getContentIndexPath(folderName, siteId));
 
-        return CoreFile.getFileEntryURL(file);
+        return file.toURL();
     }
 
     /**

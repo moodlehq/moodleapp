@@ -89,7 +89,7 @@ export default class CoreSharedFilesChooseSitePage implements OnInit {
             return;
         }
 
-        this.fileEntry = await CoreFile.getExternalFile(this.filePath);
+        this.fileEntry = await CoreFile.getFile(this.filePath);
         this.fileName = this.fileEntry.name;
     }
 

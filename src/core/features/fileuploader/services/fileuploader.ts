@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { MediaFile, CaptureError, CaptureVideoOptions } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Subject } from 'rxjs';
 
@@ -207,14 +207,8 @@ export class CoreFileUploaderProvider {
     clearTmpFiles(files: (CoreWSFile | FileEntry)[]): void {
         // Delete the temporary files.
         files.forEach((file) => {
-            if (
-                'remove' in file &&
-                CoreFile.removeBasePath(CoreFile.getFileEntryURL(file)).startsWith(CoreFileProvider.TMPFOLDER)
-            ) {
-                // Pass an empty function to prevent missing parameter error.
-                file.remove(() => {
-                    // Nothing to do.
-                });
+            if ('toURL' in file && CoreFile.removeBasePath(file.toURL()).startsWith(CoreFileProvider.TMPFOLDER)) {
+                CoreFile.removeFile(file.toURL());
             }
         });
     }
@@ -574,7 +568,7 @@ export class CoreFileUploaderProvider {
                     filename: file.filename,
                     fileurl: CoreFileHelper.getFileUrl(file),
                 });
-            } else if (file.fullPath?.includes(folderPath)) {
+            } else if (file.toURL().includes(folderPath)) {
                 // File already in the submission folder.
                 result.offline++;
             } else {
@@ -583,7 +577,7 @@ export class CoreFileUploaderProvider {
                 const destFile = CorePath.concatenatePaths(folderPath, file.name);
                 result.offline++;
 
-                await CoreFile.copyFile(CoreFile.getFileEntryURL(file), destFile);
+                await CoreFile.copyFile(file.toURL(), destFile);
             }
         }));
 
@@ -617,7 +611,7 @@ export class CoreFileUploaderProvider {
         const result = await site.uploadFile(uri, ftOptions, onProgress);
 
         if (deleteAfterUpload) {
-            CoreFile.removeExternalFile(uri);
+            CoreFile.removeFile(uri);
         }
 
         return result;
@@ -658,7 +652,7 @@ export class CoreFileUploaderProvider {
             usedNames[name] = file;
 
             // Now upload the file.
-            const filePath = CoreFile.getFileEntryURL(file);
+            const filePath = file.toURL();
             const options = this.getFileUploadOptions(filePath, name, undefined, false, 'draft', itemId);
 
             await this.uploadFile(filePath, options, undefined, siteId);
@@ -712,13 +706,13 @@ export class CoreFileUploaderProvider {
                 file,
             );
 
-            fileEntry = await CoreFile.getExternalFile(path);
+            fileEntry = await CoreFile.getFile(path);
         }
 
         // Now upload the file.
         const extension = CoreMimetype.getFileExtension(fileName);
         const mimetype = extension ? CoreMimetype.getMimeType(extension) : undefined;
-        const filePath = CoreFile.getFileEntryURL(fileEntry);
+        const filePath = fileEntry.toURL();
         const options = this.getFileUploadOptions(filePath, fileName, mimetype, isOnline, 'draft', itemId);
 
         const result = await this.uploadFile(filePath, options, undefined, siteId);
