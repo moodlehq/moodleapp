@@ -33,6 +33,7 @@ Feature: Test basic usage of login in app
       | Username | student1 |
       | Password | student1 |
     And I press "Log in" near "Lost password?" in the app
+    And I set "core-course-image" styles to "--core-image-visibility" "hidden"
     Then the header should be "Acceptance test site" in the app
     And the UI should match the snapshot
     When I restart the app
