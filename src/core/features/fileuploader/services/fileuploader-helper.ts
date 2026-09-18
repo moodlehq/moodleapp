@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { ActionSheetButton } from '@ionic/core';
 import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { ChooserResult } from 'cordova-plugin-chooser';
-import { FileEntry, IFile } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
@@ -158,10 +158,10 @@ export class CoreFileUploaderHelperProvider {
      * @param name Name to use when uploading the file. If not defined, use the file's name.
      * @returns Promise resolved when the file is uploaded.
      */
-    async copyAndUploadFile(file: IFile | File, upload: true, name?: string): Promise<CoreWSUploadFileResult>;
-    async copyAndUploadFile(file: IFile | File, upload: false, name?: string): Promise<FileEntry>;
-    async copyAndUploadFile(file: IFile | File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry>;
-    async copyAndUploadFile(file: IFile | File, upload = false, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
+    async copyAndUploadFile(file: File, upload: true, name?: string): Promise<CoreWSUploadFileResult>;
+    async copyAndUploadFile(file: File, upload: false, name?: string): Promise<FileEntry>;
+    async copyAndUploadFile(file: File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry>;
+    async copyAndUploadFile(file: File, upload = false, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
         name = name || file.name;
 
         const modal = await CoreLoadings.show('core.fileuploader.readingfile', true);
@@ -190,7 +190,7 @@ export class CoreFileUploaderHelperProvider {
 
         if (upload) {
             // Pass true to delete the copy after the upload.
-            return this.uploadGenericFile(CoreFile.getFileEntryURL(fileEntry), name, file.type, true);
+            return this.uploadGenericFile(fileEntry.toURL(), name, file.type, true);
         } else {
             return fileEntry;
         }
@@ -217,8 +217,8 @@ export class CoreFileUploaderHelperProvider {
         const fileName = options?.fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
-        if (maxSize !== undefined && maxSize != -1) {
-            const fileEntry = await CoreFile.getExternalFile(path);
+        if (maxSize !== undefined && maxSize !== -1) {
+            const fileEntry = await CoreFile.getFile(path);
 
             const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
@@ -234,9 +234,9 @@ export class CoreFileUploaderHelperProvider {
         // Now move or copy the file.
         const destPath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
         if (shouldDelete) {
-            return CoreFile.moveExternalFile(path, destPath);
+            return CoreFile.moveFile(path, destPath);
         } else {
-            return CoreFile.copyExternalFile(path, destPath);
+            return CoreFile.copyFile(path, destPath);
         }
     }
 
@@ -395,15 +395,7 @@ export class CoreFileUploaderHelperProvider {
                             // The handler provided us a fileEntry, use it.
                             result = await this.uploadFileEntry(data.fileEntry, !!data.delete, maxSize, upload, allowOffline);
                         } else if (data.path) {
-                            let fileEntry: FileEntry;
-
-                            try {
-                                // The handler provided a path. First treat it like it's a relative path.
-                                fileEntry = await CoreFile.getFile(data.path);
-                            } catch {
-                                // File not found, it's probably an absolute path.
-                                fileEntry = await CoreFile.getExternalFile(data.path);
-                            }
+                            const fileEntry = await CoreFile.getFile(data.path);
 
                             // File found, treat it.
                             result = await this.uploadFileEntry(fileEntry, !!data.delete, maxSize, upload, allowOffline);
@@ -458,7 +450,7 @@ export class CoreFileUploaderHelperProvider {
 
             await this.confirmUploadFile(file.size);
 
-            await this.uploadGenericFile(CoreFile.getFileEntryURL(fileEntry), file.name, file.type, deleteAfterUpload, siteId);
+            await this.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId);
 
             CoreToasts.show({
                 message: 'core.fileuploader.fileuploaded',
@@ -755,28 +747,28 @@ export class CoreFileUploaderHelperProvider {
      * @returns Promise resolved when done.
      */
     async uploadFileObject(
-        file: IFile | File,
+        file: File,
         maxSize: undefined | number,
         upload: true,
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult>;
     async uploadFileObject(
-        file: IFile | File,
+        file: File,
         maxSize: undefined | number,
         upload: false,
         allowOffline?: boolean,
         name?: string,
     ): Promise<FileEntry>;
     async uploadFileObject(
-        file: IFile | File,
+        file: File,
         maxSize: undefined | number,
         upload?: boolean,
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry>;
     async uploadFileObject(
-        file: IFile | File,
+        file: File,
         maxSize: undefined | number = undefined,
         upload?: boolean,
         allowOffline?: boolean,
@@ -830,7 +822,7 @@ export class CoreFileUploaderHelperProvider {
             } catch {
                 // User cancelled. Delete the file if needed.
                 if (options.deleteAfterUpload) {
-                    CoreFile.removeExternalFile(path);
+                    CoreFile.removeFile(path);
                 }
 
                 throw new CoreCanceledError();
@@ -844,17 +836,13 @@ export class CoreFileUploaderHelperProvider {
             return errorUploading(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
-        let file: IFile | undefined;
+        let file: File | undefined;
         let size = 0;
 
         if (checkSize) {
             try {
                 // Check that file size is the right one.
-                const fileEntry = await CoreFile.getExternalFile(path);
-
-                file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
-
-                size = file.size;
+                size = await CoreFile.getFileSize(path);
             } catch {
                 // Ignore failures.
             }

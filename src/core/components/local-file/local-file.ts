@@ -118,11 +118,7 @@ export class CoreLocalFileComponent implements OnInit {
         this.fileExtension = CoreMimetype.getFileExtension(file.name);
 
         // Let's calculate the relative path for the file.
-        this.relativePath = CoreFile.removeBasePath(CoreFile.getFileEntryURL(file));
-        if (!this.relativePath) {
-            // Didn't find basePath, use fullPath but if the user tries to manage the file it'll probably fail.
-            this.relativePath = file.fullPath;
-        }
+        this.relativePath = CoreFile.removeBasePath(file.toURL());
     }
 
     /**
@@ -159,7 +155,7 @@ export class CoreLocalFileComponent implements OnInit {
             options.iOSOpenFileAction = this.defaultIsOpenWithPicker ? OpenFileAction.OPEN : OpenFileAction.OPEN_WITH;
         }
 
-        CoreOpener.openFile(CoreFile.getFileEntryURL(this.file), options);
+        CoreOpener.openFile(this.file.toURL(), options);
     }
 
     /**
@@ -193,7 +189,7 @@ export class CoreLocalFileComponent implements OnInit {
         e.preventDefault();
         e.stopPropagation();
 
-        if (newName == this.file.name) {
+        if (newName === this.file.name) {
             // Name hasn't changed, stop.
             this.editMode = false;
             CoreForms.triggerFormCancelledEvent(this.formElement(), CoreSites.getCurrentSiteId());

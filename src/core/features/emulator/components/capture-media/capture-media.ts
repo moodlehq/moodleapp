@@ -316,7 +316,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             const fileEntry = await CoreFile.writeFile(this.getFilePath(), this.mediaBlob);
 
             if (!this.isVideo && !this.isCaptureImage) {
-                this.dismissWithData(CoreFile.getFileEntryURL(fileEntry));
+                this.dismissWithData(fileEntry.toURL());
             } else {
                 // The capture plugin should return a MediaFile, not a FileEntry. Convert it.
                 const metadata = await CoreFile.getMetadata(fileEntry);
@@ -328,7 +328,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
                 const mediaFile: MediaFile = {
                     name: fileEntry.name,
-                    fullPath: fileEntry.nativeURL || fileEntry.fullPath,
+                    fullPath: fileEntry.toURL(),
                     type: mimetype || '',
                     lastModifiedDate: metadata.modificationTime,
                     size: metadata.size,
