@@ -16,34 +16,13 @@ import { Injectable } from '@angular/core';
 import { Zip } from '@features/native/plugins/zip';
 import JSZip from 'jszip';
 import { CorePath } from '@static/path';
-import { File } from '@singletons';
+import { CoreFile, CoreFileFormat } from '@services/file';
 
 /**
  * Emulates the Cordova Zip plugin in browser.
  */
 @Injectable()
 export class ZipMock extends Zip {
-
-    /**
-     * Create a directory. It creates all the foldes in dirPath 1 by 1 to prevent errors.
-     *
-     * @param destination Destination parent folder.
-     * @param dirPath Relative path to the folder.
-     * @returns Promise resolved when done.
-     */
-    protected async createDir(destination: string, dirPath: string): Promise<void> {
-        // Create all the folders 1 by 1 in order, otherwise it fails.
-        const folders = dirPath.split('/');
-
-        for (let i = 0; i < folders.length; i++) {
-            const folder = folders[i];
-
-            await File.createDir(destination, folder, true);
-
-            // Folder created, add it to the destination path.
-            destination = CorePath.concatenatePaths(destination, folder);
-        }
-    }
 
     /**
      * Extracts files from a ZIP archive.
@@ -62,13 +41,11 @@ export class ZipMock extends Zip {
         source = source.replace(/%20/g, ' ');
         destination = destination.replace(/%20/g, ' ');
 
-        const sourceDir = source.substring(0, source.lastIndexOf('/'));
-        const sourceName = source.substring(source.lastIndexOf('/') + 1);
         const zip = new JSZip();
 
         try {
             // Read the file first.
-            const data = await File.readAsArrayBuffer(sourceDir, sourceName);
+            const data = await CoreFile.readFile(source, CoreFileFormat.FORMATARRAYBUFFER);
 
             // Now load the file using the JSZip library.
             await zip.loadAsync(data);
@@ -79,10 +56,7 @@ export class ZipMock extends Zip {
             }
 
             // First of all, create the directory where the files will be unzipped.
-            const destParent = destination.substring(0, destination.lastIndexOf('/'));
-            const destFolderName = destination.substring(destination.lastIndexOf('/') + 1);
-
-            await File.createDir(destParent, destFolderName, true);
+            await CoreFile.createDir(destination);
 
             const total = Object.keys(zip.files).length;
             let loaded = 0;
@@ -93,23 +67,21 @@ export class ZipMock extends Zip {
                 if (!file.dir) {
                     // It's a file.
                     const fileDir = name.substring(0, name.lastIndexOf('/'));
-                    const fileName = name.substring(name.lastIndexOf('/') + 1);
-
                     if (fileDir) {
                         // The file is in a subfolder, create it first.
-                        await this.createDir(destination, fileDir);
+                        await CoreFile.createDir(CorePath.concatenatePaths(destination, fileDir));
                     }
 
                     // Read the file contents as a Blob.
                     const fileData = await file.async('blob');
 
                     // File read and parent folder created, now write the file.
-                    const parentFolder = CorePath.concatenatePaths(destination, fileDir);
+                    const filePath = CorePath.concatenatePaths(destination, name);
 
-                    await File.writeFile(parentFolder, fileName, fileData, { replace: true });
+                    await CoreFile.writeFile(filePath, fileData);
                 } else {
                     // It's a folder, create it if it doesn't exist.
-                    await this.createDir(destination, name);
+                    await CoreFile.createDir(CorePath.concatenatePaths(destination, name));
                 }
 
                 // File unzipped, call the progress.
