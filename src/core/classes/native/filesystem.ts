@@ -490,7 +490,7 @@ function base64ToBlob(base64: string, mimeType: string): Blob {
 /**
  * Error object returned by the filesystem operations.
  */
-type FileError = {
+export type FileError = {
     code: number | string;
     message: string;
 };
