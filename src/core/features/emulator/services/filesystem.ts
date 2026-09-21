@@ -49,7 +49,14 @@ import { type FileError } from '@/core/classes/native/filesystem';
  * Native APIs used in webkit window.
  *
  * @deprecated since 4.4
- * This code will be removed when migrating to Capacitor.
+ * The requestFileSystem functions are deprecated and not supported in all browsers.
+ * But we decided to keep them for now because:
+ *
+ * -Capacitor implementation uses IndexedDB, which can cause problems with big files or when embedding files (we would need to
+ * convert every embedded file to base64).
+ * -The recommended alternative is OPFS, but we cannot use it with the --disable-web-security flag in Chrome 147+.
+ *
+ * We could explore using the File System Access API, where the user picks the folder to grant access to.
  */
 interface WebkitWindow {
 
@@ -70,7 +77,7 @@ interface WebkitWindow {
     requestFileSystem(
         type: LocalFileSystem,
         size: number,
-        successCallback: (fileSystem: FileSystem) => void,
+        successCallback: (fileSystem: FileSystemWithToURL) => void,
         errorCallback?: (fileError: FileError) => void,
     ): void;
 
@@ -80,7 +87,7 @@ interface WebkitWindow {
     webkitRequestFileSystem(
         type: LocalFileSystem,
         size: number,
-        successCallback: (fileSystem: FileSystem) => void,
+        successCallback: (fileSystem: FileSystemWithToURL) => void,
         errorCallback?: (fileError: FileError) => void,
     ): void;
 
@@ -104,6 +111,14 @@ interface WebkitWindow {
     ): void;
 
 }
+
+type FileSystemWithToURL = Omit<FileSystem, 'root'> & {
+    root: FileSystemDirectoryEntryWithToURL;
+};
+
+type FileSystemDirectoryEntryWithToURL = FileSystemDirectoryEntry & {
+    toURL(): string;
+};
 
 /**
  * Emulates the Capacitor Filesystem plugin in browser.
@@ -396,7 +411,7 @@ export class FilesystemMock implements FilesystemPlugin {
     }
 
     /**
-     * Creates a new file in a directory. The directoy must exist.
+     * Creates a new file in a directory. The directory must exist.
      *
      * @param parentDirPath Directory path.
      * @param name Name of file to create.
@@ -559,10 +574,8 @@ export class FilesystemMock implements FilesystemPlugin {
                     return;
                 }
 
-                window.requestFileSystem(window.LocalFileSystem.PERSISTENT, quota, (fileSystem: FileSystem) => {
-                    // @todo Capacitor: Stop using requestFileSystem?
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    resolve((<any> fileSystem.root).toURL());
+                window.requestFileSystem(window.LocalFileSystem.PERSISTENT, quota, (fileSystem) => {
+                    resolve(fileSystem.root.toURL());
                 }, reject);
 
                 return;
