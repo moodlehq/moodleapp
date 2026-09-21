@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreFile } from '@services/file';
 import { makeSingleton, Filesystem } from '@singletons';
 import { CoreLogger } from '@static/logger';
-import { FilesystemMock } from './file';
+import { FilesystemMock } from './filesystem';
 import { FileTransferErrorMock, FileTransferMock } from './file-transfer';
 
 /**
