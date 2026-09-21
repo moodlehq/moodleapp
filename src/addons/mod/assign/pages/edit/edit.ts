@@ -400,7 +400,7 @@ export default class AddonModAssignEditPage implements OnInit, OnDestroy, CanLea
 
         try {
             // Confirm action.
-            await CoreFileUploaderHelper.confirmUploadFile(size, true, true);
+            await CoreFileUploaderHelper.confirmUploadFile(size, undefined, true);
 
             modal = await CoreLoadings.show('core.sending', true);
 

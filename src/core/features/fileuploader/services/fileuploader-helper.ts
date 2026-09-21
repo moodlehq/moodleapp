@@ -114,7 +114,7 @@ export class CoreFileUploaderHelperProvider {
      * Show a confirmation modal to the user if the size of the file is bigger than the allowed threshold.
      *
      * @param size File size.
-     * @param alwaysConfirm True to show a confirm even if the size isn't high.
+     * @param _alwaysConfirm Unused parameter kept for compatibility.
      * @param allowOffline True to allow uploading in offline.
      * @param wifiThreshold Threshold for WiFi connection. Default: CoreFileUploaderProvider.WIFI_SIZE_WARNING.
      * @param limitedThreshold Threshold for limited connection. Default: CoreFileUploaderProvider.LIMITED_SIZE_WARNING.
@@ -122,7 +122,7 @@ export class CoreFileUploaderHelperProvider {
      */
     async confirmUploadFile(
         size: number,
-        alwaysConfirm?: boolean,
+        _alwaysConfirm?: boolean,
         allowOffline?: boolean,
         wifiThreshold?: number,
         limitedThreshold?: number,
@@ -145,8 +145,6 @@ export class CoreFileUploaderHelperProvider {
             const readableSize = CoreText.bytesToSize(size, 2);
 
             return CoreAlerts.confirm(Translate.instant('core.fileuploader.confirmuploadfile', { size: readableSize }));
-        } else if (alwaysConfirm) {
-            return CoreAlerts.confirm(Translate.instant('core.areyousure'));
         }
     }
 
@@ -795,7 +793,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         if (upload) {
-            await this.confirmUploadFile(file.size, false, allowOffline);
+            await this.confirmUploadFile(file.size, undefined, allowOffline);
         }
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.

@@ -37,7 +37,6 @@ Feature: Test basic usage of assignment activity in app
     When I press "Edit submission" in the app
     And I set the field "Online text submissions" to "Submission test edited" in the app
     And I press "Save" in the app
-    And I press "OK" in the app
     Then I should find "Submission test edited" in the app
 
     When I press "Submit assignment" in the app
@@ -115,12 +114,10 @@ Feature: Test basic usage of assignment activity in app
     And I should find "Maybe next time" within "Feedback comments" "ion-item" in the app
 
     When I press "Add a new attempt based on previous submission" in the app
-    And I press "OK" in the app
     Then I should find "Submission test 1st attempt" in the app
 
     When I set the field "Online text submissions" to "Submission test 2nd attempt" in the app
     And I press "Save" in the app
-    And I press "OK" in the app
     And I press "Submit assignment" in the app
     And I press "OK" in the app
 
@@ -252,7 +249,6 @@ Feature: Test basic usage of assignment activity in app
     When I press "Add submission" in the app
     And I set the field "Online text submissions" to "Submission test offline" in the app
     And I press "Save" in the app
-    And I press "OK" in the app
     Then I should find "This Assignment has offline data to be synchronised." in the app
     And I should find "Submission test offline" in the app
 
