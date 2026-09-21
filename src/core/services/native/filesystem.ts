@@ -14,7 +14,16 @@
 
 import { InjectionToken } from '@angular/core';
 // eslint-disable-next-line no-restricted-imports
-import { Filesystem } from '@capacitor/filesystem';
+import { Filesystem, type FilesystemPlugin } from '@capacitor/filesystem';
+
+/**
+ * Resolve the native Capacitor Filesystem implementation.
+ *
+ * @returns Native Capacitor Filesystem plugin.
+ */
+export function resolveCapacitorFilesystem(): FilesystemPlugin {
+    return Filesystem;
+}
 
 /**
  * Injection token for the Capacitor Filesystem instance.
@@ -22,5 +31,5 @@ import { Filesystem } from '@capacitor/filesystem';
  */
 export const CAPACITOR_FILESYSTEM = new InjectionToken<typeof Filesystem>('CAPACITOR_FILESYSTEM', {
     providedIn: 'root',
-    factory: () => Filesystem,
+    factory: () => resolveCapacitorFilesystem(),
 });
