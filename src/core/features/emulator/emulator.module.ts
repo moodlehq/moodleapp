@@ -26,7 +26,7 @@ import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
 import { CameraMock } from './services/camera';
-import { FilesystemMock } from './services/file';
+import { FilesystemMock } from './services/filesystem';
 import { FileOpenerMock } from './services/file-opener';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { LocalNotificationsMock } from './services/local-notifications';
