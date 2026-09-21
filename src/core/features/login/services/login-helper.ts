@@ -1080,31 +1080,67 @@ export class CoreLoginHelperProvider {
      * @returns Whether the QR reader should be displayed in site screen.
      */
     displayQRInSiteScreen(): boolean {
-        return CoreQRScan.canScanQR() && (CoreConstants.CONFIG.displayqronsitescreen === undefined ||
-            !!CoreConstants.CONFIG.displayqronsitescreen);
+        // displayqronsitescreen default is true.
+        return CoreQRScan.canScanQR() && CoreConstants.CONFIG.displayqronsitescreen !== false;
     }
 
     /**
      * Check whether the QR reader should be displayed in credentials screen.
      *
-     * @param qrCodeType QR Code type from public config, assuming enabled if undefined.
+     * @param qrCodeType QR Code type from public config.
      * @returns Whether the QR reader should be displayed in credentials screen.
      */
-    async displayQRInCredentialsScreen(qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN): Promise<boolean> {
-        if (!CoreQRScan.canScanQR()) {
+    async displayQRInCredentialsScreen(qrCodeType?: CoreSiteQRCodeType): Promise<boolean> {
+        if (
+            !CoreQRScan.canScanQR() ||
+            qrCodeType !== CoreSiteQRCodeType.QR_CODE_LOGIN ||
+            CoreConstants.CONFIG.displayqroncredentialscreen === false
+        ) {
             return false;
         }
 
-        const isSingleFixedSite = await this.isSingleFixedSite();
+        return await this.displayQRInLoginMethods();
+    }
 
-        if ((CoreConstants.CONFIG.displayqroncredentialscreen === undefined && isSingleFixedSite) ||
-            (CoreConstants.CONFIG.displayqroncredentialscreen !== undefined &&
-                !!CoreConstants.CONFIG.displayqroncredentialscreen)) {
+    /**
+     * Check whether the QR reader should be displayed in reconnect screen.
+     *
+     * @param qrCodeType QR Code type from public config.
+     * @returns Whether the QR reader should be displayed in reconnect screen.
+     */
+    async displayQRInReconnectScreen(qrCodeType?: CoreSiteQRCodeType): Promise<boolean> {
+        if (
+            !CoreQRScan.canScanQR() ||
+            qrCodeType !== CoreSiteQRCodeType.QR_CODE_LOGIN ||
+            CoreConstants.CONFIG.displayqroncredentialscreen === false
+        ) {
+            return false;
+        }
 
+        const displayQRInLoginMethods = await this.displayQRInLoginMethods();
+        if (displayQRInLoginMethods) {
+            return true;
+        }
+
+        // Check if the QR reader should be displayed in the site screen.
+        if (this.displayQRInSiteScreen()) {
             return qrCodeType === CoreSiteQRCodeType.QR_CODE_LOGIN;
         }
 
         return false;
+    }
+
+    /**
+     * Check whether the QR reader can displayed in login methods.
+     *
+     * @returns Whether the QR reader can displayed in login methods.
+     */
+    protected async displayQRInLoginMethods(): Promise<boolean> {
+        const isSingleFixedSite = await this.isSingleFixedSite();
+
+        // For "singleFixedSites" default is true, otherwise default is false.
+        return (CoreConstants.CONFIG.displayqroncredentialscreen === undefined && isSingleFixedSite) ||
+            CoreConstants.CONFIG.displayqroncredentialscreen === true;
     }
 
     /**

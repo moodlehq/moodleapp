@@ -693,7 +693,8 @@ export type CoreSitePublicConfigResponse = {
     tool_mobile_androidappid?: string; // Android app's unique identifier.
     // eslint-disable-next-line @typescript-eslint/naming-convention
     tool_mobile_setuplink?: string; // App download page.
-    tool_mobile_qrcodetype?: CoreSiteQRCodeType; // eslint-disable-line @typescript-eslint/naming-convention
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    tool_mobile_qrcodetype?: CoreSiteQRCodeType; // @since 4.3. QR login configuration.
     warnings?: CoreWSExternalWarning[];
     showloginform?: number; // @since 4.5. Display default login form.
     // eslint-disable-next-line @typescript-eslint/naming-convention
