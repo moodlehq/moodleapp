@@ -17,7 +17,6 @@ import { NgModule, Type } from '@angular/core';
 import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
-import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
@@ -41,6 +40,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { Geolocation } = await import('@features/emulator/services/geolocation');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Clipboard } = await import('@services/native/clipboard');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { File } = await import('@services/native/file');
     const { Device } = await import('@services/native/device');
 
     return [
@@ -71,7 +72,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Badge,
         Camera,
         Chooser,
-        File,
         FileOpener,
         InAppBrowser,
         Keyboard,
