@@ -729,25 +729,11 @@ export class FilesystemMock implements FilesystemPlugin {
      * @returns Promise resolved when done.
      */
     protected writeFileWithWriter(writer: FileWriter, data: string | Blob | ArrayBuffer): Promise<void> {
-        if (data instanceof Blob) {
-            return this.writeFileWithWriterInChunks(writer, data);
+        if (!(data instanceof Blob)) {
+            data = new Blob([data]);
         }
 
-        if (data instanceof ArrayBuffer) {
-            // Convert to string.
-            data = String.fromCharCode(...new Uint8Array(data));
-        }
-
-        return new Promise<void>((resolve, reject) => {
-            writer.onwriteend = (): void => {
-                if (writer.error) {
-                    reject(writer.error);
-                } else {
-                    resolve();
-                }
-            };
-            writer.write(<string> data);
-        });
+        return this.writeFileWithWriterInChunks(writer, data);
     }
 
     /**
