@@ -55,7 +55,6 @@
         "@awesome-cordova-plugins/badge": "^9.2.0",
         "@awesome-cordova-plugins/camera": "^9.2.0",
         "@awesome-cordova-plugins/core": "^9.2.0",
-        "@awesome-cordova-plugins/file": "^9.2.0",
         "@awesome-cordova-plugins/file-opener": "^9.2.0",
         "@awesome-cordova-plugins/in-app-browser": "^9.2.0",
         "@awesome-cordova-plugins/ionic-webview": "^9.2.0",
