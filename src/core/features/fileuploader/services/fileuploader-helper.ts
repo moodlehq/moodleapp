@@ -47,6 +47,7 @@ import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 /**
  * Helper service to upload files.
@@ -729,8 +730,8 @@ export class CoreFileUploaderHelperProvider {
         const result = await this.uploadFileObject(file, maxSize, upload, allowOffline, name);
 
         if (deleteAfter) {
-            // We have uploaded and deleted a copy of the file. Now delete the original one.
-            CoreFile.removeFileByFileEntry(fileEntry);
+            // We have uploaded and deleted a copy of the file. Now delete the original one if we have permission.
+            await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(fileEntry));
         }
 
         return result;
@@ -820,9 +821,9 @@ export class CoreFileUploaderHelperProvider {
                     okText: Translate.instant('core.retry'),
                 });
             } catch {
-                // User cancelled. Delete the file if needed.
+                // User cancelled. Delete the file if needed and we have permission.
                 if (options.deleteAfterUpload) {
-                    CoreFile.removeFile(path);
+                    await CorePromiseUtils.ignoreErrors(CoreFile.removeFile(path));
                 }
 
                 throw new CoreCanceledError();
