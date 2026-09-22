@@ -12,8 +12,8 @@ Feature: Test basic usage of one course in app
       | student1 | Student | student | student1@example.com |
       | student2 | Student2 | student2 | student2@example.com |
     And the following "courses" exist:
-      | fullname | shortname | category | initsections |
-      | Course 1 | C1        | 0        | 1            |
+      | fullname | shortname | category | initsections | startdate              | summary      |
+      | Course 1 | C1        | 0        | 1            | ## 1 September 2026 ## | Summary text |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
@@ -438,3 +438,10 @@ Feature: Test basic usage of one course in app
     Then I press "Open block drawer" in the app
     And I should find "HTML title test" in the app
     And I should find "body test" in the app
+
+  Scenario: View course summary
+    Given I entered the course "Course 1" as "student1" in the app
+    When I press "Course summary" in the app
+    And I set "page-core-course-index core-course-image" styles to "--core-image-visibility" "hidden"
+    And I set "page-core-course-summary core-course-image" styles to "--core-image-visibility" "hidden"
+    Then the UI should match the snapshot
