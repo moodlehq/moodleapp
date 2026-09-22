@@ -50,7 +50,15 @@ export class Entry {
     constructor(isDirectory: boolean, absoluteUrl: string) {
         this.isFile = !isDirectory;
         this.isDirectory = isDirectory;
-        this.name = absoluteUrl.substring(absoluteUrl.lastIndexOf('/') + 1);
+
+        // Paths can be encoded. Make sure the name is decoded.
+        const encodedName = absoluteUrl.substring(absoluteUrl.lastIndexOf('/') + 1);
+        try {
+            this.name = decodeURIComponent(encodedName);
+        } catch {
+            this.name = encodedName;
+        }
+
         this.nativeURL = absoluteUrl; // eslint-disable-line @typescript-eslint/no-deprecated
 
         this.fullPath = absoluteUrl; // eslint-disable-line @typescript-eslint/no-deprecated

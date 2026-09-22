@@ -166,14 +166,12 @@ export class CoreFileProvider {
         await this.init();
         this.logger.debug(`Get file: ${path}`);
 
-        const absolutePath = this.addBasePathIfNeeded(path);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
         const stat = await Filesystem.stat({ path: absolutePath });
 
         if (stat.type !== 'file') {
             throw new CoreError(`Path is not a file: ${path}`);
         }
-
-        // @todo: Encode needed?
 
         return new FileEntry(stat.uri);
     }
@@ -189,14 +187,12 @@ export class CoreFileProvider {
 
         this.logger.debug(`Get directory: ${path}`);
 
-        const absolutePath = this.addBasePathIfNeeded(path);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
         const stat = await Filesystem.stat({ path: absolutePath });
 
         if (stat.type !== 'directory') {
             throw new CoreError(`Path is not a directory: ${path}`);
         }
-
-        // @todo: encode needed?
 
         return new DirectoryEntry(stat.uri);
     }
@@ -228,7 +224,7 @@ export class CoreFileProvider {
     ): Promise<FileEntry | DirectoryEntry> {
         await this.init();
 
-        const absolutePath = base ? CorePath.concatenatePaths(base, path) : this.addBasePathIfNeeded(path);
+        const absolutePath = this.toAbsoluteAndNormalize(base ? CorePath.concatenatePaths(base, path) : path);
 
         this.logger.debug(`Create ${isDirectory ? 'dir' : 'file'} ${path}`);
 
@@ -256,10 +252,10 @@ export class CoreFileProvider {
         }
 
         // Ensure parent directory exists.
-        const parent = CoreFileUtils.getFileAndDirectoryFromPath(path).directory;
+        const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
         if (parent) {
             await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
-                path: this.addBasePathIfNeeded(parent),
+                path: parent,
                 recursive: true,
             }));
         }
@@ -311,7 +307,7 @@ export class CoreFileProvider {
 
         this.logger.debug(`Remove directory: ${path}`);
 
-        await Filesystem.rmdir({ path: this.addBasePathIfNeeded(path), recursive: true });
+        await Filesystem.rmdir({ path: this.toAbsoluteAndNormalize(path), recursive: true });
     }
 
     /**
@@ -325,9 +321,7 @@ export class CoreFileProvider {
 
         this.logger.debug(`Remove file: ${path}`);
 
-        await Filesystem.deleteFile({ path: this.addBasePathIfNeeded(path) });
-
-        // @todo: Encode needed?
+        await Filesystem.deleteFile({ path: this.toAbsoluteAndNormalize(path) });
     }
 
     /**
@@ -355,7 +349,7 @@ export class CoreFileProvider {
 
         this.logger.debug(`Get contents of dir: ${path}`);
 
-        const { files } = await Filesystem.readdir({ path: this.addBasePathIfNeeded(path) });
+        const { files } = await Filesystem.readdir({ path: this.toAbsoluteAndNormalize(path) });
 
         return files.map((info) => info.type === 'directory'
             ? new DirectoryEntry(info.uri)
@@ -380,12 +374,12 @@ export class CoreFileProvider {
      */
     protected async getSize(entry: DirectoryEntry | FileEntry): Promise<number> {
         if (!this.isDirectoryEntry(entry)) {
-            const stat = await Filesystem.stat({ path: this.addBasePathIfNeeded(entry.toURL()) });
+            const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(entry.toURL()) });
 
             return stat.size;
         }
 
-        const contents = await this.getDirectoryContents(entry.toURL());
+        const contents = await this.getDirectoryContents(this.normalizePathForFilesystem(entry.toURL()));
         const sizes = await Promise.all(contents.map((child) => this.getSize(child)));
 
         return sizes.reduce((total, size) => total + size, 0);
@@ -540,7 +534,7 @@ export class CoreFileProvider {
             path = CorePath.concatenatePaths(folder, path);
         }
 
-        const absolutePath = this.addBasePathIfNeeded(path);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
 
         this.logger.debug(`Read file ${absolutePath} with format ${format}`);
 
@@ -728,14 +722,14 @@ export class CoreFileProvider {
 
         this.logger.debug(`Write file: ${path}`);
 
-        const absolutePath = this.addBasePathIfNeeded(path);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
 
         if (append) {
             // Ensure parent directory exists to prevent errors.
-            const parent = CoreFileUtils.getFileAndDirectoryFromPath(path).directory;
+            const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
             if (parent) {
                 await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
-                    path: this.addBasePathIfNeeded(parent),
+                    path: parent,
                     recursive: true,
                 }));
             }
@@ -841,7 +835,7 @@ export class CoreFileProvider {
      * @deprecated since 6.0. Use getFile with the absolute path instead.
      */
     async getExternalFile(fullPath: string): Promise<FileEntry> {
-        const { uri } = await Filesystem.stat({ path: fullPath });
+        const { uri } = await Filesystem.stat({ path: this.normalizePathForFilesystem(fullPath) });
 
         return new FileEntry(uri);
     }
@@ -854,7 +848,7 @@ export class CoreFileProvider {
      * @deprecated since 6.0. Use getFileSize with the absolute path instead.
      */
     async getExternalFileSize(path: string): Promise<number> {
-        const stat = await Filesystem.stat({ path });
+        const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(path) });
 
         return stat.size;
     }
@@ -867,7 +861,7 @@ export class CoreFileProvider {
      * @deprecated since 6.0. Use removeFile with the absolute path instead.
      */
     async removeExternalFile(fullPath: string): Promise<void> {
-        await Filesystem.deleteFile({ path: fullPath });
+        await Filesystem.deleteFile({ path: this.normalizePathForFilesystem(fullPath) });
     }
 
     /**
@@ -995,8 +989,8 @@ export class CoreFileProvider {
             await this.createDir(toFileAndDir.directory);
         }
 
-        const fromPath = this.addBasePathIfNeeded(from);
-        const toPath = this.addBasePathIfNeeded(to);
+        const fromPath = this.toAbsoluteAndNormalize(from);
+        const toPath = this.toAbsoluteAndNormalize(to);
 
         if (copy) {
             await Filesystem.copy({
@@ -1009,8 +1003,6 @@ export class CoreFileProvider {
                 to: toPath,
             });
         }
-
-        // @todo: Encode?
 
         return isDir ? new DirectoryEntry(toPath) : new FileEntry(toPath);
     }
@@ -1055,6 +1047,7 @@ export class CoreFileProvider {
      *
      * @param path Path to treat.
      * @returns Path with basePath added.
+     * @deprecated since 6.0. Use the toAbsoluteAndNormalize instead, for internal use only.
      */
     addBasePathIfNeeded(path: string): string {
         if (path.match(/^[a-z0-9]+:\/\//i)) {
@@ -1066,6 +1059,37 @@ export class CoreFileProvider {
         } else {
             return CorePath.concatenatePaths(this.basePath, path);
         }
+    }
+
+    /**
+     * Converts the path to an absolute path and also fixes invalid percent encodings.
+     *
+     * @param path Path to treat.
+     * @returns Fixed path.
+     */
+    protected toAbsoluteAndNormalize(path: string): string {
+        const absolutePath = path.match(/^[a-z0-9]+:\/\//i)
+            ? path
+            : path.startsWith(this.basePath)
+                ? path
+                : CorePath.concatenatePaths(this.basePath, path);
+
+        return this.normalizePathForFilesystem(absolutePath);
+    }
+
+    /**
+     * Normalize a path before using it in Capacitor Filesystem calls.
+     *
+     * It keeps already URI-encoded bytes unchanged and encodes invalid `%` occurrences.
+     *
+     * @param path Path to normalize.
+     * @returns Normalized path.
+     */
+    protected normalizePathForFilesystem(path: string): string {
+        const placeholder = '__CORE_FILE_ENCODED_PERCENT__';
+        const protectedPath = path.replace(/%([0-9a-fA-F]{2})/g, `${placeholder}$1`);
+
+        return encodeURI(protectedPath).replace(new RegExp(`${placeholder}([0-9a-fA-F]{2})`, 'g'), '%$1');
     }
 
     /**
@@ -1105,8 +1129,8 @@ export class CoreFileProvider {
             await this.createDir(destFolder);
         }
 
-        // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
-        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetype.removeExtension(path));
+        // If destFolder is not set, use same location as ZIP file.
+        destFolder = this.toAbsoluteAndNormalize(destFolder || CoreMimetype.removeExtension(path));
 
         const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress);
 
@@ -1144,7 +1168,7 @@ export class CoreFileProvider {
      * @returns Promise resolved with metadata.
      */
     async getMetadata(fileEntry: Entry): Promise<Metadata> {
-        const path = fileEntry.toURL();
+        const path = this.normalizePathForFilesystem(fileEntry.toURL());
         const stat = await Filesystem.stat({ path });
 
         return {
@@ -1183,7 +1207,8 @@ export class CoreFileProvider {
             await this.createDir(dirAndFile.directory);
         }
 
-        to = this.addBasePathIfNeeded(to);
+        from = this.toAbsoluteAndNormalize(from);
+        to = this.toAbsoluteAndNormalize(to);
 
         if (copy) {
             await Filesystem.copy({ from, to });
