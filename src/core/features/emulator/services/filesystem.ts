@@ -252,7 +252,7 @@ export class FilesystemMock implements FilesystemPlugin {
      * @param options Mkdir options.
      */
     async mkdir(options: MkdirOptions): Promise<void> {
-        await this.getFileOrDir(options.path, true, { create: true, recursive: options.recursive });
+        await this.getFileOrDir(options.path, false, { create: true, recursive: options.recursive });
     }
 
     /**
@@ -697,7 +697,7 @@ export class FilesystemMock implements FilesystemPlugin {
         if (dirEntry.isDirectory) {
             return <DirectoryEntry> dirEntry;
         } else {
-            throw this.toFileError('input is not a directory');
+            throw this.toFileError(`input is not a directory: ${directoryUrl}`);
         }
     }
 
