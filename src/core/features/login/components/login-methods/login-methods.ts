@@ -15,7 +15,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreSite } from '@classes/sites/site';
-import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
+import { CoreSiteIdentityProvider, CoreSitePublicConfigResponse, CoreSiteQRCodeType } from '@classes/sites/unauthenticated-site';
 import { CoreLoginHelper, CoreLoginMethod } from '@features/login/services/login-helper';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreSitesFactory } from '@services/sites-factory';
@@ -94,24 +94,24 @@ export class CoreLoginMethodsComponent implements OnInit {
      * Set if should show the scan QR code button.
      */
     async setShowScanQR(): Promise<void> {
-        if (this.site) {
-            if (this.site.isDemoModeSite()) {
-                this.showScanQR = false;
+        // Site is only populated on the reconnect screen.
+        if (this.site?.isDemoModeSite()) {
+            this.showScanQR = false;
 
-                return;
-            }
-
-            this.showScanQR = CoreLoginHelper.displayQRInSiteScreen();
-
-            if (this.showScanQR) {
-                return;
-            }
+            return;
         }
 
-        // If still false or credentials screen.
-        if (this.siteConfig) {
-            this.showScanQR = await CoreLoginHelper.displayQRInCredentialsScreen(this.siteConfig.tool_mobile_qrcodetype);
+        const credentialsScreen = !this.site;
+
+        let qrCodeType = this.siteConfig?.tool_mobile_qrcodetype;
+        // If the QR code type is undefined the site does not have this setting, assume it enabled.
+        if (this.siteConfig && this.siteConfig.tool_mobile_qrcodetype === undefined) {
+            qrCodeType = CoreSiteQRCodeType.QR_CODE_LOGIN;
         }
+
+        this.showScanQR = credentialsScreen ?
+            await CoreLoginHelper.displayQRInCredentialsScreen(qrCodeType) :
+            await CoreLoginHelper.displayQRInReconnectScreen(qrCodeType);
     }
 
     /**
