@@ -15,6 +15,8 @@
 import { NgModule, provideAppInitializer } from '@angular/core';
 import { TestingBehatRuntime, TestingBehatRuntimeService } from './services/behat-runtime';
 import { CorePlatform } from '@services/platform';
+import { CoreQRScanService } from '@services/qrscan';
+import { CoreQRScanBehatMock } from './services/qrscan';
 
 type AutomatedTestsWindow = Window & {
     behat?: TestingBehatRuntimeService;
@@ -35,6 +37,10 @@ async function initializeAutomatedTests(window: AutomatedTestsWindow) {
 
 @NgModule({
     providers: [
+        {
+            provide: CoreQRScanService,
+            useFactory: (): CoreQRScanService => CorePlatform.isAutomated() ? new CoreQRScanBehatMock() : new CoreQRScanService(),
+        },
         provideAppInitializer(() => initializeAutomatedTests(window)),
     ],
 })
