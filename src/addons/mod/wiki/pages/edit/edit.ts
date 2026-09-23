@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import { CoreError } from '@classes/errors/error';
+import { CoreAnyError, CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
@@ -214,6 +214,13 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
                 await this.fetchModuleAndCourseId();
 
+                if (this.courseId && this.cmId) {
+                    const wiki = await AddonModWiki.getWiki(this.courseId, this.cmId, {
+                        readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
+                    });
+                    canEdit = canEdit && wiki.cancreatepages;
+                }
+
                 // Try to get wikiId.
                 if (!this.wikiId && this.cmId && this.courseId) {
                     const module = await CoreCourse.getModule(this.cmId, this.courseId, undefined, true);
@@ -225,7 +232,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
                     // Title is set, it could be editing an offline page or creating a new page using an edit link.
                     // First of all, verify if this page was created in the current sync.
                     if (syncResult) {
-                        const page = syncResult.created.find((page) => page.title == pageTitle);
+                        const page = syncResult.created.find((page) => page.title === pageTitle);
 
                         if (page && page.pageId > 0) {
                             // Page was created, now it exists in the site.
@@ -256,7 +263,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
             return true;
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error getting wiki data.' });
+            CoreAlerts.showError(error as CoreAnyError, { default: 'Error getting wiki data.' });
             fetchFailed = true;
 
             // Go back.
@@ -332,7 +339,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
     protected hasDataChanged(): boolean {
         const values = this.pageForm.value;
 
-        return !(this.originalContent == values.text || (!this.editing && !values.text && !values.title));
+        return !(this.originalContent === values.text || (!this.editing && !values.text && !values.title));
     }
 
     /**
@@ -488,7 +495,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
         const response = await AddonModWiki.getPageForEditing(this.pageId, this.section, true);
 
-        if (response.version && this.version != response.version) {
+        if (response.version && this.version !== response.version) {
             this.wrongVersionLock = true;
         }
     }
