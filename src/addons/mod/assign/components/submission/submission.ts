@@ -306,7 +306,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
         try {
             // Confirm action.
-            await CoreFileUploaderHelper.confirmUploadFile(size, true);
+            await CoreFileUploaderHelper.confirmUploadFile(size);
         } catch {
             // Cancelled.
             return;
