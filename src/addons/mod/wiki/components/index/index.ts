@@ -152,7 +152,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected listenEvents(): void {
         // Listen for manual sync events.
         this.manualSyncObserver = CoreEvents.on(ADDON_MOD_WIKI_MANUAL_SYNCED, (data) => {
-            if (!data || !this.wiki || data.wikiId != this.wiki.id) {
+            if (!data || !this.wiki || data.wikiId !== this.wiki.id) {
                 return;
             }
 
@@ -328,7 +328,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             if (!this.newPageObserver) {
                 // It's an offline page, listen for new pages event to detect if the user goes to Edit and submits the page.
                 this.newPageObserver = CoreEvents.on(ADDON_MOD_WIKI_PAGE_CREATED_EVENT, async (data) => {
-                    if (data.subwikiId != this.currentSubwiki?.id || data.pageTitle != title) {
+                    if (data.subwikiId !== this.currentSubwiki?.id || data.pageTitle !== title) {
                         return;
                     }
 
@@ -647,13 +647,13 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
     protected async goToPage(page: AddonModWikiSubwikiPage | AddonModWikiPageDBRecord): Promise<void> {
         if (!('id' in page)) {
             // It's an offline page. Check if we are already in the same offline page.
-            if (this.currentPage || !this.pageTitle || page.title != this.pageTitle) {
+            if (this.currentPage || !this.pageTitle || page.title !== this.pageTitle) {
                 this.openPageOrSubwiki({
                     pageTitle: page.title,
                     subwikiId: page.subwikiid,
                 });
             }
-        } else if (this.currentPage != page.id) {
+        } else if (this.currentPage !== page.id) {
             // Add a new State.
             const pageContents = await this.fetchPageContents(page.id);
 
@@ -760,10 +760,10 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      */
     protected isSubwikiSelected(subwiki: AddonModWikiSubwiki): boolean {
         if (subwiki.id > 0 && this.subwikiData.subwikiSelected > 0) {
-            return subwiki.id == this.subwikiData.subwikiSelected;
+            return subwiki.id === this.subwikiData.subwikiSelected;
         }
 
-        return subwiki.userid == this.subwikiData.userSelected && subwiki.groupid == this.subwikiData.groupSelected;
+        return subwiki.userid === this.subwikiData.userSelected && subwiki.groupid === this.subwikiData.groupSelected;
     }
 
     /**
@@ -898,9 +898,9 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
      * @inheritdoc
      */
     protected isRefreshSyncNeeded(syncEventData: AddonModWikiAutoSyncData): boolean {
-        if (this.currentSubwiki && syncEventData.subwikiId == this.currentSubwiki.id &&
-            syncEventData.wikiId == this.currentSubwiki.wikiid && syncEventData.userId == this.currentSubwiki.userid &&
-            syncEventData.groupId == this.currentSubwiki.groupid) {
+        if (this.currentSubwiki && syncEventData.subwikiId === this.currentSubwiki.id &&
+            syncEventData.wikiId === this.currentSubwiki.wikiid && syncEventData.userId === this.currentSubwiki.userid &&
+            syncEventData.groupId === this.currentSubwiki.groupid) {
 
             if (this.isCurrentView && syncEventData.warnings && syncEventData.warnings.length) {
                 // Show warnings.
@@ -998,14 +998,14 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
             } else {
                 if (subwiki.groupid !== 0 && userGroups.length > 0) {
                     // Get groupLabel if it has groupId.
-                    const group = userGroups.find(group => group.id == subwiki.groupid);
+                    const group = userGroups.find(group => group.id === subwiki.groupid);
                     groupLabel = group?.name ?? '';
                 } else {
                     groupLabel = Translate.instant('addon.mod_wiki.notingroup');
                 }
 
                 if (subwiki.userid !== 0) {
-                    if (!multiLevelList && subwiki.groupid != 0) {
+                    if (!multiLevelList && subwiki.groupid !== 0) {
                         multiLevelList = true;
                     }
 
@@ -1066,7 +1066,7 @@ export class AddonModWikiIndexComponent extends CoreCourseModuleMainActivityComp
                     let candidateSubwikiId: number | undefined;
                     if (subwiki.userid > 0) {
                         // Check if it's the current user.
-                        if (this.currentUserId == subwiki.userid) {
+                        if (this.currentUserId === subwiki.userid) {
                             candidateSubwikiId = subwiki.id;
                         }
                     } else if (subwiki.groupid > 0) {
