@@ -214,6 +214,13 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
                 await this.fetchModuleAndCourseId();
 
+                if (this.courseId && this.cmId) {
+                    const wiki = await AddonModWiki.getWiki(this.courseId, this.cmId, {
+                        readingStrategy: CoreSitesReadingStrategy.PREFER_CACHE,
+                    });
+                    canEdit = canEdit && wiki.cancreatepages;
+                }
+
                 // Try to get wikiId.
                 if (!this.wikiId && this.cmId && this.courseId) {
                     const module = await CoreCourse.getModule(this.cmId, this.courseId, undefined, true);

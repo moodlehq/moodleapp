@@ -19,11 +19,14 @@
     }
 
     <core-context-menu>
-        @if (canEdit) {
+        @if (canEdit()) {
             @if (isOnline() || pageIsOffline) {
                 <core-context-menu-item [priority]="590" [content]="'core.edit' | translate" iconAction="fas-pen"
                     (action)="goToEditPage()" />
             }
+        }
+
+        @if (canCreate()) {
             <core-context-menu-item [priority]="580" [content]="'addon.mod_wiki.createpage' | translate" iconAction="fas-plus"
                 (action)="goToNewPage()" />
         }
@@ -73,7 +76,7 @@
                         [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
                 </h2>
             }
-            <article [class.addon-mod_wiki-noedit]="!canEdit">
+            <article [class.addon-mod_wiki-noedit]="!canEdit()">
                 @if (pageContent) {
                     <core-format-text [component]="component" [componentId]="componentId" [text]="pageContent" contextLevel="module"
                         [contextInstanceId]="module.id" [courseId]="courseId" [sanitize]="pageIsOffline" />
@@ -96,7 +99,7 @@
     <core-course-module-navigation collapsible-footer [hidden]="showLoading" [courseId]="courseId" [currentModuleId]="module.id" />
 }
 
-@if (canEdit) {
+@if (canCreate()) {
     <ion-fab slot="fixed" core-fab vertical="bottom" horizontal="end">
         <ion-fab-button (click)="goToNewPage()" [attr.aria-label]="'addon.mod_wiki.createpage' | translate">
             <ion-icon name="fas-plus" aria-hidden="true" />
