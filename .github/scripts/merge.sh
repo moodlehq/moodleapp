@@ -7,7 +7,7 @@ if [ -z $GIT_TOKEN ] || [ $GITHUB_REPOSITORY != 'moodlemobile/moodleapp' ]; then
 fi
 
 print_title "Run merge scripts"
-git clone --depth 1 --single-branch --branch ionic5 https://$GIT_TOKEN@github.com/moodlemobile/apps-scripts.git ../scripts
+git clone --depth 1 --single-branch --branch capacitor https://$GIT_TOKEN@github.com/moodlemobile/apps-scripts.git ../scripts
 cp ../scripts/*.sh scripts/
 
 if [ ! -f scripts/merge.sh ]; then
