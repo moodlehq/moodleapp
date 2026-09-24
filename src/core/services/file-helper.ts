@@ -13,8 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreNetwork } from '@services/network';
 import { CoreFile } from '@services/file';
 import { CoreFileUtils } from '@static/file-utils';
@@ -482,7 +481,7 @@ export class CoreFileHelperProvider {
      * @returns The file name.
      */
     getFilenameFromPath(file: CoreFileEntry): string | undefined {
-        const path = CoreFileUtils.isFileEntry(file) ? file.fullPath : file.filepath;
+        const path = CoreFileUtils.isFileEntry(file) ? file.toURL() : file.filepath;
 
         if (path === undefined || path.length === 0) {
             return;

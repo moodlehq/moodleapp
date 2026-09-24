@@ -19,7 +19,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreFileSession } from '@services/file-session';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 import { AddonModAssignSubmissionPluginBaseComponent } from '@addons/mod/assign/classes/base-submission-plugin-component';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';

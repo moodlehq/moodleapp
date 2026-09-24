@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
@@ -204,7 +203,7 @@ export class CoreH5PHelper {
         const destFolder = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, `h5p/${folderName}`);
 
         // Unzip the file.
-        await CoreFile.unzipFile(CoreFile.getFileEntryURL(file), destFolder, options.onProgress);
+        await CoreFile.unzipFile(file.toURL(), destFolder, options.onProgress);
 
         try {
             // Notify that the unzip is starting.

@@ -18,7 +18,6 @@ import { CoreEmulatorHelper } from './services/emulator-helper';
 
 // Ionic Native services.
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
-import { File } from '@awesome-cordova-plugins/file/ngx';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
@@ -27,7 +26,7 @@ import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
 import { CameraMock } from './services/camera';
-import { FileMock } from './services/file';
+import { FilesystemMock } from './services/filesystem';
 import { FileOpenerMock } from './services/file-opener';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { LocalNotificationsMock } from './services/local-notifications';
@@ -39,6 +38,7 @@ import { CoreNative } from '@features/native/services/native';
 import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 import { CoreDbProvider } from '@services/db';
 import { CoreDbProviderMock } from '@features/emulator/services/db';
+import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
 
 /**
  * This module handles the emulation of Cordova plugins in browser and desktop.
@@ -56,8 +56,8 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
             useFactory: (): Camera => CorePlatform.isMobile() ? new Camera() : new CameraMock(),
         },
         {
-            provide: File,
-            useFactory: (): File => CorePlatform.isMobile() ? new File() : new FileMock(),
+            provide: CAPACITOR_FILESYSTEM,
+            useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFilesystem() : new FilesystemMock(),
         },
         {
             provide: FileOpener,

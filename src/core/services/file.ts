@@ -14,15 +14,13 @@
 
 import { Injectable } from '@angular/core';
 
-import { FileEntry, DirectoryEntry, Entry, Metadata, IFile } from '@awesome-cordova-plugins/file/ngx';
-
 import { CoreMimetype } from '@static/mimetype';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreBytesConstants, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@static/logger';
-import { makeSingleton, File } from '@singletons';
+import { Filesystem, makeSingleton } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@static/text';
 import { CorePlatform } from '@services/platform';
@@ -31,6 +29,8 @@ import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Capacitor } from '@capacitor/core';
+import { Directory, Encoding } from '@capacitor/filesystem';
+import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -130,9 +130,12 @@ export class CoreFileProvider {
         await CorePlatform.ready();
 
         if (CorePlatform.isAndroid()) {
-            this.basePath = File.externalApplicationStorageDirectory || this.basePath;
+            // Capacitor returns .../files for Directory.External. Use the parent to keep compatibility with Cordova paths.
+            const { uri } = await Filesystem.getUri({ directory: Directory.External, path: '' });
+            this.basePath = CoreText.addEndingSlash(uri.replace(/\/files\/?$/, ''));
         } else if (CorePlatform.isIOS()) {
-            this.basePath = File.documentsDirectory || this.basePath;
+            const { uri } = await Filesystem.getUri({ directory: Directory.Documents, path: '' });
+            this.basePath = CoreText.addEndingSlash(uri);
         } else if (this.basePath === '') {
             this.logger.error('Error getting device OS.');
 
@@ -150,7 +153,7 @@ export class CoreFileProvider {
      * @deprecated since 5.0. Not necessary anymore.
      */
     isAvailable(): boolean {
-        return window.resolveLocalFileSystemURL !== undefined;
+        return true;
     }
 
     /**
@@ -163,19 +166,14 @@ export class CoreFileProvider {
         await this.init();
         this.logger.debug(`Get file: ${path}`);
 
-        try {
-            return <FileEntry>await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(path));
-        } catch (error) {
-            if (error && (error.code === FileError.NOT_FOUND_ERR || error.code === FileError.ENCODING_ERR)) {
-                // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
-                const encodedPath = encodeURI(path);
-                if (encodedPath !== path) {
-                    return <FileEntry>await File.resolveLocalFilesystemUrl(this.addBasePathIfNeeded(encodedPath));
-                }
-            }
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+        const stat = await Filesystem.stat({ path: absolutePath });
 
-            throw error;
+        if (stat.type !== 'file') {
+            throw new CoreError(`Path is not a file: ${path}`);
         }
+
+        return new FileEntry(stat.uri);
     }
 
     /**
@@ -189,19 +187,14 @@ export class CoreFileProvider {
 
         this.logger.debug(`Get directory: ${path}`);
 
-        try {
-            return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(path));
-        } catch (error) {
-            if (error && (error.code === FileError.NOT_FOUND_ERR || error.code === FileError.ENCODING_ERR)) {
-                // Cannot read some files if the path contains the % character and it's not an encoded char. Try encoding it.
-                const encodedPath = encodeURI(path);
-                if (encodedPath !== path) {
-                    return await File.resolveDirectoryUrl(this.addBasePathIfNeeded(encodedPath));
-                }
-            }
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+        const stat = await Filesystem.stat({ path: absolutePath });
 
-            throw error;
+        if (stat.type !== 'directory') {
+            throw new CoreError(`Path is not a directory: ${path}`);
         }
+
+        return new DirectoryEntry(stat.uri);
     }
 
     /**
@@ -231,31 +224,50 @@ export class CoreFileProvider {
     ): Promise<FileEntry | DirectoryEntry> {
         await this.init();
 
-        path = this.removeBasePath(path);
-        base = base || this.basePath;
+        const absolutePath = this.toAbsoluteAndNormalize(base ? CorePath.concatenatePaths(base, path) : path);
 
-        if (!path.includes('/')) {
-            if (isDirectory) {
-                this.logger.debug(`Create dir ${path} in ${base}`);
+        this.logger.debug(`Create ${isDirectory ? 'dir' : 'file'} ${path}`);
 
-                return File.createDir(base, path, !failIfExists);
-            } else {
-                this.logger.debug(`Create file ${path} in ${base}`);
+        // Check if it already exists to honor failIfExists and to avoid overwriting existing files.
+        const existing = await CorePromiseUtils.ignoreErrors(Filesystem.stat({ path: absolutePath }));
 
-                return File.createFile(base, path, !failIfExists);
+        if (existing) {
+            if (failIfExists) {
+                throw new CoreError(`Path already exists: ${path}`);
             }
-        } else {
-            // The file plugin doesn't allow creating more than 1 level at a time (e.g. tmp/folder).
-            // We need to create them 1 by 1.
-            const firstDir = path.substring(0, path.indexOf('/'));
-            const restOfPath = path.substring(path.indexOf('/') + 1);
+            if (isDirectory && existing.type !== 'directory') {
+                throw new CoreError(`Path exists and is not a directory: ${path}`);
+            }
+            if (!isDirectory && existing.type !== 'file') {
+                throw new CoreError(`Path exists and is not a file: ${path}`);
+            }
 
-            this.logger.debug(`Create dir ${firstDir} in ${base}`);
-
-            const newDirEntry = await File.createDir(base, firstDir, true);
-
-            return this.create(isDirectory, restOfPath, failIfExists, this.getFileEntryURL(newDirEntry));
+            return isDirectory ? new DirectoryEntry(existing.uri) : new FileEntry(existing.uri);
         }
+
+        if (isDirectory) {
+            await Filesystem.mkdir({ path: absolutePath, recursive: true });
+
+            return new DirectoryEntry(absolutePath);
+        }
+
+        // Ensure parent directory exists.
+        const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
+        if (parent) {
+            await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
+                path: parent,
+                recursive: true,
+            }));
+        }
+
+        // Create empty file.
+        const { uri } = await Filesystem.writeFile({
+            path: absolutePath,
+            data: '',
+            encoding: Encoding.UTF8,
+        });
+
+        return new FileEntry(uri);
     }
 
     /**
@@ -293,10 +305,9 @@ export class CoreFileProvider {
     async removeDir(path: string): Promise<void> {
         await this.init();
 
-        path = this.removeBasePath(path);
         this.logger.debug(`Remove directory: ${path}`);
 
-        await File.removeRecursively(this.basePath, path);
+        await Filesystem.rmdir({ path: this.toAbsoluteAndNormalize(path), recursive: true });
     }
 
     /**
@@ -308,21 +319,9 @@ export class CoreFileProvider {
     async removeFile(path: string): Promise<void> {
         await this.init();
 
-        path = this.removeBasePath(path);
         this.logger.debug(`Remove file: ${path}`);
 
-        try {
-            await File.removeFile(this.basePath, path);
-        } catch (error) {
-            // The delete can fail if the path has encoded characters. Try again if that's the case.
-            const decodedPath = decodeURI(path);
-
-            if (decodedPath != path) {
-                await File.removeFile(this.basePath, decodedPath);
-            } else {
-                throw error;
-            }
-        }
+        await Filesystem.deleteFile({ path: this.toAbsoluteAndNormalize(path) });
     }
 
     /**
@@ -331,8 +330,12 @@ export class CoreFileProvider {
      * @param entry File Entry.
      * @returns Promise resolved when the file is deleted.
      */
-    removeFileByFileEntry(entry: Entry): Promise<void> {
-        return new Promise((resolve, reject) => entry.remove(resolve, reject));
+    async removeFileByFileEntry(entry: Entry): Promise<void> {
+        if (entry.isDirectory) {
+            await this.removeDir(entry.toURL());
+        } else {
+            await this.removeFile(entry.toURL());
+        }
     }
 
     /**
@@ -344,12 +347,13 @@ export class CoreFileProvider {
     async getDirectoryContents(path: string): Promise<(FileEntry | DirectoryEntry)[]> {
         await this.init();
 
-        path = this.removeBasePath(path);
         this.logger.debug(`Get contents of dir: ${path}`);
 
-        const result = await File.listDir(this.basePath, path);
+        const { files } = await Filesystem.readdir({ path: this.toAbsoluteAndNormalize(path) });
 
-        return <(FileEntry | DirectoryEntry)[]>result;
+        return files.map((info) => info.type === 'directory'
+            ? new DirectoryEntry(info.uri)
+            : new FileEntry(info.uri));
     }
 
     /**
@@ -368,41 +372,17 @@ export class CoreFileProvider {
      * @param entry Directory or file.
      * @returns Promise to be resolved when the size is calculated.
      */
-    protected getSize(entry: DirectoryEntry | FileEntry): Promise<number> {
-        return new Promise<number>((resolve, reject) => {
-            if (this.isDirectoryEntry(entry)) {
-                const directoryReader = entry.createReader();
+    protected async getSize(entry: DirectoryEntry | FileEntry): Promise<number> {
+        if (!this.isDirectoryEntry(entry)) {
+            const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(entry.toURL()) });
 
-                directoryReader.readEntries(async (entries: (DirectoryEntry | FileEntry)[]) => {
-                    const promises: Promise<number>[] = [];
-                    for (let i = 0; i < entries.length; i++) {
-                        promises.push(this.getSize(entries[i]));
-                    }
+            return stat.size;
+        }
 
-                    try {
-                        const sizes = await Promise.all(promises);
+        const contents = await this.getDirectoryContents(this.normalizePathForFilesystem(entry.toURL()));
+        const sizes = await Promise.all(contents.map((child) => this.getSize(child)));
 
-                        let directorySize = 0;
-                        for (let i = 0; i < sizes.length; i++) {
-                            const fileSize = Number(sizes[i]);
-                            if (isNaN(fileSize)) {
-                                reject();
-
-                                return;
-                            }
-                            directorySize += fileSize;
-                        }
-                        resolve(directorySize);
-                    } catch (error) {
-                        reject(error);
-                    }
-                }, reject);
-            } else {
-                entry.file((file) => {
-                    resolve(file.size);
-                }, reject);
-            }
-        });
+        return sizes.reduce((total, size) => total + size, 0);
     }
 
     /**
@@ -412,8 +392,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the size is calculated.
      */
     async getDirectorySize(path: string): Promise<number> {
-        path = this.removeBasePath(path);
-
         this.logger.debug(`Get size of dir: ${path}`);
 
         const dirEntry = await this.getDir(path);
@@ -428,8 +406,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the size is calculated.
      */
     async getFileSize(path: string): Promise<number> {
-        path = this.removeBasePath(path);
-
         this.logger.debug(`Get size of file: ${path}`);
 
         const fileEntry = await this.getFile(path);
@@ -443,10 +419,34 @@ export class CoreFileProvider {
      * @param entry Relative path to the file.
      * @returns Promise to be resolved when the file is retrieved.
      */
-    getFileObjectFromFileEntry(entry: FileEntry): Promise<IFile> {
-        return new Promise((resolve, reject): void => {
-            this.logger.debug(`Get file object of: ${entry.fullPath}`);
-            entry.file(resolve, reject);
+    async getFileObjectFromFileEntry(entry: FileEntry): Promise<File> {
+        // @todo Capacitor: evaluate if we want to deprecate this function and try to always work with paths or FileEntry objects.
+        // File type is used a lot in file uploader, check this after FileTransfer has been migrated.
+        this.logger.debug(`Get file object of: ${entry.toURL()}`);
+
+        const uri = this.normalizePathForFilesystem(entry.toURL());
+
+        // Guess extension from the extension, Capacitor doesn't provide a way to obtain the MIME type.
+        const extension = CoreMimetype.getFileExtension(entry.name);
+        const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
+
+        const [data, stat] = await Promise.all([
+            this.readAsArrayBuffer(uri),
+            Filesystem.stat({ path: uri }),
+        ]);
+        const blob = new Blob([data], { type: mimeType });
+        const lastModified = stat.mtime ?? Date.now();
+
+        // @todo Capacitor: Use the File class once cordova plugin file has been removed. Cordova plugin overrides File class.
+        // return new File([blob], entry.name, { type: blob.type, lastModified: Date.now() });
+        return Object.assign(blob, {
+            name: entry.name,
+            localURL: entry.toURL(),
+            start: 0,
+            end: blob.size,
+            lastModifiedDate: lastModified,
+            lastModified,
+            webkitRelativePath: '',
         });
     }
 
@@ -457,14 +457,17 @@ export class CoreFileProvider {
      * @returns Promise resolved with the estimated free space in bytes.
      */
     async calculateFreeSpace(): Promise<number> {
-        const size = await File.getFreeDiskSpace();
-
-        if (CorePlatform.isIOS()) {
-            // In iOS the size is in bytes.
-            return Number(size);
+        // Capacitor Filesystem doesn't expose free disk space; use Storage Manager API as an estimate.
+        // @todo Capacitor: this is not good enough. In a device this says 10GB when there's only 4.7GB available.
+        if (typeof navigator.storage?.estimate !== 'function') {
+            return Number.MAX_SAFE_INTEGER;
         }
 
-        return Number(size) * CoreBytesConstants.KILOBYTE;
+        const estimate = await navigator.storage.estimate();
+        const quota = estimate.quota ?? 0;
+        const usage = estimate.usage ?? 0;
+
+        return Math.max(quota - usage, 0);
     }
 
     /**
@@ -527,25 +530,24 @@ export class CoreFileProvider {
         format: CoreFileFormat = CoreFileFormat.FORMATTEXT,
         folder?: string,
     ): Promise<string | ArrayBuffer | unknown> {
-        if (!folder) {
-            folder = this.basePath;
-
-            path = this.removeBasePath(path);
+        if (folder) {
+            path = CorePath.concatenatePaths(folder, path);
         }
 
-        this.logger.debug(`Read file ${path} with format ${format} in folder ${folder}`);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+
+        this.logger.debug(`Read file ${absolutePath} with format ${format}`);
 
         switch (format) {
             case CoreFileFormat.FORMATDATAURL:
-                return File.readAsDataURL(folder, path);
+                return this.readAsDataUrl(absolutePath);
             // eslint-disable-next-line @typescript-eslint/no-deprecated
             case CoreFileFormat.FORMATBINARYSTRING:
-                // This internally uses deprecated FileReader.readAsBinaryString for webapp.
-                return File.readAsBinaryString(folder, path);
+                return this.readAsBinaryString(absolutePath);
             case CoreFileFormat.FORMATARRAYBUFFER:
-                return File.readAsArrayBuffer(folder, path);
+                return this.readAsArrayBuffer(absolutePath);
             case CoreFileFormat.FORMATJSON:
-                return File.readAsText(folder, path).then((text) => {
+                return this.readAsText(absolutePath).then((text) => {
                     const parsed = CoreText.parseJSON(text, null);
 
                     if (parsed === null && text !== null) {
@@ -555,8 +557,91 @@ export class CoreFileProvider {
                     return parsed;
                 });
             default:
-                return File.readAsText(folder, path);
+                return this.readAsText(absolutePath);
         }
+    }
+
+    /**
+     * Read a file as UTF-8 text.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsText(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path, encoding: Encoding.UTF8 });
+
+        return typeof data === 'string' ? data : await data.text();
+    }
+
+    /**
+     * Read a file and return its contents as an ArrayBuffer.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsArrayBuffer(path: string): Promise<ArrayBuffer> {
+        const { data } = await Filesystem.readFile({ path });
+
+        if (typeof data !== 'string') {
+            return data.arrayBuffer();
+        }
+
+        const binary = atob(data);
+        const buffer = new ArrayBuffer(binary.length);
+        const view = new Uint8Array(buffer);
+        for (let i = 0; i < binary.length; i++) {
+            view[i] = binary.charCodeAt(i);
+        }
+
+        return buffer;
+    }
+
+    /**
+     * Read a file and return its contents as a binary string.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsBinaryString(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path });
+
+        if (typeof data === 'string') {
+            return atob(data);
+        }
+
+        // Convert Blob → binary string via ArrayBuffer.
+        const buffer = await data.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+
+        return binary;
+    }
+
+    /**
+     * Read a file and return its contents as a base64 data URL.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsDataUrl(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path });
+        const extension = CoreMimetype.getFileExtension(path);
+        const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
+
+        if (typeof data === 'string') {
+            return `data:${mimeType};base64,${data}`;
+        }
+
+        // Blob returned by the web implementation: read it as data URL.
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(<string>reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(data);
+        });
     }
 
     /**
@@ -566,10 +651,11 @@ export class CoreFileProvider {
      * @param format Format to read the file.
      * @returns Promise to be resolved when the file is read.
      */
-    readFileData(fileData: IFile, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
+    readFileData(fileData: File, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
         this.logger.debug(`Read file from file data with format ${format}`);
 
         return new Promise((resolve, reject): void => {
+            // @todo Capacitor: Test this once cordova plugin file has been removed.
             const reader = new FileReader();
 
             reader.onloadend = (event): void => {
@@ -634,22 +720,58 @@ export class CoreFileProvider {
     async writeFile(path: string, data: string | Blob, append?: boolean): Promise<FileEntry> {
         await this.init();
 
-        path = this.removeBasePath(path);
         this.logger.debug(`Write file: ${path}`);
 
-        // Create file (and parent folders) to prevent errors.
-        const fileEntry = await this.createFile(path);
+        const absolutePath = this.toAbsoluteAndNormalize(path);
 
-        if (this.isHTMLAPI && (typeof data === 'string' || data.toString() === '[object ArrayBuffer]')) {
-            // We need to write Blobs.
-            const extension = CoreMimetype.getFileExtension(path);
-            const type = extension ? CoreMimetype.getMimeType(extension) : '';
-            data = new Blob([data], { type: type || 'text/plain' });
+        if (append) {
+            // Ensure parent directory exists to prevent errors.
+            const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
+            if (parent) {
+                await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
+                    path: parent,
+                    recursive: true,
+                }));
+            }
         }
 
-        await File.writeFile(this.basePath, path, data, { replace: !append, append: !!append });
+        if (typeof data === 'string') {
+            if (append) {
+                await Filesystem.appendFile({ path: absolutePath, data, encoding: Encoding.UTF8 });
+            } else {
+                await Filesystem.writeFile({ path: absolutePath, data, encoding: Encoding.UTF8, recursive: true });
+            }
+        } else {
+            // @todo Capacitor: Test this once cordova plugin file has been removed.
+            const base64 = await this.blobToBase64(data);
 
-        return fileEntry;
+            if (append) {
+                await Filesystem.appendFile({ path: absolutePath, data: base64 });
+            } else {
+                await Filesystem.writeFile({ path: absolutePath, data: base64, recursive: true });
+            }
+        }
+
+        return new FileEntry(absolutePath);
+    }
+
+    /**
+     * Read a Blob and return its base64-encoded contents (without the data URL prefix).
+     *
+     * @param blob Blob to encode.
+     * @returns Promise resolved with the base64 representation.
+     */
+    protected blobToBase64(blob: Blob): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const result = <string>reader.result;
+                const commaIndex = result.indexOf(',');
+                resolve(commaIndex === -1 ? result : result.substring(commaIndex + 1));
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(blob);
+        });
     }
 
     /**
@@ -671,6 +793,7 @@ export class CoreFileProvider {
         offset = 0,
         append?: boolean,
     ): Promise<FileEntry> {
+        // @todo Capacitor: Test this once cordova plugin file has been removed.
         offset = offset || 0;
 
         try {
@@ -709,11 +832,12 @@ export class CoreFileProvider {
      *
      * @param fullPath Absolute path to the file.
      * @returns Promise to be resolved when the file is retrieved.
+     * @deprecated since 6.0. Use getFile with the absolute path instead.
      */
     async getExternalFile(fullPath: string): Promise<FileEntry> {
-        const entry = await File.resolveLocalFilesystemUrl(fullPath);
+        const { uri } = await Filesystem.stat({ path: this.normalizePathForFilesystem(fullPath) });
 
-        return <FileEntry>entry;
+        return new FileEntry(uri);
     }
 
     /**
@@ -721,11 +845,12 @@ export class CoreFileProvider {
      *
      * @param path Absolute path to the file.
      * @returns Promise to be resolved when the size is calculated.
+     * @deprecated since 6.0. Use getFileSize with the absolute path instead.
      */
     async getExternalFileSize(path: string): Promise<number> {
-        const fileEntry = await this.getExternalFile(path);
+        const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(path) });
 
-        return this.getSize(fileEntry);
+        return stat.size;
     }
 
     /**
@@ -733,12 +858,10 @@ export class CoreFileProvider {
      *
      * @param fullPath Absolute path to the file.
      * @returns Promise to be resolved when the file is removed.
+     * @deprecated since 6.0. Use removeFile with the absolute path instead.
      */
     async removeExternalFile(fullPath: string): Promise<void> {
-        const directory = fullPath.substring(0, fullPath.lastIndexOf('/'));
-        const filename = fullPath.substring(fullPath.lastIndexOf('/') + 1);
-
-        await File.removeFile(directory, filename);
+        await Filesystem.deleteFile({ path: this.normalizePathForFilesystem(fullPath) });
     }
 
     /**
@@ -749,32 +872,19 @@ export class CoreFileProvider {
     async getBasePath(): Promise<string> {
         await this.init();
 
-        if (this.basePath.slice(-1) === '/') {
-            return this.basePath;
-        } else {
-            return `${this.basePath}/`;
-        }
+        return CoreText.addEndingSlash(this.basePath);
     }
 
     /**
      * Get the base path where the application files are stored in the format to be used for downloads.
-     * iOS: Internal URL (cdvfile://).
-     * Others: basePath (file://)
      *
      * @returns Promise to be resolved when the base path is retrieved.
+     * @deprecated since 6.0. Use getBasePathInstant() instead. Capacitor doesn't provide a cdvfile URL.
      */
     async getBasePathToDownload(): Promise<string> {
         await this.init();
 
-        if (CorePlatform.isIOS()) {
-            // In iOS we want the internal URL (cdvfile://localhost/persistent/...).
-            const dirEntry = await File.resolveDirectoryUrl(this.basePath);
-
-            return dirEntry.toInternalURL();
-        } else {
-            // In the other platforms we use the basePath as it is (file://...).
-            return this.basePath;
-        }
+        return this.getBasePathInstant();
     }
 
     /**
@@ -783,13 +893,7 @@ export class CoreFileProvider {
      * @returns Base path. If the service hasn't been initialized it will return an invalid value.
      */
     getBasePathInstant(): string {
-        if (!this.basePath) {
-            return this.basePath;
-        } else if (this.basePath.slice(-1) === '/') {
-            return this.basePath;
-        } else {
-            return `${this.basePath}/`;
-        }
+        return CoreText.addEndingSlash(this.basePath);
     }
 
     /**
@@ -876,14 +980,7 @@ export class CoreFileProvider {
             return this.copyOrMoveExternalFile(from, to, copy);
         }
 
-        const moveCopyFn: MoveCopyFunction = (...args) => copy ?
-            (isDir ? File.copyDir(...args) : File.copyFile(...args)) :
-            (isDir ? File.moveDir(...args) : File.moveFile(...args));
-
         await this.init();
-
-        from = this.removeBasePath(from);
-        to = this.removeBasePath(to);
 
         const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
@@ -892,35 +989,22 @@ export class CoreFileProvider {
             await this.createDir(toFileAndDir.directory);
         }
 
-        try {
-            const entry = await moveCopyFn(this.basePath, from, this.basePath, to);
+        const fromPath = this.toAbsoluteAndNormalize(from);
+        const toPath = this.toAbsoluteAndNormalize(to);
 
-            return <FileEntry | DirectoryEntry>entry;
-        } catch (error) {
-            try {
-                // The copy/move can fail if the final path contains the % character and it's not an encoded char. Try encoding it.
-                const encodedTo = encodeURI(to);
-                if (to !== encodedTo) {
-                    const entry = await moveCopyFn(this.basePath, from, this.basePath, encodedTo);
-
-                    return <FileEntry | DirectoryEntry>entry;
-                }
-            } catch {
-                // Still failing, continue with next fallback.
-            }
-
-            // The copy/move can fail if the path has encoded characters. Try again if that's the case.
-            const decodedFrom = decodeURI(from);
-            const decodedTo = decodeURI(to);
-
-            if (from != decodedFrom || to != decodedTo) {
-                const entry = await moveCopyFn(this.basePath, decodedFrom, this.basePath, decodedTo);
-
-                return <FileEntry | DirectoryEntry>entry;
-            } else {
-                return Promise.reject(error);
-            }
+        if (copy) {
+            await Filesystem.copy({
+                from: fromPath,
+                to: toPath,
+            });
+        } else {
+            await Filesystem.rename({
+                from: fromPath,
+                to: toPath,
+            });
         }
+
+        return isDir ? new DirectoryEntry(toPath) : new FileEntry(toPath);
     }
 
     /**
@@ -940,14 +1024,10 @@ export class CoreFileProvider {
      *
      * @param fileEntry File Entry.
      * @returns Internal URL.
+     * @deprecated since 6.0. Use toURL() from the FileEntry instance instead.
      */
     getInternalURL(fileEntry: FileEntry): string {
-        if (!fileEntry.toInternalURL) {
-            // File doesn't implement toInternalURL, use toURL.
-            return this.getFileEntryURL(fileEntry);
-        }
-
-        return fileEntry.toInternalURL();
+        return fileEntry.toURL();
     }
 
     /**
@@ -956,14 +1036,9 @@ export class CoreFileProvider {
      *
      * @param fileEntry File Entry.
      * @returns URL.
+     * @deprecated since 6.0. Use toURL() from the FileEntry instance instead.
      */
     getFileEntryURL(fileEntry: Entry): string {
-        if (CorePlatform.isAndroid()) {
-            // Cordova plugin file v7 changed the format returned by toURL, the new format it's not compatible with
-            // Ionic WebView or FileTransfer plugin.
-            return fileEntry.nativeURL;
-        }
-
         return fileEntry.toURL();
     }
 
@@ -972,13 +1047,49 @@ export class CoreFileProvider {
      *
      * @param path Path to treat.
      * @returns Path with basePath added.
+     * @deprecated since 6.0. Use the toAbsoluteAndNormalize instead, for internal use only.
      */
     addBasePathIfNeeded(path: string): string {
-        if (path.includes(this.basePath)) {
+        if (path.match(/^[a-z0-9]+:\/\//i)) {
+            return path;
+        }
+
+        if (path.startsWith(this.basePath)) {
             return path;
         } else {
             return CorePath.concatenatePaths(this.basePath, path);
         }
+    }
+
+    /**
+     * Converts the path to an absolute path and also fixes invalid percent encodings.
+     *
+     * @param path Path to treat.
+     * @returns Fixed path.
+     */
+    protected toAbsoluteAndNormalize(path: string): string {
+        const absolutePath = path.match(/^[a-z0-9]+:\/\//i)
+            ? path
+            : path.startsWith(this.basePath)
+                ? path
+                : CorePath.concatenatePaths(this.basePath, path);
+
+        return this.normalizePathForFilesystem(absolutePath);
+    }
+
+    /**
+     * Normalize a path before using it in Capacitor Filesystem calls.
+     *
+     * It keeps already URI-encoded bytes unchanged and encodes invalid `%` occurrences.
+     *
+     * @param path Path to normalize.
+     * @returns Normalized path.
+     */
+    protected normalizePathForFilesystem(path: string): string {
+        const placeholder = '__CORE_FILE_ENCODED_PERCENT__';
+        const protectedPath = path.replace(/%([0-9a-fA-F]{2})/g, `${placeholder}$1`);
+
+        return encodeURI(protectedPath).replace(new RegExp(`${placeholder}([0-9a-fA-F]{2})`, 'g'), '%$1');
     }
 
     /**
@@ -1018,10 +1129,10 @@ export class CoreFileProvider {
             await this.createDir(destFolder);
         }
 
-        // If destFolder is not set, use same location as ZIP file. We need to use absolute paths (including basePath).
-        destFolder = this.addBasePathIfNeeded(destFolder || CoreMimetype.removeExtension(path));
+        // If destFolder is not set, use same location as ZIP file.
+        destFolder = this.toAbsoluteAndNormalize(destFolder || CoreMimetype.removeExtension(path));
 
-        const result = await Zip.unzip(this.getFileEntryURL(fileEntry), destFolder, onProgress);
+        const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress);
 
         if (result == -1) {
             throw new CoreError('Unzip failed.');
@@ -1037,7 +1148,7 @@ export class CoreFileProvider {
      * @returns Promise resolved in success.
      */
     async replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<void> {
-        let content = <string>await this.readFile(path);
+        let content = <string> await this.readFile(path);
 
         if (content === undefined || content === null || !content.replace) {
             throw new CoreError(`Error reading file ${path}`);
@@ -1056,14 +1167,14 @@ export class CoreFileProvider {
      * @param fileEntry FileEntry retrieved from getFile or similar.
      * @returns Promise resolved with metadata.
      */
-    getMetadata(fileEntry: Entry): Promise<Metadata> {
-        if (!fileEntry || !fileEntry.getMetadata) {
-            return Promise.reject(new CoreError('Cannot get metadata from file entry.'));
-        }
+    async getMetadata(fileEntry: Entry): Promise<Metadata> {
+        const path = this.normalizePathForFilesystem(fileEntry.toURL());
+        const stat = await Filesystem.stat({ path });
 
-        return new Promise((resolve, reject): void => {
-            fileEntry.getMetadata(resolve, reject);
-        });
+        return {
+            modificationTime: new Date(stat.mtime),
+            size: stat.size,
+        };
     }
 
     /**
@@ -1088,22 +1199,24 @@ export class CoreFileProvider {
      * @returns Promise resolved when the entry is copied/moved.
      */
     protected async copyOrMoveExternalFile(from: string, to: string, copy?: boolean): Promise<FileEntry> {
-        // Get the file to copy/move.
-        const fileEntry = await this.getExternalFile(from);
+        await this.init();
 
         // Create the destination dir if it doesn't exist.
         const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);
+        if (dirAndFile.directory) {
+            await this.createDir(dirAndFile.directory);
+        }
 
-        const dirEntry = await this.createDir(dirAndFile.directory);
+        from = this.toAbsoluteAndNormalize(from);
+        to = this.toAbsoluteAndNormalize(to);
 
-        // Now copy/move the file.
-        return new Promise((resolve, reject): void => {
-            if (copy) {
-                fileEntry.copyTo(dirEntry, dirAndFile.name, (entry: FileEntry) => resolve(entry), reject);
-            } else {
-                fileEntry.moveTo(dirEntry, dirAndFile.name, (entry: FileEntry) => resolve(entry), reject);
-            }
-        });
+        if (copy) {
+            await Filesystem.copy({ from, to });
+        } else {
+            await Filesystem.rename({ from, to });
+        }
+
+        return new FileEntry(to);
     }
 
     /**
@@ -1112,6 +1225,7 @@ export class CoreFileProvider {
      * @param from Absolute path to the file to copy.
      * @param to Relative new path of the file (inside the app folder).
      * @returns Promise resolved when the entry is copied.
+     * @deprecated since 6.0. Use copyFile instead.
      */
     copyExternalFile(from: string, to: string): Promise<FileEntry> {
         return this.copyOrMoveExternalFile(from, to, true);
@@ -1123,6 +1237,7 @@ export class CoreFileProvider {
      * @param from Absolute path to the file to move.
      * @param to Relative new path of the file (inside the app folder).
      * @returns Promise resolved when the entry is moved.
+     * @deprecated since 6.0. Use moveFile instead.
      */
     moveExternalFile(from: string, to: string): Promise<FileEntry> {
         return this.copyOrMoveExternalFile(from, to, false);
@@ -1141,7 +1256,7 @@ export class CoreFileProvider {
         try {
             const entries = await this.getDirectoryContents(dirPath);
 
-            const files = {};
+            const files: Record<string, FileEntry | DirectoryEntry> = {};
             let fileNameWithoutExtension = CoreMimetype.removeExtension(fileName);
             let extension = CoreMimetype.getFileExtension(fileName) || defaultExt;
 
@@ -1223,11 +1338,9 @@ export class CoreFileProvider {
             }
 
             const promises: Promise<void>[] = contents.map(async (file) => {
-                if (file.isDirectory) {
-                    if (!existingSiteNames.includes(file.name)) {
-                        // Site does not exist... delete it.
-                        await CorePromiseUtils.ignoreErrors(this.removeDir(this.getSiteFolder(file.name)));
-                    }
+                if (file.isDirectory && !existingSiteNames.includes(file.name)) {
+                    // Site does not exist, delete it.
+                    await CorePromiseUtils.ignoreErrors(this.removeDir(file.toURL()));
                 }
             });
 
@@ -1258,13 +1371,13 @@ export class CoreFileProvider {
             // Index the received files by fullPath and ignore the invalid ones.
             files.forEach((file) => {
                 if ('fullPath' in file) {
-                    filesMap[file.fullPath] = file;
+                    filesMap[file.toURL()] = file;
                 }
             });
 
             // Check which of the content files aren't used anymore and delete them.
             contents.forEach((file) => {
-                if (!filesMap[file.fullPath]) {
+                if (!filesMap[file.toURL()]) {
                     // File isn't used, delete it.
                     promises.push(this.removeFileByFileEntry(file));
                 }
@@ -1371,5 +1484,3 @@ export class CoreFileProvider {
 }
 
 export const CoreFile = makeSingleton(CoreFileProvider);
-
-type MoveCopyFunction = (path: string, name: string, newPath: string, newName: string) => Promise<Entry>;

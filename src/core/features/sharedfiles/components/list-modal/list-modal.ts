@@ -15,7 +15,7 @@
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
 import { Component, OnInit, Input } from '@angular/core';
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry } from '@classes/native/filesystem';
 
 import { CoreFileUtils } from '@static/file-utils';
 import { ModalController, Translate } from '@singletons';

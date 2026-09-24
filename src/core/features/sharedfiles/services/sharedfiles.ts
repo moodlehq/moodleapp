@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { FileEntry, DirectoryEntry } from '@awesome-cordova-plugins/file/ngx';
+import { FileEntry, DirectoryEntry } from '@classes/native/filesystem';
 import { Md5 } from 'ts-md5';
 import { CoreLogger } from '@static/logger';
 import { CoreAppDB } from '@services/app-db';
@@ -246,7 +246,7 @@ export class CoreSharedFilesProvider {
         // Create dir if it doesn't exist already.
         await CoreFile.createDir(sharedFilesFolder);
 
-        const newFile = await CoreFile.moveExternalFile(CoreFile.getFileEntryURL(entry), newPath);
+        const newFile = await CoreFile.moveFile(entry.toURL(), newPath);
 
         CoreEvents.trigger(CoreEvents.FILE_SHARED, { siteId, name: newName });
 

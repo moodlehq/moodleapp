@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { FileEntry } from '@awesome-cordova-plugins/file/ngx';
-
+import { FileEntry } from '@classes/native/filesystem';
 import { CoreFile } from '@services/file';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreText } from '@static/text';
@@ -183,7 +182,7 @@ export class CoreMimetype {
             // @todo linting: See if this can be removed
             (file as { embedType?: string }).embedType = embedType;
 
-            path = path ?? (CoreFileUtils.isFileEntry(file) ? CoreFile.getFileEntryURL(file) : CoreFileHelper.getFileUrl(file));
+            path = path ?? (CoreFileUtils.isFileEntry(file) ? file.toURL() : CoreFileHelper.getFileUrl(file));
             path = path && CoreFile.convertFileSrc(path);
 
             switch (embedType) {

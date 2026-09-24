@@ -15,9 +15,9 @@
 import { Injectable } from '@angular/core';
 
 import { CoreFile } from '@services/file';
-import { File, makeSingleton } from '@singletons';
+import { makeSingleton, Filesystem } from '@singletons';
 import { CoreLogger } from '@static/logger';
-import { FileMock } from './file';
+import { FilesystemMock } from './filesystem';
 import { FileTransferErrorMock, FileTransferMock } from './file-transfer';
 
 /**
@@ -38,13 +38,15 @@ export class CoreEmulatorHelperProvider {
      * @returns Promise resolved when loaded.
      */
     async load(): Promise<void> {
-        window.FileTransferError = FileTransferErrorMock;
+        // @todo Capacitor: Check type problem when migrating FileTransfer to Capacitor.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        window.FileTransferError = <any> FileTransferErrorMock;
         window.FileTransfer = FileTransferMock;
 
-        const fileService = File.instance;
+        const filesystemInstance = Filesystem.instance;
 
-        if (fileService instanceof FileMock) {
-            const basePath = await fileService.load();
+        if (filesystemInstance instanceof FilesystemMock) {
+            const basePath = await filesystemInstance.load();
 
             CoreFile.setHTMLBasePath(basePath);
         }
