@@ -22,8 +22,7 @@
 
                 <p class="item-heading">
                     @if (course.isfavourite) {
-                        <ion-icon name="fas-star" [attr.aria-label]="'core.courses.favourite' | translate" />
-                        <span class="sr-only">{{ 'core.courses.aria:favourite' | translate }}</span>
+                        <ion-icon name="fas-star" [attr.aria-label]="'core.courses.aria:favourite' | translate" />
                     }
 
                     <span (ariaButtonClick)="openCourse()">
@@ -48,8 +47,8 @@
 
                 @if (course.categoryname) {
                     <ion-chip color="primary" class="core-course-category core-course-additional-info ion-text-nowrap">
-                        <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
-                        <ion-label>
+                        <ion-label role="group">
+                            <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                             <core-format-text [text]="course.categoryname" contextLevel="coursecat"
                                 [contextInstanceId]="course.categoryid" />
                         </ion-label>
