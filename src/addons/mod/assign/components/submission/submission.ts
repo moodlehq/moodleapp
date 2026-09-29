@@ -23,7 +23,7 @@ import {
     AddonModAssignPlugin,
     AddonModAssign,
     AddonModAssignGetSubmissionStatusWSResponse,
-    AddonModAssignMarkerFeedback,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -126,6 +126,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
     readonly hasMultipleMarkers = signal(false); // Whether the assignment has multiple markers.
+
+    readonly feedbackPlugins = signal<AddonModAssignFeedbackPluginMultipleMarkers[]>([]); // List of feedback plugins.
 
     readonly hasMultipleMarkersWithFeedback = computed(() => {
         if (!this.hasMultipleMarkers()) {
@@ -632,6 +634,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
             // Check if the grade uses advanced grading.
             this.feedback.advancedgrade = this.getAdvancedGrade(this.feedback.gradefordisplay);
             this.feedback.penalty = CoreGradesHelper.getPenaltyFromGrade(this.feedback.gradefordisplay);
+
+            const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(this.feedback);
+            this.feedbackPlugins.set(feedbackPlugins);
         }
 
         // Get the grade for the assign.
@@ -712,8 +717,8 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 this.feedback = {
                     gradefordisplay: gradeForDisplay,
                     gradeddate: submissionGrade.timemodified,
-                    plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
                 };
+                this.feedbackPlugins.set(AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'));
             } else {
                 this.feedback.gradefordisplay = gradeForDisplay;
                 this.feedback.gradeddate = submissionGrade.timemodified;

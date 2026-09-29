@@ -27,6 +27,7 @@ import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants'
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 
 /**
  * Component to render a comments feedback plugin.
@@ -70,13 +71,15 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
      *
      * @param e Event.
      */
-    open(e: Event): void {
+    async open(e: Event): Promise<void> {
         // Not editing, see full text when clicked.
         e.preventDefault();
         e.stopPropagation();
 
+        const text = await this.getExpandedText();
+
         // Open a new state with the interpolated contents.
-        CoreViewer.viewText(this.plugin.name, this.text, {
+        CoreViewer.viewText(this.plugin.name, text, {
             component: this.component,
             componentId: this.assign.cmid,
             filter: true,
@@ -84,6 +87,24 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
             instanceId: this.assign.cmid,
             courseId: this.assign.course,
         });
+    }
+
+    /**
+     * Get the expanded text including multiple markers.
+     *
+     * @param showTitles Whether to show titles for multiple markers.
+     * @returns Promise resolved with the expanded text including multiple markers.
+     */
+    protected async getExpandedText(showTitles = true): Promise<string> {
+        return AddonModAssignHelper.getPluginExpandedText(
+            this.plugin,
+            this.markerFeedbacks(),
+            undefined,
+            showTitles ? {
+                markerTranslationKey: 'addon.mod_assign_feedback_comments.markercomment',
+                overallTranslationKey: 'addon.mod_assign_feedback_comments.overallcomment',
+            } : undefined,
+        );
     }
 
     /**
@@ -108,7 +129,14 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
         // No offline data found, return online text.
         this.isSent = true;
 
-        return AddonModAssign.getSubmissionPluginText(this.plugin);
+        const text = AddonModAssign.getSubmissionPluginText(this.plugin);
+
+        if (!text) {
+            // Show only if there is no overall feedback.
+            return this.getExpandedText(false);
+        }
+
+        return text;
     }
 
     /**

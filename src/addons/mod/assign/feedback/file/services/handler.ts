@@ -25,7 +25,7 @@ import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 
 /**
- * Handler for file feedback plugin.
+ * Handler for feedback files plugin.
  */
 @Injectable( { providedIn: 'root' })
 export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignFeedbackHandler {

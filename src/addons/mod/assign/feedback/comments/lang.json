@@ -1,3 +1,5 @@
 {
+    "markercomment": "Marker comment ({{$a}})",
+    "overallcomment": "Overall comment",
     "pluginname": "Feedback comments"
 }

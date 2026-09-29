@@ -1,3 +1,5 @@
 {
-    "pluginname": "File feedback"
+    "markerfile": "Marker file ({{$a}})",
+    "overallfiles": "Overall feedback files",
+    "pluginname": "Feedback files"
 }
