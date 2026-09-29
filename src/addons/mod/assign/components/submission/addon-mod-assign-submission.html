@@ -328,20 +328,6 @@
                             <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="userSubmission" [userId]="submitId"
                                 [plugin]="plugin" [markerFeedbacks]="plugin.multiplemarkers" />
                         }
-
-                        @if (hasMultipleMarkersWithFeedback()) {
-                            <!-- Info multiple markers not supported. -->
-                            <core-alert-card type="info" [message]="'addon.mod_assign.multiplemarkersnotsupportedfeedback' | translate" >
-                                @if (modUrl) {
-                                    <div buttons>
-                                        <ion-button fill="outline" [href]="modUrl" core-link [showBrowserWarning]="false">
-                                            {{ 'core.openinbrowser' | translate }}
-                                            <ion-icon name="fas-up-right-from-square" slot="end" aria-hidden="true" />
-                                        </ion-button>
-                                    </div>
-                                }
-                            </core-alert-card>
-                        }
                     }
                 </ion-card>
             }
@@ -412,7 +398,7 @@
                                             </ion-item>
                                         }
 
-                                        @if (attempt.grade.timemodified && !attempt.grader) {
+                                        @if (attempt.grade.timemodified && (!attempt.grader || hasMultipleMarkersWithFeedback())) {
                                             <!-- Grader is hidden, display only the grade date. -->
                                             <ion-item class="ion-text-wrap">
                                                 <ion-label>
