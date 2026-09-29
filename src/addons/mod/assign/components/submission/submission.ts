@@ -135,7 +135,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         }
 
         // In Moodle 5.2 there can be multiple markers but no feedback for markers, so we support that case for students.
-        // In Moodle 5.3 is when we don't support it.
+        // In Moodle 5.3 is when we don't support multiple markers with feedback on previous attempts.
         const site = CoreSites.getRequiredCurrentSite();
 
         return site.isVersionGreaterEqualThan('5.3');
