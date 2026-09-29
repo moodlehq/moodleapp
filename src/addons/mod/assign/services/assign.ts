@@ -1618,6 +1618,15 @@ export type AddonModAssignSubmissionFeedback = {
     gradefordisplay: string; // Grade rendered into a format suitable for display.
     gradeddate: number; // The date the user was graded.
     plugins?: AddonModAssignPlugin[]; // Plugins info.
+    markerfeedback?: AddonModAssignMarkerFeedback[]; // @since 5.3. Feedback broken down by individual marker,
+        // when the assignment uses multiple markers.
+};
+
+export type AddonModAssignMarkerFeedback = {
+    markerid: number; // Id of the marker who gave this feedback (-1 if the grader identity is hidden).
+    position: number; // Marker position for this assignment (1, 2, ...).
+    workflowstate?: string; // Workflow state of this marker's mark.
+    plugins?: AddonModAssignPlugin[]; // Feedback plugin info for this marker.
 };
 
 /**

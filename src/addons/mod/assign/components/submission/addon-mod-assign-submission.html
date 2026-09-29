@@ -294,32 +294,31 @@
                     @if (feedback) {
                         <!-- Only display grader if there's a gradeddate, otherwise it's displayed when anonymous and not revealed. -->
                         @if (feedback.gradeddate) {
-                            @if (!grader || hasMultipleMarkersWithFeedback()) {
-                                <!-- Grader is hidden, display only the grade date. -->
-                                <ion-item class="ion-text-wrap">
-                                    <ion-label>
-                                        <p class="item-heading">{{ 'addon.mod_assign.gradedon' | translate }}</p>
-                                        <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
-                                    </ion-label>
-                                </ion-item>
-                            } @else {
+                            @let gradedBy = graders();
+                            @if (gradedBy.length > 0) {
                                 <!-- Data about the grader (teacher who graded). -->
-                                <ion-item class="ion-text-wrap grader" core-user-link [userId]="grader.id" [courseId]="courseId"
-                                    [attr.aria-label]="grader.fullname" [detail]="true">
+                                <ion-item class="ion-text-wrap grader" [detail]="true">
                                     <ion-label>
                                         <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
-                                        <div class="flex">
-                                            <core-user-avatar [user]="grader" [linkProfile]="false" />
-                                            <div>
-                                                <p>{{ grader.fullname }}</p>
-                                                @if (feedback.gradeddate) {
-                                                    <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
-                                                }
+                                        @for (grader of gradedBy; track grader.id) {
+                                            <div class="flex ion-align-items-center" core-user-link [userId]="grader.id"
+                                                [courseId]="courseId">
+                                                <core-user-avatar [user]="grader" [linkProfile]="false" />
+                                                <p>
+                                                    {{ grader.fullname }}
+                                                </p>
                                             </div>
-                                        </div>
+                                        }
                                     </ion-label>
                                 </ion-item>
                             }
+
+                            <ion-item class="ion-text-wrap">
+                                <ion-label>
+                                    <p class="item-heading">{{ 'addon.mod_assign.gradedon' | translate }}</p>
+                                    <p>{{ feedback.gradeddate * 1000 | coreFormatDate }}</p>
+                                </ion-label>
+                            </ion-item>
                         }
 
                         <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
