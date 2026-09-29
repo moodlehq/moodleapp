@@ -49,6 +49,10 @@ export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedba
                 markerTranslationKey: 'addon.mod_assign_feedback_editpdf.markerfeedback',
                 overallTranslationKey: 'addon.mod_assign_feedback_editpdf.overallfeedback',
             },
+            {
+                overallFileAreas: ['download'],
+                markerFileAreas: ['download_marker'],
+            },
         );
     }
 

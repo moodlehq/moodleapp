@@ -486,7 +486,9 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
                 // Prefetch feedback plugins data.
                 if (submission.feedback.plugins && userSubmission && userSubmission.id) {
-                    submission.feedback.plugins.forEach((plugin) => {
+                    const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(submission.feedback);
+
+                    feedbackPlugins.forEach((plugin) => {
                         // Prefetch the plugin WS data.
                         promises.push(AddonModAssignFeedbackDelegate.prefetch(assign, userSubmission, plugin, siteId));
 

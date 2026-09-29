@@ -57,7 +57,7 @@ export class AddonModAssignFeedbackEditPdfHandlerService implements AddonModAssi
         submission: AddonModAssignSubmission,
         plugin: AddonModAssignFeedbackPluginMultipleMarkers,
     ): CoreWSFile[] {
-        return AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(plugin);
+        return AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(plugin, ['download', 'download_marker']);
     }
 
     /**

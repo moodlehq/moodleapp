@@ -378,9 +378,10 @@ export class AddonModAssignProvider {
      * Get attachments of a submission plugin.
      *
      * @param submissionPlugin Submission plugin.
+     * @param filterFileAreas List of file areas to include. If not defined, all file areas are included.
      * @returns Submission plugin attachments.
      */
-    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin): CoreWSFile[] {
+    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin, filterFileAreas?: string[]): CoreWSFile[] {
         if (!submissionPlugin.fileareas) {
             return [];
         }
@@ -390,6 +391,11 @@ export class AddonModAssignProvider {
         submissionPlugin.fileareas.forEach((filearea) => {
             if (!filearea || !filearea.files) {
                 // No files to get.
+                return;
+            }
+
+            if (filterFileAreas && !filterFileAreas.includes(filearea.area)) {
+                // Skip this file area if it's not in the filter list.
                 return;
             }
 
