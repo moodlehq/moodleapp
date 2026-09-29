@@ -910,6 +910,9 @@ export class AddonModAssignHelperProvider {
      * @param translations Translations for marker titles.
      * @param translations.markerTranslationKey Translation key for the title of the marker.
      * @param translations.overallTranslationKey Translation key for the title of the overall comment.
+     * @param filterFileAreas List of file areas to include. If not defined, all file areas are included.
+     * @param filterFileAreas.overallFileAreas List of overall file areas to include.
+     * @param filterFileAreas.markerFileAreas List of marker file areas to include.
      * @returns List of attachments with their titles.
      */
     async getPluginAttachmentsWithMarkerTitles(
@@ -919,14 +922,18 @@ export class AddonModAssignHelperProvider {
             markerTranslationKey?: string;
             overallTranslationKey?: string;
         } = {},
+        filterFileAreas: {
+            overallFileAreas?: string[];
+            markerFileAreas?: string[];
+        } = {},
     ): Promise<{ title?: string; files: CoreWSFile[] }[]> {
-        const overallFiles = AddonModAssign.getSubmissionPluginAttachments(pluginInfo);
+        const overallFiles = AddonModAssign.getSubmissionPluginAttachments(pluginInfo, filterFileAreas.overallFileAreas);
         const markerFiles: { title?: string; files: CoreWSFile[] }[] = [];
         if (markerFeedbacks && markerFeedbacks.length > 0) {
             const markerAttachments = await Promise.all(markerFeedbacks.map(async (markerFeedback) => {
                 let graderName: string | undefined;
 
-                const files = AddonModAssign.getSubmissionPluginAttachments(markerFeedback);
+                const files = AddonModAssign.getSubmissionPluginAttachments(markerFeedback, filterFileAreas.markerFileAreas);
                 if (files.length === 0) {
                     return;
                 }
@@ -961,13 +968,17 @@ export class AddonModAssignHelperProvider {
      * Get attachments of a submission plugin.
      *
      * @param submissionPlugin Submission plugin.
+     * @param filterFileAreas List of file areas to include. If not defined, all file areas are included.
      * @returns Submission plugin attachments.
      */
-    getSubmissionPluginAttachmentsWithMultipleMarkers(submissionPlugin: AddonModAssignFeedbackPluginMultipleMarkers): CoreWSFile[] {
-        const files = AddonModAssign.getSubmissionPluginAttachments(submissionPlugin);
+    getSubmissionPluginAttachmentsWithMultipleMarkers(
+        submissionPlugin: AddonModAssignFeedbackPluginMultipleMarkers,
+        filterFileAreas?: string[],
+    ): CoreWSFile[] {
+        const files = AddonModAssign.getSubmissionPluginAttachments(submissionPlugin, filterFileAreas);
 
         submissionPlugin.multiplemarkers?.forEach((marker) => {
-            const markerFiles = AddonModAssign.getSubmissionPluginAttachments(marker);
+            const markerFiles = AddonModAssign.getSubmissionPluginAttachments(marker, filterFileAreas);
 
             files.push(...markerFiles);
         });
