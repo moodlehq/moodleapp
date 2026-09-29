@@ -40,14 +40,46 @@ export const ADDON_MOD_ASSIGN_WARN_GROUPS_REQUIRED = 'warnrequired';
 export const ADDON_MOD_ASSIGN_WARN_GROUPS_OPTIONAL = 'warnoptional';
 
 /**
- * Submission status.
+ * Assignment submission statuses.
  * Constants on LMS starting with ASSIGN_SUBMISSION_STATUS_
  */
-export const enum AddonModAssignSubmissionStatusValues {
-    SUBMITTED = 'submitted',
-    DRAFT = 'draft',
+const enum AddonModAssignSubmissionStatus {
     NEW = 'new',
     REOPENED = 'reopened',
+    DRAFT = 'draft',
+    SUBMITTED = 'submitted',
+};
+
+/**
+ * Marking workflow states.
+ * Constants on LMS starting with ASSIGN_MARKING_WORKFLOW_STATE_
+ */
+const enum AddonModAssignMarkingWorkflowStates {
+    NOTMARKED = 'notmarked',
+    INMARKING = 'inmarking',
+    READYFORREVIEW = 'readyforreview',
+    INREVIEW = 'inreview',
+    READYFORRELEASE = 'readyforrelease',
+    RELEASED = 'released',
+}
+
+/**
+ * Grading states.
+ * Constants on LMS starting with ASSIGN_GRADING_STATUS_
+ */
+const enum AddonModAssignGradingStatus {
+    GRADED = 'graded',
+    NOT_GRADED = 'notgraded',
+}
+
+/**
+ * Submission status for the app.
+ */
+export const enum AddonModAssignSubmissionStatusValues {
+    SUBMITTED = AddonModAssignSubmissionStatus.SUBMITTED,
+    DRAFT = AddonModAssignSubmissionStatus.DRAFT,
+    NEW = AddonModAssignSubmissionStatus.NEW,
+    REOPENED = AddonModAssignSubmissionStatus.REOPENED,
     // Added by App Statuses.
     NO_ATTEMPT = 'noattempt',
     NO_ONLINE_SUBMISSIONS = 'noonlinesubmissions',
@@ -56,14 +88,20 @@ export const enum AddonModAssignSubmissionStatusValues {
 }
 
 /**
- * Grading status.
- * Constants on LMS starting with ASSIGN_GRADING_STATUS_
+ * Grading status for the app. Merge of AddonModAssignGradingStatus and AddonModAssignMarkingWorkflowStates.
  */
 export const enum AddonModAssignGradingStates {
-    GRADED = 'graded',
-    NOT_GRADED = 'notgraded',
+    // AddonModAssignGradingStatus
+    GRADED = AddonModAssignGradingStatus.GRADED,
+    NOT_GRADED = AddonModAssignGradingStatus.NOT_GRADED,
+    // AddonModAssignMarkingWorkflowStates
+    MARKING_WORKFLOW_STATE_NOTMARKED = AddonModAssignMarkingWorkflowStates.NOTMARKED,
+    MARKING_WORKFLOW_STATE_INMARKING = AddonModAssignMarkingWorkflowStates.INMARKING,
+    MARKING_WORKFLOW_STATE_READYFORREVIEW = AddonModAssignMarkingWorkflowStates.READYFORREVIEW,
+    MARKING_WORKFLOW_STATE_INREVIEW = AddonModAssignMarkingWorkflowStates.INREVIEW,
+    MARKING_WORKFLOW_STATE_READYFORRELEASE = AddonModAssignMarkingWorkflowStates.READYFORRELEASE,
+    MARKING_WORKFLOW_STATE_RELEASED = AddonModAssignMarkingWorkflowStates.RELEASED,
     // Added by App Statuses.
-    MARKING_WORKFLOW_STATE_RELEASED = 'released', // with ASSIGN_MARKING_WORKFLOW_STATE_RELEASED
     GRADED_FOLLOWUP_SUBMIT = 'gradedfollowupsubmit',
 }
 

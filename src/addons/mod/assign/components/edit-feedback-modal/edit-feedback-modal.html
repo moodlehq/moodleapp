@@ -17,14 +17,12 @@
                 @if (grade.method === 'simple'){
                     @if (!grade.scale) {
                         <!-- Numeric grade.
-                        Use a text input because otherwise we cannot read the value if it has an invalid character. -->
+                            Use a text input because otherwise we cannot read the value if it has an invalid character. -->
                         <ion-item class="ion-text-wrap">
-                            @if (!grade.disabled) {
-                                <ion-input name="grade" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
-                                    [lang]="grade.lang" [label]="'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade}"
-                                    labelPlacement="stacked"
-                                    [helperText]="grade.disabled ? ('addon.mod_assign.gradelocked' | translate) : null" />
-                            }
+                            <ion-input name="grade" type="text" [(ngModel)]="grade.grade" min="0" [max]="gradeInfo.grade"
+                                [lang]="grade.lang" [label]="'addon.mod_assign.gradeoutof' | translate: {$a: gradeInfo.grade}"
+                                labelPlacement="stacked" [disabled]="grade.disabled"
+                                [helperText]="grade.disabled ? ('addon.mod_assign.gradelocked' | translate) : null" />
                         </ion-item>
                     } @else {
                         <!-- Grade using a scale. -->
@@ -44,7 +42,7 @@
                 <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo.outcomes">
                     @if (outcome.itemNumber) {
                         <ion-select name="outcome" [(ngModel)]="outcome.selectedId" interface="action-sheet"
-                            [disabled]="!!gradeInfo.disabled" [cancelText]="'core.cancel' | translate"
+                            [disabled]="!!grade.disabled" [cancelText]="'core.cancel' | translate"
                             [interfaceOptions]="{header: outcome.name }">
                             <p class="item-heading" slot="label">{{ outcome.name }}</p>
                             <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">
