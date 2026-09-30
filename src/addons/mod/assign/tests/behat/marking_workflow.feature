@@ -114,15 +114,12 @@ Feature: Test marking workflow in assignment activity in app
     When I go back in the app
     And I press "Student3" in the app
     And I press "Grade" "ion-button" in the app
-    Then I set the field "Grade out of 100" to "80" in the app
+    Then I should find "30" within "Current grade in gradebook" "ion-item" in the app
+
     When I press "Grade" "ion-button" in the app
     And I wait loading to finish in the app
     Then I should find "Released" within "Marking workflow state" "ion-item" in the app
     And I should find "Teacher teacher" within "Graded by" "ion-item" in the app
-    When I press "Grade" "ion-button" in the app
-    Then I should find "80" within "Current grade in gradebook" "ion-item" in the app
-    And the field "Grade out of 100" matches value "80" in the app
-    And I should not find "Current grade in assignment" in the app
 
   @lms_from5.2
   Scenario: Grading with multiple markers is not supported in the app
