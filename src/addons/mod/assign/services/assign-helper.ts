@@ -955,6 +955,24 @@ export class AddonModAssignHelperProvider {
         return [{ files: overallFiles }];
     }
 
+    /**
+     * Get attachments of a submission plugin.
+     *
+     * @param submissionPlugin Submission plugin.
+     * @returns Submission plugin attachments.
+     */
+    getSubmissionPluginAttachmentsWithMultipleMarkers(submissionPlugin: AddonModAssignFeedbackPluginMultipleMarkers): CoreWSFile[] {
+        const files = AddonModAssign.getSubmissionPluginAttachments(submissionPlugin);
+
+        submissionPlugin.multiplemarkers?.forEach((marker) => {
+            const markerFiles = AddonModAssign.getSubmissionPluginAttachments(marker);
+
+            files.push(...markerFiles);
+        });
+
+        return files;
+    }
+
 }
 export const AddonModAssignHelper = makeSingleton(AddonModAssignHelperProvider);
 

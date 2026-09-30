@@ -407,6 +407,24 @@ export class AddonModAssignProvider {
     }
 
     /**
+     * Get attachments of a submission plugin.
+     *
+     * @param submissionPlugin Submission plugin.
+     * @returns Submission plugin attachments.
+     */
+    getSubmissionPluginAttachmentsWithMultipleMarkers(submissionPlugin: AddonModAssignFeedbackPluginMultipleMarkers): CoreWSFile[] {
+        const files = this.getSubmissionPluginAttachments(submissionPlugin);
+
+        submissionPlugin.multiplemarkers?.forEach((marker) => {
+            const markerFiles = this.getSubmissionPluginAttachments(marker);
+
+            files.push(...markerFiles);
+        });
+
+        return files;
+    }
+
+    /**
      * Get text of a submission plugin.
      *
      * @param submissionPlugin Submission plugin.
