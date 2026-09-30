@@ -2,7 +2,7 @@ name: Mirror
 
 on:
   push:
-    branches: [main, v*.x]
+    branches: [main, v*.x, latest-test]
 
 jobs:
   mirror:
