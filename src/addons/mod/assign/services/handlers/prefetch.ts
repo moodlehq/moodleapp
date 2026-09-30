@@ -185,8 +185,10 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         if (submissionStatus.feedback && submissionStatus.feedback.plugins) {
+            const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(submissionStatus.feedback);
+
             // Add feedback plugin files.
-            submissionStatus.feedback.plugins.forEach((plugin) => {
+            feedbackPlugins.forEach((plugin) => {
                 promises.push(AddonModAssignFeedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
             });
         }

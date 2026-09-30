@@ -21,6 +21,7 @@ import {
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
     AddonModAssignSubmissionFeedback,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from './assign';
 import { makeSingleton } from '@singletons';
 import { CoreWSFile } from '@services/ws';
@@ -304,7 +305,7 @@ export class AddonModAssignFeedbackDelegateService extends CoreDelegate<AddonMod
     async getPluginFiles(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
-        plugin: AddonModAssignPlugin,
+        plugin: AddonModAssignFeedbackPluginMultipleMarkers,
         siteId?: string,
     ): Promise<CoreWSFile[]> {
         const files: CoreWSFile[] | undefined =
