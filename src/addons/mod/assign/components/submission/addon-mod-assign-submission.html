@@ -297,11 +297,11 @@
                             @let gradedby = graders();
                             @if (gradedby.length > 0) {
                                 <!-- Data about the grader (teacher who graded). -->
-                                <ion-item class="ion-text-wrap grader" [detail]="true">
+                                <ion-item class="ion-text-wrap grader" [detail]="false">
                                     <ion-label>
                                         <p class="item-heading">{{ 'addon.mod_assign.gradedby' | translate }}</p>
                                         @for (grader of gradedby; track grader.id) {
-                                            <div class="flex clickable" core-user-link [userId]="grader.id" [courseId]="courseId">
+                                            <div class="flex" core-user-link [userId]="grader.id" [courseId]="courseId">
                                                 <core-user-avatar [user]="grader" [linkProfile]="false" />
                                                 <div>
                                                     <p>{{ grader.fullname }}</p>

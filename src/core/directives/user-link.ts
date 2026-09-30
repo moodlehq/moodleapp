@@ -14,6 +14,7 @@
 
 import { Directive, OnInit, ElementRef, inject, input } from '@angular/core';
 import { CoreNavigator } from '@services/navigator';
+import { CoreDom } from '@static/dom';
 
 /**
  * Directive to go to user profile on click.
@@ -26,13 +27,22 @@ export class CoreUserLinkDirective implements OnInit {
     readonly userId = input<number>(); // User id to open the profile.
     readonly courseId = input<number>(); // If set, course id to show the user info related to that course.
 
-    protected element: HTMLElement = inject(ElementRef).nativeElement;
+    protected element: HTMLElement | HTMLIonFabButtonElement | HTMLIonButtonElement | HTMLIonItemElement =
+        inject(ElementRef).nativeElement;
 
     /**
-     * Function executed when the component is initialized.
+     * @inheritdoc
      */
-    ngOnInit(): void {
-        this.element.addEventListener('click', (event) => {
+    async ngOnInit(): Promise<void> {
+        let hasNativeButton = false;
+        if ('componentOnReady' in this.element) {
+            await this.element.componentOnReady();
+
+            // Native buttons may be already accessible and does not neet to set TabIndex and role.
+            hasNativeButton = !!this.element.shadowRoot?.querySelector('.button-native');
+        }
+
+        CoreDom.initializeClickableElementA11y(this.element, (event) => {
             // If the event prevented default action, do nothing.
             const userId = this.userId();
             if (event.defaultPrevented || !userId) {
@@ -48,7 +58,7 @@ export class CoreUserLinkDirective implements OnInit {
                     courseId: this.courseId(),
                 },
             });
-        });
+        }, !hasNativeButton);
     }
 
 }
