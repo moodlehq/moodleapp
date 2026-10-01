@@ -111,7 +111,7 @@
     "stillcantconnect": "Still can't connect?",
     "toggleremove": "Edit accounts list",
     "unsupportedsite": "Site not accessible through the app",
-    "unsupportedsitemessage": "This site isn't configured to allow mobile app access.<br><br>Contact your site administrator to enable it, or you can still access it using a web browser.",
+    "unsupportedsitemessage": "This site isn't configured to allow mobile app access.<br><br>You can still access it using a web browser.",
     "username": "Username",
     "usernamelowercase": "Only lowercase letters allowed",
     "usernameoremail": "Enter either username or email address",
