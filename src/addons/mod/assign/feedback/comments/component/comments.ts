@@ -102,6 +102,7 @@ export class AddonModAssignFeedbackCommentsComponent extends AddonModAssignFeedb
             undefined,
             showTitles ? {
                 markerTranslationKey: 'addon.mod_assign_feedback_comments.markercomment',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_comments.markercomment1',
                 overallTranslationKey: 'addon.mod_assign_feedback_comments.overallcomment',
             } : undefined,
         );

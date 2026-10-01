@@ -47,6 +47,7 @@ export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedba
             this.markerFeedbacks(),
             {
                 markerTranslationKey: 'addon.mod_assign_feedback_editpdf.markerfeedback',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_editpdf.markernumberfeedback',
                 overallTranslationKey: 'addon.mod_assign_feedback_editpdf.overallfeedback',
             },
             {

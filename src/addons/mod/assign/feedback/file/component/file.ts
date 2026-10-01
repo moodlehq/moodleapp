@@ -47,6 +47,7 @@ export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackP
             this.markerFeedbacks(),
             {
                 markerTranslationKey: 'addon.mod_assign_feedback_file.markerfile',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_file.markernumberfile',
                 overallTranslationKey: 'addon.mod_assign_feedback_file.overallfiles',
             },
         );

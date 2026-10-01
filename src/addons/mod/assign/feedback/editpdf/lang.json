@@ -1,5 +1,6 @@
 {
     "markerfeedback": "Marker feedback ({{$a}})",
+    "markernumberfeedback": "Marker {{$a}} feedback",
     "overallfeedback": "Overall feedback",
     "pluginname": "Annotate PDF"
 }

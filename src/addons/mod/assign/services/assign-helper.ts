@@ -817,6 +817,7 @@ export class AddonModAssignHelperProvider {
      * @param keepUrls True if it should keep original URLs, false if they should be replaced.
      * @param translations Object containing translation keys for the marker, hidden marker, and overall comments.
      * @param translations.markerTranslationKey Translation key for the title of the marker comment.
+     * @param translations.hiddenMarkerTranslationKey Translation key for the title of the hidden marker comment.
      * @param translations.overallTranslationKey Translation key for the title of the overall comment.
      * @returns Submission text.
      */
@@ -825,6 +826,7 @@ export class AddonModAssignHelperProvider {
         keepUrls?: boolean,
         translations: {
             markerTranslationKey?: string;
+            hiddenMarkerTranslationKey?: string;
             overallTranslationKey?: string;
         } = {},
     ): Promise<string> {
@@ -836,14 +838,18 @@ export class AddonModAssignHelperProvider {
         if (translations) {
             let title: string | undefined;
             if ('markerid' in pluginInfo) {
-                let graderName: string | undefined;
                 if (pluginInfo.markerid > 0 && translations.markerTranslationKey) {
                     const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(pluginInfo.markerid, undefined, true));
-                    graderName = user?.fullname ?? '';
+                    const graderName = user?.fullname ?? '';
+
+                    if (graderName && translations.markerTranslationKey) {
+                        title = Translate.instant(translations.markerTranslationKey, { $a: graderName });
+                    }
                 }
-                title = translations.markerTranslationKey
-                        ? Translate.instant(translations.markerTranslationKey, { $a: graderName ?? pluginInfo.position })
-                        : undefined;
+
+                if (!title && translations.hiddenMarkerTranslationKey) {
+                    title = Translate.instant(translations.hiddenMarkerTranslationKey, { $a: pluginInfo.position });
+                }
             } else if (translations.overallTranslationKey) {
                 title = Translate.instant(translations.overallTranslationKey);
             }
@@ -909,6 +915,7 @@ export class AddonModAssignHelperProvider {
      * @param markerFeedbacks Marker feedbacks.
      * @param translations Translations for marker titles.
      * @param translations.markerTranslationKey Translation key for the title of the marker.
+     * @param translations.hiddenMarkerTranslationKey Translation key for the title of the hidden marker.
      * @param translations.overallTranslationKey Translation key for the title of the overall comment.
      * @param filterFileAreas List of file areas to include. If not defined, all file areas are included.
      * @param filterFileAreas.overallFileAreas List of overall file areas to include.
@@ -920,6 +927,7 @@ export class AddonModAssignHelperProvider {
         markerFeedbacks?: AddonModAssignFeedbackPluginMultipleMarker[],
         translations: {
             markerTranslationKey?: string;
+            hiddenMarkerTranslationKey?: string;
             overallTranslationKey?: string;
         } = {},
         filterFileAreas: {
@@ -931,14 +939,20 @@ export class AddonModAssignHelperProvider {
         const markerFiles: { title?: string; files: CoreWSFile[] }[] = [];
         if (markerFeedbacks && markerFeedbacks.length > 0) {
             const markerAttachments = await Promise.all(markerFeedbacks.map(async (markerFeedback) => {
-                let graderName: string | undefined;
+                let title: string | undefined;
+
                 if (markerFeedback.markerid > 0) {
                     const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(markerFeedback.markerid, undefined, true));
-                    graderName = user?.fullname;
+                    const graderName = user?.fullname;
+
+                    if (graderName && translations.markerTranslationKey) {
+                        title = Translate.instant(translations.markerTranslationKey, { $a: graderName });
+                    }
                 }
-                const title = translations.markerTranslationKey
-                        ? Translate.instant(translations.markerTranslationKey, { $a: graderName ?? markerFeedback.position })
-                        : undefined;
+
+                if (!title && translations.hiddenMarkerTranslationKey) {
+                    title = Translate.instant(translations.hiddenMarkerTranslationKey, { $a: markerFeedback.position });
+                }
                 const files = AddonModAssign.getSubmissionPluginAttachments(markerFeedback, filterFileAreas.markerFileAreas);
                 if (files.length === 0) {
                     return;
