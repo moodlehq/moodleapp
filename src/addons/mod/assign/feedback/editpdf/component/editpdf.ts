@@ -15,9 +15,8 @@
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
 import { Component, OnInit } from '@angular/core';
-import { CoreWSFile } from '@services/ws';
 import { CoreSharedModule } from '@/core/shared.module';
-import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
+import { AddonModAssignHelper, AddonModAssignMarkerFiles } from '@addons/mod/assign/services/assign-helper';
 
 /**
  * Component to render a edit pdf feedback plugin.
@@ -32,7 +31,7 @@ import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper'
 export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
-    markerFiles: { title?: string; files: CoreWSFile[] }[] = [];
+    markerFiles: AddonModAssignMarkerFiles[] = [];
 
     /**
      * @inheritdoc
@@ -47,6 +46,7 @@ export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedba
             this.markerFeedbacks(),
             {
                 markerTranslationKey: 'addon.mod_assign_feedback_editpdf.markerfeedback',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_editpdf.markernumberfeedback',
                 overallTranslationKey: 'addon.mod_assign_feedback_editpdf.overallfeedback',
             },
             {

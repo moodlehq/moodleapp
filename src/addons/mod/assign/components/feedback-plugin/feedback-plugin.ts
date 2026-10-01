@@ -96,7 +96,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
             };
         } else {
             // Data to render the plugin.
-            this.text = await AddonModAssignHelper.getPluginExpandedText(this.plugin, this.markerFeedbacks());
+            this.text = await AddonModAssignHelper.getPluginExpandedText(this.plugin, { markerFeedbacks: this.markerFeedbacks() });
             this.files = AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(this.plugin);
             this.notSupported = AddonModAssignFeedbackDelegate.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;

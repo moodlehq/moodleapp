@@ -3,7 +3,7 @@
     <ion-item class="ion-text-wrap">
         <ion-label>
             <p class="item-heading">{{ plugin.name }}</p>
-            @for (markerFile of markerFiles; track $index) {
+            @for (markerFile of markerFiles; track markerFile.position) {
                 @if (markerFile.title) {
                     <p>{{ markerFile.title }}</p>
                 }
