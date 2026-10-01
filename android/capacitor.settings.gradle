@@ -14,5 +14,8 @@ project(':capacitor-filesystem').projectDir = new File('../node_modules/@capacit
 include ':capacitor-network'
 project(':capacitor-network').projectDir = new File('../node_modules/@capacitor/network/android')
 
+include ':capacitor-screen-orientation'
+project(':capacitor-screen-orientation').projectDir = new File('../node_modules/@capacitor/screen-orientation/android')
+
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capacitor/splash-screen/android')

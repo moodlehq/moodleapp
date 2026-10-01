@@ -12,11 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { signal } from '@angular/core';
+
 import { CoreIframeComponent } from '@components/iframe/iframe';
 
-import { renderTemplate } from '@/testing/utils';
+import { mockSingleton, renderTemplate } from '@/testing/utils';
+import { CoreScreen, CoreScreenOrientation } from '@services/screen';
 
 describe('CoreIframeComponent', () => {
+
+    beforeEach(() => {
+        mockSingleton(CoreScreen, {
+            watchOrientation: () => Promise.resolve(),
+            orientationSignal: signal(CoreScreenOrientation.PORTRAIT).asReadonly(),
+        });
+    });
 
     it('should render', async () => {
         // Arrange.
