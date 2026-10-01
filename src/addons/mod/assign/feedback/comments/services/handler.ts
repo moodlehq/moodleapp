@@ -19,6 +19,7 @@ import {
     AddonModAssignSubmission,
     AddonModAssign,
     AddonModAssignSavePluginData,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from '@addons/mod/assign/services/assign';
 import { AddonModAssignOffline } from '@addons/mod/assign/services/assign-offline';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
@@ -28,6 +29,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 import { CoreFileHelper } from '@services/file-helper';
+import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 
 /**
  * Handler for comments feedback plugin.
@@ -77,9 +79,9 @@ export class AddonModAssignFeedbackCommentsHandlerService implements AddonModAss
     getPluginFiles(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
-        plugin: AddonModAssignPlugin,
+        plugin: AddonModAssignFeedbackPluginMultipleMarkers,
     ): CoreWSFile[] {
-        return AddonModAssign.getSubmissionPluginAttachments(plugin);
+        return AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(plugin);
     }
 
     /**

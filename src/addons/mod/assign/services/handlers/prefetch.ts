@@ -185,8 +185,10 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
         }
 
         if (submissionStatus.feedback && submissionStatus.feedback.plugins) {
+            const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(submissionStatus.feedback);
+
             // Add feedback plugin files.
-            submissionStatus.feedback.plugins.forEach((plugin) => {
+            feedbackPlugins.forEach((plugin) => {
                 promises.push(AddonModAssignFeedbackDelegate.getPluginFiles(assign, userSubmission, plugin, siteId));
             });
         }
@@ -484,7 +486,9 @@ export class AddonModAssignPrefetchHandlerService extends CoreCourseActivityPref
 
                 // Prefetch feedback plugins data.
                 if (submission.feedback.plugins && userSubmission && userSubmission.id) {
-                    submission.feedback.plugins.forEach((plugin) => {
+                    const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(submission.feedback);
+
+                    feedbackPlugins.forEach((plugin) => {
                         // Prefetch the plugin WS data.
                         promises.push(AddonModAssignFeedbackDelegate.prefetch(assign, userSubmission, plugin, siteId));
 

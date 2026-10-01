@@ -23,7 +23,7 @@ import {
     AddonModAssignPlugin,
     AddonModAssign,
     AddonModAssignGetSubmissionStatusWSResponse,
-    AddonModAssignGrade,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from '../../services/assign';
 import {
     AddonModAssignAutoSyncData,
@@ -65,6 +65,7 @@ import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreUtils } from '@static/utils';
+import { CoreAnyError } from '@classes/errors/error';
 
 /**
  * Component that displays an assignment submission.
@@ -121,10 +122,12 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     submissionStatusBadge?: StatusBadge;
     unsupportedEditPlugins: string[] = []; // List of submission plugins that don't support edit.
 
-    grader?: CoreUserProfile; // Profile of the teacher that graded the submission.
+    readonly graders = signal<CoreUserProfile[]>([]); // Profile of the teachers that graded the submission.
     canGrade = false; // Whether the user is grading.
     canSaveGrades = false; // Whether the user can save the grades.
     readonly hasMultipleMarkers = signal(false); // Whether the assignment has multiple markers.
+
+    readonly feedbackPlugins = signal<AddonModAssignFeedbackPluginMultipleMarkers[]>([]); // List of feedback plugins.
 
     readonly hasMultipleMarkersWithFeedback = computed(() => {
         if (!this.hasMultipleMarkers()) {
@@ -132,7 +135,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         }
 
         // In Moodle 5.2 there can be multiple markers but no feedback for markers, so we support that case for students.
-        // In Moodle 5.3 is when we don't support it.
+        // In Moodle 5.3 is when we don't support multiple markers with feedback on previous attempts.
         const site = CoreSites.getRequiredCurrentSite();
 
         return site.isVersionGreaterEqualThan('5.3');
@@ -332,7 +335,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 await this.invalidateAndRefresh(true);
             }
         } catch (error) {
-            CoreAlerts.showError(error, { default: Translate.instant('core.error') });
+            CoreAlerts.showError(error as CoreAnyError, { default: Translate.instant('core.error') });
         } finally {
             modal.dismiss();
         }
@@ -402,7 +405,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 CoreSites.getCurrentSiteId(),
             );
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error removing submission.' });
+            CoreAlerts.showError(error as CoreAnyError, { default: 'Error removing submission.' });
         } finally {
             modal.dismiss();
         }
@@ -527,7 +530,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 attempt.submissionStatusBadge = this.getSubmissionStatusBadge(attempt.submission?.status, this.lastAttempt);
 
                 // If we have data about the grader, get its profile.
-                attempt.grader = await this.getGrader(attempt.grade);
+                attempt.grader = await this.getGrader(attempt.grade?.grader);
                 attempt.advancedgrade = this.getAdvancedGrade(attempt.grade?.gradefordisplay);
                 attempt.penalty = CoreGradesHelper.getPenaltyFromGrade(attempt.grade?.gradefordisplay);
             });
@@ -565,7 +568,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
 
             await Promise.all(promises);
         } catch (error) {
-            CoreAlerts.showError(error, { default: 'Error getting assigment data.' });
+            CoreAlerts.showError(error as CoreAnyError, { default: 'Error getting assigment data.' });
         } finally {
             this.loaded = true;
         }
@@ -609,14 +612,31 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
      */
     protected async loadFeedback(assign: AddonModAssignAssign, feedback?: AddonModAssignSubmissionFeedback): Promise<void> {
         this.feedback = feedback;
-
         if (this.feedback) {
+            const graders: CoreUserProfile[] = [];
             // If we have data about the grader, get its profile.
-            this.grader = await this.getGrader(this.feedback.grade);
+            if (this.feedback.markerfeedback && this.feedback.markerfeedback.length > 0) {
+                const markerGraders = await Promise.all(this.feedback.markerfeedback.map(async (markerFeedback) => {
+                    if (markerFeedback.markerid > 0) {
+                        return this.getGrader(markerFeedback.markerid);
+                    }
 
+                    return undefined;
+                }));
+                graders.push(...markerGraders.filter((grader: CoreUserProfile | undefined) => !!grader));
+            } else {
+                const grader = await this.getGrader(this.feedback.grade?.grader);
+                if (grader) {
+                    graders.push(grader);
+                }
+            }
+            this.graders.set(graders);
             // Check if the grade uses advanced grading.
             this.feedback.advancedgrade = this.getAdvancedGrade(this.feedback.gradefordisplay);
             this.feedback.penalty = CoreGradesHelper.getPenaltyFromGrade(this.feedback.gradefordisplay);
+
+            const feedbackPlugins = AddonModAssignHelper.mergeFeedbackPluginsWithMultipleMarkers(this.feedback);
+            this.feedbackPlugins.set(feedbackPlugins);
         }
 
         // Get the grade for the assign.
@@ -697,14 +717,17 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                 this.feedback = {
                     gradefordisplay: gradeForDisplay,
                     gradeddate: submissionGrade.timemodified,
-                    plugins: AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'),
                 };
+                this.feedbackPlugins.set(AddonModAssignHelper.getPluginsEnabled(assign, 'assignfeedback'));
             } else {
                 this.feedback.gradefordisplay = gradeForDisplay;
                 this.feedback.gradeddate = submissionGrade.timemodified;
             }
 
-            this.grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
+            const grader = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(this.currentUserId, this.courseId));
+            if (grader) {
+                this.graders.set([grader]);
+            }
 
             this.hasOfflineGrade = true;
             this.gradingStatusBadge = {
@@ -853,7 +876,7 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     userId: this.currentUserId,
                 }, this.siteId);
             } catch (error) {
-                CoreAlerts.showError(error, { default: Translate.instant('core.error') });
+                CoreAlerts.showError(error as CoreAnyError, { default: Translate.instant('core.error') });
             } finally {
                 modal.dismiss();
             }
@@ -1008,15 +1031,15 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     /**
      * Get grader user info.
      *
-     * @param grade Grade to get the grader from.
+     * @param graderId Grader id to get the grader from.
      * @returns Promise resolved with the grader user info or undefined if not found.
      */
-    protected async getGrader(grade?: AddonModAssignGrade): Promise<CoreUserProfile | undefined> {
-        if (!grade || grade.grader <= 0) {
+    protected async getGrader(graderId?: number): Promise<CoreUserProfile | undefined> {
+        if (!graderId || graderId <= 0) {
             return;
         }
 
-        return await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(grade.grader, this.courseId));
+        return await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(graderId, this.courseId));
     }
 
     /**

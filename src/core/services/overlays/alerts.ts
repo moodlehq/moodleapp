@@ -236,7 +236,9 @@ export class CoreAlertsService {
             return null;
         }
 
-        return CoreText.decodeHTML(errorMessage);
+        errorMessage = CoreText.decodeHTML(errorMessage);
+
+        return CoreText.replaceNewLines(errorMessage, '<br>');
     }
 
     /**

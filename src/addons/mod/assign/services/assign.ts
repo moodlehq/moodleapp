@@ -378,9 +378,10 @@ export class AddonModAssignProvider {
      * Get attachments of a submission plugin.
      *
      * @param submissionPlugin Submission plugin.
+     * @param filterFileAreas List of file areas to include. If not defined, all file areas are included.
      * @returns Submission plugin attachments.
      */
-    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin): CoreWSFile[] {
+    getSubmissionPluginAttachments(submissionPlugin: AddonModAssignPlugin, filterFileAreas?: string[]): CoreWSFile[] {
         if (!submissionPlugin.fileareas) {
             return [];
         }
@@ -393,6 +394,11 @@ export class AddonModAssignProvider {
                 return;
             }
 
+            if (filterFileAreas && !filterFileAreas.includes(filearea.area)) {
+                // Skip this file area if it's not in the filter list.
+                return;
+            }
+
             filearea.files.forEach((file) => {
                 if (!file.filename) {
                     // We don't have filename, extract it from the path.
@@ -401,6 +407,24 @@ export class AddonModAssignProvider {
 
                 files.push(file);
             });
+        });
+
+        return files;
+    }
+
+    /**
+     * Get attachments of a submission plugin.
+     *
+     * @param submissionPlugin Submission plugin.
+     * @returns Submission plugin attachments.
+     */
+    getSubmissionPluginAttachmentsWithMultipleMarkers(submissionPlugin: AddonModAssignFeedbackPluginMultipleMarkers): CoreWSFile[] {
+        const files = this.getSubmissionPluginAttachments(submissionPlugin);
+
+        submissionPlugin.multiplemarkers?.forEach((marker) => {
+            const markerFiles = this.getSubmissionPluginAttachments(marker);
+
+            files.push(...markerFiles);
         });
 
         return files;
@@ -1567,6 +1591,19 @@ export type AddonModAssignPlugin = {
     }[];
 };
 
+export type AddonModAssignFeedbackPluginMultipleMarker = AddonModAssignPlugin & {
+    markerid: number; // Id of the marker who gave this feedback (-1 if the grader identity is hidden).
+    position: number; // Marker position for this assignment (1, 2, ...).
+    workflowstate?: string; // Workflow state of this marker's mark.
+};
+
+/**
+ * Assign feedback plugin for multiple markers.
+ */
+export type AddonModAssignFeedbackPluginMultipleMarkers = AddonModAssignPlugin & {
+    multiplemarkers?: AddonModAssignFeedbackPluginMultipleMarker[];
+};
+
 /**
  * Grading summary of an assign submission.
  */
@@ -1618,6 +1655,15 @@ export type AddonModAssignSubmissionFeedback = {
     gradefordisplay: string; // Grade rendered into a format suitable for display.
     gradeddate: number; // The date the user was graded.
     plugins?: AddonModAssignPlugin[]; // Plugins info.
+    markerfeedback?: AddonModAssignMarkerFeedback[]; // @since 5.3. Feedback broken down by individual marker,
+        // when the assignment uses multiple markers.
+};
+
+export type AddonModAssignMarkerFeedback = {
+    markerid: number; // Id of the marker who gave this feedback (-1 if the grader identity is hidden).
+    position: number; // Marker position for this assignment (1, 2, ...).
+    workflowstate?: string; // Workflow state of this marker's mark.
+    plugins?: AddonModAssignPlugin[]; // Feedback plugin info for this marker.
 };
 
 /**
