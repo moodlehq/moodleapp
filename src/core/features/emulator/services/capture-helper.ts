@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-import { CaptureImageOptions, CaptureVideoOptions, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreMimetype } from '@static/mimetype';
 import { makeSingleton, ModalController } from '@singletons';
 import { CaptureMediaComponentInputs, CoreEmulatorCaptureMediaComponent } from '../components/capture-media/capture-media';
+import { CameraDirection, EncodingType, RecordVideoOptions, TakePhotoOptions } from '@capacitor/camera';
+import { CoreMediaFile } from '@services/native/camera';
 
 /**
  * Helper service with some features to capture media (image, video).
@@ -41,13 +41,12 @@ export class CoreEmulatorCaptureHelperProvider {
      * @param options Optional options.
      * @returns Promise resolved when captured, rejected if error.
      */
-    captureMedia(type: 'image', options?: MockCameraOptions): Promise<string>;
-    captureMedia(type: 'captureimage', options?: MockCaptureImageOptions): Promise<MediaFile[]>;
-    captureMedia(type: 'video', options?: MockCaptureVideoOptions): Promise<MediaFile[]>;
+    captureMedia(type: 'image' | 'captureimage', options?: MockTakePhotoOptions): Promise<CoreMediaFile>;
+    captureMedia(type: 'video', options?: MockRecordVideoOptions): Promise<CoreMediaFile>;
     async captureMedia(
         type: 'image' | 'captureimage' | 'video',
-        options?: MockCameraOptions | MockCaptureImageOptions | MockCaptureVideoOptions,
-    ): Promise<MediaFile[] | string> {
+        options?: MockRecordVideoOptions | MockTakePhotoOptions,
+    ): Promise<CoreMediaFile> {
         options = options || {};
 
         // Build the params to send to the modal.
@@ -61,15 +60,11 @@ export class CoreEmulatorCaptureHelperProvider {
             params.mimetype = mimeAndExt.mimetype;
             params.extension = mimeAndExt.extension;
         } else if (type === 'image') {
-            if ('sourceType' in options && options.sourceType !== undefined && options.sourceType != 1) {
-                return Promise.reject('This source type is not supported in browser.');
-            }
-
-            if ('cameraDirection' in options && options.cameraDirection === 1) {
+            if ('cameraDirection' in options && options.cameraDirection === CameraDirection.Front) {
                 params.facingMode = 'user';
             }
 
-            if ('encodingType' in options && options.encodingType === 1) {
+            if ('encodingType' in options && options.encodingType === EncodingType.PNG) {
                 params.mimetype = 'image/png';
                 params.extension = 'png';
             } else {
@@ -80,14 +75,6 @@ export class CoreEmulatorCaptureHelperProvider {
             if ('quality' in options && options.quality !== undefined && options.quality >= 0 && options.quality <= 100) {
                 params.quality = options.quality / 100;
             }
-
-            if ('destinationType' in options && options.destinationType === 0) {
-                params.returnDataUrl = true;
-            }
-        }
-
-        if ('duration' in options && options.duration) {
-            params.maxTime = options.duration * 1000;
         }
 
         const modal = await ModalController.create({
@@ -176,12 +163,9 @@ export class CoreEmulatorCaptureHelperProvider {
 
 export const CoreEmulatorCaptureHelper = makeSingleton(CoreEmulatorCaptureHelperProvider);
 
-export interface MockCameraOptions extends CameraOptions {
+export interface MockTakePhotoOptions extends TakePhotoOptions {
     mimetypes?: string[]; // Allowed mimetypes.
 }
-export interface MockCaptureImageOptions extends CaptureImageOptions {
-    mimetypes?: string[]; // Allowed mimetypes.
-}
-export interface MockCaptureVideoOptions extends CaptureVideoOptions {
+export interface MockRecordVideoOptions extends RecordVideoOptions {
     mimetypes?: string[]; // Allowed mimetypes.
 }

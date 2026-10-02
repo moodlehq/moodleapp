@@ -15,7 +15,6 @@
 import { NgModule, Type } from '@angular/core';
 
 import { Badge } from '@awesome-cordova-plugins/badge/ngx';
-import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
@@ -36,6 +35,7 @@ import { Zip } from '@features/native/plugins/zip';
  * @returns Returns native services.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
+    const { Camera } = await import('@services/native/camera');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Geolocation } = await import('@features/emulator/services/geolocation');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -70,7 +70,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
 @NgModule({
     providers: [
         Badge,
-        Camera,
         Chooser,
         FileOpener,
         InAppBrowser,
