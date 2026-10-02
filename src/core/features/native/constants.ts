@@ -12,19 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export const enum CoreNativeCordovaPluginResultStatus {
-    NO_RESULT,
-    OK,
-    CLASS_NOT_FOUND_EXCEPTION,
-    ILLEGAL_ACCESS_EXCEPTION,
-    INSTANTIATION_EXCEPTION,
-    MALFORMED_URL_EXCEPTION,
-    IO_EXCEPTION,
-    INVALID_ACTION,
-    JSON_EXCEPTION,
-    ERROR,
-}
-
 export const enum AndroidNotificationPriority {
     NONE = 0,
     MIN = 1,
@@ -32,4 +19,17 @@ export const enum AndroidNotificationPriority {
     DEFAULT = 3,
     HIGH = 4,
     MAX = 5,
+}
+
+/**
+ * List of Error Codes and Meanings for FileOpener
+ *
+ * When an error is thrown, one of the following codes (as a string value) will be used.
+ */
+export const enum CoreNativeCapacitorFileOpenerErrorCode {
+    INTERNAL_ERROR = '1',
+    INVALID_ARGUMENT = '2',
+    FILE_NOT_SUPPORTED = '8',
+    FILE_NOT_FOUND = '9',
+    UNKNOWN = '10',
 }

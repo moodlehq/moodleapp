@@ -30,9 +30,10 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@static/events';
 import { CoreColors } from './colors';
 import { CorePrompts } from '@services/overlays/prompts';
-import { CoreNativeCordovaPluginResultStatus } from '@features/native/constants';
+import { CoreNativeCapacitorFileOpenerErrorCode } from '@features/native/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreFileUtils } from './file-utils';
+import { FileOpenerOptions } from '@capacitor-community/file-opener';
 
 /**
  * Static class with helper functions to handler open files and urls.
@@ -132,16 +133,16 @@ export class CoreOpener {
 
         const openFile = async (path: string, mimetype?: string, hasFailed?: boolean) => {
             try {
-                if (CoreOpener.shouldOpenWithDialog(options)) {
-                    await FileOpener.showOpenWithDialog(path, mimetype || '');
-                } else {
-                    await FileOpener.open(path, mimetype || '');
-                }
+                const openOptions: FileOpenerOptions = {
+                    filePath: path,
+                    contentType: mimetype,
+                    openWithDefault: !CoreOpener.shouldOpenWithDialog(options),
+                };
+                await FileOpener.open(openOptions);
             } catch (error) {
                 if (
                     hasFailed ||
-                    error.status !== CoreNativeCordovaPluginResultStatus.ERROR ||
-                    error.message.includes('Activity not found')
+                    error.code !== CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_FOUND
                 ) {
                     throw error;
                 }
@@ -161,7 +162,7 @@ export class CoreOpener {
             try {
                 await openFile(path, mimetype);
             } catch (error) {
-                if (!extension || !error || Number(error.status) !== 9) {
+                if (!extension || !error || error.code !== CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_SUPPORTED) {
                     throw error;
                 }
 
@@ -182,7 +183,10 @@ export class CoreOpener {
                 throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }
 
-            throw new Error(Translate.instant('core.erroropenfilenoapp'));
+            if (error.code === CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_SUPPORTED) {
+                throw new Error(Translate.instant('core.erroropenfilenoapp'));
+            }
+            throw new Error(error.message);
         }
     }
 

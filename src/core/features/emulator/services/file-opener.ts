@@ -12,64 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
-
+import { FileOpenerOptions, FileOpenerPlugin } from '@capacitor-community/file-opener';
 import { CoreFile } from '@services/file';
 
 /**
- * Emulates the FileOpener plugin in browser.
+ * Emulates the Capacitor File Opener in browser.
  */
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any */
-@Injectable()
-export class FileOpenerMock extends FileOpener {
+export class FileOpenerMock implements FileOpenerPlugin {
 
     /**
-     * Check if an app is already installed.
-     *
-     * @param packageId Package ID.
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
-    appIsInstalled(packageId: string): Promise<any> {
-        return Promise.reject('appIsInstalled not supported in browser.');
-    }
-
-    /**
-     * Open an file.
-     *
-     * @param filePath File path.
-     * @param fileMIMEType File MIME type.
-     * @returns Promise resolved when done.
-     */
-    async open(filePath: string, fileMIMEType: string): Promise<any> {
+    async open(options: FileOpenerOptions): Promise<void> {
+        const filePath = options.filePath;
         if (!filePath.match(/^filesystem:/)) {
-            // Just open the page.
             window.open(filePath, '_blank');
 
             return;
         }
 
         try {
-            // Opening local files in browser just display a blank page. Convert the path to an object URL.
             const fileEntry = await CoreFile.getFile(filePath);
-
             const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
             window.open(URL.createObjectURL(file), '_blank');
-        } catch (error) {
-            // File not found. Just open the URL even if it ends up being a blank page.
+        } catch {
             window.open(filePath, '_blank');
         }
-    }
-
-    /**
-     * Uninstalls a package.
-     *
-     * @param packageId Package ID.
-     * @returns Promise resolved when done.
-     */
-    uninstall(packageId: string): Promise<any> {
-        return Promise.reject('uninstall not supported in browser.');
     }
 
 }

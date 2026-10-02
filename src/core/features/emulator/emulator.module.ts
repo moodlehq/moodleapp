@@ -18,7 +18,7 @@ import { CoreEmulatorHelper } from './services/emulator-helper';
 
 // Ionic Native services.
 import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camera';
-import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
+import { CAPACITOR_FILE_OPENER, resolveCapacitorFileOpener } from '@services/native/file-opener';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Zip } from '@features/native/plugins/zip';
@@ -64,8 +64,8 @@ import { FileTransferMock } from './services/file-transfer';
             useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFileTransfer() : new FileTransferMock(),
         },
         {
-            provide: FileOpener,
-            useFactory: (): FileOpener => CorePlatform.isMobile() ? new FileOpener() : new FileOpenerMock(),
+            provide: CAPACITOR_FILE_OPENER,
+            useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFileOpener() : new FileOpenerMock(),
         },
         {
             provide: InAppBrowser,
