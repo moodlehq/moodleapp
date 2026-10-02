@@ -44,6 +44,7 @@ import {
     type WriteFileResult,
 } from '@capacitor/filesystem';
 import { type FileError } from '@/core/classes/native/filesystem';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Native APIs used in webkit window.
@@ -836,12 +837,7 @@ export class FilesystemMock implements FilesystemPlugin {
         }
 
         const base64 = this.extractBase64(data);
-        const binary = atob(base64);
-        const bytes = new Uint8Array(binary.length);
-
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
+        const bytes = CoreFileUtils.base64ToBinaryData(base64);
 
         return new Blob([bytes]);
     }

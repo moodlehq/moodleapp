@@ -586,14 +586,9 @@ export class CoreFileProvider {
             return data.arrayBuffer();
         }
 
-        const binary = atob(data);
-        const buffer = new ArrayBuffer(binary.length);
-        const view = new Uint8Array(buffer);
-        for (let i = 0; i < binary.length; i++) {
-            view[i] = binary.charCodeAt(i);
-        }
+        const view = CoreFileUtils.base64ToBinaryData(data);
 
-        return buffer;
+        return view.buffer;
     }
 
     /**
@@ -611,13 +606,8 @@ export class CoreFileProvider {
 
         // Convert Blob → binary string via ArrayBuffer.
         const buffer = await data.arrayBuffer();
-        const bytes = new Uint8Array(buffer);
-        let binary = '';
-        for (let i = 0; i < bytes.length; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
 
-        return binary;
+        return CoreFileUtils.arrayBufferToBinaryString(buffer);
     }
 
     /**
@@ -636,12 +626,7 @@ export class CoreFileProvider {
         }
 
         // Blob returned by the web implementation: read it as data URL.
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(<string>reader.result);
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(data);
-        });
+        return CoreFileUtils.readBlobAsString(data, 'data-url');
     }
 
     /**
@@ -761,17 +746,11 @@ export class CoreFileProvider {
      * @param blob Blob to encode.
      * @returns Promise resolved with the base64 representation.
      */
-    protected blobToBase64(blob: Blob): Promise<string> {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const result = <string>reader.result;
-                const commaIndex = result.indexOf(',');
-                resolve(commaIndex === -1 ? result : result.substring(commaIndex + 1));
-            };
-            reader.onerror = () => reject(reader.error);
-            reader.readAsDataURL(blob);
-        });
+    protected async blobToBase64(blob: Blob): Promise<string> {
+        const dataUrl = await CoreFileUtils.readBlobAsString(blob, 'data-url');
+        const commaIndex = dataUrl.indexOf(',');
+
+        return commaIndex === -1 ? dataUrl : dataUrl.substring(commaIndex + 1);
     }
 
     /**
