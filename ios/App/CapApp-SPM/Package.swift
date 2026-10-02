@@ -12,6 +12,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.2"),
+        .package(name: "CapacitorCommunityFileOpener", path: "../../../node_modules/@capacitor-community/file-opener"),
         .package(name: "CapacitorApp", path: "../../../node_modules/@capacitor/app"),
         .package(name: "CapacitorCamera", path: "../../../node_modules/@capacitor/camera"),
         .package(name: "CapacitorClipboard", path: "../../../node_modules/@capacitor/clipboard"),
@@ -22,7 +23,6 @@ let package = Package(
         .package(name: "CapacitorScreenOrientation", path: "../../../node_modules/@capacitor/screen-orientation"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/@capacitor/splash-screen"),
         .package(name: "CapawesomeCapacitorFilePicker", path: "../../../node_modules/@capawesome/capacitor-file-picker"),
-        .package(name: "MoodlehqCordovaPluginFileOpener", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginFileOpener"),
         .package(name: "MoodlehqCordovaPluginInappbrowser", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginInappbrowser"),
         .package(name: "MoodlehqCordovaPluginIonicKeyboard", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginIonicKeyboard"),
         .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
@@ -43,6 +43,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
+                .product(name: "CapacitorCommunityFileOpener", package: "CapacitorCommunityFileOpener"),
                 .product(name: "CapacitorApp", package: "CapacitorApp"),
                 .product(name: "CapacitorCamera", package: "CapacitorCamera"),
                 .product(name: "CapacitorClipboard", package: "CapacitorClipboard"),
@@ -53,7 +54,6 @@ let package = Package(
                 .product(name: "CapacitorScreenOrientation", package: "CapacitorScreenOrientation"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
                 .product(name: "CapawesomeCapacitorFilePicker", package: "CapawesomeCapacitorFilePicker"),
-                .product(name: "MoodlehqCordovaPluginFileOpener", package: "MoodlehqCordovaPluginFileOpener"),
                 .product(name: "MoodlehqCordovaPluginInappbrowser", package: "MoodlehqCordovaPluginInappbrowser"),
                 .product(name: "MoodlehqCordovaPluginIonicKeyboard", package: "MoodlehqCordovaPluginIonicKeyboard"),
                 .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
