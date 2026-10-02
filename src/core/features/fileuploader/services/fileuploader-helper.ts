@@ -565,8 +565,8 @@ export class CoreFileUploaderHelperProvider {
         }
 
         // Make sure the path has the protocol. In iOS it doesn't.
-        if (CorePlatform.isMobile() && !path.includes('file://')) {
-            path = `file://${path}`;
+        if (CorePlatform.isMobile()) {
+            path = CoreFileUtils.convertToFileUrl(path);
         }
 
         const options = CoreFileUploader.getMediaUploadOptions(media);

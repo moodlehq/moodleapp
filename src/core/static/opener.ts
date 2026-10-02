@@ -32,6 +32,7 @@ import { CoreColors } from './colors';
 import { CorePrompts } from '@services/overlays/prompts';
 import { CoreNativeCordovaPluginResultStatus } from '@features/native/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
+import { CoreFileUtils } from './file-utils';
 
 /**
  * Static class with helper functions to handler open files and urls.
@@ -320,7 +321,7 @@ export class CoreOpener {
             ...CoreOpener.calculateInAppBrowserToolbarColors(options || {}),
         };
 
-        if (!iabOptions.location && CorePlatform.isIOS() && url.startsWith('file://')) {
+        if (!iabOptions.location && CorePlatform.isIOS() && CoreFileUtils.isFileUrl(url)) {
             // The URL uses file protocol, don't show it on iOS.
             // In Android we keep it because otherwise we lose the whole toolbar.
             iabOptions.location = 'no';
