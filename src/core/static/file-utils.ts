@@ -124,4 +124,24 @@ export class CoreFileUtils {
         });
     }
 
+    /**
+     * Convert a file path to a file URL.
+     *
+     * @param path File path to convert.
+     * @returns File URL.
+     */
+    static convertToFileUrl(path: string): string {
+        return path.startsWith('file://') ? path : `file://${path}`;
+    }
+
+    /**
+     * Is file URL.
+     *
+     * @param path File path to check.
+     * @returns Whether the path is a file URL.
+     */
+    static isFileUrl(path: string): boolean {
+        return path.startsWith('file://');
+    }
+
 }

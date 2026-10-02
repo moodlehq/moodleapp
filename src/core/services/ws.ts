@@ -51,6 +51,7 @@ import { CoreErrorLogs } from '@static/error-logs';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -1206,7 +1207,7 @@ export class CoreWSProvider {
 
         if (CorePlatform.isMobile()) {
             // Use a native request.
-            if (url.startsWith('file://')) {
+            if (CoreFileUtils.isFileUrl(url)) {
                 // We cannot load local files using the http native plugin. Use file provider instead.
                 const content = options.responseType === 'json' ?
                     await CoreFile.readFile<T>(url, CoreFileFormat.FORMATJSON) :
