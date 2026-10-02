@@ -14,6 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreNativeFilePicker } from '@services/native/file-picker';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Chooser plugin wrapper.
@@ -49,33 +50,12 @@ export class Chooser {
         }
 
         return {
-            data: this.decodeBase64(file.data),
+            data: CoreFileUtils.base64ToBinaryData(file.data),
             dataURI: file.data ? `data:${file.mimeType ?? ''};base64,${file.data}` : '',
             mediaType: file.mimeType ?? '',
             name: file.name,
             uri: file.path ?? file.webPath ?? '',
         };
-    }
-
-    /**
-     * Converts base64-encoded data to binary data.
-     *
-     * @param data Base64-encoded data.
-     * @returns Decoded binary data.
-     */
-    protected decodeBase64(data?: string): Uint8Array {
-        if (!data) {
-            return new Uint8Array(0);
-        }
-
-        const binary = atob(data);
-        const bytes = new Uint8Array(binary.length);
-
-        for (let index = 0; index < binary.length; index++) {
-            bytes[index] = binary.charCodeAt(index);
-        }
-
-        return bytes;
     }
 
     /**

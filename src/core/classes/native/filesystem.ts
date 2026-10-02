@@ -14,6 +14,7 @@
 
 import { Encoding } from '@capacitor/filesystem';
 import { Filesystem } from '@singletons';
+import { CoreFileUtils } from '@static/file-utils';
 import { CoreMimetype } from '@static/mimetype';
 import { CorePath } from '@static/path';
 
@@ -485,12 +486,7 @@ export class DirectoryEntry extends Entry {
  * @returns Blob instance.
  */
 function base64ToBlob(base64: string, mimeType: string): Blob {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-
-    for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
+    const bytes = CoreFileUtils.base64ToBinaryData(base64);
 
     return new Blob([bytes], { type: mimeType });
 }

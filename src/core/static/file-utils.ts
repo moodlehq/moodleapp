@@ -125,6 +125,73 @@ export class CoreFileUtils {
     }
 
     /**
+     * Converts base64-encoded data to binary data.
+     *
+     * @param base64 Base64-encoded data.
+     * @returns Decoded binary data.
+     */
+    static base64ToBinaryData(base64?: string): Uint8Array<ArrayBuffer> {
+        if (!base64) {
+            return new Uint8Array(0);
+        }
+
+        const binary = atob(base64);
+        const bytes = new Uint8Array(binary.length);
+
+        for (let index = 0; index < binary.length; index++) {
+            bytes[index] = binary.charCodeAt(index);
+        }
+
+        return bytes;
+    }
+
+    /**
+     * Converts an ArrayBuffer to a binary string.
+     *
+     * @param buffer ArrayBuffer to convert.
+     * @returns Binary string representation of the ArrayBuffer.
+     */
+    static arrayBufferToBinaryString(buffer: ArrayBuffer): string {
+        const bytes = new Uint8Array(buffer);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+
+        return binary;
+    }
+
+    /**
+     * Read a Blob as text or as a data URL.
+     *
+     * @param blob Blob to read.
+     * @param format Result format.
+     * @returns Promise resolved with the Blob contents.
+     */
+    static readBlobAsString(blob: Blob, format: 'text' | 'data-url'): Promise<string> {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                if (typeof reader.result !== 'string') {
+                    reject(new Error('FileReader returned no string result.'));
+
+                    return;
+                }
+
+                resolve(String(reader.result || ''));
+            };
+            reader.onerror = () => reject(reader.error ?? new Error('FileReader failed to read the Blob.'));
+            reader.onabort = () => reject(reader.error ?? new Error('FileReader was aborted.'));
+
+            if (format === 'text') {
+                reader.readAsText(blob);
+            } else {
+                reader.readAsDataURL(blob);
+            }
+        });
+    }
+
+    /**
      * Convert a file path to a file URL.
      *
      * @param path File path to convert.

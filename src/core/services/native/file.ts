@@ -23,6 +23,7 @@ import { CoreFile, CoreFileFormat } from '@services/file';
 import { CorePath } from '@static/path';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Filesystem } from '@singletons';
+import { CoreFileUtils } from '@static/file-utils';
 
 type Flags = {
 	create?: boolean;
@@ -323,14 +324,8 @@ export class File {
 	 */
 	async readAsBinaryString(path: string, file: string): Promise<string> {
 		const buffer = await this.readAsArrayBuffer(path, file);
-		const bytes = new Uint8Array(buffer);
-		let binary = '';
 
-		for (let i = 0; i < bytes.length; i++) {
-			binary += String.fromCharCode(bytes[i]);
-		}
-
-		return binary;
+		return CoreFileUtils.arrayBufferToBinaryString(buffer);
 	}
 
 	/**
