@@ -340,13 +340,7 @@ export class FileTransferMock implements FileTransferPlugin {
      * @returns Promise resolved with blob contents.
      */
     protected blobToText(blob: Blob): Promise<string> {
-        return new Promise<string>((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = (): void => {
-                resolve(String(reader.result || ''));
-            };
-            reader.readAsText(blob);
-        });
+        return CoreFileUtils.readBlobAsString(blob, 'text');
     }
 
 }
