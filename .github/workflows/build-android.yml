@@ -1,0 +1,57 @@
+name: Build Android APK
+
+on:
+  push:
+    branches:
+      - my-branding
+  workflow_dispatch:  # امکان اجرای دستی از تب Actions
+
+jobs:
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm install -g cordova ionic
+
+      - name: Build Ionic app
+        run: |
+          npm run build --prod
+
+      - name: Add Android platform
+        run: |
+          npx ionic cordova platform add android
+
+      - name: Build APK (Debug)
+        run: |
+          cd platforms/android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: moodle-app-debug-apk
+          path: platforms/android/app/build/outputs/apk/debug/*.apk
+          retention-days: 30
