@@ -199,7 +199,7 @@ jobs:
 
             # During Moodle onsync period, this value should be false to avoid lang tests to fail due to missing langpacks.
             - name: Run or skip lang tests
-              run: moodle-plugin-ci add-config 'define("TOOL_LANGIMPORT_REMOTE_TESTS", true);'
+              run: moodle-plugin-ci add-config 'define("TOOL_LANGIMPORT_REMOTE_TESTS", false);'
 
             - name: Run Behat tests
               id: run-behat-tests
