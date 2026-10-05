@@ -321,8 +321,10 @@
                             </ion-item>
                         }
 
-                        <addon-mod-assign-feedback-plugin *ngFor="let plugin of feedback.plugins" [assign]="assign"
-                            [submission]="userSubmission" [userId]="submitId" [plugin]="plugin" />
+                        @for (plugin of feedbackPlugins(); track plugin) {
+                            <addon-mod-assign-feedback-plugin [assign]="assign" [submission]="userSubmission" [userId]="submitId"
+                                [plugin]="plugin" [markerFeedbacks]="plugin.multiplemarkers" />
+                        }
 
                         @if (hasMultipleMarkersWithFeedback()) {
                             <!-- Info multiple markers not supported. -->

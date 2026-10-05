@@ -1567,6 +1567,19 @@ export type AddonModAssignPlugin = {
     }[];
 };
 
+export type AddonModAssignFeedbackPluginMultipleMarker = AddonModAssignPlugin & {
+    markerid: number; // Id of the marker who gave this feedback (-1 if the grader identity is hidden).
+    position: number; // Marker position for this assignment (1, 2, ...).
+    workflowstate?: string; // Workflow state of this marker's mark.
+};
+
+/**
+ * Assign feedback plugin for multiple markers.
+ */
+export type AddonModAssignFeedbackPluginMultipleMarkers = AddonModAssignPlugin & {
+    multiplemarkers?: AddonModAssignFeedbackPluginMultipleMarker[];
+};
+
 /**
  * Grading summary of an assign submission.
  */

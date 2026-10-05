@@ -24,6 +24,8 @@ import {
     AddonModAssign,
     AddonModAssignPlugin,
     AddonModAssignSavePluginData,
+    AddonModAssignFeedbackPluginMultipleMarker,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreObject } from '@static/object';
@@ -32,11 +34,13 @@ import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { AddonModAssignFeedbackDelegate } from './feedback-delegate';
-import { makeSingleton } from '@singletons';
+import { makeSingleton, Translate } from '@singletons';
 import { CoreFormFields } from '@static/form';
 import { CoreFileEntry } from '@services/file-helper';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, AddonModAssignSubmissionStatusValues } from '../constants';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreUser } from '@features/user/services/user';
+import { CoreWSFile } from '@services/ws';
 
 /**
  * Service that provides some helper functions for assign.
@@ -771,6 +775,186 @@ export class AddonModAssignHelperProvider {
         }
 
         return this.uploadFiles(assignId, files, siteId);
+    }
+
+    /**
+     * Merge feedback plugins with multiple markers.
+     *
+     * @param feedback Feedback object containing plugins and marker feedback.
+     * @returns List of feedback plugins with multiple markers merged.
+     */
+    mergeFeedbackPluginsWithMultipleMarkers(
+        feedback: AddonModAssignSubmissionFeedback,
+    ): AddonModAssignFeedbackPluginMultipleMarkers[] {
+
+        const plugins: AddonModAssignFeedbackPluginMultipleMarkers [] = feedback.plugins || [];
+        const markerFeedback = feedback.markerfeedback || [];
+        if (markerFeedback.length > 0 && feedback.plugins?.length) {
+            feedback.plugins.forEach((plugin: AddonModAssignFeedbackPluginMultipleMarkers) => {
+                const multipleMarkers: AddonModAssignFeedbackPluginMultipleMarker[] = [];
+                markerFeedback.forEach((mf) => {
+                    const multipleMarker = mf.plugins?.find((mfPlugin) => mfPlugin.type === plugin.type);
+                    if (multipleMarker) {
+                        multipleMarkers.push({
+                            markerid: mf.markerid,
+                            position: mf.position,
+                            workflowstate: mf.workflowstate,
+                            ...multipleMarker,
+                        });
+                    }
+                });
+                plugin.multiplemarkers = multipleMarkers;
+            });
+        }
+
+        return plugins;
+    }
+
+    /**
+     * Get text of a submission plugin.
+     *
+     * @param pluginInfo Plugin info.
+     * @param keepUrls True if it should keep original URLs, false if they should be replaced.
+     * @param translations Object containing translation keys for the marker, hidden marker, and overall comments.
+     * @param translations.markerTranslationKey Translation key for the title of the marker comment.
+     * @param translations.overallTranslationKey Translation key for the title of the overall comment.
+     * @returns Submission text.
+     */
+    protected async getPluginTextWithMarker(
+        pluginInfo: AddonModAssignFeedbackPluginMultipleMarker | AddonModAssignPlugin,
+        keepUrls?: boolean,
+        translations: {
+            markerTranslationKey?: string;
+            overallTranslationKey?: string;
+        } = {},
+    ): Promise<string> {
+        const text = AddonModAssign.getSubmissionPluginText(pluginInfo, keepUrls);
+        if (!text) {
+            return '';
+        }
+
+        if (translations) {
+            let title: string | undefined;
+            if ('markerid' in pluginInfo) {
+                let graderName: string | undefined;
+                if (pluginInfo.markerid > 0 && translations.markerTranslationKey) {
+                    const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(pluginInfo.markerid, undefined, true));
+                    graderName = user?.fullname ?? '';
+                }
+                title = translations.markerTranslationKey
+                        ? Translate.instant(translations.markerTranslationKey, { $a: graderName ?? pluginInfo.position })
+                        : undefined;
+            } else if (translations.overallTranslationKey) {
+                title = Translate.instant(translations.overallTranslationKey);
+            }
+
+            if (title) {
+                return `<h2 style="font: var(--mdl-typography-heading5-font);">${title}</h2><div>${text}</div>`;
+            }
+        }
+
+        return `<div>${text}</div>`;
+    }
+
+    /**
+     * Get text of a submission plugin.
+     *
+     * @param pluginInfo Plugin info.
+     * @param markerFeedbacks List of marker feedbacks for the plugin.
+     * @param keepUrls True if it should keep original URLs, false if they should be replaced.
+     * @param translations Object containing translation keys for the marker, hidden marker, and overall comments.
+     * @param translations.markerTranslationKey Translation key for the title of the marker comment.
+     * @param translations.hiddenMarkerTranslationKey Translation key for the title of the hidden marker comment.
+     * @param translations.overallTranslationKey Translation key for the title of the overall comment.
+     * @returns Submission text.
+     */
+    async getPluginExpandedText(
+        pluginInfo: AddonModAssignPlugin,
+        markerFeedbacks?: AddonModAssignFeedbackPluginMultipleMarker[],
+        keepUrls?: boolean,
+        translations: {
+            markerTranslationKey?: string;
+            hiddenMarkerTranslationKey?: string;
+            overallTranslationKey?: string;
+        } = {},
+    ): Promise<string> {
+        if (!markerFeedbacks || markerFeedbacks.length === 0) {
+            return AddonModAssign.getSubmissionPluginText(
+                pluginInfo,
+                keepUrls,
+            );
+        }
+
+        const expandedTexts = await Promise.all(markerFeedbacks?.map(async (markerFeedback) =>
+            await this.getPluginTextWithMarker(
+                markerFeedback,
+                keepUrls,
+                translations,
+            )));
+
+        const overallText = await this.getPluginTextWithMarker(
+            pluginInfo,
+            keepUrls,
+            translations,
+        );
+        expandedTexts.push(overallText);
+
+        return expandedTexts.join('');
+    }
+
+    /**
+     * Get attachments of a plugin with marker titles.
+     *
+     * @param pluginInfo Plugin information.
+     * @param markerFeedbacks Marker feedbacks.
+     * @param translations Translations for marker titles.
+     * @param translations.markerTranslationKey Translation key for the title of the marker.
+     * @param translations.overallTranslationKey Translation key for the title of the overall comment.
+     * @returns List of attachments with their titles.
+     */
+    async getPluginAttachmentsWithMarkerTitles(
+        pluginInfo: AddonModAssignPlugin,
+        markerFeedbacks?: AddonModAssignFeedbackPluginMultipleMarker[],
+        translations: {
+            markerTranslationKey?: string;
+            overallTranslationKey?: string;
+        } = {},
+    ): Promise<{ title?: string; files: CoreWSFile[] }[]> {
+        const overallFiles = AddonModAssign.getSubmissionPluginAttachments(pluginInfo);
+        const markerFiles: { title?: string; files: CoreWSFile[] }[] = [];
+        if (markerFeedbacks && markerFeedbacks.length > 0) {
+            const markerAttachments = await Promise.all(markerFeedbacks.map(async (markerFeedback) => {
+                let graderName: string | undefined;
+
+                const files = AddonModAssign.getSubmissionPluginAttachments(markerFeedback);
+                if (files.length === 0) {
+                    return;
+                }
+
+                if (markerFeedback.markerid > 0) {
+                    const user = await CorePromiseUtils.ignoreErrors(CoreUser.getProfile(markerFeedback.markerid, undefined, true));
+                    graderName = user?.fullname;
+                }
+                const title = translations.markerTranslationKey
+                        ? Translate.instant(translations.markerTranslationKey, { $a: graderName ?? markerFeedback.position })
+                        : undefined;
+
+                return { title, files };
+            }));
+            markerFiles.push(...markerAttachments.filter((attachment) => attachment !== undefined));
+
+            if (overallFiles.length > 0) {
+                const title = translations.overallTranslationKey
+                    ? Translate.instant(translations.overallTranslationKey)
+                    : undefined;
+                markerFiles.push({ title, files: overallFiles });
+            }
+
+            return markerFiles;
+        }
+
+        // No multiple markers.
+        return [{ files: overallFiles }];
     }
 
 }
