@@ -14,18 +14,18 @@
 
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import {
-    AddonModAssignPlugin,
     AddonModAssignAssign,
     AddonModAssignSubmission,
-    AddonModAssign,
+    AddonModAssignFeedbackPluginMultipleMarkers,
 } from '@addons/mod/assign/services/assign';
+import { AddonModAssignHelper } from '@addons/mod/assign/services/assign-helper';
 import { AddonModAssignFeedbackHandler } from '@addons/mod/assign/services/feedback-delegate';
 import { Injectable, Type } from '@angular/core';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
 
 /**
- * Handler for file feedback plugin.
+ * Handler for feedback files plugin.
  */
 @Injectable( { providedIn: 'root' })
 export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignFeedbackHandler {
@@ -55,9 +55,9 @@ export class AddonModAssignFeedbackFileHandlerService implements AddonModAssignF
     getPluginFiles(
         assign: AddonModAssignAssign,
         submission: AddonModAssignSubmission,
-        plugin: AddonModAssignPlugin,
+        plugin: AddonModAssignFeedbackPluginMultipleMarkers,
     ): CoreWSFile[] {
-        return AddonModAssign.getSubmissionPluginAttachments(plugin);
+        return AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(plugin);
     }
 
     /**

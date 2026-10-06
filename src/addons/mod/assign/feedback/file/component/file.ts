@@ -14,13 +14,12 @@
 
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
-import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
-import { CoreWSFile } from '@services/ws';
 import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModAssignHelper, AddonModAssignMarkerFiles } from '@addons/mod/assign/services/assign-helper';
 
 /**
- * Component to render a file feedback plugin.
+ * Component to render a feedback files plugin.
  */
 @Component({
     selector: 'addon-mod-assign-feedback-file',
@@ -32,15 +31,26 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModAssignFeedbackFileComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
-    files: CoreWSFile[] = [];
+    markerFiles: AddonModAssignMarkerFiles[] = [];
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (this.plugin) {
-            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+        if (!this.plugin) {
+            return;
         }
+
+        this.markerFiles = await AddonModAssignHelper.getPluginAttachmentsWithMarkerTitles(
+            this.plugin,
+            this.markerFeedbacks(),
+            {
+                markerTranslationKey: 'addon.mod_assign_feedback_file.markerfile',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_file.markernumberfile',
+                overallTranslationKey: 'addon.mod_assign_feedback_file.overallfiles',
+            },
+        );
+
     }
 
 }

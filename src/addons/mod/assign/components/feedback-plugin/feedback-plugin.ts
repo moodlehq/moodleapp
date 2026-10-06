@@ -13,14 +13,14 @@
 // limitations under the License.
 
 import type { IAddonModAssignFeedbackPluginComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
-import { Component, Input, OnInit, Type, viewChild } from '@angular/core';
+import { Component, Input, OnInit, Type, viewChild, input } from '@angular/core';
 import { CoreDynamicComponent } from '@components/dynamic-component/dynamic-component';
 import { CoreWSFile } from '@services/ws';
 import {
     AddonModAssignAssign,
     AddonModAssignSubmission,
     AddonModAssignPlugin,
-    AddonModAssign,
+    AddonModAssignFeedbackPluginMultipleMarker,
 } from '../../services/assign';
 import { AddonModAssignHelper, AddonModAssignPluginConfig } from '../../services/assign-helper';
 import { AddonModAssignFeedbackDelegate } from '../../services/feedback-delegate';
@@ -48,6 +48,7 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
     @Input({ required: true }) userId!: number; // The user ID of the submission.
     @Input({ transform: toBoolean }) canEdit = false; // Whether the user can edit.
     @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
+    readonly markerFeedbacks = input<AddonModAssignFeedbackPluginMultipleMarker[]>(); // The marker feedbacks for the plugin.
 
     pluginComponent?: Type<IAddonModAssignFeedbackPluginComponent>; // Component to render the plugin.
     data?: AddonModAssignFeedbackPluginData; // Data to pass to the component.
@@ -91,11 +92,12 @@ export class AddonModAssignFeedbackPluginComponent implements OnInit {
                 configs: AddonModAssignHelper.getPluginConfig(this.assign, 'assignfeedback', this.plugin.type),
                 edit: this.edit,
                 canEdit: this.canEdit,
+                markerFeedbacks: this.markerFeedbacks(),
             };
         } else {
             // Data to render the plugin.
-            this.text = AddonModAssign.getSubmissionPluginText(this.plugin);
-            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+            this.text = await AddonModAssignHelper.getPluginExpandedText(this.plugin, { markerFeedbacks: this.markerFeedbacks() });
+            this.files = AddonModAssignHelper.getSubmissionPluginAttachmentsWithMultipleMarkers(this.plugin);
             this.notSupported = AddonModAssignFeedbackDelegate.isPluginSupported(this.plugin.type);
             this.pluginLoaded = true;
         }
@@ -120,4 +122,5 @@ export type AddonModAssignFeedbackPluginData = {
     edit: boolean;
     canEdit: boolean;
     userId: number;
+    markerFeedbacks?: AddonModAssignFeedbackPluginMultipleMarker[];
 };

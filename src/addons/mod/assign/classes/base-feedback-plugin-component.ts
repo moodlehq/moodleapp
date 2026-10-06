@@ -12,12 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, Input } from '@angular/core';
+import { Component, input, Input } from '@angular/core';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreError } from '@classes/errors/error';
 import { CoreModals } from '@services/overlays/modals';
 import { AddonModAssignFeedbackCommentsTextData } from '../feedback/comments/services/handler';
-import { AddonModAssignAssign, AddonModAssignPlugin, AddonModAssignSubmission } from '../services/assign';
+import {
+    AddonModAssignAssign,
+    AddonModAssignFeedbackPluginMultipleMarker,
+    AddonModAssignPlugin,
+    AddonModAssignSubmission,
+} from '../services/assign';
 import { toBoolean } from '@/core/transforms/boolean';
 
 /**
@@ -35,6 +40,7 @@ export class AddonModAssignFeedbackPluginBaseComponent implements IAddonModAssig
     @Input() configs?: Record<string,string>; // The configs for the plugin.
     @Input({ transform: toBoolean }) canEdit = false; // Whether the user can edit.
     @Input({ transform: toBoolean }) edit = false; // Whether the user is editing.
+    readonly markerFeedbacks = input<AddonModAssignFeedbackPluginMultipleMarker[]>(); // The marker feedbacks for the plugin.
 
     /**
      * Open a modal to edit the feedback plugin.

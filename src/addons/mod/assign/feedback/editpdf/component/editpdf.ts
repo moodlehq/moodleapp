@@ -14,10 +14,9 @@
 
 import { AddonModAssignFeedbackPluginBaseComponent } from '@addons/mod/assign/classes/base-feedback-plugin-component';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY } from '@addons/mod/assign/constants';
-import { AddonModAssign } from '@addons/mod/assign/services/assign';
 import { Component, OnInit } from '@angular/core';
-import { CoreWSFile } from '@services/ws';
 import { CoreSharedModule } from '@/core/shared.module';
+import { AddonModAssignHelper, AddonModAssignMarkerFiles } from '@addons/mod/assign/services/assign-helper';
 
 /**
  * Component to render a edit pdf feedback plugin.
@@ -32,17 +31,29 @@ import { CoreSharedModule } from '@/core/shared.module';
 export class AddonModAssignFeedbackEditPdfComponent extends AddonModAssignFeedbackPluginBaseComponent implements OnInit {
 
     component = ADDON_MOD_ASSIGN_COMPONENT_LEGACY;
-    files: CoreWSFile[] = [];
+    markerFiles: AddonModAssignMarkerFiles[] = [];
 
     /**
      * @inheritdoc
      */
     async ngOnInit(): Promise<void> {
-        if (this.plugin) {
-            this.plugin.fileareas = this.plugin.fileareas?.filter((filearea) => filearea.area === 'download');
-
-            this.files = AddonModAssign.getSubmissionPluginAttachments(this.plugin);
+        if (!this.plugin) {
+            return;
         }
+
+        this.markerFiles = await AddonModAssignHelper.getPluginAttachmentsWithMarkerTitles(
+            this.plugin,
+            this.markerFeedbacks(),
+            {
+                markerTranslationKey: 'addon.mod_assign_feedback_editpdf.markerfeedback',
+                hiddenMarkerTranslationKey: 'addon.mod_assign_feedback_editpdf.markernumberfeedback',
+                overallTranslationKey: 'addon.mod_assign_feedback_editpdf.overallfeedback',
+            },
+            {
+                overallFileAreas: ['download'],
+                markerFileAreas: ['download_marker'],
+            },
+        );
     }
 
 }
