@@ -13,35 +13,79 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
-
+import { MediaType, type CameraPlugin, type MediaResult } from '@capacitor/camera';
+import { Camera } from '@services/native/camera-compat';
+import { resolveCapacitorCamera } from '@services/native/camera';
 import { CoreEmulatorCaptureHelper } from './capture-helper';
+import {
+    CoreCaptureMediaTakePhotoOptions,
+    CoreCaptureMediaRecordVideoOptions,
+} from '@services/native/capture-media';
 
 /**
- * Emulates the Cordova Camera plugin in browser.
+ * Emulates the Capacitor Camera plugin in browser.
  */
 @Injectable()
+// eslint-disable-next-line @typescript-eslint/no-deprecated
 export class CameraMock extends Camera {
 
     /**
-     * Remove intermediate image files that are kept in temporary storage after calling camera.getPicture.
-     *
-     * @returns Promise resolved when done.
+     * @inheritdoc
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cleanup(): Promise<any> {
-        // This function is iOS only, nothing to do.
-        return Promise.resolve();
+    async takePhoto(options: CoreCaptureMediaTakePhotoOptions): Promise<MediaResult> {
+        const media = await CoreEmulatorCaptureHelper.captureMedia('image', options);
+
+        return {
+            type: MediaType.Photo,
+            webPath: media.fullPath,
+            saved: false,
+            metadata: {
+                format: media.format,
+                size: media.size,
+            },
+        };
     }
 
     /**
-     * Take a picture.
-     *
-     * @param options Options that you want to pass to the camera.
-     * @returns Promise resolved when captured.
+     * @inheritdoc
      */
-    getPicture(options: CameraOptions): Promise<string> {
-        return CoreEmulatorCaptureHelper.captureMedia('image', options);
+    async recordVideo(options: CoreCaptureMediaRecordVideoOptions): Promise<MediaResult> {
+        const media = await CoreEmulatorCaptureHelper.captureMedia('video', options);
+
+        return {
+            type: MediaType.Video,
+            webPath: media.fullPath,
+            saved: false,
+            metadata: {
+                format: media.format,
+                size: media.size,
+                duration: media.duration,
+            },
+        };
     }
 
+}
+
+/**
+ * Create a browser camera plugin that uses the emulator for camera capture.
+ *
+ * @returns Camera plugin with emulated photo and video capture.
+ */
+export function createCameraMock(): CameraPlugin {
+    const camera = resolveCapacitorCamera();
+    const mock = new CameraMock();
+
+    return new Proxy(camera, {
+        get(target, property, receiver) {
+            if (property === 'takePhoto') {
+                return mock.takePhoto.bind(mock);
+            }
+
+            if (property === 'recordVideo') {
+                return mock.recordVideo.bind(mock);
+            }
+
+            return Reflect.get(target, property, receiver);
+        },
+    });
 }

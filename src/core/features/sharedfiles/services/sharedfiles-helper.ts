@@ -31,6 +31,7 @@ import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Helper service to share files with the app.
@@ -71,7 +72,7 @@ export class CoreSharedFilesHelperProvider {
         });
 
         CoreEvents.on(CoreEvents.APP_LAUNCHED_URL, (data) => {
-            if (data.url.startsWith('file://')) {
+            if (CoreFileUtils.isFileUrl(data.url)) {
                 // We received a file in iOS, it's probably a shared file. Treat it.
                 lastCheck = Date.now();
                 this.searchIOSNewSharedFiles(data.url);
