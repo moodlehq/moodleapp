@@ -1,0 +1,57 @@
+diff --git a/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt b/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
+index 0388462..6a44af4 100644
+--- a/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
++++ b/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
+@@ -183,8 +183,16 @@ class FileTransferPlugin : Plugin() {
+                             MediaScannerConnection.scanFile(context, arrayOf(filePath), null, null)
+                         }
+ 
++                        val headersObj = JSObject()
++                        result.data.headers?.entries?.forEach { (key, values) ->
++                            key?.let { headerKey ->
++                                headersObj.put(headerKey, values.firstOrNull() ?: "")
++                            }
++                        }
++                        
+                         val response = JSObject().apply {
+                             put("path", filePath)
++                            put("headers", headersObj)
+                         }
+                         call.resolve(response)
+                     }
+diff --git a/node_modules/@capacitor/file-transfer/dist/definitions.d.ts b/node_modules/@capacitor/file-transfer/dist/definitions.d.ts
+index 6c20dde..2e06660 100644
+--- a/node_modules/@capacitor/file-transfer/dist/definitions.d.ts
++++ b/node_modules/@capacitor/file-transfer/dist/definitions.d.ts
+@@ -71,6 +71,13 @@ export interface DownloadFileResult {
+      * @since 1.0.0
+      */
+     path?: string;
++    /**
++     * HTTP headers from the download response (when available).
++     * @since 1.0.0
++     */
++    headers?: {
++        [key: string]: string;
++    };
+     /**
+      * The blob data of the downloaded file.
+      * This is only available on web.
+diff --git a/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift b/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
+index 011e2ea..d328b76 100644
+--- a/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
++++ b/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
+@@ -225,7 +225,12 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+                 let result: JSObject = {
+                     switch type {
+                     case .download:
+-                        return ["path": path]
++                        return [
++                            "path": path,
++                            "headers": data.headers.reduce(into: JSObject()) { result, entry in
++                                result[entry.key] = entry.value
++                            },
++                        ]
+                     case .upload:
+                         return [
+                             "bytesSent": data.totalBytes,
