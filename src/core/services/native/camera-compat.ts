@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Injectable } from '@angular/core';
 import {
     CameraDirection,
     MediaTypeSelection,
@@ -32,6 +33,7 @@ import { CoreFileFormat } from '@services/file';
  *
  * @deprecated since 6.0. Use CoreCaptureMedia instead.
  */
+@Injectable({ providedIn: 'root' })
 export class Camera {
 
     /**
