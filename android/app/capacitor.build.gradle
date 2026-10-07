@@ -12,6 +12,7 @@ dependencies {
     implementation project(':capacitor-camera')
     implementation project(':capacitor-clipboard')
     implementation project(':capacitor-device')
+    implementation project(':capacitor-file-transfer')
     implementation project(':capacitor-filesystem')
     implementation project(':capacitor-network')
     implementation project(':capacitor-screen-orientation')
