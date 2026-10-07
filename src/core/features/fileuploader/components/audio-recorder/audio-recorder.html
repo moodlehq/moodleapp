@@ -8,7 +8,7 @@
 
 <hr>
 
-@if ((status$ | async); as status) {
+@if (status(); as status) {
 
     @if (status === 'empty') {
         <div class="core-audio-recorder--wrapper">
@@ -23,7 +23,7 @@
 
     @if (status.startsWith('recording')) {
         <div class="core-audio-recorder--wrapper">
-            @if ((histogramAnalyzer$ | async); as analyser) {
+            @if (histogramAnalyzer(); as analyser) {
                 <core-audio-histogram [analyser]="analyser" [paused]="status !== 'recording-ongoing'" />
             }
 
@@ -60,14 +60,10 @@
         </div>
     }
 
-    @if (status === 'done') {
-        <div class="core-audio-recorder--wrapper">
-            @if ((recordingUrl$ | async); as recordingUrl) {
-                <audio controls controlsList="nodownload">
-                    <source [src]="recordingUrl" />
-                </audio>
-            }
+    <div class="core-audio-recorder--wrapper" [hidden]="status !== 'done'">
+        <audio controls controlsList="nodownload" #previewAudio [src]="recordingUrl()"></audio>
 
+        @if (status === 'done') {
             <div class="core-audio-recorder--controls">
                 <div class="core-audio-recorder--control">
                     <ion-button shape="round" fill="clear" color="danger" [ariaLabel]="'core.fileuploader.discardrecording' | translate"
@@ -82,7 +78,7 @@
                     </ion-button>
                 </div>
             </div>
-        </div>
-    }
+        }
+    </div>
 
 }

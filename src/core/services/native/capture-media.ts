@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CaptureError, MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 import {
     MediaResult,
     TakePhotoOptions,
@@ -21,9 +20,7 @@ import {
     ChooseFromGalleryOptions,
     CameraErrorCode,
 } from '@capacitor/camera';
-import { Camera, makeSingleton, MediaCapture } from '@singletons';
-import { CoreLogger } from '@static/logger';
-import { CorePlatform } from '@services/platform';
+import { Camera, makeSingleton } from '@singletons';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFileUploaderAudioRecording } from '../../features/fileuploader/services/fileuploader';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
@@ -35,19 +32,14 @@ import { CoreFileUtils } from '@static/file-utils';
 @Injectable({ providedIn: 'root' })
 export class CoreCaptureMediaService {
 
-    protected logger: CoreLogger;
-
-    constructor() {
-        this.logger = CoreLogger.getInstance('CoreCaptureMediaService');
-    }
-
     /**
      * Check whether the in-app audio recorder can be used.
      *
      * @returns Whether the in-app audio recorder can be used.
+     * @deprecated since 6.0. The in-app audio recorder is now used on every platform.
      */
     canUseInAppAudioRecorder(): boolean {
-        return CorePlatform.supportsMediaCapture() && CorePlatform.supportsWebAssembly();
+        return true;
     }
 
     /**
@@ -55,25 +47,7 @@ export class CoreCaptureMediaService {
      *
      * @returns Promise resolved with the result.
      */
-    async captureAudio(): Promise<CoreFileUploaderAudioRecording[] | MediaFile[] | CaptureError> {
-        if (!this.canUseInAppAudioRecorder()) {
-            const media = await MediaCapture.captureAudio({ limit: 1 });
-
-            return media;
-        }
-
-        const recording = await this.captureAudioInApp();
-
-        return [recording];
-    }
-
-    /**
-     * Record an audio file without using an external app.
-     *
-     * @returns Promise resolved with the file.
-     * Do not use this function directly, use CoreCaptureMedia.captureAudio instead.
-     */
-    async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
+    async captureAudio(): Promise<CoreFileUploaderAudioRecording> {
         // @todo Capacitor: Decide where to place this component.
         const { CoreFileUploaderAudioRecorderComponent } =
             await import('@features/fileuploader/components/audio-recorder/audio-recorder.component');
@@ -85,6 +59,16 @@ export class CoreCaptureMediaService {
         }
 
         return recording;
+    }
+
+    /**
+     * Record an audio file without using an external app.
+     *
+     * @returns Promise resolved with the file.
+     * Do not use this function directly, use CoreCaptureMedia.captureAudio instead.
+     */
+    async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
+        return await CoreCaptureMedia.captureAudio();
     }
 
     /**

@@ -115,6 +115,7 @@ export class CorePlatformService extends Platform {
      * Checks whether media capture is supported.
      *
      * @returns Whether media capture is supported.
+     * @deprecated since 6.0. Not used anymore.
      */
     supportsMediaCapture(): boolean {
         return 'mediaDevices' in navigator;
@@ -124,6 +125,7 @@ export class CorePlatformService extends Platform {
      * Checks whether web assembly is supported.
      *
      * @returns Whether web assembly is supported.
+     * @deprecated since 6.0. Not used anymore.
      */
     supportsWebAssembly(): boolean {
         return 'WebAssembly' in window;

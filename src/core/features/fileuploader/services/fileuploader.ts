@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CameraOptions } from '@services/native/camera-compat';
 import { FileEntry } from '@classes/native/filesystem';
-import { MediaFile, CaptureError } from '@awesome-cordova-plugins/media-capture/ngx';
+import { MediaFile } from '@services/native/media-capture';
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -145,10 +145,10 @@ export class CoreFileUploaderProvider {
      * Check whether the in-app audio recorder can be used.
      *
      * @returns Whether the in-app audio recorder can be used.
-     * @deprecated since 6.0. Use CoreCaptureMedia.canUseInAppAudioRecorder instead.
+     * @deprecated since 6.0. Not used anymore.
      */
     canUseInAppAudioRecorder(): boolean {
-        return CorePlatform.supportsMediaCapture() && CorePlatform.supportsWebAssembly();
+        return true;
     }
 
     /**
@@ -157,12 +157,14 @@ export class CoreFileUploaderProvider {
      * @returns Promise resolved with the result.
      * @deprecated since 6.0. Use CoreCaptureMedia.captureAudio instead.
      */
-    async captureAudio(): Promise<CoreFileUploaderAudioRecording[] | MediaFile[] | CaptureError> {
+    async captureAudio(): Promise<CoreFileUploaderAudioRecording[]> {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         this.onAudioCapture.next(true);
 
         try {
-            return await CoreCaptureMedia.captureAudio();
+            const audio = await CoreCaptureMedia.captureAudio();
+
+            return [audio];
         } finally {
             // eslint-disable-next-line @typescript-eslint/no-deprecated
             this.onAudioCapture.next(false);
@@ -176,7 +178,7 @@ export class CoreFileUploaderProvider {
      * @deprecated since 6.0. Use CoreCaptureMedia.captureAudio instead.
      */
     async captureAudioInApp(): Promise<CoreFileUploaderAudioRecording> {
-        return await CoreCaptureMedia.captureAudioInApp();
+        return await CoreCaptureMedia.captureAudio();
     }
 
     /**
@@ -185,7 +187,7 @@ export class CoreFileUploaderProvider {
      * @returns Promise resolved with the result.
      * @deprecated since 6.0. Use CoreCaptureMedia.captureVideo instead.
      */
-    async captureVideo(): Promise<MediaFile[] | CaptureError> {
+    async captureVideo(): Promise<MediaFile[]> {
         // eslint-disable-next-line @typescript-eslint/no-deprecated
         this.onVideoCapture.next(true);
 
@@ -781,4 +783,5 @@ export type CoreFileUploaderAudioRecording = {
     name: string;
     fullPath: string;
     type: string;
+    duration?: number; // Duration of the audio recording in seconds.
 };
