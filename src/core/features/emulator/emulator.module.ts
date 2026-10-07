@@ -21,7 +21,6 @@ import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camer
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
@@ -30,7 +29,6 @@ import { FilesystemMock } from './services/filesystem';
 import { FileOpenerMock } from './services/file-opener';
 import { InAppBrowserMock } from './services/inappbrowser';
 import { LocalNotificationsMock } from './services/local-notifications';
-import { MediaCaptureMock } from './services/media-capture';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
 import { CoreLocalNotifications } from '@services/local-notifications';
@@ -66,10 +64,6 @@ import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/nati
         {
             provide: InAppBrowser,
             useFactory: (): InAppBrowser => CorePlatform.isMobile() ? new InAppBrowser() : new InAppBrowserMock(),
-        },
-        {
-            provide: MediaCapture,
-            useFactory: (): MediaCapture => CorePlatform.isMobile() ? new MediaCapture() : new MediaCaptureMock(),
         },
         {
             provide: Zip,

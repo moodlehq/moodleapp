@@ -20,7 +20,6 @@ import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
@@ -37,6 +36,8 @@ import { Zip } from '@features/native/plugins/zip';
 export async function getNativeServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Camera } = await import('@services/native/camera-compat');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { MediaCapture } = await import('@services/native/media-capture');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Geolocation } = await import('@features/emulator/services/geolocation');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -76,7 +77,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         InAppBrowser,
         Keyboard,
         LocalNotifications,
-        MediaCapture,
         Push,
         QRScanner,
         SQLite,

@@ -55,7 +55,7 @@ export class FileOpenerMock extends FileOpener {
 
             const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
 
-            window.open(window.URL.createObjectURL(file), '_blank');
+            window.open(URL.createObjectURL(file), '_blank');
         } catch (error) {
             // File not found. Just open the URL even if it ends up being a blank page.
             window.open(filePath, '_blank');

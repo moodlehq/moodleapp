@@ -12,15 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    OnDestroy,
+    signal,
+    untracked,
+    viewChild,
+} from '@angular/core';
 import { CoreModalComponent } from '@classes/modal-component';
 import { CorePlatform } from '@services/platform';
-import { DomSanitizer, Translate } from '@singletons';
-import { BehaviorSubject, combineLatest, Observable, OperatorFunction } from 'rxjs';
+import { Translate } from '@singletons';
 import { Mp3MediaRecorder } from 'mp3-mediarecorder';
-import { map, shareReplay, tap } from 'rxjs/operators';
 import { initAudioEncoderMessage } from '@features/fileuploader/utils/worker-messages';
-import { SafeUrl } from '@angular/platform-browser';
 import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -29,6 +36,8 @@ import { CoreNative } from '@features/native/services/native';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audio-histogram';
 import { CoreAlerts } from '@services/overlays/alerts';
+import { CoreAnyError } from '@classes/errors/error';
+import { CoreMimetype } from '@static/mimetype';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
@@ -43,60 +52,58 @@ import { CoreAlerts } from '@services/overlays/alerts';
 export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<CoreFileUploaderAudioRecording>
     implements OnDestroy {
 
-    recordingUrl$: Observable<SafeUrl | null>;
-    histogramAnalyzer$: Observable<AnalyserNode | null>;
-    status$: Observable<'recording-ongoing' | 'recording-paused' | 'done' | 'empty'>;
+    readonly recordingUrl = signal<string>('');
 
-    protected recording: AudioRecording | null;
-    protected media$: BehaviorSubject<AudioRecorderMedia | null>;
-    protected recording$: Observable<AudioRecording | null>;
+    readonly histogramAnalyzer = computed<AnalyserNode | null>(() => {
+        const media = this.media();
+
+        return media && !CorePlatform.prefersReducedMotion() ? media.analyser : null;
+    });
+
+    readonly status = computed<CoreFileUploaderAudioRecorderStatus>(() => {
+        if (this.recording()) {
+            return 'done';
+        }
+
+        switch (this.recordingState()) {
+            case 'recording':
+                return 'recording-ongoing';
+            case 'paused':
+                return 'recording-paused';
+            default:
+                return 'empty';
+        }
+    });
+
+    protected readonly recording = signal<Blob | null>(null);
+    protected readonly media = signal<AudioRecorderMedia | null>(null);
+    protected readonly recordingState = signal<RecordingState>('inactive');
+
+    protected readonly previewAudio = viewChild<ElementRef<HTMLAudioElement>>('previewAudio');
+    protected readonly previewMedia = computed(() => this.previewAudio()?.nativeElement);
 
     constructor() {
         super();
 
-        this.recording = null;
-        this.media$ = new BehaviorSubject<AudioRecorderMedia | null>(null);
-        this.recording$ = this.media$.pipe(
-            recorderAudioRecording(),
-            shareReplay(),
-            tap(recording => this.recording = recording),
-        );
-        this.recordingUrl$ = this.recording$.pipe(
-            map(recording => recording && DomSanitizer.bypassSecurityTrustUrl(recording.url)),
-        );
-        this.histogramAnalyzer$ = this.media$.pipe(map(media => {
-            if (!media?.analyser || CorePlatform.prefersReducedMotion()) {
-                return null;
-            }
+        effect(() => {
+            const blob = this.recording();
+            untracked(() => {
+                this.recordingUrl.update((previousUrl) => {
+                    if (previousUrl) {
+                        URL.revokeObjectURL(previousUrl);
+                    }
 
-            return media.analyser;
-        }));
-        this.status$ = combineLatest([this.media$.pipe(recorderStatus(), shareReplay()), this.recording$])
-            .pipe(map(([recordingStatus, recording]) => {
-                if (recording) {
-                    return 'done';
-                }
-                if (recordingStatus === 'recording') {
-                    return 'recording-ongoing';
-                }
-
-                if (recordingStatus === 'paused') {
-                    return 'recording-paused';
-                }
-
-                return 'empty';
-            }));
+                    return blob ? URL.createObjectURL(blob) : '';
+                });
+            });
+        });
     }
 
     /**
      * @inheritdoc
      */
     ngOnDestroy(): void {
-        const recorder = this.media$.value?.recorder;
-
-        if (recorder && recorder.state !== 'inactive') {
-            recorder.stop();
-        }
+        this.resetMedia();
     }
 
     /**
@@ -105,12 +112,27 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
     async startRecording(): Promise<void> {
         try {
             const media = await this.createMedia();
+            const audioChunks: Blob[] = [];
 
-            this.media$.next(media);
+            this.resetMedia();
+
+            media.recorder.ondataavailable = event => audioChunks.push(event.data);
+            media.recorder.onerror = event => CoreAlerts.showError(event.error);
+            media.recorder.onstart = () => this.recordingState.set('recording');
+            media.recorder.onpause = () => this.recordingState.set('paused');
+            media.recorder.onresume = () => this.recordingState.set('recording');
+            media.recorder.onstop = async () => {
+                const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+
+                this.recording.set(blob);
+                this.recordingState.set('inactive');
+            };
+
+            this.media.set(media);
 
             media.recorder.start();
         } catch (error) {
-            CoreAlerts.showError(error);
+            CoreAlerts.showError(error as CoreAnyError);
         }
     }
 
@@ -119,9 +141,9 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      */
     stopRecording(): void {
         try {
-            this.media$.value?.recorder.stop();
+            this.media()?.recorder.stop();
         } catch (error) {
-            CoreAlerts.showError(error);
+            CoreAlerts.showError(error as CoreAnyError);
         }
     }
 
@@ -130,9 +152,9 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      */
     pauseRecording(): void {
         try {
-            this.media$.value?.recorder.pause();
+            this.media()?.recorder.pause();
         } catch (error) {
-            CoreAlerts.showError(error);
+            CoreAlerts.showError(error as CoreAnyError);
         }
     }
 
@@ -141,9 +163,9 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      */
     resumeRecording(): void {
         try {
-            this.media$.value?.recorder.resume();
+            this.media()?.recorder.resume();
         } catch (error) {
-            CoreAlerts.showError(error);
+            CoreAlerts.showError(error as CoreAnyError);
         }
     }
 
@@ -151,7 +173,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * Discard recording.
      */
     discardRecording(): void {
-        this.media$.next(null);
+        this.resetMedia();
     }
 
     /**
@@ -165,23 +187,68 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * Dismiss the modal with the current recording as a result.
      */
     async submit(): Promise<void> {
-        if (!this.recording) {
+        const blob = this.recording();
+
+        if (!blob) {
             return;
         }
 
         try {
-            const fileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, 'recording.mp3');
+            const type = blob.type.split(';')[0];
+            const extension = CoreMimetype.getExtension(type);
+            const fileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, `recording.${extension}`);
             const filePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, fileName);
-            const fileEntry = await CoreFile.writeFile(filePath, this.recording.blob);
+            const fileEntry = await CoreFile.writeFile(filePath, blob);
+            const mediaDuration = this.previewMedia()?.duration;
+            const duration = mediaDuration && Number.isFinite(mediaDuration) ? mediaDuration : undefined;
 
-            this.close({
+            const result: CoreFileUploaderAudioRecording = {
                 name: fileEntry.name,
                 fullPath: fileEntry.toURL(),
-                type: 'audio/mpeg',
-            });
+                type,
+                duration,
+            };
+
+            this.close(result);
         } catch (error) {
-            CoreAlerts.showError(error);
+            CoreAlerts.showError(error as CoreAnyError);
         }
+    }
+
+    /**
+     * Reset recorder state and release its event handlers and recording URL.
+     */
+    protected resetMedia(): void {
+        const recorder = this.media()?.recorder;
+
+        if (recorder) {
+            recorder.ondataavailable = null;
+            recorder.onerror = null;
+            recorder.onstart = null;
+            recorder.onpause = null;
+            recorder.onresume = null;
+            recorder.onstop = null;
+
+            if (recorder.state !== 'inactive') {
+                recorder.stop();
+            }
+        }
+
+        this.clearPreview();
+
+        this.media.set(null);
+        this.recording.set(null);
+        this.recordingState.set('inactive');
+    }
+
+    /**
+     * Clear the preview and release its object URL.
+     */
+    protected clearPreview(): void {
+        this.previewMedia()?.pause();
+        this.previewMedia()?.removeAttribute('src');
+        this.previewMedia()?.load();
+        this.recording.set(null);
     }
 
     /**
@@ -210,9 +277,12 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * Make sure that microphone usage has been authorized.
      */
     protected async prepareMicrophoneAuthorization(): Promise<void> {
-        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
 
-        if (!CorePlatform.isMobile() || !diagnostic) {
+        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
+        if (!diagnostic) {
             return;
         }
 
@@ -245,14 +315,6 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 }
 
 /**
- * Audio recording data.
- */
-interface AudioRecording {
-    url: string;
-    blob: Blob;
-}
-
-/**
  * Media instances.
  */
 interface AudioRecorderMedia {
@@ -261,100 +323,6 @@ interface AudioRecorderMedia {
 }
 
 /**
- * Observable operator that listens to a recorder and emits a recording file.
- *
- * @returns Operator.
+ * Recording status.
  */
-function recorderAudioRecording(): OperatorFunction<AudioRecorderMedia | null, AudioRecording | null> {
-    return source => new Observable(subscriber => {
-        let audioChunks: Blob[] = [];
-        let previousRecorder: Mp3MediaRecorder | undefined;
-        const onDataAvailable = event => audioChunks.push(event.data);
-        const onError = event => CoreAlerts.showError(event.error);
-        const onStop = () => {
-            const blob = new Blob(audioChunks, { type: 'audio/mpeg' });
-
-            subscriber.next({
-                url: URL.createObjectURL(blob),
-                blob,
-            });
-        };
-        const subscription = source.subscribe(media => {
-            if (previousRecorder) {
-                previousRecorder.ondataavailable = null;
-                previousRecorder.onerror = null;
-                previousRecorder.onstop = null;
-            }
-
-            if (media?.recorder) {
-                media.recorder.ondataavailable = onDataAvailable;
-                media.recorder.onerror = onError;
-                media.recorder.onstop = onStop;
-            }
-
-            audioChunks = [];
-            previousRecorder = media?.recorder;
-
-            subscriber.next(null);
-        });
-
-        subscriber.next(null);
-
-        return () => {
-            subscription.unsubscribe();
-
-            if (previousRecorder) {
-                previousRecorder.ondataavailable = null;
-                previousRecorder.onerror = null;
-                previousRecorder.onstop = null;
-            }
-        };
-    });
-}
-
-/**
- * Observable operator that listens to a recorder and emits its recording status.
- *
- * @returns Operator.
- */
-function recorderStatus(): OperatorFunction<AudioRecorderMedia | null, RecordingState> {
-    return source => new Observable(subscriber => {
-        let previousRecorder: Mp3MediaRecorder | undefined;
-        const onStart = () => subscriber.next('recording');
-        const onPause = () => subscriber.next('paused');
-        const onResume = () => subscriber.next('recording');
-        const onStop = () => subscriber.next('inactive');
-        const subscription = source.subscribe(media => {
-            if (previousRecorder) {
-                previousRecorder.onstart = null;
-                previousRecorder.onpause = null;
-                previousRecorder.onresume = null;
-                previousRecorder.onstop = null;
-            }
-
-            if (media?.recorder) {
-                media.recorder.onstart = onStart;
-                media.recorder.onpause = onPause;
-                media.recorder.onresume = onResume;
-                media.recorder.onstop = onStop;
-            }
-
-            previousRecorder = media?.recorder;
-
-            subscriber.next(media?.recorder?.state ?? 'inactive');
-        });
-
-        subscriber.next('inactive');
-
-        return () => {
-            subscription.unsubscribe();
-
-            if (previousRecorder) {
-                previousRecorder.onstart = null;
-                previousRecorder.onpause = null;
-                previousRecorder.onresume = null;
-                previousRecorder.onstop = null;
-            }
-        };
-    });
-}
+type CoreFileUploaderAudioRecorderStatus = 'empty' | 'recording-ongoing' | 'recording-paused' | 'done';
