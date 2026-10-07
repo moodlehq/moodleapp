@@ -14,7 +14,17 @@
 
 import { CoreSharedModule } from '@/core/shared.module';
 import { toBoolean } from '@/core/transforms/boolean';
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, Input, OnDestroy, viewChild } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    computed,
+    effect,
+    ElementRef,
+    inject,
+    input,
+    OnDestroy,
+    viewChild,
+} from '@angular/core';
 
 @Component({
     selector: 'core-audio-histogram',
@@ -25,32 +35,34 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, 
         CoreSharedModule,
     ],
 })
-export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, OnDestroy {
+export class CoreFileUploaderAudioHistogramComponent implements OnDestroy {
 
-    private static readonly BARS_WIDTH = 2;
-    private static readonly BARS_MIN_HEIGHT = 4;
-    private static readonly BARS_GUTTER = 4;
+    protected static readonly BARS_WIDTH = 2;
+    protected static readonly BARS_MIN_HEIGHT = 4;
+    protected static readonly BARS_GUTTER = 4;
 
-    @Input({ required: true }) analyser!: AnalyserNode;
-    @Input({ transform: toBoolean }) paused = false;
+    readonly analyser = input.required<AnalyserNode>();
+    readonly paused = input(false, { transform: toBoolean });
     readonly canvasRef = viewChild<ElementRef<HTMLCanvasElement>>('canvas');
 
-    private element: HTMLElement = inject(ElementRef).nativeElement;
-    private canvas?: HTMLCanvasElement;
-    private context?: CanvasRenderingContext2D | null;
-    private buffer?: Uint8Array<ArrayBuffer>;
-    private destroyed = false;
+    protected hostElement: HTMLElement = inject(ElementRef).nativeElement;
+    protected readonly canvas = computed(() => this.canvasRef()?.nativeElement);
+    protected readonly context = computed(() => this.canvas()?.getContext('2d'));
+    protected buffer?: Uint8Array<ArrayBuffer>;
+    protected destroyed = false;
 
-    /**
-     * @inheritdoc
-     */
-    ngAfterViewInit(): void {
-        this.canvas = this.canvasRef()?.nativeElement;
-        this.context = this.canvas?.getContext('2d');
-        this.buffer = new Uint8Array(this.analyser.fftSize);
+    constructor() {
+        effect(() => {
+            const canvas = this.canvas();
+            const context = this.context();
+            if (!canvas || !context) {
+                return;
+            }
 
-        this.updateCanvas(this.element.clientWidth, this.element.clientHeight);
-        this.draw();
+            this.buffer = new Uint8Array(this.analyser().fftSize);
+            this.updateCanvas(this.hostElement.clientWidth, this.hostElement.clientHeight);
+            this.draw();
+        });
     }
 
     /**
@@ -64,34 +76,35 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
      * Draw histogram.
      */
     private draw(): void {
-        if (this.destroyed || !this.canvas || !this.context || !this.buffer) {
+        const canvas = this.canvas();
+        const context = this.context();
+        if (this.destroyed || !canvas || !context || !this.buffer) {
             return;
         }
 
-        if (this.canvas.width !== this.element.clientWidth || this.canvas.height !== this.element.clientHeight) {
-            this.updateCanvas(this.element.clientWidth, this.element.clientHeight);
+        if (canvas.width !== this.hostElement.clientWidth || canvas.height !== this.hostElement.clientHeight) {
+            this.updateCanvas(this.hostElement.clientWidth, this.hostElement.clientHeight);
         }
 
-        const width = this.canvas.width;
-        const height = this.canvas.height;
+        const width = canvas.width;
+        const height = canvas.height;
         const barsWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
         const barsGutter = CoreFileUploaderAudioHistogramComponent.BARS_GUTTER;
-        const chunkLength = Math.floor(this.buffer.length / ((width - barsWidth - 1) / (barsWidth + barsGutter)));
-        const barsCount = Math.floor(this.buffer.length / chunkLength);
+        const barsCount = Math.max(1, Math.floor((width - barsWidth - 1) / (barsWidth + barsGutter)));
 
         // Reset canvas.
-        this.context.fillRect(0, 0, width, height);
+        context.fillRect(0, 0, width, height);
 
         // Draw bars.
         const startX = Math.floor((width - (barsWidth + barsGutter)*barsCount - barsWidth - 1)/2);
 
-        this.context.beginPath();
-        if (this.paused) {
+        context.beginPath();
+        if (this.paused()) {
             this.drawPausedBars(startX);
         } else {
             this.drawActiveBars(startX);
         }
-        this.context.stroke();
+        context.stroke();
 
         // Schedule next frame.
         requestAnimationFrame(() => this.draw());
@@ -102,21 +115,23 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
      *
      * @param x Starting x position.
      */
-    private drawActiveBars(x: number): void {
-        if (!this.canvas || !this.context || !this.buffer) {
+    protected drawActiveBars(x: number): void {
+        const canvas = this.canvas();
+        const context = this.context();
+        if (!canvas || !context || !this.buffer) {
             return;
         }
 
         let bufferX = 0;
-        const width = this.canvas.width;
-        const halfHeight = this.canvas.height / 2;
+        const width = canvas.width;
+        const halfHeight = canvas.height / 2;
         const halfMinHeight = CoreFileUploaderAudioHistogramComponent.BARS_MIN_HEIGHT / 2;
         const barsWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
         const barsGutter = CoreFileUploaderAudioHistogramComponent.BARS_GUTTER;
         const bufferLength = this.buffer.length;
         const barsBufferWidth = Math.floor(bufferLength / ((width - barsWidth - 1) / (barsWidth + barsGutter)));
 
-        this.analyser.getByteTimeDomainData(this.buffer);
+        this.analyser().getByteTimeDomainData(this.buffer);
 
         while (bufferX < bufferLength) {
             let maxLevel = halfMinHeight;
@@ -126,8 +141,8 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
                 bufferX++;
             } while (bufferX % barsBufferWidth !== 0 && bufferX < bufferLength);
 
-            this.context.moveTo(x, halfHeight - maxLevel);
-            this.context.lineTo(x, halfHeight + maxLevel);
+            context.moveTo(x, halfHeight - maxLevel);
+            context.lineTo(x, halfHeight + maxLevel);
 
             x += barsWidth + barsGutter;
         }
@@ -138,19 +153,21 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
      *
      * @param x Starting x position.
      */
-    private drawPausedBars(x: number): void {
-        if (!this.canvas || !this.context) {
+    protected drawPausedBars(x: number): void {
+        const canvas = this.canvas();
+        const context = this.context();
+        if (!canvas || !context) {
             return;
         }
 
-        const width = this.canvas.width;
-        const halfHeight = this.canvas.height / 2;
+        const width = canvas.width;
+        const halfHeight = canvas.height / 2;
         const halfMinHeight = CoreFileUploaderAudioHistogramComponent.BARS_MIN_HEIGHT / 2;
         const xStep = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH + CoreFileUploaderAudioHistogramComponent.BARS_GUTTER;
 
         while (x < width) {
-            this.context.moveTo(x, halfHeight - halfMinHeight);
-            this.context.lineTo(x, halfHeight + halfMinHeight);
+            context.moveTo(x, halfHeight - halfMinHeight);
+            context.lineTo(x, halfHeight + halfMinHeight);
 
             x += xStep;
         }
@@ -162,19 +179,21 @@ export class CoreFileUploaderAudioHistogramComponent implements AfterViewInit, O
      * @param width Canvas width.
      * @param height Canvas height.
      */
-    private updateCanvas(width: number, height: number): void {
-        if (!this.canvas || !this.context) {
+    protected updateCanvas(width: number, height: number): void {
+        const canvas = this.canvas();
+        const context = this.context();
+        if (!canvas || !context) {
             return;
         }
 
-        const styles = getComputedStyle(this.element);
+        const styles = getComputedStyle(this.hostElement);
 
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.context.fillStyle = styles.getPropertyValue('--background-color');
-        this.context.lineCap = 'round';
-        this.context.lineWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
-        this.context.strokeStyle = styles.getPropertyValue('--bars-color');
+        canvas.width = width;
+        canvas.height = height;
+        context.fillStyle = styles.getPropertyValue('--background-color');
+        context.lineCap = 'round';
+        context.lineWidth = CoreFileUploaderAudioHistogramComponent.BARS_WIDTH;
+        context.strokeStyle = styles.getPropertyValue('--bars-color');
     }
 
 }

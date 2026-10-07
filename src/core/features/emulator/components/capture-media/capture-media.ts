@@ -66,6 +66,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     protected mediaRecorder?: MediaRecorder; // To record video.
     protected previewMedia?: HTMLVideoElement; // The element to preview the video captured.
     protected mediaBlob?: Blob; // A Blob where the captured data is stored.
+    protected previewObjectUrl?: string;
     protected localMediaStream?: MediaStream;
     protected changeDetectorRef = inject(ChangeDetectorRef);
 
@@ -128,11 +129,12 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
 
                 // When recording stops, create a Blob element with the recording and set it to the video.
                 this.mediaRecorder.onstop = (): void => {
-                    this.mediaBlob = new Blob(chunks);
+                    const mediaBlob = new Blob(chunks);
+                    this.mediaBlob = mediaBlob;
                     chunks = [];
 
                     if (this.previewMedia) {
-                        this.previewMedia.src = window.URL.createObjectURL(this.mediaBlob);
+                        this.previewMedia.src = this.createPreviewUrl(mediaBlob);
                     }
                 };
             }
@@ -211,11 +213,20 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             imgCanvas.nativeElement.getContext('2d').drawImage(streamVideo?.nativeElement, 0, 0, width, height);
 
             // Convert the image to blob and show it in an image element.
-            imgCanvas.nativeElement.toBlob((blob: Blob) => {
+            imgCanvas.nativeElement.toBlob((blob: Blob | null) => {
                 loadingModal.dismiss();
 
+                if (!blob) {
+                    this.dismissWithError(-1, 'Could not create image blob.');
+
+                    return;
+                }
+
                 this.mediaBlob = blob;
-                this.previewImage()?.nativeElement.setAttribute('src', window.URL.createObjectURL(this.mediaBlob));
+                const previewImage = this.previewImage();
+                if (previewImage) {
+                    previewImage.nativeElement.src = this.createPreviewUrl(blob);
+                }
                 this.hasCaptured = true;
             }, this.mimetype, this.quality);
         }
@@ -240,7 +251,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.previewMedia?.pause();
+        this.clearPreview();
         this.streamVideo()?.nativeElement.play();
 
         this.hasCaptured = false;
@@ -342,6 +353,42 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Create a preview URL, releasing the previous one first.
+     *
+     * @param blob Blob to preview.
+     * @returns Object URL for the preview.
+     */
+    protected createPreviewUrl(blob: Blob): string {
+        this.revokePreviewUrl();
+        this.previewObjectUrl = URL.createObjectURL(blob);
+
+        return this.previewObjectUrl;
+    }
+
+    /**
+     * Clear the preview and release its object URL.
+     */
+    protected clearPreview(): void {
+        this.previewMedia?.pause();
+        this.previewMedia?.removeAttribute('src');
+        this.previewMedia?.load();
+        this.previewImage()?.nativeElement.removeAttribute('src');
+        this.revokePreviewUrl();
+    }
+
+    /**
+     * Revoke the current preview URL.
+     */
+    protected revokePreviewUrl(): void {
+        if (!this.previewObjectUrl) {
+            return;
+        }
+
+        URL.revokeObjectURL(this.previewObjectUrl);
+        delete this.previewObjectUrl;
+    }
+
+    /**
      * Stop capturing. Only for video.
      */
     stopCapturing(): void {
@@ -354,7 +401,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Page destroyed.
+     * @inheritdoc
      */
     ngOnDestroy(): void {
         if (this.localMediaStream) {
@@ -364,7 +411,7 @@ export class CoreEmulatorCaptureMediaComponent implements OnInit, OnDestroy {
             });
         }
         this.streamVideo()?.nativeElement.pause();
-        this.previewMedia?.pause();
+        this.clearPreview();
         delete this.mediaBlob;
     }
 

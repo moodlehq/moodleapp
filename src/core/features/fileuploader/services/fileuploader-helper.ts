@@ -17,7 +17,6 @@ import { ActionSheetButton } from '@ionic/core';
 import { EncodingType, MediaTypeSelection } from '@capacitor/camera';
 import { ChooserResult } from 'cordova-plugin-chooser';
 import { FileEntry } from '@classes/native/filesystem';
-import { MediaFile } from '@awesome-cordova-plugins/media-capture/ngx';
 
 import { CoreNetwork } from '@services/network';
 import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
@@ -550,14 +549,12 @@ export class CoreFileUploaderHelperProvider {
     ): Promise<CoreWSUploadFileResult | FileEntry> {
         this.logger.debug(`Trying to record a ${isAudio ? 'audio' : 'video'  } file`);
 
-        let media: MediaFile | CoreFileUploaderAudioRecording | CoreMediaFile;
+        let media: CoreFileUploaderAudioRecording | CoreMediaFile;
 
         try {
-            const medias = isAudio
+            media = isAudio
                 ? await CoreCaptureMedia.captureAudio()
                 : await CoreCaptureMedia.captureVideo();
-
-            media = isAudio ? medias[0] : medias; // We used limit 1, we only want 1 media.
         } catch (error) {
             const defaultError = isAudio ? 'core.fileuploader.errorcapturingaudio' : 'core.fileuploader.errorcapturingvideo';
 
@@ -593,7 +590,7 @@ export class CoreFileUploaderHelperProvider {
      * @returns Options.
      */
     protected getMediaUploadOptions(
-        mediaFile: MediaFile | CoreFileUploaderAudioRecording | CoreMediaFile,
+        mediaFile: CoreFileUploaderAudioRecording | CoreMediaFile,
     ): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
         let filename = 'name' in mediaFile
