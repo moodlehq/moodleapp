@@ -18,13 +18,11 @@ import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
 import { FileOpener } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { MediaCapture } from '@awesome-cordova-plugins/media-capture/ngx';
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Zip } from '@features/native/plugins/zip';
@@ -55,13 +53,11 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         FileOpener,
         Geolocation,
         InAppBrowser,
-        Keyboard,
         LocalNotifications,
         MediaCapture,
         Push,
         QRScanner,
         SQLite,
-        StatusBar,
         WebIntent,
         WebView,
         Zip,
@@ -74,13 +70,11 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Chooser,
         FileOpener,
         InAppBrowser,
-        Keyboard,
         LocalNotifications,
         MediaCapture,
         Push,
         QRScanner,
         SQLite,
-        StatusBar,
         WebIntent,
         WebView,
         Zip,
