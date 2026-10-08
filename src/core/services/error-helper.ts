@@ -21,6 +21,7 @@ import { CoreText } from '@static/text';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CoreNetworkError } from '@classes/errors/network-error';
+import { CapacitorException } from '@capacitor/core';
 
 /**
  * Provider to provide some helper functions regarding files and packages.
@@ -276,6 +277,16 @@ export class CoreErrorHelperService {
        console.error(`Unhandled error: ${message}`, error);
     }
 
+    /**
+     * Check if an error is a Capacitor-like error.
+     *
+     * @param error Error to check.
+     * @returns Whether it's a Capacitor-like error.
+     */
+    isCapacitorLikeError(error: unknown): error is CapacitorError {
+        return error instanceof Error && 'code' in error && 'message' in error;
+    }
+
 }
 export const CoreErrorHelper = makeSingleton(CoreErrorHelperService);
 
@@ -291,4 +302,12 @@ export type CoreErrorObject = {
     backtrace?: string;
     title?: string;
     buttons?: AlertButton[];
+};
+
+/**
+ * Capacitor error. The original type uses a limited enum so code comparison is too restrictive.
+ * See https://github.com/ionic-team/capacitor/issues/7633
+ */
+export type CapacitorError = Omit<CapacitorException, 'code'> & {
+    code?: string;
 };
