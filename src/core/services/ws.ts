@@ -35,7 +35,7 @@ import { CoreText } from '@static/text';
 import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, Http } from '@singletons';
+import { makeSingleton, Translate, Http, FileTransfer } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -53,7 +53,7 @@ import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreFileUtils } from '@static/file-utils';
-import { FileTransfer, FileTransferError, UploadFileResult } from '@capacitor/file-transfer';
+import { type FileTransferError, type UploadFileResult } from '@capacitor/file-transfer';
 
 /**
  * This service allows performing WS calls and download/upload files.
