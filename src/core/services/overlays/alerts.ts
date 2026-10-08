@@ -22,7 +22,7 @@ import { Md5 } from 'ts-md5';
 import { CoreLoadings } from './loadings';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
 import { CoreOpener } from '@static/opener';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLogger } from '@static/logger';
 import { CoreConfig } from '@services/config';
@@ -204,10 +204,12 @@ export class CoreAlertsService {
      * @param options Other options.
      * @returns Error message, null if no error should be displayed.
      */
-    getErrorMessage(error: CoreAnyError, options: CoreAlertsGetErrorMessageOptions = {}): string | null {
+    getErrorMessage(error: unknown, options: CoreAlertsGetErrorMessageOptions = {}): string | null {
         let errorMessage: string | undefined;
 
-        if (typeof error !== 'string' && !error) {
+        if (typeof error === 'string') {
+            errorMessage = error || options.default || '';
+        } else if (!error) {
             errorMessage = options.default;
         } else if (typeof error === 'object') {
             if (this.debugDisplay) {
@@ -229,7 +231,7 @@ export class CoreAlertsService {
                 errorMessage = errorMessage.replace(new RegExp(matches[1], 'g'), 'secret');
             }
         } else {
-            errorMessage = error || options.default || '';
+            errorMessage = String(error) || options.default || '';
         }
 
         if (!errorMessage) {
@@ -376,7 +378,7 @@ export class CoreAlertsService {
      * @returns Alert modal.
      */
     async showError(
-        error: CoreAnyError,
+        error: unknown,
         options: CoreAlertsShowErrorOptions = {},
     ): Promise<HTMLIonAlertElement | null> {
         if (CoreErrorHelper.isCanceledError(error) || CoreErrorHelper.isSilentError(error)) {
@@ -389,6 +391,8 @@ export class CoreAlertsService {
             return null;
         }
 
+        const errorObject = error && typeof error === 'object' ? error : null;
+
         const alertOptions: CoreAlertsShowOptions = {
             message,
             autoCloseTime: options.autoCloseTime,
@@ -399,8 +403,8 @@ export class CoreAlertsService {
             alertOptions.cssClass = 'core-alert-network-error';
         }
 
-        if (typeof error !== 'string' && error && 'title' in error && error.title) {
-            alertOptions.header = error.title || undefined;
+        if (errorObject && 'title' in errorObject && typeof errorObject.title === 'string' && errorObject.title) {
+            alertOptions.header = errorObject.title;
         } else if (message === Translate.instant('core.sitenotfoundhelp')) {
             alertOptions.header = Translate.instant('core.cannotconnect');
         } else if (CoreErrorHelper.isSiteUnavailableErrorMessage(message)) {
@@ -411,8 +415,8 @@ export class CoreAlertsService {
             alertOptions.header = Translate.instant('core.error');
         }
 
-        if (typeof error !== 'string' && error && 'buttons' in error && typeof error.buttons !== 'undefined') {
-            alertOptions.buttons = error.buttons;
+        if (errorObject && 'buttons' in errorObject && Array.isArray(errorObject.buttons)) {
+            alertOptions.buttons = errorObject.buttons;
         } else {
             alertOptions.buttons = [Translate.instant('core.ok')];
         }
