@@ -18,7 +18,6 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ModalController } from '@singletons';
-import { CoreAnyError } from '@classes/errors/error';
 
 /**
  * Page to display a URL in an iframe.
@@ -51,7 +50,7 @@ export default class CoreViewerIframePage implements OnInit {
                 this.effectiveTitle.set(CoreNavigator.getRequiredRouteParam('title'));
                 this.effectiveUrl.set(CoreNavigator.getRequiredRouteParam('url'));
             } catch (error) {
-                CoreAlerts.showError(error as CoreAnyError);
+                CoreAlerts.showError(error);
                 CoreNavigator.back();
 
                 return;
