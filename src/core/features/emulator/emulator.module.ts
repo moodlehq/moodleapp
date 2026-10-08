@@ -37,6 +37,8 @@ import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 import { CoreDbProvider } from '@services/db';
 import { CoreDbProviderMock } from '@features/emulator/services/db';
 import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
+import { CAPACITOR_FILE_TRANSFER, resolveCapacitorFileTransfer } from '@services/native/file-transfer';
+import { FileTransferMock } from './services/file-transfer';
 
 /**
  * This module handles the emulation of Capacitor plugins in browser and desktop.
@@ -56,6 +58,10 @@ import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/nati
         {
             provide: CAPACITOR_FILESYSTEM,
             useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFilesystem() : new FilesystemMock(),
+        },
+        {
+            provide: CAPACITOR_FILE_TRANSFER,
+            useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFileTransfer() : new FileTransferMock(),
         },
         {
             provide: FileOpener,

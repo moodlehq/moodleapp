@@ -13,171 +13,265 @@
 // limitations under the License.
 
 import { CoreFile } from '@services/file';
+import { CapacitorException, ExceptionCode, PluginListenerHandle } from '@capacitor/core';
+import {
+    type DownloadFileOptions,
+    type DownloadFileResult,
+    type FileTransferError,
+    type FileTransferPlugin,
+    type ProgressStatus,
+    type UploadFileOptions,
+    type UploadFileResult,
+} from '@capacitor/file-transfer';
+import { CoreUrl } from '@static/url';
+import { CoreFileUtils } from '@static/file-utils';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
- * Mock the File Transfer Error.
+ * Emulates the Capacitor FileTransfer plugin in desktop apps and in browser.
  */
-export class FileTransferErrorMock implements FileTransferError {
+export class FileTransferMock implements FileTransferPlugin {
 
-    static readonly FILE_NOT_FOUND_ERR = 1;
-    static readonly INVALID_URL_ERR = 2;
-    static readonly CONNECTION_ERR = 3;
-    static readonly ABORT_ERR = 4;
-    static readonly NOT_MODIFIED_ERR = 5;
-
-    constructor(
-        public code: number,
-        public source: string,
-        public target: string,
-        public http_status: number,
-        public body: string,
-        public exception: string,
-    ) { }
-
-}
-
-/**
- * Emulates the Cordova FileTransfer plugin in desktop apps and in browser.
- */
-export class FileTransferMock {
-
-    source?: string;
-    target?: string;
-    xhr?: XMLHttpRequest;
-
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    onprogress: (event: ProgressEvent) => void = () => {};
-
-    errorCallback?: (error: FileTransferError) => void;
+    protected progressListeners = new Set<(progress: ProgressStatus) => void>();
 
     /**
-     * Aborts an in-progress transfer. The onerror callback is passed a FileTransferError
-     * object which has an error code of FileTransferError.ABORT_ERR.
-     */
-     abort(): void {
-        if (this.xhr) {
-            this.xhr.abort();
-            this.errorCallback?.(
-                new FileTransferErrorMock(FileTransferErrorMock.ABORT_ERR, this.source || '', this.target || '', 0, '', ''),
-            );
-        }
-    }
-
-    /**
-     * Downloads a file from server.
+     * Perform an HTTP request to a server and download the file to the specified destination.
      *
-     * @param source URL of the server to download the file, as encoded by encodeURI().
-     * @param target Filesystem url representing the file on the device.
-     * @param successCallback Callback to execute if download the file sucessfully.
-     * @param errorCallback Callback to execute if an error happened downloading the file.
-     * @param trustAllHosts If set to true, it accepts all security certificates.
-     * @param options Optional parameters, currently only supports headers.
+     * @param options Download options.
+     * @returns Promise resolved with download result.
      */
-    download(
-        source: string,
-        target: string,
-        successCallback: (params: CoreFileTransferDownloadResponse) => void,
-        errorCallback: (error: FileTransferError) => void,
-        trustAllHosts?: boolean,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        options?: Record<string, any>,
-    ): void {
+    async downloadFile(options: DownloadFileOptions): Promise<DownloadFileResult> {
+        // Send params as GET params to mimic Capacitor behaviour.
+        const source = CoreUrl.addParamsToUrl(options.url, options.params);
+
+        return new Promise((resolve, reject) => {
             // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
-            const basicAuthHeader = this.getBasicAuthHeader(source);
             const xhr = new XMLHttpRequest();
 
-            this.xhr = xhr;
-            this.source = source;
-            this.target = target;
-            this.errorCallback = errorCallback;
-
-            if (basicAuthHeader) {
-                source = source.replace(`${this.getUrlCredentials(source)}@`, '');
-
-                options = options || {};
-                options.headers = options.headers || {};
-                options.headers[basicAuthHeader.name] = basicAuthHeader.value;
-            }
-
-            const headers = options?.headers || null;
-
-            // Prepare the request.
-            xhr.open('GET', source, true);
+            xhr.open(options.method || 'GET', source, true);
             xhr.responseType = 'blob';
-            for (const name in headers) {
-                // We can't set the User-Agent in browser.
-                if (name !== 'User-Agent') {
-                    xhr.setRequestHeader(name, headers[name]);
-                }
-            }
 
-            xhr.onprogress = (ev: ProgressEvent): void => {
-                this.onprogress(ev);
+            this.applyHeaders(xhr, options.headers);
+
+            xhr.onprogress = (event: ProgressEvent): void => {
+                this.notifyProgress('download', source, event);
             };
 
             xhr.onerror = (): void => {
-                const error = new FileTransferErrorMock(-1, source, target, xhr.status, '', '');
-                errorCallback(error);
+                reject(new CapacitorException('Failed to download file.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
             };
 
             xhr.onload = async (): Promise<void> => {
-                // Finished dowloading the file.
-
                 const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
                 if (status < 200 || status >= 300) {
-                    // Request failed. Try to get the response.
                     const body = xhr.response ? await this.blobToText(xhr.response) : '';
-                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, body, '');
 
-                    return errorCallback(error);
+                    reject(this.createHttpError(source, options.path, status, xhr, body));
+
+                    return;
                 }
 
                 if (!xhr.response) {
-                    const error = new FileTransferErrorMock(-1, source, target, xhr.status, '', 'No response obtained');
+                    reject(new CapacitorException('No response obtained.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
 
-                    return errorCallback(error);
+                    return;
                 }
 
-                const basePath = CoreFile.getBasePathInstant();
-                target = target.replace(basePath, ''); // Remove basePath from the target.
-                target = target.replace(/%20/g, ' '); // Replace all %20 with spaces.
-
                 try {
-                    const entry = await CoreFile.writeFile(target, xhr.response) ;
-                    successCallback({
-                        entry: entry as unknown as globalThis.FileEntry,
+                    const entry = await CoreFile.writeFile(options.path, xhr.response);
+
+                    resolve({
+                        path: entry.toURL(),
                         headers: this.getHeadersAsObject(xhr),
                     });
                 } catch (error) {
-                    errorCallback(error);
+                    reject(new CapacitorException(
+                        CoreErrorHelper.getErrorMessageFromError(error) ?? 'Error downloading file',
+                        'OS-PLUG-FLTR-0011' as ExceptionCode,
+                    ));
                 }
             };
 
             xhr.send();
+        });
     }
 
     /**
-     * Given a URL, check if it has a credentials in it and, if so, return them in a header object.
-     * This code is extracted from Cordova FileTransfer plugin.
+     * Perform an HTTP request to upload a file to a server.
      *
-     * @param urlString The URL to get the credentials from.
-     * @returns The header with the credentials, null if no credentials.
+     * @param options Upload options.
+     * @returns Promise resolved with upload result.
      */
-    protected getBasicAuthHeader(urlString: string): { name: string; value: string } | null {
-        let header: { name: string; value: string } | null = null;
+    async uploadFile(options: UploadFileOptions): Promise<UploadFileResult> {
+        // Send params as GET params to mimic Capacitor behaviour.
+        const url = CoreUrl.addParamsToUrl(options.url, options.params);
+        const sourcePath = options.path;
+        const file = options.blob || await this.readFileBlob(sourcePath);
 
-        // MS Windows doesn't support credentials in http uris so we detect them by regexp and strip off from result url.
-        if (window.btoa) {
-            const credentials = this.getUrlCredentials(urlString);
-            if (credentials) {
-                header = {
-                    name: 'Authorization',
-                    value: `Basic ${window.btoa(credentials)}`,
-                };
-            }
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const headers = options.headers || {};
+
+            xhr.open(options.method || 'POST', url, true);
+            xhr.responseType = 'text';
+
+            // Adding a Content-Type header with the mimeType makes the request fail (it doesn't detect the token in the params).
+            // Don't include this header, and delete it if it's supplied.
+            delete headers['Content-Type'];
+
+            this.applyHeaders(xhr, headers);
+
+            xhr.upload.onprogress = (event: ProgressEvent): void => {
+                this.notifyProgress('upload', url, event);
+            };
+
+            xhr.onerror = (): void => {
+                reject(new CapacitorException('Failed to upload file.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
+            };
+
+            xhr.onload = (): void => {
+                const status = Math.max(xhr.status === 1223 ? 204 : xhr.status, 0);
+                if (status < 200 || status >= 300) {
+                    reject(this.createHttpError(sourcePath, url, status, xhr, xhr.responseText || ''));
+
+                    return;
+                }
+
+                resolve({
+                    bytesSent: file.size,
+                    responseCode: String(status),
+                    response: xhr.responseText || '',
+                    headers: this.getHeadersAsObject(xhr),
+                });
+            };
+
+            xhr.send(this.createUploadPayload(file, options));
+        });
+    }
+
+    /**
+     * Add listener for progress events.
+     *
+     * @param eventName Event name.
+     * @param listenerFunc Callback.
+     * @returns Listener handle.
+     */
+    async addListener(eventName: 'progress', listenerFunc: (progress: ProgressStatus) => void): Promise<PluginListenerHandle> {
+        if (eventName === 'progress') {
+            this.progressListeners.add(listenerFunc);
         }
 
-        return header;
+        return {
+            remove: async () => {
+                this.progressListeners.delete(listenerFunc);
+            },
+        };
+    }
+
+    /**
+     * Remove all registered listeners.
+     */
+    async removeAllListeners(): Promise<void> {
+        this.progressListeners.clear();
+    }
+
+    /**
+     * Notify all listeners of transfer progress.
+     *
+     * @param type Transfer type.
+     * @param url Transfer URL.
+     * @param event Progress event.
+     */
+    protected notifyProgress(type: 'download' | 'upload', url: string, event: ProgressEvent): void {
+        const progress: ProgressStatus = {
+            type,
+            url,
+            bytes: event.loaded,
+            contentLength: event.total,
+            lengthComputable: event.lengthComputable,
+        };
+
+        this.progressListeners.forEach(listener => listener(progress));
+    }
+
+    /**
+     * Apply request headers to XHR skipping blocked browser headers.
+     *
+     * @param xhr XHR instance.
+     * @param headers Headers to set.
+     */
+    protected applyHeaders(xhr: XMLHttpRequest, headers?: Record<string, string>): void {
+        if (!headers) {
+            return;
+        }
+
+        for (const name in headers) {
+            // Browsers do not allow setting these headers programmatically.
+            if (name.toLowerCase() !== 'user-agent' && name.toLowerCase() !== 'connection') {
+                xhr.setRequestHeader(name, headers[name]);
+            }
+        }
+    }
+
+    /**
+     * Create upload payload.
+     *
+     * @param file File blob.
+     * @param options Upload options.
+     * @returns Payload to send.
+     */
+    protected createUploadPayload(file: Blob, options: UploadFileOptions): Blob | FormData {
+        const formData = new FormData();
+        const fileKey = options.fileKey || 'file';
+        const fileName = CoreFileUtils.getFileAndDirectoryFromPath(options.path).name;
+
+        formData.append(fileKey, file, fileName);
+
+        return formData;
+    }
+
+    /**
+     * Read file from app storage and return it as blob.
+     *
+     * @param path File path.
+     * @returns Blob with file contents.
+     */
+    protected async readFileBlob(path: string): Promise<Blob> {
+        const fileEntry = await CoreFile.getFile(path);
+
+        return CoreFile.getFileObjectFromFileEntry(fileEntry);
+    }
+
+    /**
+     * Create an HTTP transfer error compatible with Capacitor FileTransfer errors.
+     *
+     * @param source Source path/URL.
+     * @param target Target path/URL.
+     * @param status HTTP status.
+     * @param xhr XHR instance.
+     * @param body Response body.
+     * @returns Error instance.
+     */
+    protected createHttpError(
+        source: string,
+        target: string,
+        status: number,
+        xhr: XMLHttpRequest,
+        body: string,
+    ): CapacitorException {
+        const message = `Request failed with status code ${status}.`;
+        const code = 'OS-PLUG-FLTR-0010';
+        const fileTransferData: FileTransferError = {
+            message,
+            code,
+            source,
+            target,
+            httpStatus: status,
+            headers: this.getHeadersAsObject(xhr),
+            body,
+        };
+
+        return new CapacitorException(message, code as ExceptionCode, fileTransferData);
     }
 
     /**
@@ -187,13 +281,12 @@ export class FileTransferMock {
      * @returns Object with the headers.
      */
     protected getHeadersAsObject(xhr: XMLHttpRequest): Record<string, string> {
-        const headersString = xhr.getAllResponseHeaders();
-        const result = {};
+        const headersString = xhr.getAllResponseHeaders() || '';
+        const result: Record<string, string> = {};
 
         if (headersString) {
             const headers = headersString.split('\n');
-            for (const i in headers) {
-                const headerString = headers[i];
+            for (const headerString of headers) {
                 const separatorPos = headerString.indexOf(':');
                 if (separatorPos !== -1) {
                     result[headerString.substring(0, separatorPos)] = headerString.substring(separatorPos + 1).trim();
@@ -202,20 +295,6 @@ export class FileTransferMock {
         }
 
         return result;
-    }
-
-    /**
-     * Get the credentials from a URL.
-     * This code is extracted from Cordova FileTransfer plugin.
-     *
-     * @param urlString The URL to get the credentials from.
-     * @returns Retrieved credentials.
-     */
-    protected getUrlCredentials(urlString: string): string | null {
-        const credentialsPattern = /^https?:\/\/(?:(?:(([^:@/]*)(?::([^@/]*))?)?@)?([^:/?#]*)(?::(\d*))?).*$/;
-        const credentials = credentialsPattern.exec(urlString);
-
-        return credentials && credentials[1];
     }
 
     /**
@@ -228,119 +307,10 @@ export class FileTransferMock {
         return new Promise<string>((resolve) => {
             const reader = new FileReader();
             reader.onloadend = (): void => {
-                resolve(<string> reader.result);
+                resolve(String(reader.result || ''));
             };
             reader.readAsText(blob);
         });
     }
 
-    /**
-     * Sends a file to a server.
-     *
-     * @param fileUrl Filesystem URL representing the file on the device or a data URI.
-     * @param url URL of the server to receive the file, as encoded by encodeURI().
-     * @param successCallback Callback to execute if upload the file sucessfully.
-     * @param errorCallback Callback to execute if an error happened uploading the file.
-     * @param options Optional parameters.
-     */
-    upload(
-        fileUrl: string,
-        url: string,
-        successCallback: (result: FileUploadResult) => void,
-        errorCallback: (error: FileTransferError) => void,
-        options?: FileUploadOptions,
-    ): void {
-            const basicAuthHeader = this.getBasicAuthHeader(url);
-            let fileKey: string | undefined;
-            let fileName: string | undefined;
-            let params: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-            let headers: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-            let httpMethod: string | undefined;
-
-            if (basicAuthHeader) {
-                url = url.replace(`${this.getUrlCredentials(url)}@`, '');
-
-                options = options || {};
-                options.headers = options.headers || {};
-                options.headers[basicAuthHeader.name] = basicAuthHeader.value;
-            }
-
-            if (options) {
-                fileKey = options.fileKey;
-                fileName = options.fileName;
-                headers = options.headers;
-                httpMethod = options.httpMethod || 'POST';
-
-                if (httpMethod.toUpperCase() === 'PUT') {
-                    httpMethod = 'PUT';
-                } else {
-                    httpMethod = 'POST';
-                }
-
-                params = options.params || {};
-            }
-
-            // Add fileKey and fileName to the headers.
-            headers = headers || {};
-            if (!headers['Content-Disposition']) {
-                headers['Content-Disposition'] = 'form-data;' + (fileKey ? ' name="' + fileKey + '";' : '') +
-                    (fileName ? ' filename="' + fileName + '"' : '');
-            }
-
-            // Adding a Content-Type header with the mimeType makes the request fail (it doesn't detect the token in the params).
-            // Don't include this header, and delete it if it's supplied.
-            delete headers['Content-Type'];
-            // Get the file to upload.
-            CoreFile.getFile(fileUrl).then((fileEntry) =>
-                CoreFile.getFileObjectFromFileEntry(fileEntry)).then((file) => {
-                // Use XMLHttpRequest instead of HttpClient to support onprogress and abort.
-                const xhr = new XMLHttpRequest();
-                xhr.open(httpMethod || 'POST', url);
-                for (const name in headers) {
-                    // Filter "unsafe" headers.
-                    if (name !=='Connection' && name !== 'User-Agent') {
-                        xhr.setRequestHeader(name, headers[name]);
-                    }
-                }
-
-                xhr.onprogress = (ev: ProgressEvent): void => {
-                    this.onprogress(ev);
-                };
-                this.xhr = xhr;
-                this.source = fileUrl;
-                this.target = url;
-                this.errorCallback = errorCallback;
-
-                xhr.onerror = (): void => {
-                    const error = new FileTransferErrorMock(-1, fileUrl, url, xhr.status, '', '');
-                    errorCallback(error);
-                };
-
-                xhr.onload = (): void => {
-                    const result = {
-                        bytesSent: file.size,
-                        responseCode: xhr.status,
-                        response: xhr.response,
-                        headers: this.getHeadersAsObject(xhr),
-                    };
-
-                    // Finished uploading the file.
-                    successCallback(result);
-                };
-
-                // Create a form data to send params and the file.
-                const fd = new FormData();
-                for (const name in params) {
-                    fd.append(name, params[name]);
-                }
-
-                fd.append('file', file, fileName);
-                xhr.send(fd);
-
-                return;
-            }).catch(error => errorCallback(error));
-    }
-
 }
-
-export type CoreFileTransferDownloadResponse = { entry: globalThis.FileEntry; headers: Record<string, string> | undefined };

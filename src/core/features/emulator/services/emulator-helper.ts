@@ -18,7 +18,6 @@ import { CoreFile } from '@services/file';
 import { makeSingleton, Filesystem } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { FilesystemMock } from './filesystem';
-import { FileTransferErrorMock, FileTransferMock } from './file-transfer';
 
 /**
  * Helper service for the emulator feature. It also acts as an init handler.
@@ -38,11 +37,6 @@ export class CoreEmulatorHelperProvider {
      * @returns Promise resolved when loaded.
      */
     async load(): Promise<void> {
-        // @todo Capacitor: Check type problem when migrating FileTransfer to Capacitor.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        window.FileTransferError = <any> FileTransferErrorMock;
-        window.FileTransfer = FileTransferMock;
-
         const filesystemInstance = Filesystem.instance;
 
         if (filesystemInstance instanceof FilesystemMock) {
