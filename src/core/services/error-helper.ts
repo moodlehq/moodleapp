@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreAnyError, CoreError, CoreErrorDebug } from '@classes/errors/error';
+import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';
 import { AlertButton } from '@ionic/angular';
 import { CoreWSError } from '@classes/errors/wserror';
@@ -141,23 +141,25 @@ export class CoreErrorHelperService {
      * @param error Error.
      * @returns Error debug info, undefined if not found.
      */
-    getDebugInfoFromError(error?: CoreAnyError): CoreErrorDebug | undefined {
-        if (!error || typeof error === 'string') {
+    getDebugInfoFromError(error?: unknown): CoreErrorDebug | undefined {
+        if (!error || typeof error === 'string' || typeof error !== 'object') {
             return;
         }
 
-        if ('debug' in error) {
-            return error.debug;
+        const objectError = error as Partial<CoreErrorObject> & { debug?: CoreErrorDebug };
+
+        if (objectError.debug) {
+            return objectError.debug;
         }
 
         // Escape the HTML of debug info so it is displayed as it is in the view.
         const debugMessages: string[] = [];
-        if ('debuginfo' in error && error.debuginfo) {
-            debugMessages.push(CoreText.escapeHTML(error.debuginfo, false));
+        if (typeof objectError.debuginfo === 'string' && objectError.debuginfo) {
+            debugMessages.push(CoreText.escapeHTML(objectError.debuginfo, false));
         }
-        if ('backtrace' in error && error.backtrace) {
+        if (typeof objectError.backtrace === 'string' && objectError.backtrace) {
             debugMessages.push(CoreText.replaceNewLines(
-                CoreText.escapeHTML(error.backtrace, false),
+                CoreText.escapeHTML(objectError.backtrace, false),
                 '<br>',
             ));
         }
@@ -169,12 +171,12 @@ export class CoreErrorHelperService {
     }
 
     /**
-     * Get the error message from an error object.
+     * Get the error message from an error.
      *
      * @param error Error.
      * @returns Error message, undefined if not found.
      */
-    getErrorMessageFromError(error?: CoreAnyError): string | undefined {
+    getErrorMessageFromError(error?: unknown): string | undefined {
         if (typeof error === 'string') {
             return error;
         }
@@ -183,16 +185,26 @@ export class CoreErrorHelperService {
             return error.message;
         }
 
-        if (!error) {
+        if (!error || typeof error !== 'object') {
             return undefined;
         }
 
-        if (error.message || error.error || error.content) {
-            return error.message || error.error || error.content;
+        const objectError = error as Partial<CoreErrorObject>;
+
+        if (typeof objectError.message === 'string' && objectError.message) {
+            return objectError.message;
         }
 
-        if (error.body) {
-            return this.getErrorMessageFromHTML(error.body);
+        if (typeof objectError.error === 'string' && objectError.error) {
+            return objectError.error;
+        }
+
+        if (typeof objectError.content === 'string' && objectError.content) {
+            return objectError.content;
+        }
+
+        if (typeof objectError.body === 'string' && objectError.body) {
+            return this.getErrorMessageFromHTML(objectError.body);
         }
 
         return undefined;
@@ -221,7 +233,7 @@ export class CoreErrorHelperService {
      * @param error Error to check.
      * @returns Whether it's a canceled error.
      */
-    isCanceledError(error: CoreAnyError): boolean {
+    isCanceledError(error: unknown): boolean {
         return error instanceof CoreCanceledError;
     }
 
@@ -231,7 +243,7 @@ export class CoreErrorHelperService {
      * @param error Error to check.
      * @returns Whether it's a network error.
      */
-    isNetworkError(error: CoreAnyError): boolean {
+    isNetworkError(error: unknown): boolean {
         if (error instanceof CoreNetworkError) {
             return true;
         }
@@ -248,7 +260,7 @@ export class CoreErrorHelperService {
      * @param error Error to check.
      * @returns Whether it's a silent error.
      */
-    isSilentError(error: CoreAnyError): boolean {
+    isSilentError(error: unknown): boolean {
         return error instanceof CoreSilentError;
     }
 

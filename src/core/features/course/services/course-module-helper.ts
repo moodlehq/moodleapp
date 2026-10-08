@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
@@ -111,7 +111,7 @@ export class CoreCourseModuleHelperService {
      * @param error Error.
      * @returns Whether the error is a "module not found" error.
      */
-    isNotFoundError(error: CoreAnyError): boolean {
+    isNotFoundError(error: unknown): boolean {
         return CoreErrorHelper.getErrorMessageFromError(error) === Translate.instant('core.course.modulenotfound');
     }
 

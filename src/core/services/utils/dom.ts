@@ -179,7 +179,7 @@ export class CoreDomUtilsProvider {
      * @returns Whether it's a canceled error.
      * @deprecated since 5.0. Use CoreErrorHelper.isCanceledError instead.
      */
-    isCanceledError(error: CoreAnyError): boolean {
+    isCanceledError(error: unknown): boolean {
         return CoreErrorHelper.isCanceledError(error);
     }
 
@@ -190,7 +190,7 @@ export class CoreDomUtilsProvider {
      * @returns Whether it's a canceled error.
      * @deprecated since 5.0. Use CoreErrorHelper.isSilentError instead.
      */
-    isSilentError(error: CoreAnyError): boolean {
+    isSilentError(error: unknown): boolean {
         return CoreErrorHelper.isSilentError(error);
     }
 

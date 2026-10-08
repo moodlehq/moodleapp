@@ -33,7 +33,7 @@ import {
 } from '../../constants';
 import { CoreCourse, CoreCourseModuleGradeInfo, CoreCourseModuleGradeOutcome } from '@features/course/services/course';
 import { AddonModAssignHelper, AddonModAssignSubmissionFormatted } from '../../services/assign-helper';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreError } from '@classes/errors/error';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreEvents } from '@static/events';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
@@ -167,7 +167,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
 
             await this.loadFeedbackData();
         } catch (error) {
-            CoreAlerts.showError(error as CoreAnyError);
+            CoreAlerts.showError(error);
             this.closeModal(true);
         } finally {
             this.loaded = true;

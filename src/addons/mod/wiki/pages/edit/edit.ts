@@ -14,7 +14,7 @@
 
 import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild } from '@angular/core';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
-import { CoreAnyError, CoreError } from '@classes/errors/error';
+import { CoreError } from '@classes/errors/error';
 import { CoreCourse } from '@features/course/services/course';
 import { CanLeave } from '@guards/can-leave';
 import { CoreNavigator } from '@services/navigator';
@@ -263,7 +263,7 @@ export default class AddonModWikiEditPage implements OnInit, OnDestroy, CanLeave
 
             return true;
         } catch (error) {
-            CoreAlerts.showError(error as CoreAnyError, { default: 'Error getting wiki data.' });
+            CoreAlerts.showError(error, { default: 'Error getting wiki data.' });
             fetchFailed = true;
 
             // Go back.
