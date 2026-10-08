@@ -109,6 +109,14 @@ ion-tabs {
     }
 
     &.placement-bottom {
+        // Set the bottom inset padding in ion-tabs, since Ionic hides ion-tab-bar
+        // when the keyboard is open, even if it's not an on-screen keyboard.
+        padding-bottom: var(--ion-safe-area-bottom) ;
+
+        ion-tab-bar {
+            @include padding(0px, var(--ion-safe-area-right), 0px, var(--ion-safe-area-left));
+        }
+
         core-loading {
             --loading-placeholder-align-content: flex-start;
             --loading-placeholder-justify: space-around;
@@ -152,7 +160,13 @@ ion-tabs {
     &.placement-side {
         flex-direction: row;
 
+        // Set the left inset padding in ion-tabs, since Ionic hides ion-tab-bar
+        // when the keyboard is open, even if it's not an on-screen keyboard.
+        padding-left: var(--ion-safe-area-left) ;
+
         ion-tab-bar {
+             @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), 0);
+
             order: -1;
             width: var(--menutabbar-size);
             height: calc(100% - var(--ion-safe-area-top) - var(--ion-safe-area-bottom));
@@ -160,8 +174,6 @@ ion-tabs {
             @include border-end(var(--border));
             border-top: 0;
             justify-content: flex-start;
-
-            @include padding(var(--ion-safe-area-top), 0px, var(--ion-safe-area-bottom), var(--ion-safe-area-left));
 
             ion-tab-button {
                 --padding-start: 0;

@@ -11,8 +11,14 @@ const config: CapacitorConfig = {
     iosScheme: 'moodleappfs',
   },
   plugins: {
+    Keyboard: {
+      resize: 'none'
+    },
     SplashScreen: {
       launchAutoHide: false,
+    },
+    SystemBars: {
+      insetsHandling: 'css'
     },
   },
   cordova: {

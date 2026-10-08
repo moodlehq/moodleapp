@@ -14,7 +14,7 @@
 
 import { effect, Signal, signal } from '@angular/core';
 import { CorePlatform } from '@services/platform';
-import { Keyboard } from '@singletons';
+import { Keyboard } from '@capacitor/keyboard';
 import { CoreEvents } from '@static/events';
 
 /**
@@ -88,8 +88,6 @@ export class CoreKeyboard {
      * @param keyboardHeight Keyboard height.
      */
     static onKeyboardShow(keyboardHeight: number): void {
-        // Error on iOS calculating size.
-        // More info: https://github.com/ionic-team/ionic-plugin-keyboard/issues/276
         CoreKeyboard.setKeyboardShown(true, keyboardHeight);
     }
 
