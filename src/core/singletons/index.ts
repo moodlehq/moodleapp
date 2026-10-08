@@ -51,6 +51,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CoreApplicationInitStatus } from '@classes/application-init-status';
 import { CAPACITOR_CAMERA } from '@services/native/camera';
 import { CAPACITOR_FILESYSTEM } from '@services/native/filesystem';
+import { CAPACITOR_FILE_TRANSFER } from '@services/native/file-transfer';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -175,6 +176,7 @@ export const WebView = makeSingleton(WebViewService);
 // Convert Capacitor classes to singletons to be able to provide mocks for webapp.
 export const Camera = makeSingleton(CAPACITOR_CAMERA);
 export const Filesystem = makeSingleton(CAPACITOR_FILESYSTEM);
+export const FileTransfer = makeSingleton(CAPACITOR_FILE_TRANSFER);
 
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);
