@@ -25,7 +25,8 @@ import { CoreText } from '@static/text';
 import { CoreConfig } from '@services/config';
 import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
 import { CoreSite } from '@classes/sites/site';
-import { makeSingleton, Badge, Translate, ApplicationInit } from '@singletons';
+import { Badge } from '@capawesome/capacitor-badge';
+import { makeSingleton, Translate, ApplicationInit } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreEvents } from '@static/events';
 import {
@@ -572,7 +573,9 @@ export class CorePushNotificationsProvider {
 
         if (CorePlatform.isMobile()) {
             // Set the app badge on mobile.
-            await Badge.set(total);
+            await Badge.set({
+                count: total,
+            });
         }
 
         return total;
