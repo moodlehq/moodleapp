@@ -48,7 +48,7 @@ type RemoveResult = {
 @Injectable({ providedIn: 'root' })
 export class File {
 
-	applicationDirectory = CoreFile.getWWWAbsolutePath();
+	applicationDirectory = '';
 	applicationStorageDirectory = '';
 	dataDirectory = '';
 	cacheDirectory = '';

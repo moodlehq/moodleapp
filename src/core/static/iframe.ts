@@ -502,6 +502,9 @@ export class CoreIframe {
      * @param userScriptWindow Window.
      */
     static injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
+        // @todo Capacitor: It's no longer possible to obtain the path to the www folder without adding custom native logic.
+        // 2 options: Fetch file contents using fetch and pass the code, or modify WKUserScript to get files from www folder.
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         const wwwPath = CoreFile.getWWWAbsolutePath();
         const linksPath = CorePath.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js').replace(/%20/g, ' ');
 

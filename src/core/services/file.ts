@@ -1423,12 +1423,9 @@ export class CoreFileProvider {
      * Get the full path to the www folder.
      *
      * @returns Path.
+     * @deprecated since 6.0. Capacitor doesn't allow obtaining a native path to the www folder.
      */
     getWWWAbsolutePath(): string {
-        if (window.cordova && cordova.file && cordova.file.applicationDirectory) {
-            return CorePath.concatenatePaths(cordova.file.applicationDirectory, 'www');
-        }
-
         // Cannot use Cordova to get it, use the WebView URL.
         return this.getWWWPath();
     }
