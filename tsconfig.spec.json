@@ -7,7 +7,6 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "types": [
-      "@moodlehq/cordova-plugin-file-transfer",
       "@moodlehq/cordova-plugin-inappbrowser",
       "cordova-plugin-moodleapp",
       "cordova",

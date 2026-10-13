@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, Type } from '@angular/core';
+import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
 import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { Chooser } from '@features/native/plugins/chooser';
@@ -27,6 +27,7 @@ import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Zip } from '@features/native/plugins/zip';
+import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
 /**
  * Get native services.
@@ -84,6 +85,12 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         WebIntent,
         WebView,
         Zip,
+        provideAppInitializer(() => {
+            // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
+            (<any> window).FileTransfer = FileTransferCompat;
+            // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
+            (<any> window).FileTransferError = FileTransferErrorCompat;
+        }),
     ],
 })
 export class CoreNativeModule {}
