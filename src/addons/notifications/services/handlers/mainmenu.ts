@@ -19,7 +19,6 @@ import { CoreUtils } from '@static/utils';
 import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CoreMainMenuHandler, CoreMainMenuPageNavHandlerData } from '@features/mainmenu/services/mainmenu-delegate';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
 import { CorePushNotificationsDelegate } from '@features/pushnotifications/services/push-delegate';
 import { AddonNotifications } from '../notifications';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
@@ -29,6 +28,7 @@ import {
     ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
     ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
 } from '@addons/notifications/constants';
+import { CoreAppBadge } from '@services/app-badge';
 
 /**
  * Handler to inject an option into main menu.
@@ -77,7 +77,7 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
         });
 
         // Register Badge counter.
-        CorePushNotificationsDelegate.registerCounterHandler(AddonNotificationsMainMenuHandlerService.name);
+        CoreAppBadge.registerBadgeCounterHandler(AddonNotificationsMainMenuHandlerService.name);
     }
 
     /**
@@ -120,8 +120,6 @@ export class AddonNotificationsMainMenuHandlerService implements CoreMainMenuHan
             this.handlerData.badge = unreadCountData.count > 0
                 ? unreadCountData.count + (unreadCountData.hasMore ? '+' : '')
                 : '';
-
-            CorePushNotifications.updateAddonCounter(AddonNotificationsMainMenuHandlerService.name, unreadCountData.count, siteId);
 
             CoreEvents.trigger(
                 MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,
