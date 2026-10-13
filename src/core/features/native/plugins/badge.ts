@@ -18,7 +18,7 @@ import { Badge as CapacitorBadge } from '@capawesome/capacitor-badge';
 /**
  * Badge plugin wrapper.
  *
- * @deprecated since 6.0. Directly managed by CorePushNotifications.updateAppCounter.
+ * @deprecated since 6.0. Directly managed by CoreAppBadge.
  */
 @Injectable({ providedIn: 'root' })
 export class Badge {
