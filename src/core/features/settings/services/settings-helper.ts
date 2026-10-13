@@ -146,7 +146,7 @@ export class CoreSettingsHelperProvider {
 
             return;
         }).catch(async (error) => {
-            if (error && error.code === FileError.NOT_FOUND_ERR) {
+            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === 'OS-PLUG-FILE-0008') {
                 // Not found, set size 0.
                 CoreFilepool.clearAllPackagesStatus(siteId);
                 siteInfo.spaceUsage = 0;
