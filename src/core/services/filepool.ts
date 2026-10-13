@@ -2736,45 +2736,46 @@ export class CoreFilepoolProvider {
 
             this.notifyFileDownloaded(siteId, fileId, links);
         } catch (errorObject) {
-            // Whoops, we have an error...
-            let dropFromQueue = false;
+            // @todo Capacitor: Decide how to handle errors coming from Capacitor File Transfer.
+            // Capacitor doesn't allow detecting out of storage or connection aborted errors.
+            const dropFromQueue = true;
 
-            if (errorObject && errorObject.source === fileUrl) {
-                // This is most likely a FileTransfer error.
-                switch (errorObject.code) {
-                    case CoreFileTransferErrorCode.ABORT_ERR:
-                        // The transfer was aborted, we will keep the file in queue.
-                        break;
-                    case CoreFileTransferErrorCode.FILE_NOT_FOUND_ERR: // File wasn't found, most likely a 404, remove from queue.
-                    case CoreFileTransferErrorCode.INVALID_URL_ERR: // The URL is invalid, we drop the file from the queue.
-                    case CoreFileTransferErrorCode.CONNECTION_ERR: // If there was an HTTP status, then let's remove from the queue.
-                    case CoreFileTransferErrorCode.NOT_MODIFIED_ERR: // We have the latest version of the file, HTTP 304 status.
-                    default: // Any other error, let's remove the file from the queue to avoid locking down the queue.
-                        dropFromQueue = true;
-                        break;
-                }
-            } else {
-                dropFromQueue = true;
-            }
+            // if (errorObject && errorObject.source === fileUrl) {
+            //     // This is most likely a FileTransfer error.
+            //     switch (errorObject.code) {
+            //         case CoreFileTransferErrorCode.ABORT_ERR:
+            //             // The transfer was aborted, we will keep the file in queue.
+            //             break;
+            //         case CoreFileTransferErrorCode.FILE_NOT_FOUND_ERR: // File wasn't found, remove from queue.
+            //         case CoreFileTransferErrorCode.INVALID_URL_ERR: // The URL is invalid, we drop the file from the queue.
+            //         case CoreFileTransferErrorCode.CONNECTION_ERR: // If there was an HTTP status, let's remove from the queue.
+            //         case CoreFileTransferErrorCode.NOT_MODIFIED_ERR: // We have the latest version of the file, HTTP 304 status.
+            //         default: // Any other error, let's remove the file from the queue to avoid locking down the queue.
+            //             dropFromQueue = true;
+            //             break;
+            //     }
+            // } else {
+            //     dropFromQueue = true;
+            // }
 
-            let error = errorObject;
-            // Some Android devices restrict the amount of usable storage using quotas.
-            // If this quota would be exceeded by the download, it throws an exception.
-            // We catch this exception here, and report a meaningful error message to the user.
-            if (errorObject instanceof FileTransferError && errorObject.exception && errorObject.exception.includes('EDQUOT')) {
-                error = new Error(Translate.instant('core.course.insufficientavailablequota'));
-            }
+            // let error = errorObject;
+            // // Some Android devices restrict the amount of usable storage using quotas.
+            // // If this quota would be exceeded by the download, it throws an exception.
+            // // We catch this exception here, and report a meaningful error message to the user.
+            // if (errorObject instanceof FileTransferError && errorObject.exception && errorObject.exception.includes('EDQUOT')) {
+            //     error = new Error(Translate.instant('core.course.insufficientavailablequota'));
+            // }
 
             if (dropFromQueue) {
                 this.logger.debug(`Item dropped from queue due to error: ${fileUrl}`, errorObject);
 
                 await CorePromiseUtils.ignoreErrors(this.queue.remove(siteId, fileId));
-                this.queue.treatDeferred(siteId, fileId, false, error);
+                this.queue.treatDeferred(siteId, fileId, false, errorObject as Error);
 
                 this.notifyFileDownloadError(siteId, fileId, links);
             } else {
                 // We considered the file as legit but did not get it, failure.
-                this.queue.treatDeferred(siteId, fileId, false, error);
+                this.queue.treatDeferred(siteId, fileId, false, errorObject as Error);
                 this.notifyFileDownloadError(siteId, fileId, links);
 
                 throw errorObject;
@@ -3236,10 +3237,11 @@ type CoreFilepoolQueueItemOptions = Omit<CoreFilepoolFileOptions, 'priority' | '
     link?: CoreFilepoolComponentLink; // The link to add for the file.
 };
 
-const enum CoreFileTransferErrorCode {
-    FILE_NOT_FOUND_ERR = 1,
-    INVALID_URL_ERR = 2,
-    CONNECTION_ERR = 3,
-    ABORT_ERR = 4,
-    NOT_MODIFIED_ERR = 5,
-}
+// @todo Capacitor: Remove this enum once Capacitor File Transfer errors are handled differently.
+// const enum CoreFileTransferErrorCode {
+//     FILE_NOT_FOUND_ERR = 1,
+//     INVALID_URL_ERR = 2,
+//     CONNECTION_ERR = 3,
+//     ABORT_ERR = 4,
+//     NOT_MODIFIED_ERR = 5,
+// }
