@@ -60,6 +60,8 @@ import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
+import { CoreErrorHelper } from '@services/error-helper';
+import { FilesystemErrorCode } from '@services/native/filesystem';
 
 /**
  * Filepool queue management.
@@ -2823,7 +2825,7 @@ export class CoreFilepoolProvider {
 
         // Remove the file.
         promises.push(CoreFile.removeFile(path).catch((error) => {
-            if (error && error.code == 1) {
+            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FilesystemErrorCode.FILE_NOT_FOUND) {
                 // Not found, ignore error since maybe it was deleted already.
             } else {
                 throw error;
