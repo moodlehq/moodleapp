@@ -54,6 +54,7 @@ import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreFileUtils } from '@static/file-utils';
 import { type FileTransferError, type UploadFileResult } from '@capacitor/file-transfer';
+import { FileTransferErrorCode } from '@services/native/file-transfer';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -381,7 +382,7 @@ export class CoreWSProvider {
                     // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
                     redirectUrl = headers.get('Location');
                 } catch (error) {
-                    if (!CoreErrorHelper.isCapacitorLikeError(error) || error.code !== 'OS-PLUG-FLTR-0010') {
+                    if (!CoreErrorHelper.isCapacitorLikeError(error) || error.code !== FileTransferErrorCode.HTTP_ERROR) {
                         throw error;
                     }
 
@@ -1169,7 +1170,7 @@ export class CoreWSProvider {
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
-            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === 'OS-PLUG-FLTR-0010') {
+            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FileTransferErrorCode.HTTP_ERROR) {
                 throw this.createHttpError(error, (error.data as FileTransferError).httpStatus ?? -1);
             }
 
