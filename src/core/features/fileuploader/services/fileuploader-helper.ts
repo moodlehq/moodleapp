@@ -54,6 +54,7 @@ import {
     CoreMediaFile,
 } from '@services/native/capture-media';
 import { CoreTime } from '@static/time';
+import { CoreErrorHelper } from '@services/error-helper';
 
 /**
  * Helper service to upload files.
@@ -859,10 +860,10 @@ export class CoreFileUploaderHelperProvider {
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
         const uploadingStr = Translate.instant('core.fileuploader.uploading');
-        const errorUploading = async (error): Promise<CoreWSUploadFileResult> => {
+        const errorUploading = async (errorMessage: string): Promise<CoreWSUploadFileResult> => {
             // Allow the user to retry.
             try {
-                await CoreAlerts.confirm(error, {
+                await CoreAlerts.confirm(errorMessage, {
                     header: Translate.instant('core.error'),
                     okText: Translate.instant('core.retry'),
                 });
@@ -920,7 +921,7 @@ export class CoreFileUploaderHelperProvider {
 
             modal.dismiss();
 
-            return errorUploading(error);
+            return errorUploading(CoreErrorHelper.getErrorMessageFromError(error) ?? 'Error uploading file.');
         } finally {
             modal.dismiss();
         }
