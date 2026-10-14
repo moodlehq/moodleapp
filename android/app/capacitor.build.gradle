@@ -17,6 +17,7 @@ dependencies {
     implementation project(':capacitor-network')
     implementation project(':capacitor-screen-orientation')
     implementation project(':capacitor-splash-screen')
+    implementation project(':capawesome-capacitor-file-picker')
     implementation "androidx.core:core:1.1.0"
     implementation "androidx.webkit:webkit:1.4.0"
     implementation "androidx.core:core:1.12.0"
