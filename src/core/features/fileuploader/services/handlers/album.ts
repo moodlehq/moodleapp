@@ -62,7 +62,7 @@ export class CoreFileUploaderAlbumHandlerService implements CoreFileUploaderHand
 
                 return {
                     treated: true,
-                    result: result,
+                    result,
                 };
             },
         };

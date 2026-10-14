@@ -79,7 +79,7 @@ export class CoreFileUploaderVideoHandlerService implements CoreFileUploaderHand
 
                 return {
                     treated: true,
-                    result: result,
+                    result,
                 };
             },
         };
