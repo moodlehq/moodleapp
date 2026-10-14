@@ -18,6 +18,7 @@ import type { PluginListenerHandle } from '@capacitor/core';
 import type { DownloadFileOptions, ProgressStatus, UploadFileOptions } from '@capacitor/file-transfer';
 import { FileEntry } from '@classes/native/filesystem';
 import { CoreErrorHelper } from '@services/error-helper';
+import { FileTransferErrorCode } from '@services/native/file-transfer';
 import { FileTransfer } from '@singletons';
 
 /**
@@ -283,11 +284,11 @@ export class FileTransferCompat {
 		}
 
 		switch (code) {
-			case 'OS-PLUG-FLTR-0005':
+			case FileTransferErrorCode.INVALID_URL:
 				return FileTransferErrorCompat.INVALID_URL_ERR;
-			case 'OS-PLUG-FLTR-0007':
+			case FileTransferErrorCode.FILE_NOT_FOUND:
 				return FileTransferErrorCompat.FILE_NOT_FOUND_ERR;
-			case 'OS-PLUG-FLTR-0009':
+			case FileTransferErrorCode.NOT_MODIFIED:
 				return FileTransferErrorCompat.NOT_MODIFIED_ERR;
 			default:
 				return FileTransferErrorCompat.CONNECTION_ERR;

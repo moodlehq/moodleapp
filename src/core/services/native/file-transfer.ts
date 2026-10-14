@@ -16,6 +16,20 @@ import { InjectionToken } from '@angular/core';
 import { FileTransfer as CapacitorFileTransfer, type FileTransferPlugin } from '@capacitor/file-transfer';
 
 /**
+ * Capacitor FileTransfer error codes.
+ */
+export const enum FileTransferErrorCode {
+    INVALID_PARAMETERS = 'OS-PLUG-FLTR-0004',
+    INVALID_URL = 'OS-PLUG-FLTR-0005',
+    PERMISSION_DENIED = 'OS-PLUG-FLTR-0006',
+    FILE_NOT_FOUND = 'OS-PLUG-FLTR-0007',
+    CONNECTION_FAILED = 'OS-PLUG-FLTR-0008',
+    NOT_MODIFIED = 'OS-PLUG-FLTR-0009',
+    HTTP_ERROR = 'OS-PLUG-FLTR-0010',
+    UNKNOWN_ERROR = 'OS-PLUG-FLTR-0011',
+}
+
+/**
  * Resolve the native Capacitor FileTransfer implementation.
  *
  * @returns Native Capacitor FileTransfer plugin.

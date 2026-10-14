@@ -21,6 +21,8 @@ import { CoreFilepool } from '@services/filepool';
 import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
+import { CoreErrorHelper } from '@services/error-helper';
+import { FilesystemErrorCode } from '@services/native/filesystem';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';
@@ -395,7 +397,10 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
 
         // Remove the unzipped folder.
         promises.push(CoreFile.removeDir(path).catch((error) => {
-            if (error && (error.code == 1 || !CorePlatform.isMobile())) {
+            if (
+                (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FilesystemErrorCode.FILE_NOT_FOUND)
+                || !CorePlatform.isMobile()
+            ) {
                 // Not found, ignore error.
             } else {
                 throw error;

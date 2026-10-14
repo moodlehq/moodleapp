@@ -908,7 +908,9 @@ export class CoreFileUploaderHelperProvider {
 
             modal.dismiss();
 
-            return errorUploading(CoreErrorHelper.getErrorMessageFromError(error) ?? 'Error uploading file.');
+            return errorUploading(
+                CoreErrorHelper.getErrorMessageFromError(error) ?? Translate.instant('core.fileuploader.errorwhileuploading'),
+            );
         } finally {
             modal.dismiss();
         }

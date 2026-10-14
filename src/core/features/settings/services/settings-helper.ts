@@ -29,6 +29,7 @@ import { makeSingleton, Translate } from '@singletons';
 import { CoreError } from '@classes/errors/error';
 import { Observable, Subject } from 'rxjs';
 import { CoreErrorHelper } from '@services/error-helper';
+import { FilesystemErrorCode } from '@services/native/filesystem';
 import { CoreNavigator } from '@services/navigator';
 import { CoreHTMLClasses } from '@static/html-classes';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -146,7 +147,7 @@ export class CoreSettingsHelperProvider {
 
             return;
         }).catch(async (error) => {
-            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === 'OS-PLUG-FILE-0008') {
+            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FilesystemErrorCode.FILE_NOT_FOUND) {
                 // Not found, set size 0.
                 CoreFilepool.clearAllPackagesStatus(siteId);
                 siteInfo.spaceUsage = 0;

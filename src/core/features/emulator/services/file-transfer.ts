@@ -26,6 +26,7 @@ import {
 import { CoreUrl } from '@static/url';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreErrorHelper } from '@services/error-helper';
+import { FileTransferErrorCode } from '@services/native/file-transfer';
 
 /**
  * Emulates the Capacitor FileTransfer plugin in desktop apps and in browser.
@@ -58,7 +59,10 @@ export class FileTransferMock implements FileTransferPlugin {
             };
 
             xhr.onerror = (): void => {
-                reject(new CapacitorException('Failed to download file.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
+                reject(new CapacitorException(
+                    'Failed to download file.',
+                    FileTransferErrorCode.UNKNOWN_ERROR as unknown as ExceptionCode,
+                ));
             };
 
             xhr.onload = async (): Promise<void> => {
@@ -72,7 +76,10 @@ export class FileTransferMock implements FileTransferPlugin {
                 }
 
                 if (!xhr.response) {
-                    reject(new CapacitorException('No response obtained.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
+                    reject(new CapacitorException(
+                        'No response obtained.',
+                        FileTransferErrorCode.UNKNOWN_ERROR as unknown as ExceptionCode,
+                    ));
 
                     return;
                 }
@@ -87,7 +94,7 @@ export class FileTransferMock implements FileTransferPlugin {
                 } catch (error) {
                     reject(new CapacitorException(
                         CoreErrorHelper.getErrorMessageFromError(error) ?? 'Error downloading file',
-                        'OS-PLUG-FLTR-0011' as ExceptionCode,
+                        FileTransferErrorCode.UNKNOWN_ERROR as unknown as ExceptionCode,
                     ));
                 }
             };
@@ -125,7 +132,10 @@ export class FileTransferMock implements FileTransferPlugin {
             };
 
             xhr.onerror = (): void => {
-                reject(new CapacitorException('Failed to upload file.', 'OS-PLUG-FLTR-0011' as ExceptionCode));
+                reject(new CapacitorException(
+                    'Failed to upload file.',
+                    FileTransferErrorCode.UNKNOWN_ERROR as unknown as ExceptionCode,
+                ));
             };
 
             xhr.onload = (): void => {
@@ -286,7 +296,7 @@ export class FileTransferMock implements FileTransferPlugin {
         body: string,
     ): CapacitorException {
         const message = `Request failed with status code ${status}.`;
-        const code = 'OS-PLUG-FLTR-0010';
+        const code = FileTransferErrorCode.HTTP_ERROR;
         const fileTransferData: FileTransferError = {
             message,
             code,
@@ -297,7 +307,7 @@ export class FileTransferMock implements FileTransferPlugin {
             body,
         };
 
-        return new CapacitorException(message, code as ExceptionCode, fileTransferData);
+        return new CapacitorException(message, code as unknown as ExceptionCode, fileTransferData);
     }
 
     /**
