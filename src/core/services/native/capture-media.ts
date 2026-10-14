@@ -114,7 +114,8 @@ export class CoreCaptureMediaService {
         }));
         const firstResult = result.results[0];
 
-        return this.getMediaFileFromResult(firstResult);    }
+        return this.getMediaFileFromResult(firstResult);
+    }
 
     /**
      * Call the camera plugin, translating its cancellation errors to a silent error.

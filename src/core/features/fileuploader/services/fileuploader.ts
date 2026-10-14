@@ -298,13 +298,25 @@ export class CoreFileUploaderProvider {
     /**
      * Get the upload options for a file of any type.
      *
-     * @param uri File URI.
-     * @param name File name.
-     * @param mimetype File mimetype.
-     * @param deleteAfterUpload Whether the file should be deleted after upload.
-     * @param fileArea File area to upload the file to. It defaults to 'draft'.
-     * @param itemId Draft ID to upload the file to, 0 to create new.
+     * @param params.path File path.
+     * @param params.name File name.
+     * @param params.mimetype File mimetype.
+     * @param params.deleteAfterUpload Whether the file should be deleted after upload.
+     * @param params.fileArea File area to upload the file to. It defaults to 'draft'.
+     * @param params.itemId Draft ID to upload the file to, 0 to create new.
      * @returns Options.
+     */
+    getFileUploadOptions(
+        params: {
+            name: string;
+            mimetype?: string;
+            deleteAfterUpload?: boolean;
+            fileArea?: string;
+            itemId?: number;
+        }
+    ): CoreFileUploaderOptions;
+    /**
+     * @deprecated since 6.0. Use without url parameter.
      */
     getFileUploadOptions(
         uri: string,
@@ -313,12 +325,36 @@ export class CoreFileUploaderProvider {
         deleteAfterUpload?: boolean,
         fileArea?: string,
         itemId?: number,
+    ): CoreFileUploaderOptions;
+    getFileUploadOptions(
+        paramsOrUri: string | {
+            name: string;
+            mimetype?: string;
+            deleteAfterUpload?: boolean;
+            fileArea?: string;
+            itemId?: number;
+        },
+        name = '',
+        mimetype?: string,
+        deleteAfterUpload?: boolean,
+        fileArea?: string,
+        itemId?: number,
     ): CoreFileUploaderOptions {
+        const params = typeof paramsOrUri === 'string' ? {
+            name,
+            mimetype,
+            deleteAfterUpload,
+            fileArea,
+            itemId,
+        } : paramsOrUri;
+
         const options: CoreFileUploaderOptions = {};
-        options.mimeType = mimetype || CoreMimetype.getMimeType(CoreMimetype.getFileExtension(name));
-        options.deleteAfterUpload = !!deleteAfterUpload;
-        options.itemId = itemId || 0;
-        options.fileArea = fileArea;
+        options.mimeType = params.mimetype || CoreMimetype.getMimeType(
+            CoreMimetype.getFileExtension(params.name),
+        );
+        options.deleteAfterUpload = !!params.deleteAfterUpload;
+        options.itemId = params.itemId || 0;
+        options.fileArea = params.fileArea;
 
         return options;
     }
@@ -631,7 +667,12 @@ export class CoreFileUploaderProvider {
 
             // Now upload the file.
             const filePath = file.toURL();
-            const options = this.getFileUploadOptions(filePath, name, undefined, false, 'draft', itemId);
+            const options = this.getFileUploadOptions({
+                name,
+                deleteAfterUpload: false,
+                fileArea: 'draft',
+                itemId,
+            });
 
             await this.uploadFile(filePath, options, undefined, siteId);
         }
@@ -705,7 +746,13 @@ export class CoreFileUploaderProvider {
             filePath = uploadFilePath;
         }
 
-        const options = this.getFileUploadOptions(filePath, fileName, mimetype, isOnline, 'draft', itemId);
+        const options = this.getFileUploadOptions({
+            name: fileName,
+            mimetype: mimetype,
+            deleteAfterUpload: isOnline,
+            fileArea: 'draft',
+            itemId,
+        });
 
         const result = await this.uploadFile(filePath, options, undefined, siteId);
 

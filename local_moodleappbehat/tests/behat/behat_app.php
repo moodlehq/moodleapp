@@ -908,8 +908,7 @@ class behat_app extends behat_app_helper {
     }
 
     /**
-     * Uploads a file to a file input, the file path should be relative to a fixtures folder next to the feature file.
-     * The ìnput locator can match a container with a file input inside, it doesn't have to be the input itself.
+        * Uploads a file using a picker button, relative to a fixtures folder next to the feature file.
      *
      * @Given /^I upload "((?:[^"]|\\")+)" to (".+") in the app$/
      * @param string $filename
@@ -919,21 +918,51 @@ class behat_app extends behat_app_helper {
         $filepath = str_replace('/', DIRECTORY_SEPARATOR, "{$this->featurepath}/fixtures/$filename");
         $inputlocator = $this->parse_element_locator($inputlocator);
 
-        $id = $this->spin(function() use ($inputlocator) {
-            $result = $this->runtime_js("getFileInputId($inputlocator)");
+        try {
+            // Intercept the picker input's click to avoid opening a native dialogue that Selenium cannot control.
+            $this->execute_script(<<<'JS'
+                const originalClick = HTMLInputElement.prototype.click;
+                HTMLInputElement.prototype.click = function() {
+                    if (this.type !== 'file') {
+                        return originalClick.call(this);
+                    }
 
-            if (str_starts_with($result, 'ERROR')) {
-                throw new DriverException('Error finding input - ' . $result);
-            }
+                    // The picker creates a detached input. Attach it to the DOM so Selenium can select the file.
+                    this.id = 'behat-file-upload';
+                    document.body.appendChild(this);
+                };
+                window.behat.restoreFileInputClick = () => {
+                    HTMLInputElement.prototype.click = originalClick;
+                    document.getElementById('behat-file-upload')?.remove();
+                    delete window.behat.restoreFileInputClick;
+                };
+                JS);
 
-            return $result;
-        });
+            $this->spin(function() use ($inputlocator) {
+                $result = $this->runtime_js("press($inputlocator)");
+                if ($result !== 'OK') {
+                    throw new DriverException('Error opening file picker - ' . $result);
+                }
 
-        $this->wait_for_pending_js();
+                return true;
+            });
 
-        $fileinput = $this ->getSession()->getPage()->findById($id);
+            // The picker may create its input asynchronously after the button is pressed.
+            $id = $this->spin(function() {
+                if (!$this->evaluate_script("!!document.getElementById('behat-file-upload')")) {
+                    throw new DriverException('Error finding file picker input');
+                }
 
-        $fileinput->attachFile($filepath);
+                return 'behat-file-upload';
+            });
+
+            $fileinput = $this->getSession()->getPage()->findById($id);
+            // Selecting the file triggers the picker's change listener and resumes the normal upload flow.
+            $fileinput->attachFile($filepath);
+        } finally {
+            // Restore normal click behaviour and remove the temporary input, even if the step fails.
+            $this->execute_script('window.behat.restoreFileInputClick?.();');
+        }
     }
 
     /**

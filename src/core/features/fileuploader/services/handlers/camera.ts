@@ -63,7 +63,7 @@ export class CoreFileUploaderCameraHandlerService implements CoreFileUploaderHan
 
                 return {
                     treated: true,
-                    result: result,
+                    result,
                 };
             },
         };

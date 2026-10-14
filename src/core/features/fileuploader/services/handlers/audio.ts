@@ -64,7 +64,7 @@ export class CoreFileUploaderAudioHandlerService implements CoreFileUploaderHand
 
                 return {
                     treated: true,
-                    result: result,
+                    result,
                 };
             },
         };

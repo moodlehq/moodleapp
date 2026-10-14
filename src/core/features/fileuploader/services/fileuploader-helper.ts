@@ -15,7 +15,6 @@
 import { Injectable } from '@angular/core';
 import { ActionSheetButton } from '@ionic/core';
 import { EncodingType, MediaTypeSelection } from '@capacitor/camera';
-import { ChooserResult } from 'cordova-plugin-chooser';
 import { FileEntry } from '@classes/native/filesystem';
 
 import { CoreNetwork } from '@services/network';
@@ -41,7 +40,6 @@ import { CoreSites } from '@services/sites';
 import { CorePath } from '@static/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { Chooser } from '@features/native/plugins';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreFileUtils } from '@static/file-utils';
@@ -54,6 +52,7 @@ import {
     CoreMediaFile,
 } from '@services/native/capture-media';
 import { CoreErrorHelper } from '@services/error-helper';
+import { CoreNativeFilePicker } from '@services/native/file-picker';
 
 /**
  * Helper service to upload files.
@@ -87,7 +86,7 @@ export class CoreFileUploaderHelperProvider {
 
         const modal = await CoreLoadings.show();
 
-        const result = await Chooser.getFileMetadata(mimetypes ? mimetypes.join(',') : undefined);
+        const result = await CoreNativeFilePicker.pickFile(mimetypes, false);
 
         modal.dismiss();
 
@@ -96,25 +95,40 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreCanceledError();
         }
 
-        if (result.name === 'File') {
-            // In some Android 4.4 devices the file name cannot be retrieved. Try to use the one from the URI.
-            result.name = this.getChosenFileNameFromPath(result) || result.name;
-        }
-
         // Verify that the mimetype is supported.
-        const error = CoreFileUploader.isInvalidMimetype(mimetypes, result.name, result.mediaType);
+        const error = CoreFileUploader.isInvalidMimetype(mimetypes, result.name, result.mimeType);
 
         if (error) {
             throw new CoreError(error);
         }
 
-        const options = CoreFileUploader.getFileUploadOptions(result.uri, result.name, result.mediaType, true);
+        const options = CoreFileUploader.getFileUploadOptions({
+            name: result.name,
+            mimetype: result.mimeType,
+            deleteAfterUpload: true,
+        });
 
-        if (upload) {
-            return this.uploadFile(result.uri, maxSize || -1, true, options);
-        } else {
-            return this.copyToTmpFolder(result.uri, false, maxSize);
+        // On Android and iOS path is set.
+        if (result.path) {
+            if (upload) {
+                return this.uploadFile(result.path, maxSize || -1, true, options);
+            }
+
+            return this.copyToTmpFolder(result.path, false, maxSize);
         }
+
+        const blob = result.blob ?? (result.webPath ? await (await fetch(result.webPath)).blob() : undefined);
+        if (!blob) {
+            throw new CoreError('The picked file has no readable content.');
+        }
+
+        if (maxSize !== undefined && maxSize !== -1 && blob.size > maxSize) {
+            throw this.createMaxBytesError(maxSize, result.name);
+        }
+
+        const file = new File([blob], result.name, { type: result.mimeType ?? blob.type });
+
+        return this.copyAndUploadFile(file, upload, result.name);
     }
 
     /**
@@ -280,33 +294,6 @@ export class CoreFileUploaderHelperProvider {
         }
         // Close the action sheet if it's opened.
         this.actionSheet?.dismiss();
-    }
-
-    /**
-     * Given the result of choosing a file, try to get its file name from the path.
-     *
-     * @param result Chosen file data.
-     * @returns File name, undefined if cannot get it.
-     */
-    protected getChosenFileNameFromPath(result: ChooserResult): string | undefined {
-        const nameAndDir = CoreFileUtils.getFileAndDirectoryFromPath(result.uri);
-
-        if (!nameAndDir.name) {
-            return;
-        }
-
-        let extension = CoreMimetype.getFileExtension(nameAndDir.name);
-
-        if (!extension) {
-            // The URI doesn't have an extension, add it now.
-            extension = CoreMimetype.getExtension(result.mediaType);
-
-            if (extension) {
-                nameAndDir.name += `.${extension}`;
-            }
-        }
-
-        return decodeURIComponent(nameAndDir.name);
     }
 
     /**
@@ -623,7 +610,11 @@ export class CoreFileUploaderHelperProvider {
         deleteAfterUpload?: boolean,
         siteId?: string,
     ): Promise<CoreWSUploadFileResult> {
-        const options = CoreFileUploader.getFileUploadOptions(uri, name, type, deleteAfterUpload);
+        const options = CoreFileUploader.getFileUploadOptions({
+            name,
+            mimetype: type,
+            deleteAfterUpload,
+        });
 
         return this.uploadFile(uri, -1, false, options, siteId);
     }
