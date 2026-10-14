@@ -23,7 +23,6 @@ import { CoreFileUtils } from '@static/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
-import { CoreTime } from '@static/time';
 import { CoreUtils } from '@static/utils';
 import { CoreWSFile, CoreWSFileUploadOptions, CoreWSUploadFileResult } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
@@ -32,7 +31,6 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CorePath } from '@static/path';
-import { CorePlatform } from '@services/platform';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreBytesConstants } from '@/core/constants';
 import { CoreCaptureMedia } from '@services/native/capture-media';
@@ -254,33 +252,14 @@ export class CoreFileUploaderProvider {
     getCameraUploadOptions(uri: string, isFromAlbum?: boolean): CoreFileUploaderOptions {
         const extension = CoreMimetype.guessExtensionFromUrl(uri);
         const mimetype = CoreMimetype.getMimeType(extension);
-        const isIOS = CorePlatform.isIOS();
         const options: CoreFileUploaderOptions = {
             deleteAfterUpload: !isFromAlbum,
             mimeType: mimetype,
         };
-        const fileName = CoreFileUtils.getFileAndDirectoryFromPath(uri).name;
-
-        if (isIOS && (mimetype === 'image/jpeg' || mimetype === 'image/png')) {
-            // In iOS, the pictures can have repeated names, even if they come from the album.
-            // Add a timestamp to the filename to make it unique.
-            const split = fileName.split('.');
-            split[0] += `_${CoreTime.readableTimestamp()}`;
-
-            options.fileName = split.join('.');
-        } else {
-            // Use the same name that the file already has.
-            options.fileName = fileName;
-        }
 
         if (isFromAlbum) {
             // If the file was picked from the album, delete it only if it was copied to the app's folder.
             options.deleteAfterUpload = CoreFile.isFileInAppFolder(uri);
-
-            if (CorePlatform.isAndroid()) {
-                // Picking an image from album in Android adds a timestamp at the end of the file. Delete it.
-                options.fileName = options.fileName.replace(/(\.[^.]*)\?[^.]*$/, '$1');
-            }
         }
 
         return options;
@@ -336,10 +315,7 @@ export class CoreFileUploaderProvider {
         itemId?: number,
     ): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
-        options.fileName = name;
-        options.mimeType = mimetype || CoreMimetype.getMimeType(
-            CoreMimetype.getFileExtension(options.fileName),
-        );
+        options.mimeType = mimetype || CoreMimetype.getMimeType(CoreMimetype.getFileExtension(name));
         options.deleteAfterUpload = !!deleteAfterUpload;
         options.itemId = itemId || 0;
         options.fileArea = fileArea;
@@ -714,7 +690,21 @@ export class CoreFileUploaderProvider {
         // Now upload the file.
         const extension = CoreMimetype.getFileExtension(fileName);
         const mimetype = extension ? CoreMimetype.getMimeType(extension) : undefined;
-        const filePath = fileEntry.toURL();
+        let filePath = fileEntry.toURL();
+
+        if (isOnline && fileName && CoreFileUtils.getFileAndDirectoryFromPath(filePath).name !== fileName) {
+            // Capacitor file transfer doesn't support overriding the multipart filename.
+            // Copy the file to a temporary path with the expected basename so Moodle receives the logical file name.
+            // Otherwise Moodle could receive the file name with a hash, like it's done in filepool.
+            // See https://github.com/ionic-team/capacitor-file-transfer/issues/85
+            const uploadFileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName);
+            const uploadFilePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, uploadFileName);
+
+            await CoreFile.copyFile(filePath, uploadFilePath);
+
+            filePath = uploadFilePath;
+        }
+
         const options = this.getFileUploadOptions(filePath, fileName, mimetype, isOnline, 'draft', itemId);
 
         const result = await this.uploadFile(filePath, options, undefined, siteId);

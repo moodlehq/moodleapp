@@ -53,7 +53,6 @@ import {
     CoreCaptureMediaTakePhotoOptions,
     CoreMediaFile,
 } from '@services/native/capture-media';
-import { CoreTime } from '@static/time';
 import { CoreErrorHelper } from '@services/error-helper';
 
 /**
@@ -114,7 +113,7 @@ export class CoreFileUploaderHelperProvider {
         if (upload) {
             return this.uploadFile(result.uri, maxSize || -1, true, options);
         } else {
-            return this.copyToTmpFolder(result.uri, false, maxSize, undefined, options);
+            return this.copyToTmpFolder(result.uri, false, maxSize);
         }
     }
 
@@ -209,7 +208,6 @@ export class CoreFileUploaderHelperProvider {
      * @param shouldDelete True if original file should be deleted (move), false otherwise (copy).
      * @param maxSize Max size of the file. If not defined or -1, no max size.
      * @param defaultExt Default extension to use if the file doesn't have any.
-     * @param options Options to get the file name. If not defined, it will be obtained from the file path.
      * @returns Promise resolved with the copied file.
      */
     protected async copyToTmpFolder(
@@ -217,10 +215,8 @@ export class CoreFileUploaderHelperProvider {
         shouldDelete: boolean,
         maxSize?: number,
         defaultExt?: string,
-        options?: CoreFileUploaderOptions,
     ): Promise<FileEntry> {
-
-        const fileName = options?.fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
+        const fileName = CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize !== -1) {
@@ -580,7 +576,7 @@ export class CoreFileUploaderHelperProvider {
             return this.uploadFile(path, maxSize || -1, true, options);
         } else {
             // Copy or move the file to our temporary folder.
-            return this.copyToTmpFolder(path, true, maxSize, undefined, options);
+            return this.copyToTmpFolder(path, true, maxSize);
         }
     }
 
@@ -594,25 +590,16 @@ export class CoreFileUploaderHelperProvider {
         mediaFile: CoreFileUploaderAudioRecording | CoreMediaFile,
     ): CoreFileUploaderOptions {
         const options: CoreFileUploaderOptions = {};
-        let filename = 'name' in mediaFile
-            ? mediaFile.name
-            : CoreFileUtils.getFileAndDirectoryFromPath(mediaFile.fullPath).name ?? '';
 
-        if (!filename.match(/_\d{14}(\..*)?$/)) {
-            // Add a timestamp to the filename to make it unique.
-            const split = filename.split('.');
-            split[0] += `_${CoreTime.readableTimestamp()}`;
-            filename = split.join('.');
-        }
-
-        options.fileName = filename;
         options.deleteAfterUpload = true;
         if ('type' in mediaFile && mediaFile.type) {
             options.mimeType = mediaFile.type;
         } else {
-            options.mimeType = CoreMimetype.getMimeType(
-                CoreMimetype.getFileExtension(options.fileName),
-            );
+            const filename = 'name' in mediaFile
+                ? mediaFile.name
+                : CoreFileUtils.getFileAndDirectoryFromPath(mediaFile.fullPath).name ?? '';
+
+            options.mimeType = CoreMimetype.getMimeType(CoreMimetype.getFileExtension(filename));
         }
 
         return options;
@@ -679,7 +666,7 @@ export class CoreFileUploaderHelperProvider {
             return this.uploadFile(path, maxSize || -1, true, uploadOptions);
         } else {
             // Copy or move the file to our temporary folder.
-            return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg', uploadOptions);
+            return this.copyToTmpFolder(path, !fromAlbum, maxSize, 'jpg');
         }
     }
 

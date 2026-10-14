@@ -38,6 +38,7 @@ import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audi
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreMimetype } from '@static/mimetype';
+import { CoreTime } from '@static/time';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
@@ -196,7 +197,7 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
         try {
             const type = blob.type.split(';')[0];
             const extension = CoreMimetype.getExtension(type);
-            const fileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, `recording.${extension}`);
+            const fileName = `recording_${CoreTime.readableTimestamp()}.${extension}`;
             const filePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, fileName);
             const fileEntry = await CoreFile.writeFile(filePath, blob);
             const mediaDuration = this.previewMedia()?.duration;
