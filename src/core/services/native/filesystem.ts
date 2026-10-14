@@ -17,6 +17,22 @@ import { InjectionToken } from '@angular/core';
 import { Filesystem, type FilesystemPlugin } from '@capacitor/filesystem';
 
 /**
+ * Capacitor Filesystem error codes.
+ */
+export const enum FilesystemErrorCode {
+    BRIDGE_NOT_INITIALIZED = 'OS-PLUG-FILE-0004',
+    INVALID_PARAMETERS = 'OS-PLUG-FILE-0005',
+    INVALID_PATH = 'OS-PLUG-FILE-0006',
+    PERMISSION_DENIED = 'OS-PLUG-FILE-0007',
+    FILE_NOT_FOUND = 'OS-PLUG-FILE-0008',
+    OPERATION_NOT_SUPPORTED = 'OS-PLUG-FILE-0009',
+    DIRECTORY_ALREADY_EXISTS = 'OS-PLUG-FILE-0010',
+    MISSING_PARENT_DIRECTORY = 'OS-PLUG-FILE-0011',
+    DIRECTORY_NOT_EMPTY = 'OS-PLUG-FILE-0012',
+    UNKNOWN_ERROR = 'OS-PLUG-FILE-0013',
+}
+
+/**
  * Resolve the native Capacitor Filesystem implementation.
  *
  * @returns Native Capacitor Filesystem plugin.

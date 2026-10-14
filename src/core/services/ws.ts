@@ -21,6 +21,7 @@ import {
     HttpResponse as NativeHttpResponse,
     CapacitorException,
     HttpOptions as NativeHttpOptions,
+    PluginListenerHandle,
 } from '@capacitor/core';
 import { Md5 } from 'ts-md5';
 import { Observable, firstValueFrom } from 'rxjs';
@@ -34,7 +35,7 @@ import { CoreText } from '@static/text';
 import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, Http } from '@singletons';
+import { makeSingleton, Translate, Http, FileTransfer } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -52,6 +53,8 @@ import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreFileUtils } from '@static/file-utils';
+import { type FileTransferError, type UploadFileResult } from '@capacitor/file-transfer';
+import { FileTransferErrorCode } from '@services/native/file-transfer';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -238,7 +241,7 @@ export class CoreWSProvider {
     }
 
     /**
-     * Downloads a file from Moodle using Cordova File API.
+     * Downloads a file from Moodle.
      *
      * @param url Download url.
      * @param path Local path to store the file.
@@ -272,35 +275,7 @@ export class CoreWSProvider {
             // Create the tmp file as an empty file.
             const fileEntry = await CoreFile.createFile(tmpPath);
 
-            let headers: HttpHeaders | undefined;
-            let redirectUrl: string | null = null;
-            let maxRedirects = 5;
-            do {
-                const transfer = new window.FileTransfer();
-                if (onProgress) {
-                    transfer.onprogress = onProgress;
-                }
-
-                // Download the file in the tmp file.
-                const responseHeaders = await new Promise<Record<string, string> | undefined>((resolve, reject) => {
-                    transfer.download(
-                        redirectUrl ?? url,
-                        fileEntry.toURL(),
-                        (result) => resolve(result.headers),
-                        (error: FileTransferError) => reject(error),
-                        true,
-                        { headers: { 'User-Agent': navigator.userAgent } },
-                    );
-                });
-
-                headers = new HttpHeaders(responseHeaders); // Convert to HttpHeaders because names are normalised.
-
-                // Redirections should have been handled by the platform,
-                // but Android does not follow redirections between HTTP and HTTPS.
-                // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                redirectUrl = headers.get('Location');
-                maxRedirects--;
-            } while (redirectUrl && maxRedirects >= 0);
+            const headers = await this.downloadFileFollowingRedirects(url, fileEntry.toURL(), onProgress);
 
             let extension = '';
 
@@ -345,6 +320,92 @@ export class CoreWSProvider {
 
             throw error;
         }
+    }
+
+    /**
+     * Download a file, following redirects if any.
+     *
+     * @param url The URL of the file to download.
+     * @param path The local path where the file should be saved.
+     * @param onProgress Optional callback to track download progress.
+     * @returns The HTTP headers of the final response after following redirects.
+     */
+    protected async downloadFileFollowingRedirects(
+        url: string,
+        path: string,
+        onProgress?: (event: ProgressEvent) => void,
+    ): Promise<HttpHeaders> {
+        let headers = new HttpHeaders();
+        let redirectUrl: string | null = null;
+        let maxRedirects = 5;
+        let currentDownloadUrl = url;
+        let listener: PluginListenerHandle | undefined = undefined;
+
+        if (onProgress) {
+            listener = await FileTransfer.addListener('progress', progress => {
+                if (progress.type !== 'download') {
+                    return;
+                }
+
+                if (progress.url && progress.url !== currentDownloadUrl) {
+                    return;
+                }
+
+                onProgress(new ProgressEvent('progress', {
+                    lengthComputable: progress.lengthComputable,
+                    loaded: progress.bytes,
+                    total: progress.contentLength,
+                }));
+            });
+
+        }
+
+        try {
+            do {
+                currentDownloadUrl = redirectUrl ?? url;
+
+                try {
+                    const result = await FileTransfer.downloadFile({
+                        url: currentDownloadUrl,
+                        path,
+                        progress: !!onProgress,
+                        headers: {
+                            'User-Agent': navigator.userAgent,
+                        },
+                        disableRedirects: false,
+                    });
+
+                    headers = new HttpHeaders(result.headers); // Convert to HttpHeaders because names are normalised.
+
+                    // Redirections should have been handled by the platform,
+                    // but Android does not follow redirections between HTTP and HTTPS.
+                    // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
+                    redirectUrl = headers.get('Location');
+                } catch (error) {
+                    if (!CoreErrorHelper.isCapacitorLikeError(error) || error.code !== FileTransferErrorCode.HTTP_ERROR) {
+                        throw error;
+                    }
+
+                    // HTTP error , treat 300 errors too in case we receive one.
+                    const transferError = error.data as FileTransferError;
+                    headers = new HttpHeaders(transferError.headers);
+                    const transferErrorRedirectUrl = headers.get('Location');
+                    const status = transferError.httpStatus ?? -1;
+
+                    if (transferErrorRedirectUrl && status >= 300 && status < 400) {
+                        redirectUrl = transferErrorRedirectUrl;
+                    } else {
+                        throw error;
+                    }
+                }
+
+                maxRedirects--;
+            } while (redirectUrl && maxRedirects >= 0);
+        } finally {
+            await listener?.remove();
+        }
+
+        return headers;
     }
 
     /**
@@ -1066,40 +1127,63 @@ export class CoreWSProvider {
         }
 
         const uploadUrl = `${preSets.siteUrl}/webservice/upload.php`;
-        const transfer = new window.FileTransfer();
-
+        let listener: PluginListenerHandle | undefined = undefined;
         if (onProgress) {
-            transfer.onprogress = onProgress;
+            listener = await FileTransfer.addListener('progress', progress => {
+                if (progress.type !== 'upload') {
+                    return;
+                }
+
+                if (progress.url && progress.url !== uploadUrl) {
+                    return;
+                }
+
+                onProgress(new ProgressEvent('progress', {
+                    lengthComputable: progress.lengthComputable,
+                    loaded: progress.bytes,
+                    total: progress.contentLength,
+                }));
+            });
         }
 
-        options.httpMethod = 'POST';
-        options.params = {
-            token: preSets.wsToken,
-            filearea: options.fileArea || 'draft',
-            itemid: options.itemId || 0,
-        };
-        options.chunkedMode = false;
-        options.headers = {
-            'User-Agent': navigator.userAgent,
-        };
-        options['Connection'] = 'close';
-
-        let success: FileUploadResult;
+        let result: UploadFileResult;
 
         try {
-            success = await new Promise((resolve, reject) =>
-                transfer.upload( filePath, uploadUrl, (result) => resolve(result), (error) => reject(error), options, true));
+            result = await FileTransfer.uploadFile({
+                url: uploadUrl,
+                path: filePath,
+                method: 'POST',
+                progress: !!onProgress,
+                params: {
+                    token: preSets.wsToken,
+                    filearea: options.fileArea || 'draft',
+                    itemid: String(options.itemId || 0),
+                },
+                chunkedMode: false,
+                mimeType: options.mimeType,
+                fileKey: options.fileKey,
+                headers: {
+                    'User-Agent': navigator.userAgent,
+                    'connection': 'close',
+                },
+            });
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
-            throw this.createHttpError(error, error.http_status ?? 0);
+            if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FileTransferErrorCode.HTTP_ERROR) {
+                throw this.createHttpError(error, (error.data as FileTransferError).httpStatus ?? -1);
+            }
+
+            throw error;
+        } finally {
+            await listener?.remove();
         }
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const data = CoreText.parseJSON<any>(
-            success.response,
+            result.response ?? '',
             null,
-            error => this.logger.error('Error parsing response from upload', success.response, error),
+            error => this.logger.error('Error parsing response from upload', result.response, error),
         );
 
         if (data === null) {
@@ -1406,12 +1490,35 @@ export const CoreWS = makeSingleton(CoreWSProvider);
 /**
  * File upload options.
  */
-export type CoreWSFileUploadOptions = FileUploadOptions & {
+export type CoreWSFileUploadOptions = {
+    /**
+     * The name of the form element. Defaults to file.
+     */
+    fileKey?: string;
+    /**
+     * The HTTP method to use - either `PUT` or `POST`. Defaults to `POST`.
+     */
+    httpMethod?: string;
+    /**
+     * The mime type of the data to upload. Defaults to image/jpeg.
+     */
+    mimeType?: string;
+    /**
+     * A set of optional key/value pairs to pass in the HTTP request.
+     */
+    params?: Record<string, unknown>;
+    /**
+     * Whether to upload the data in chunked streaming mode. Defaults to true.
+     */
+    chunkedMode?: boolean;
+    /**
+     * A map of header name/header values. Use an array to specify more than one value.
+     */
+    headers?: Record<string, unknown>;
     /**
      * The file area where to put the file. By default, 'draft'.
      */
     fileArea?: string;
-
     /**
      * Item ID of the area where to put the file. By default, 0.
      */
