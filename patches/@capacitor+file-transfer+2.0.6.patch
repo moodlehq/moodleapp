@@ -1,5 +1,5 @@
 diff --git a/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt b/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
-index 0388462..6a44af4 100644
+index 0388462..fd6c70a 100644
 --- a/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
 +++ b/node_modules/@capacitor/file-transfer/android/src/main/java/com/capacitorjs/plugins/filetransfer/FileTransferPlugin.kt
 @@ -183,8 +183,16 @@ class FileTransferPlugin : Plugin() {
@@ -12,13 +12,40 @@ index 0388462..6a44af4 100644
 +                                headersObj.put(headerKey, values.firstOrNull() ?: "")
 +                            }
 +                        }
-+                        
++
                          val response = JSObject().apply {
                              put("path", filePath)
 +                            put("headers", headersObj)
                          }
                          call.resolve(response)
                      }
+@@ -222,7 +230,16 @@ class FileTransferPlugin : Plugin() {
+         val mimeType = call.getString("mimeType")
+         val fileKey = call.getString("fileKey") ?: "file"
+ 
++        val params = call.getObject("params") ?: JSObject()
+         val httpOptions = createHttpOptions(call, "POST")
++        val uploadHttpOptions = if (chunkedMode) {
++            httpOptions
++        } else {
++            // For non-chunked uploads, native lib builds multipart fields from formParams.
++            // Keep params out of httpOptions to avoid String[] object serialization in multipart body.
++            httpOptions.copy(params = emptyMap())
++        }
++        val formParams = if (chunkedMode) null else params.toMap()
+ 
+         val options = IONFLTRUploadOptions(
+             url = url,
+@@ -230,7 +247,8 @@ class FileTransferPlugin : Plugin() {
+             chunkedMode = chunkedMode,
+             mimeType = mimeType,
+             fileKey = fileKey,
+-            httpOptions = httpOptions
++            formParams = formParams,
++            httpOptions = uploadHttpOptions
+         )
+ 
+         controller.uploadFile(options)
 diff --git a/node_modules/@capacitor/file-transfer/dist/definitions.d.ts b/node_modules/@capacitor/file-transfer/dist/definitions.d.ts
 index 6c20dde..2e06660 100644
 --- a/node_modules/@capacitor/file-transfer/dist/definitions.d.ts
@@ -38,10 +65,77 @@ index 6c20dde..2e06660 100644
       * The blob data of the downloaded file.
       * This is only available on web.
 diff --git a/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift b/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
-index 011e2ea..d328b76 100644
+index 011e2ea..11a12ae 100644
 --- a/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
 +++ b/node_modules/@capacitor/file-transfer/ios/Sources/FileTransferPlugin/FileTransferPlugin.swift
-@@ -225,7 +225,12 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+@@ -57,14 +57,21 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+     /// - Parameter call: The Capacitor call containing `url`, `path`, `fileKey`, and optional HTTP options.
+     @objc func uploadFile(_ call: CAPPluginCall) {
+         do {
+-            let prepData = try validateAndPrepare(call: call, action: .upload)
+             let chunkedMode = call.getBool("chunkedMode", false)
++            let prepData = try validateAndPrepare(
++                call: call,
++                action: .upload,
++                includeParamsInHttpOptions: chunkedMode
++            )
+             let mimeType = call.getString("mimeType")
+             let fileKey = call.getString("fileKey") ?? "file"
++            let params = call.getObject("params") ?? JSObject()
++            let formParams = chunkedMode ? nil : extractFormParams(from: params)
+             let uploadOptions = IONFLTRUploadOptions(
+                 chunkedMode: chunkedMode,
+                 mimeType: mimeType,
+-                fileKey: fileKey
++                fileKey: fileKey,
++                formParams: formParams
+             )
+ 
+             try manager.uploadFile(
+@@ -102,7 +109,11 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+     ///   - action: The type of action (`upload` or `download`).
+     /// - Throws: An error if validation fails.
+     /// - Returns: Structure containing server URL, file URL, progress flag, and HTTP options.
+-    private func validateAndPrepare(call: CAPPluginCall, action: Action) throws -> TransferPreparationData {
++    private func validateAndPrepare(
++        call: CAPPluginCall,
++        action: Action,
++        includeParamsInHttpOptions: Bool = true
++    ) throws -> TransferPreparationData {
+         guard let url = call.getString("url") else {
+             throw FileTransferError.invalidServerUrl(nil)
+         }
+@@ -125,7 +136,7 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+ 
+         let httpOptions = IONFLTRHttpOptions(
+             method: call.getString("method") ?? defaultHTTPMethod(for: action),
+-            params: extractParams(from: params),
++            params: includeParamsInHttpOptions ? extractParams(from: params) : [:],
+             headers: extractHeaders(from: headers),
+             timeout: call.getInt("connectTimeout", call.getInt("readTimeout", 60000)) / 1000, // Timeouts in iOS are in seconds. So read the value in millis and divide by 1000
+             disableRedirects: call.getBool("disableRedirects", false),
+@@ -159,6 +170,20 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
+         }
+     }
+ 
++    /// Converts a JSObject to a dictionary used for multipart form fields.
++    private func extractFormParams(from jsObject: JSObject) -> [String: String] {
++        var result: [String: String] = [:]
++        for (key, value) in jsObject {
++            if let stringValue = value as? String {
++                result[key] = stringValue
++            } else if let arrayValue = value as? [Any],
++                let firstString = arrayValue.compactMap({ $0 as? String }).first {
++                result[key] = firstString
++            }
++        }
++        return result
++    }
++
+     /// Converts a JSObject to a dictionary of arrays, supporting both string and string-array values.
+     private func extractParams(from jsObject: JSObject) -> [String: [String]] {
+         var result: [String: [String]] = [:]
+@@ -225,7 +250,12 @@ public class FileTransferPlugin: CAPPlugin, CAPBridgedPlugin {
                  let result: JSObject = {
                      switch type {
                      case .download:
