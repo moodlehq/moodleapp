@@ -3,5 +3,5 @@
     <string name="app_name">Moodle</string>
     <string name="title_activity_main">Moodle</string>
     <string name="package_name">com.moodle.moodlemobile</string>
-    <string name="custom_url_scheme">com.moodle.moodlemobile</string>
+    <string name="custom_url_scheme">moodlemobile</string>
 </resources>

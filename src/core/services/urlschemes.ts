@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { App } from '@capacitor/app';
 import { Injectable } from '@angular/core';
 
 import { CoreError } from '@classes/errors/error';
@@ -34,6 +35,7 @@ import { CorePlatform } from './platform';
 import { NO_SITE_ID } from '@features/login/constants';
 import { CoreSitesFactory } from './sites-factory';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreEvents } from '@static/events';
 
 /*
  * Provider to handle custom URL schemes.
@@ -42,7 +44,9 @@ import { CorePromiseUtils } from '@static/promise-utils';
 export class CoreCustomURLSchemesProvider {
 
     protected logger: CoreLogger;
-    protected lastUrls: Record<string, number> = {};
+    protected lastHandledUrls: Record<string, number> = {};
+    protected lastLaunchUrls: Record<string, number> = {};
+    protected lastLaunchURL?: string;
 
     constructor() {
         this.logger = CoreLogger.getInstance('CoreCustomURLSchemesProvider');
@@ -245,14 +249,13 @@ export class CoreCustomURLSchemesProvider {
             throw this.createInvalidSchemeError(url);
         }
 
-        /* First check that this URL hasn't been treated a few seconds ago. The function that handles custom URL schemes already
-           does this, but this function is called from other places so we need to handle it in here too. */
-        if (this.lastUrls[url] && Date.now() - this.lastUrls[url] < 3000) {
+        // Also deduplicate URLs received through QR codes, the in-app browser and other entry points.
+        if (this.lastHandledUrls[url] && Date.now() - this.lastHandledUrls[url] < 3000) {
             // Function called more than once, stop.
             return;
         }
 
-        this.lastUrls[url] = Date.now();
+        this.lastHandledUrls[url] = Date.now();
         url = CoreUrl.decodeURIComponent(url);
 
         // Wait for app to be ready.
@@ -695,20 +698,43 @@ export class CoreCustomURLSchemesProvider {
     }
 
     /**
+     * Handle a URL received when opening the app, notifying observers once per recent URL.
+     *
+     * @param url URL received.
+     */
+    handleLaunchURL(url: string): void {
+        this.lastLaunchURL = url;
+
+        if (!this.isCustomURL(url)) {
+            return;
+        }
+
+        if (this.lastLaunchUrls[url] && Date.now() - this.lastLaunchUrls[url] < 3000) {
+            return;
+        }
+
+        this.lastLaunchUrls[url] = Date.now();
+
+        CoreEvents.trigger(CoreEvents.APP_LAUNCHED_URL, { url });
+        this.handleCustomURL(url).catch(error => {
+            this.treatHandleCustomURLError(error, url, 'handleOpenURL');
+        });
+    }
+
+    /**
      * Get the last URL used to open the app using a URL scheme.
+     * Fall back to the initial launch URL if no URL event has been received yet.
      *
      * @returns URL.
      */
-    getLastLaunchURL(): Promise<string | undefined> {
-        if (!CorePlatform.isAndroid()) {
-            // Last launch URL is only available in Android.
-            return Promise.resolve(undefined);
+    async getLastLaunchURL(): Promise<string | undefined> {
+        if (this.lastLaunchURL !== undefined) {
+            return this.lastLaunchURL;
         }
 
-        return new Promise((resolve) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (<any> window).plugins.launchmyapp.getLastIntent(intent => resolve(intent), () => resolve(undefined));
-        });
+        const launchUrl = await App.getLaunchUrl();
+
+        return this.lastLaunchURL ?? launchUrl?.url;
     }
 
     /**

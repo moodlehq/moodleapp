@@ -46,7 +46,6 @@ const config: CapacitorConfig = {
       'android-targetSdkVersion': '37',
       AndroidPersistentFileLocation: 'Compatibility',
       AndroidInsecureFileModeEnabled: 'false',
-      CustomURLSchemePluginClearsAndroidIntent: 'true',
       'deployment-target': '15.0',
       iosPersistentFileLocation: 'Compatibility',
       scheme: 'http',
