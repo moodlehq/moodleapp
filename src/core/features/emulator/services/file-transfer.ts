@@ -103,8 +103,7 @@ export class FileTransferMock implements FileTransferPlugin {
      * @returns Promise resolved with upload result.
      */
     async uploadFile(options: UploadFileOptions): Promise<UploadFileResult> {
-        // Send params as GET params to mimic Capacitor behaviour.
-        const url = CoreUrl.addParamsToUrl(options.url, options.params);
+        const url = options.url;
         const sourcePath = options.path;
         const file = options.blob || await this.readFileBlob(sourcePath);
 
@@ -226,8 +225,35 @@ export class FileTransferMock implements FileTransferPlugin {
         const fileName = CoreFileUtils.getFileAndDirectoryFromPath(options.path).name;
 
         formData.append(fileKey, file, fileName);
+        this.appendParamsToFormData(formData, options.params);
 
         return formData;
+    }
+
+    /**
+     * Append upload params to multipart form data.
+     *
+     * @param formData Multipart payload.
+     * @param params Upload params.
+     */
+    protected appendParamsToFormData(formData: FormData, params?: UploadFileOptions['params']): void {
+        if (!params) {
+            return;
+        }
+
+        for (const key in params) {
+            const value = params[key];
+
+            if (value === null || value === undefined) {
+                continue;
+            }
+
+            if (Array.isArray(value)) {
+                value.forEach(item => formData.append(key, String(item)));
+            } else {
+                formData.append(key, String(value));
+            }
+        }
     }
 
     /**
