@@ -1495,10 +1495,6 @@ export type CoreWSFileUploadOptions = {
      */
     fileKey?: string;
     /**
-     * The file name to use when saving the file on the server. Defaults to image.jpg.
-     */
-    fileName?: string;
-    /**
      * The HTTP method to use - either `PUT` or `POST`. Defaults to `POST`.
      */
     httpMethod?: string;
