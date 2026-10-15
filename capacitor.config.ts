@@ -36,7 +36,6 @@ const config: CapacitorConfig = {
       AllowInlineMediaPlayback: 'true',
       LoadUrlTimeoutValue: '60000',
       'load-url-timeout': '60000',
-      AutoHideSplashScreen: 'false',
       'android-minSdkVersion': '24',
       'android-targetSdkVersion': '37',
       AndroidPersistentFileLocation: 'Compatibility',
