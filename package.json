@@ -60,7 +60,6 @@
         "@awesome-cordova-plugins/keyboard": "9.2.0",
         "@awesome-cordova-plugins/local-notifications": "9.2.0",
         "@awesome-cordova-plugins/push": "9.2.0",
-        "@awesome-cordova-plugins/splash-screen": "9.2.0",
         "@awesome-cordova-plugins/sqlite": "9.2.0",
         "@awesome-cordova-plugins/status-bar": "9.2.0",
         "@awesome-cordova-plugins/web-intent": "9.2.0",
