@@ -30,6 +30,7 @@
                         </ion-label>
                     </ion-item>
                 }
+
                 @if (gradeMethodTranslatable) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
@@ -38,6 +39,37 @@
                         </ion-label>
                     </ion-item>
                 }
+
+                @let dueDate = quiz?.duedate || 0;
+                @if (dueDate > 0) {
+                    <ion-item class="ion-text-wrap">
+                        <ion-label>
+                            <p class="item-heading">{{ 'addon.mod_quiz.duedate' | translate }}</p>
+                            @if (!firstAttempt || !firstAttempt.timefinish) {
+                                @if (dueDate <= now) {
+                                    <p>{{ 'addon.mod_quiz.quizoverdue' | translate }}</p>
+                                } @else {
+                                    <p>{{ 'addon.mod_quiz.quizduein' | translate: { $a: dueDate - now | coreDuration } }}</p>
+                                }
+                            } @else {
+                                @if (dueDate <= firstAttempt.timefinish) {
+                                    <p>
+                                        {{ 'addon.mod_quiz.quizfinishedlate' | translate: {
+                                            $a: dueDate - firstAttempt.timefinish | coreDuration
+                                        } }}
+                                    </p>
+                                } @else {
+                                    <p>
+                                        {{ 'addon.mod_quiz.quizfinishedearly' | translate: {
+                                            $a: dueDate - firstAttempt.timefinish | coreDuration
+                                        } }}
+                                    </p>
+                                }
+                            }
+                        </ion-label>
+                    </ion-item>
+                }
+
                 @if (bestGrade && gradeToPass && quiz && quiz.gradeFormatted) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>
@@ -49,6 +81,7 @@
                         </ion-label>
                     </ion-item>
                 }
+
                 @if (syncTime) {
                     <ion-item class="ion-text-wrap">
                         <ion-label>

@@ -2323,6 +2323,7 @@ export type AddonModQuizQuizWSData = CoreCourseModuleStandardElements & {
     autosaveperiod?: number; // Auto-save delay.
     hasfeedback?: number; // Whether the quiz has any non-blank feedback text.
     hasquestions?: number; // Whether the quiz has questions.
+    duedate?: number; // @since 5.3. The due date for the quiz. (0 = no due date.)
 };
 
 /**

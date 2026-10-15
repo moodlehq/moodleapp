@@ -54,6 +54,7 @@ import { AddonModQuizAttemptStateComponent } from '../attempt-state/attempt-stat
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';
 import { CoreSharedModule } from '@/core/shared.module';
+import { CoreTime } from '@static/time';
 
 /**
  * Component that displays a quiz entry page.
@@ -75,7 +76,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     component = ADDON_MOD_QUIZ_COMPONENT_LEGACY;
     pluginName = 'quiz';
     quiz?: AddonModQuizQuizData; // The quiz.
-    now?: number; // Current time.
+    now = CoreTime.timestamp(); // Current time.
     syncTime?: string; // Last synchronization time.
     hasOffline = false; // Whether the quiz has offline data.
     hasSupportedQuestions = false; // Whether the quiz has at least 1 supported question.
@@ -97,6 +98,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     bestGrade?: AddonModQuizGetUserBestGradeWSResponse; // Best grade data.
     gradeToPass?: string; // Grade to pass.
     hasQuestions = false; // Whether the quiz has questions.
+    firstAttempt?: QuizAttempt; // The first attempt of the user, if any.
 
     protected fetchContentDefaultError = 'addon.mod_quiz.errorgetquiz'; // Default error to show when loading contents.
     protected syncEventName = ADDON_MOD_QUIZ_AUTO_SYNCED;
@@ -189,7 +191,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
         const quiz = await AddonModQuiz.getQuiz(this.courseId, this.module.id);
 
         this.gradeMethodTranslatable = AddonModQuiz.getQuizGradeMethod(quiz.grademethod);
-        this.now = Date.now();
+        this.now = CoreTime.timestamp();
         this.dataRetrieved.emit(quiz);
         this.description = quiz.intro || this.description;
         this.candidateQuiz = quiz;
@@ -585,6 +587,7 @@ export class AddonModQuizIndexComponent extends CoreCourseModuleMainActivityComp
     ): Promise<QuizAttempt[]> {
         // Don't display not started attempts.
         attempts = attempts.filter(attempt => attempt.state !== AddonModQuizAttemptStates.NOT_STARTED);
+        this.firstAttempt = attempts[0];
 
         if (!attempts || !attempts.length) {
             // There are no attempts to treat.
