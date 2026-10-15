@@ -30,6 +30,7 @@ import { CoreWait } from '@static/wait';
 import { CoreOpener } from '@static/opener';
 import { BackButtonPriority } from '@/core/constants';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { App } from '@capacitor/app';
 
 register();
 
@@ -75,12 +76,13 @@ export class AppComponent implements OnInit, AfterViewInit {
         };
 
         // Quit app with back button.
-        document.addEventListener('ionBackButton', (event: BackButtonEvent) => {
-            event.detail.register(BackButtonPriority.QUIT_APP, async () => {
+        document.addEventListener('ionBackButton', (event) => {
+            const backButtonEvent = event as BackButtonEvent;
+            backButtonEvent.detail.register(BackButtonPriority.QUIT_APP, async () => {
                 const initialPath = CoreNavigator.getCurrentPath();
                 if (initialPath.startsWith('/main/')) {
                     // Main menu has its own callback to handle back. If this callback is called it means we should exit app.
-                    CoreApp.closeApp();
+                    await App.exitApp();
 
                     return;
                 }
@@ -91,13 +93,13 @@ export class AppComponent implements OnInit, AfterViewInit {
                 // The path seems to change immediately (0 ms timeout), but use 50ms just in case.
                 await CoreWait.wait(50);
 
-                if (CoreNavigator.getCurrentPath() != initialPath) {
+                if (CoreNavigator.getCurrentPath() !== initialPath) {
                     // Ionic has navigated back, nothing else to do.
                     return;
                 }
 
                 // Quit the app.
-                CoreApp.closeApp();
+                await App.exitApp();
             });
         });
 
