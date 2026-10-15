@@ -196,10 +196,11 @@ export class CoreAppProvider {
 
     /**
      * Close the app.
+     *
+     * @deprecated since 6.0. This method no longer performs any action.
      */
-    closeApp(): void {
-        const nav = <any> window.navigator; // eslint-disable-line @typescript-eslint/no-explicit-any
-        nav.app?.exitApp();
+    async closeApp(): Promise<void> {
+        // Do nothing.
     }
 
     /**

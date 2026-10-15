@@ -65,6 +65,7 @@
         "@awesome-cordova-plugins/status-bar": "9.2.0",
         "@awesome-cordova-plugins/web-intent": "9.2.0",
         "@capacitor/android": "^8.5.2",
+        "@capacitor/app": "^8.1.2",
         "@capacitor/camera": "^8.2.5",
         "@capacitor/clipboard": "^8.0.1",
         "@capacitor/core": "^8.5.2",
