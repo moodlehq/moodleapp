@@ -2,7 +2,7 @@ os: linux
 dist: noble
 language: java
 node_js: lts/krypton
-jdk: openjdk17
+jdk: openjdk21
 
 git:
   depth: 3
