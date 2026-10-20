@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InstallReferrer } from '../src/ts/plugins/InstallReferrer';
 import { SecureStorage as SecureStorageImpl } from '../src/ts/plugins/SecureStorage';
 import { Diagnostic } from '../src/ts/plugins/Diagnostic';
 
@@ -20,7 +19,6 @@ declare global {
 
     interface MoodleAppPlugins {
         secureStorage: SecureStorageImpl;
-        installReferrer: InstallReferrer;
         diagnostic: Diagnostic;
     }
 

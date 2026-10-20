@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { registerPlugin } from '@capacitor/core';
+
+const NativeInstallReferrer = registerPlugin<InstallReferrerNativePlugin>('MoodleAppInstallReferrer');
+
 /**
  * Allows retrieving install referrer data.
  * https://developer.android.com/google/play/installreferrer
@@ -24,12 +28,14 @@ export class InstallReferrer {
      * @returns Referrer data.
      */
     async getReferrer(): Promise<InstallReferrerResult> {
-        return new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'InstallReferrer', 'getReferrer', []);
-        });
+        return NativeInstallReferrer.getReferrer();
     }
 
 }
+
+type InstallReferrerNativePlugin = {
+    getReferrer(): Promise<InstallReferrerResult>;
+};
 
 export type InstallReferrerResult = {
     referrer: string;

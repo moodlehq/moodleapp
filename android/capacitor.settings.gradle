@@ -34,3 +34,6 @@ project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capa
 
 include ':capawesome-capacitor-file-picker'
 project(':capawesome-capacitor-file-picker').projectDir = new File('../node_modules/@capawesome/capacitor-file-picker/android')
+
+include ':capacitor-plugin-moodleapp'
+project(':capacitor-plugin-moodleapp').projectDir = new File('../capacitor-plugin-moodleapp/android')
