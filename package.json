@@ -87,6 +87,7 @@
         "@stylistic/eslint-plugin": "5.10.0",
         "@types/cordova": "11.0.3",
         "@types/dom-mediacapture-record": "1.0.22",
+        "capacitor-plugin-moodleapp": "file:capacitor-plugin-moodleapp",
         "chart.js": "4.5.1",
         "cordova-plugin-badge": "0.8.9",
         "cordova-plugin-customurlscheme": "5.0.2",

@@ -345,6 +345,17 @@ const cordovaPluginConfig = {
     },
 };
 
+const capacitorPluginConfig = {
+    ...appConfig,
+    languageOptions: {
+        ...appConfig.languageOptions,
+        parserOptions: {
+            ...appConfig.languageOptions.parserOptions,
+            project: 'capacitor-plugin-moodleapp/tsconfig.json',
+        },
+    },
+};
+
 const testsConfig = {
     ...appConfig,
     languageOptions: {
@@ -381,6 +392,7 @@ export default defineConfig([
         ],
     }, appConfig),
     Object.assign({ files: ['cordova-plugin-moodleapp/src/ts/**/*.ts'] }, cordovaPluginConfig),
+    Object.assign({ files: ['capacitor-plugin-moodleapp/src/**/*.ts'] }, capacitorPluginConfig),
     Object.assign({
         files: [
             'src/**/*.test.ts',

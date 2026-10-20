@@ -67,6 +67,9 @@
       ],
       "@/*": [
         "./src/*"
+      ],
+      "capacitor-plugin-moodleapp": [
+        "./capacitor-plugin-moodleapp/src/index.ts"
       ]
     }
   },
