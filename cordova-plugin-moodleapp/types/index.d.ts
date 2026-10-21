@@ -13,13 +13,11 @@
 // limitations under the License.
 
 import { SecureStorage as SecureStorageImpl } from '../src/ts/plugins/SecureStorage';
-import { Diagnostic } from '../src/ts/plugins/Diagnostic';
 
 declare global {
 
     interface MoodleAppPlugins {
         secureStorage: SecureStorageImpl;
-        diagnostic: Diagnostic;
     }
 
     interface Cordova {

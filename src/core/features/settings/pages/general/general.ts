@@ -274,7 +274,7 @@ export default class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
-        CoreNative.plugin('diagnostic')?.switchToSettings();
+        CoreNative.plugin('nativeSettings')?.open();
     }
 
 }
