@@ -21,7 +21,6 @@
     "invalidfiletype": "{{$a}} filetype cannot be accepted.",
     "maxbytesfile": "The file {{$a.file}} is too large. The maximum size you can upload is {{$a.size}}.",
     "microphonepermissiondenied": "Permission to access the microphone has been denied.",
-    "microphonepermissionrestricted": "Microphone access is restricted.",
     "more": "More",
     "nofilesattached": "No files attached",
     "pauserecording": "Pause recording",
