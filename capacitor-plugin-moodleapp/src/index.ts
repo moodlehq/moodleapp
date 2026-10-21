@@ -13,10 +13,12 @@
 // limitations under the License.
 
 import { InstallReferrer } from './plugins/InstallReferrer';
+import { NativeSettings } from './plugins/NativeSettings';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
 
 // Wrapped in plain classes because Capacitor proxies are thenables and break when resolved from a promise.
 export const MoodleAppCapacitorPlugins = {
     installReferrer: new InstallReferrer(),
+    nativeSettings: new NativeSettings(),
 };

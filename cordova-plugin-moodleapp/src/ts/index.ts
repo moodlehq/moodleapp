@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Diagnostic } from './plugins/Diagnostic';
 import { SecureStorage } from './plugins/SecureStorage';
 
 const api: MoodleAppPlugins = {
     secureStorage: new SecureStorage(),
-    diagnostic: new Diagnostic(),
 };
 
 // This is necessary to work around the default transpilation behavior,

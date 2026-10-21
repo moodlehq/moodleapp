@@ -577,7 +577,7 @@ export class CoreIframe {
                 {
                     text: Translate.instant('core.opensettings'),
                     handler: (): void => {
-                        CoreNative.plugin('diagnostic')?.switchToSettings();
+                        CoreNative.plugin('nativeSettings')?.open();
                     },
                 },
             ],
