@@ -32,7 +32,6 @@ import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/
 import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
 import { CoreFile, CoreFileProvider } from '@services/file';
 import { CorePath } from '@static/path';
-import { CoreNative } from '@features/native/services/native';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audio-histogram';
 import { CoreAlerts } from '@services/overlays/alerts';
@@ -133,7 +132,11 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 
             media.recorder.start();
         } catch (error) {
-            CoreAlerts.showError(error as CoreAnyError);
+            if (error && typeof error === 'object' && 'name' in error && error.name === 'NotAllowedError') {
+                CoreAlerts.showError(Translate.instant('core.fileuploader.microphonepermissiondenied'));
+            } else {
+                CoreAlerts.showError(error);
+            }
         }
     }
 
@@ -258,8 +261,6 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
      * @returns Media instances.
      */
     protected async createMedia(): Promise<AudioRecorderMedia> {
-        await this.prepareMicrophoneAuthorization();
-
         const mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const audioContext = new window.AudioContext();
         const source = audioContext.createMediaStreamSource(mediaStream);
@@ -272,30 +273,6 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
             analyser,
             recorder: new Mp3MediaRecorder(mediaStream, { worker: this.startWorker(), audioContext }),
         };
-    }
-
-    /**
-     * Make sure that microphone usage has been authorized.
-     */
-    protected async prepareMicrophoneAuthorization(): Promise<void> {
-        if (!CorePlatform.isMobile()) {
-            return;
-        }
-
-        const diagnostic = await CoreNative.plugin('diagnostic')?.getInstance();
-        if (!diagnostic) {
-            return;
-        }
-
-        const status = await diagnostic.requestMicrophoneAuthorization();
-
-        switch (status) {
-            case diagnostic.permissionStatus.deniedOnce:
-            case diagnostic.permissionStatus.deniedAlways:
-                throw new Error(Translate.instant('core.fileuploader.microphonepermissiondenied'));
-            case diagnostic.permissionStatus.restricted:
-                throw new Error(Translate.instant('core.fileuploader.microphonepermissionrestricted'));
-        }
     }
 
     /**
