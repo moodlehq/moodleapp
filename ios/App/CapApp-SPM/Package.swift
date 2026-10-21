@@ -35,8 +35,7 @@ let package = Package(
         .package(name: "CordovaPluginWkuserscript", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginWkuserscript"),
         .package(name: "CordovaPluginWkwebviewCookies", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginWkwebviewCookies"),
         .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage"),
-        .package(name: "TotalpaveCordovaPluginInsets", path: "../../capacitor-cordova-ios-plugins/sources/TotalpaveCordovaPluginInsets"),
-        .package(name: "CordovaPluginMoodleapp", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginMoodleapp")
+        .package(name: "TotalpaveCordovaPluginInsets", path: "../../capacitor-cordova-ios-plugins/sources/TotalpaveCordovaPluginInsets")
     ],
     targets: [
         .target(
@@ -67,8 +66,7 @@ let package = Package(
                 .product(name: "CordovaPluginWkuserscript", package: "CordovaPluginWkuserscript"),
                 .product(name: "CordovaPluginWkwebviewCookies", package: "CordovaPluginWkwebviewCookies"),
                 .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage"),
-                .product(name: "TotalpaveCordovaPluginInsets", package: "TotalpaveCordovaPluginInsets"),
-                .product(name: "CordovaPluginMoodleapp", package: "CordovaPluginMoodleapp")
+                .product(name: "TotalpaveCordovaPluginInsets", package: "TotalpaveCordovaPluginInsets")
             ]
         )
     ]

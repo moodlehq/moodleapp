@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SecureStorage } from 'cordova-plugin-moodleapp';
+import type { SecureStorage } from 'capacitor-plugin-moodleapp';
 
 /**
  * Mock for SecureStorage plugin. It will store the data without being encrypted.

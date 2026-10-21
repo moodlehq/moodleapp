@@ -111,7 +111,7 @@ npm run dev:ios        # Run on iOS
 npm run prod:android   # Production Android build
 npm run prod:ios       # Production iOS build
 ```
-Custom Cordova plugin in `cordova-plugin-moodleapp/` with TypeScript source compiled to `www/index.js`
+Custom Capacitor plugin in `capacitor-plugin-moodleapp/` for app-specific native functionality.
 
 ### Language Files
 Distributed lang files compiled into `src/assets/lang/{lang}.json`:

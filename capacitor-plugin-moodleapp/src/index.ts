@@ -14,11 +14,14 @@
 
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { NativeSettings } from './plugins/NativeSettings';
+import { SecureStorage } from './plugins/SecureStorage';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
+export type { SecureStorage } from './plugins/SecureStorage';
 
 // Wrapped in plain classes because Capacitor proxies are thenables and break when resolved from a promise.
 export const MoodleAppCapacitorPlugins = {
     installReferrer: new InstallReferrer(),
     nativeSettings: new NativeSettings(),
+    secureStorage: new SecureStorage(),
 };

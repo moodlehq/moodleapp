@@ -5,7 +5,6 @@
     "types": [
       "@moodlehq/cordova-plugin-inappbrowser",
       "cordova-plugin-file",
-      "cordova-plugin-moodleapp",
       "cordova",
       "dom-mediacapture-record",
       "resize-observer-browser",
