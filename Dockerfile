@@ -6,12 +6,6 @@ WORKDIR /app
 # Update platform dependencies
 RUN apt-get update && apt-get install libsecret-1-0 jq -y
 
-# Prepare native plugin
-COPY ./cordova-plugin-moodleapp/package*.json /app/cordova-plugin-moodleapp/
-RUN npm ci --prefix cordova-plugin-moodleapp
-COPY ./cordova-plugin-moodleapp/ /app/cordova-plugin-moodleapp/
-RUN npm run prod --prefix cordova-plugin-moodleapp
-
 # Prepare node dependencies
 COPY package*.json ./
 COPY patches ./patches

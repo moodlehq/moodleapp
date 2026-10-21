@@ -334,17 +334,6 @@ const appConfig = {
     },
 };
 
-const cordovaPluginConfig = {
-    ...appConfig,
-    languageOptions: {
-        ...appConfig.languageOptions,
-        parserOptions: {
-            ...appConfig.languageOptions.parserOptions,
-            project: 'cordova-plugin-moodleapp/tsconfig.json', // Use the tsconfig of the cordova plugin.
-        },
-    },
-};
-
 const capacitorPluginConfig = {
     ...appConfig,
     languageOptions: {
@@ -391,7 +380,6 @@ export default defineConfig([
             'src/**/*.stories.*'
         ],
     }, appConfig),
-    Object.assign({ files: ['cordova-plugin-moodleapp/src/ts/**/*.ts'] }, cordovaPluginConfig),
     Object.assign({ files: ['capacitor-plugin-moodleapp/src/**/*.ts'] }, capacitorPluginConfig),
     Object.assign({
         files: [

@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { registerPlugin } from '@capacitor/core';
+
+const NativeSecureStorage = registerPlugin<NativeSecureStoragePlugin>('MoodleAppSecureStorage');
+
 /**
- * Allows retrieving and storing items in a secure storage.
+ * Allows retrieving and storing items in secure storage.
  */
 export class SecureStorage {
 
@@ -29,9 +33,7 @@ export class SecureStorage {
             names = [names];
         }
 
-        return new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'SecureStorage', 'get', [names, collection]);
-        });
+        return NativeSecureStorage.get({ names, collection });
     }
 
     /**
@@ -50,9 +52,7 @@ export class SecureStorage {
             }
         }
 
-        await new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'SecureStorage', 'store', [data, collection]);
-        });
+        await NativeSecureStorage.store({ data, collection });
     }
 
     /**
@@ -66,9 +66,7 @@ export class SecureStorage {
             names = [names];
         }
 
-        await new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'SecureStorage', 'delete', [names, collection]);
-        });
+        await NativeSecureStorage.delete({ names, collection });
     }
 
     /**
@@ -77,9 +75,33 @@ export class SecureStorage {
      * @param collection The collection to delete.
      */
     async deleteCollection(collection: string): Promise<void> {
-        await new Promise((resolve, reject) => {
-            cordova.exec(resolve, reject, 'SecureStorage', 'deleteCollection', [collection]);
-        });
+        await NativeSecureStorage.deleteCollection({ collection });
     }
 
 }
+
+type NativeSecureStoragePlugin = {
+    get(options: SecureStorageGetOptions): Promise<Record<string, string>>;
+    store(options: SecureStorageStoreOptions): Promise<void>;
+    delete(options: SecureStorageDeleteOptions): Promise<void>;
+    deleteCollection(options: SecureStorageDeleteCollectionOptions): Promise<void>;
+};
+
+type SecureStorageGetOptions = {
+    names: string[];
+    collection: string;
+};
+
+type SecureStorageStoreOptions = {
+    data: Record<string, string>;
+    collection: string;
+};
+
+type SecureStorageDeleteOptions = {
+    names: string[];
+    collection: string;
+};
+
+type SecureStorageDeleteCollectionOptions = {
+    collection: string;
+};

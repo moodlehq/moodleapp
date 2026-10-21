@@ -42,7 +42,7 @@ export class CoreNativeService {
             this.plugins[plugin] = asyncInstance(async () => {
                 await CorePlatform.ready();
 
-                const instance = CorePlatform.isMobile() ? this.getNativeInstance(plugin) : this.mocks[plugin];
+                const instance = CorePlatform.isMobile() ? MoodleAppCapacitorPlugins[plugin] : this.mocks[plugin];
                 if (!instance) {
                     throw new Error(`Plugin ${plugin} not found.`);
                 }
@@ -52,20 +52,6 @@ export class CoreNativeService {
         }
 
         return this.plugins[plugin] as AsyncInstance<CoreNativePlugins[Plugin]>;
-    }
-
-    /**
-     * Get the native implementation of a plugin, either from Capacitor or Cordova.
-     *
-     * @param plugin Plugin name.
-     * @returns Plugin instance, undefined if not found.
-     */
-    protected getNativeInstance(plugin: keyof CoreNativePlugins): CoreNativePlugins[keyof CoreNativePlugins] | undefined {
-        if (plugin in MoodleAppCapacitorPlugins) {
-            return MoodleAppCapacitorPlugins[plugin as keyof CapacitorPlugins];
-        }
-
-        return window.cordova?.MoodleApp?.[plugin as keyof MoodleAppPlugins];
     }
 
     /**
@@ -82,6 +68,4 @@ export class CoreNativeService {
 
 export const CoreNative = makeSingleton(CoreNativeService);
 
-type CapacitorPlugins = typeof MoodleAppCapacitorPlugins;
-
-export type CoreNativePlugins = MoodleAppPlugins & CapacitorPlugins;
+type CoreNativePlugins = typeof MoodleAppCapacitorPlugins;
