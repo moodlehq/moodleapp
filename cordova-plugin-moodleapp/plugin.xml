@@ -27,8 +27,7 @@
             </feature>
         </config-file>
 
-        <header-file src="src/ios/SecureStorage.h" />
-        <source-file src="src/ios/SecureStorage.m" />
+        <source-file src="src/ios/SecureStorage.swift" />
 
     </platform>
 </plugin>
