@@ -4,7 +4,7 @@
             <ion-back-button [text]="'core.back' | translate" />
         </ion-buttons>
         <ion-title>
-            <h1>
+            <h1 [core-page-title]="'core.courses.mycourses' | translate">
                 <core-site-logo logoType="top" />
             </h1>
         </ion-title>
@@ -20,7 +20,7 @@
     <core-loading [hideUntil]="loaded">
         <ion-item class="ion-text-wrap divider">
             <ion-label>
-                <h2 core-page-title class="big" id="core-courses-my-title">{{ 'core.courses.mycourses' | translate }}</h2>
+                <h2 class="big" id="core-courses-my-title">{{ 'core.courses.mycourses' | translate }}</h2>
             </ion-label>
             <div slot="end" class="flex-row">
                 <!-- Download all courses. -->

@@ -31,7 +31,6 @@ import { CoreBlockSideBlocksButtonComponent } from '../../../block/components/si
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_BLOCKS_DASHBOARD_FALLBACK_BLOCKS } from '@features/block/constants';
 import { Subscription } from 'rxjs';
-import { CorePageTitle } from '@services/page-title';
 import { ActivatedRoute } from '@angular/router';
 
 /**
@@ -106,8 +105,6 @@ export default class CoreCoursesDashboardPage implements OnInit, OnDestroy {
         this.downloadCoursesEnabled = !CoreCourses.isDownloadCoursesDisabledInSite();
 
         this.loadContent();
-
-        CorePageTitle.setTitle(this.route, Translate.instant('core.courses.mymoodle'));
     }
 
     /**
