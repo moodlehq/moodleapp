@@ -6,5 +6,10 @@ ion-list.core-sites-list {
         }
 
         border-bottom: 1px solid var(--stroke);
+
+        // Ionic sets "overflow: hidden" on these elements, which clips focus outlines.
+        &, &::part(inner), &::part(container), ion-label, ion-label p {
+            overflow: visible;
+        }
     }
 }
