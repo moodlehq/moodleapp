@@ -37,7 +37,6 @@ import {
 } from '@ionic/angular';
 
 import { Badge as BadgeService } from '@awesome-cordova-plugins/badge/ngx';
-import { FileOpener as FileOpenerService } from '@awesome-cordova-plugins/file-opener/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { Keyboard as KeyboardService } from '@awesome-cordova-plugins/keyboard/ngx';
@@ -52,6 +51,7 @@ import { CoreApplicationInitStatus } from '@classes/application-init-status';
 import { CAPACITOR_CAMERA } from '@services/native/camera';
 import { CAPACITOR_FILESYSTEM } from '@services/native/filesystem';
 import { CAPACITOR_FILE_TRANSFER } from '@services/native/file-transfer';
+import { CAPACITOR_FILE_OPENER } from '@services/native/file-opener';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
 
@@ -164,7 +164,6 @@ export function makeSingleton<Service extends object = object>(
 
 // Convert ionic-native services to singleton.
 export const Badge = makeSingleton(BadgeService);
-export const FileOpener = makeSingleton(FileOpenerService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
@@ -177,6 +176,7 @@ export const WebView = makeSingleton(WebViewService);
 export const Camera = makeSingleton(CAPACITOR_CAMERA);
 export const Filesystem = makeSingleton(CAPACITOR_FILESYSTEM);
 export const FileTransfer = makeSingleton(CAPACITOR_FILE_TRANSFER);
+export const FileOpener = makeSingleton(CAPACITOR_FILE_OPENER);
 
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);

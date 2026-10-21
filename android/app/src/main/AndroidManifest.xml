@@ -54,14 +54,6 @@
         </provider>
 
         <provider
-            android:authorities="${applicationId}.fileOpener2.provider"
-            android:exported="false"
-            android:grantUriPermissions="true"
-            android:name="io.github.pwlin.cordova.plugins.fileopener2.FileProvider">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/opener_paths" />
-        </provider>
-
-        <provider
             android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
