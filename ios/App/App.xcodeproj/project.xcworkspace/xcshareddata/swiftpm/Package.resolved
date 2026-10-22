@@ -1,5 +1,5 @@
 {
-  "originHash" : "02b82dc8ce544942f399c9a72fe3eff4ffb2e467793e02a17a92ad1a142b00f9",
+  "originHash" : "957671b6d219f4f864754c14ec1f37204643a889779611c43543626b931df772",
   "pins" : [
     {
       "identity" : "capacitor-swift-pm",
@@ -35,6 +35,15 @@
       "state" : {
         "revision" : "b4c0765f3932aa0b70d07bb463bbac82b7e9ad42",
         "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "zipfoundation",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/weichsel/ZIPFoundation.git",
+      "state" : {
+        "revision" : "22787ffb59de99e5dc1fbfe80b19c97a904ad48d",
+        "version" : "0.9.20"
       }
     }
   ],

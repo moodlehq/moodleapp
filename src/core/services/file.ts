@@ -20,17 +20,17 @@ import { CoreBytesConstants, CoreConstants } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 
 import { CoreLogger } from '@static/logger';
-import { Filesystem, makeSingleton } from '@singletons';
+import { Filesystem, makeSingleton, Zip } from '@singletons';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreText } from '@static/text';
 import { CorePlatform } from '@services/platform';
 import { CorePath } from '@static/path';
-import { Zip } from '@features/native/plugins';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
+import type { ZipProgressEvent } from '@capgo/capacitor-zip';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -1084,38 +1084,51 @@ export class CoreFileProvider {
     /**
      * Unzips a file.
      *
-     * @param path Path to the ZIP file.
-     * @param destFolder Path to the destination folder. If not defined, a new folder will be created with the
+     * @param source Path to the ZIP file.
+     * @param destination Path to the destination folder. If not defined, a new folder will be created with the
      *                   same location and name as the ZIP file (without extension).
      * @param onProgress Function to call on progress.
      * @param recreateDir Delete the dest directory before unzipping. Defaults to true.
-     * @returns Promise resolved when the file is unzipped.
      */
     async unzipFile(
-        path: string,
-        destFolder?: string,
+        source: string,
+        destination?: string,
         onProgress?: (progress: ProgressEvent) => void,
         recreateDir = true,
     ): Promise<void> {
         // Get the source file.
-        const fileEntry = await this.getFile(path);
+        const fileEntry = await this.getFile(source);
 
-        if (destFolder && recreateDir) {
+        if (destination && recreateDir) {
             // Make sure the dest dir doesn't exist already.
-            await CorePromiseUtils.ignoreErrors(this.removeDir(destFolder));
+            await CorePromiseUtils.ignoreErrors(this.removeDir(destination));
 
             // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
-            await this.createDir(destFolder);
+            await this.createDir(destination);
         }
 
-        // If destFolder is not set, use same location as ZIP file.
-        destFolder = this.toAbsoluteAndNormalize(destFolder || CoreMimetype.removeExtension(path));
+        // If destination is not set, use same location as ZIP file.
+        destination = this.toAbsoluteAndNormalize(destination || CoreMimetype.removeExtension(source));
 
-        const result = await Zip.unzip(fileEntry.toURL(), destFolder, onProgress);
+        let zipOnProgress: ((event: ZipProgressEvent) => void) | undefined;
+        if (onProgress) {
+            // Wrap the onProgress function to remove some unnecessary information from the event.
+            zipOnProgress = (event: ZipProgressEvent) => {
+                const progressEvent = new ProgressEvent('progress', {
+                    lengthComputable: event.lengthComputable,
+                    loaded: event.loaded,
+                    total: event.total,
+                });
 
-        if (result == -1) {
-            throw new CoreError('Unzip failed.');
+                onProgress(progressEvent);
+            };
         }
+
+        await Zip.unzip({
+            source: fileEntry.toURL(),
+            destination,
+            onProgress: zipOnProgress,
+        });
     }
 
     /**

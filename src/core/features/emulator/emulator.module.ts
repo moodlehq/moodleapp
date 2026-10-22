@@ -21,7 +21,6 @@ import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camer
 import { CAPACITOR_FILE_OPENER, resolveCapacitorFileOpener } from '@services/native/file-opener';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { Zip } from '@features/native/plugins/zip';
 
 // Mock services.
 import { createCameraMock } from './services/camera';
@@ -39,6 +38,7 @@ import { CoreDbProviderMock } from '@features/emulator/services/db';
 import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
 import { CAPACITOR_FILE_TRANSFER, resolveCapacitorFileTransfer } from '@services/native/file-transfer';
 import { FileTransferMock } from './services/file-transfer';
+import { CAPACITOR_ZIP, resolveCapacitorZip } from '@services/native/zip';
 
 /**
  * This module handles the emulation of Capacitor plugins in browser and desktop.
@@ -72,8 +72,8 @@ import { FileTransferMock } from './services/file-transfer';
             useFactory: (): InAppBrowser => CorePlatform.isMobile() ? new InAppBrowser() : new InAppBrowserMock(),
         },
         {
-            provide: Zip,
-            useFactory: (): Zip => CorePlatform.isMobile() ? new Zip() : new ZipMock(),
+            provide: CAPACITOR_ZIP,
+            useFactory: () => CorePlatform.isMobile() ? resolveCapacitorZip() : new ZipMock(),
         },
         {
             provide: LocalNotifications,

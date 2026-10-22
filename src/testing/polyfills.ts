@@ -12,21 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Types for file cordova plugin.
- *
- * @see https://github.com/moodlemobile/cordova-plugin-zip
- */
+import {
+    TransformStream,
+    ReadableStream,
+    WritableStream,
+} from 'node:stream/web';
 
-interface Window {
-
-    zip: {
-        unzip(
-            source: string,
-            destination: string,
-            onSuccess: (result: number) => void,
-            onProgress?: (ev: { loaded: number; total: number }) => void,
-        ): void;
-    };
-
-}
+globalThis.TransformStream = globalThis.TransformStream ?? TransformStream;
+globalThis.ReadableStream = globalThis.ReadableStream ?? ReadableStream;
+globalThis.WritableStream = globalThis.WritableStream ?? WritableStream;

@@ -13,87 +13,189 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Zip } from '@features/native/plugins/zip';
-import JSZip from 'jszip';
+import { BlobReader, BlobWriter, ZipReader, type Entry } from '@zip.js/zip.js';
 import { CorePath } from '@static/path';
 import { CoreFile, CoreFileFormat } from '@services/file';
+import type { CapacitorZipPlugin, UnzipOptions, ZipOptions, ZipProgressEvent } from '@capgo/capacitor-zip';
+import type { PluginListenerHandle } from '@capacitor/core';
 
 /**
- * Emulates the Cordova Zip plugin in browser.
+ * Emulates the Capacitor Zip plugin in browser.
  */
 @Injectable()
-export class ZipMock extends Zip {
+export class ZipMock implements CapacitorZipPlugin {
 
     /**
-     * Extracts files from a ZIP archive.
-     *
-     * @param source Path to the source ZIP file.
-     * @param destination Destination folder.
-     * @param onProgress Optional callback to be called on progress update
-     * @returns Promise that resolves with a number. 0 is success, -1 is error.
+     * @inheritdoc
      */
-    async unzip(
-        source: string,
-        destination: string,
-        onProgress?: (ev: { loaded: number; total: number }) => void,
-    ): Promise<number> {
+    async addListener(eventName: 'progress', listenerFunc: (event: ZipProgressEvent) => void): Promise<PluginListenerHandle> {
+        void eventName;
+        void listenerFunc;
+        throw new Error('Not implemented in the browser mock.');
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    async unzip(options: UnzipOptions): Promise<void> {
+        // Capacitor Zip plugin uses zip.js to handle ZIP file operations in the browser but it downloads
+        // the files without structure in the download folder.
+
+        let { source, destination } = options;
+
         // Replace all %20 with spaces.
         source = source.replace(/%20/g, ' ');
         destination = destination.replace(/%20/g, ' ');
 
-        const zip = new JSZip();
+        // Read the file first.
+        const data = await CoreFile.readFile(source, CoreFileFormat.FORMATARRAYBUFFER);
+
+        let zipReader: ZipReader<unknown> | undefined;
 
         try {
-            // Read the file first.
-            const data = await CoreFile.readFile(source, CoreFileFormat.FORMATARRAYBUFFER);
+            zipReader = new ZipReader(new BlobReader(new Blob([data])));
+            const entries = await zipReader.getEntries();
 
-            // Now load the file using the JSZip library.
-            await zip.loadAsync(data);
+            if (!entries.length) {
+                options.onProgress?.({
+                    operationId: options.operationId,
+                    operation: 'unzip',
+                    source: options.source,
+                    destination: options.destination,
+                    loaded: 0,
+                    total: 0,
+                    lengthComputable: false,
+                    progress: 1,
+                    filesCompleted: 0,
+                    filesTotal: 0,
+                });
 
-            if (!zip.files || !Object.keys(zip.files).length) {
                 // Nothing to extract.
-                return 0;
+                return;
             }
+
+            const normalisedEntries = entries.map((entry) => {
+                const filename = entry.filename.replace(/\\/g, '/');
+                let decodedFilename = filename;
+
+                try {
+                    decodedFilename = decodeURIComponent(filename);
+                } catch {
+                    // Keep invalid percent sequences literal; CoreFile encodes them before filesystem access.
+                }
+
+                decodedFilename = decodedFilename.replace(/\\/g, '/');
+
+                if (
+                    !filename ||
+                    decodedFilename.startsWith('/') ||
+                    /^[a-z]:/i.test(decodedFilename) ||
+                    decodedFilename.split('/').includes('..')
+                ) {
+                    throw new Error(`Invalid ZIP entry path: ${entry.filename}`);
+                }
+
+                return { entry, filename };
+            });
 
             // First of all, create the directory where the files will be unzipped.
             await CoreFile.createDir(destination);
 
-            const total = Object.keys(zip.files).length;
+            const files = normalisedEntries.filter(({ entry }) => !entry.directory);
+            const totalSizeKnown = files.every(({ entry }) => entry.uncompressedSize !== undefined);
+            const total = totalSizeKnown
+                ? files.reduce((total, { entry }) => total + (entry.uncompressedSize ?? 0), 0)
+                : 0;
+            const lengthComputable = total > 0 || entries.length > 0;
             let loaded = 0;
+            let filesCompleted = 0;
+            const emitProgress = (entry: Entry): void => {
+                if (!options.onProgress) {
+                    return;
+                }
 
-            await Promise.all(Object.keys(zip.files).map(async (name) => {
-                const file = zip.files[name];
+                const progress = total > 0 ? loaded / total : filesCompleted / entries.length;
+                const event: ZipProgressEvent = {
+                    operationId: options.operationId,
+                    operation: 'unzip',
+                    source: options.source,
+                    destination: options.destination,
+                    loaded,
+                    total: lengthComputable ? total : 0,
+                    lengthComputable,
+                    progress,
+                    currentFile: entry.filename,
+                    filesCompleted,
+                    filesTotal: entries.length,
+                };
 
-                if (!file.dir) {
+                options.onProgress(event);
+            };
+
+            await Promise.all(normalisedEntries.map(async ({ entry, filename }) => {
+                let entryLoaded = 0;
+                const updateLoaded = (bytes: number): void => {
+                    loaded += bytes - entryLoaded;
+                    entryLoaded = bytes;
+                };
+
+                if (!entry.directory) {
                     // It's a file.
-                    const fileDir = name.substring(0, name.lastIndexOf('/'));
+                    const fileDir = filename.substring(0, filename.lastIndexOf('/'));
                     if (fileDir) {
                         // The file is in a subfolder, create it first.
                         await CoreFile.createDir(CorePath.concatenatePaths(destination, fileDir));
                     }
 
                     // Read the file contents as a Blob.
-                    const fileData = await file.async('blob');
+                    const fileData = await entry.getData(new BlobWriter(), {
+                        password: options.password,
+	                    onprogress: (compressedLoaded, compressedTotal) => {
+                            const bytes = compressedTotal > 0 && entry.uncompressedSize !== undefined
+                                ? Math.min(compressedLoaded / compressedTotal, 1) * entry.uncompressedSize
+                                : 0;
+                            updateLoaded(bytes);
+                            emitProgress(entry);
+                        },
+                    });
 
                     // File read and parent folder created, now write the file.
-                    const filePath = CorePath.concatenatePaths(destination, name);
+                    const filePath = CorePath.concatenatePaths(destination, filename);
 
                     await CoreFile.writeFile(filePath, fileData);
+                    updateLoaded(entry.uncompressedSize ?? fileData.size);
                 } else {
                     // It's a folder, create it if it doesn't exist.
-                    await CoreFile.createDir(CorePath.concatenatePaths(destination, name));
+                    await CoreFile.createDir(CorePath.concatenatePaths(destination, filename));
                 }
 
-                // File unzipped, call the progress.
-                loaded++;
-                onProgress && onProgress({ loaded: loaded, total: total });
+                filesCompleted++;
+                emitProgress(entry);
             }));
-
-            return 0;
-        } catch {
-            // Error.
-            return -1;
+        } finally {
+            if (zipReader) {
+                await zipReader.close();
+            }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    zip(options: ZipOptions): Promise<void> {
+        void options;
+
+        // Not implemented in the browser mock.
+        throw new Error('Not implemented in the browser mock.');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    getPluginVersion(): Promise<{ version: string }> {
+        // Not implemented in the browser mock.
+        throw new Error('Not implemented in the browser mock.');
     }
 
 }

@@ -194,7 +194,7 @@ export class AddonModScormPrefetchHandlerService extends CoreCourseActivityPrefe
     }
 
     /**
-     * Function that converts a regular ProgressEvent into a AddonModScormProgressEvent.
+     * Function that converts a regular ProgressEvent into an AddonModScormProgressEvent.
      *
      * @param downloading True when downloading, false when unzipping.
      * @param onProgress Function to call on progress.
@@ -436,7 +436,7 @@ export const AddonModScormPrefetchHandler = makeSingleton(AddonModScormPrefetchH
  */
 export type AddonModScormProgressEvent = {
     downloading?: boolean; // Whether the event is due to the download of a chunk of data.
-    progress?: ProgressEvent; // Progress event sent by the download.
+    progress?: ProgressEvent; // Progress event sent by the download or unzip operation.
     message?: string; // A message related to the progress, used to notify that a certain step of the download has started.
 };
 
