@@ -12,36 +12,44 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AfterViewInit, Directive, ElementRef, OnDestroy, inject } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, afterRenderEffect, inject, input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-
 import { CorePageTitle } from '@services/page-title';
+import { CorePlatform } from '@services/platform';
 
 /**
- * Directive to use a heading's visible text as the current page title.
+ * Directive to use an explicit title or a heading's visible text as the current page title.
  */
 @Directive({
-    selector: '[core-page-title]',
+    selector: 'h1[core-page-title]',
+    host: {
+        '[attr.aria-label]': 'ariaLabel',
+    },
 })
-export class CorePageTitleDirective implements AfterViewInit, OnDestroy {
+export class CorePageTitleDirective implements OnDestroy {
+
+    readonly pageTitle = input('', { alias: 'core-page-title' });
 
     protected element: HTMLHeadingElement = inject(ElementRef).nativeElement;
     protected route = inject(ActivatedRoute);
+    protected isIOS = CorePlatform.isIOS() || document.documentElement.classList.contains('ios');
     protected mutationObserver?: MutationObserver;
-    protected title = '';
+    protected title?: string;
 
     /**
-     * @inheritdoc
+     * Accessible page title on iOS.
+     *
+     * @returns Page title on iOS, or null when no label is needed.
      */
-    ngAfterViewInit(): void {
-        this.updateTitle();
+    protected get ariaLabel(): string | null {
+        return this.isIOS ? CorePageTitle.getFullTitle(this.route) : null;
+    }
 
-        this.mutationObserver = new MutationObserver(() => this.updateTitle());
-        this.mutationObserver.observe(this.element, {
-            characterData: true,
-            childList: true,
-            subtree: true,
-        });
+    /**
+     * Constructor.
+     */
+    constructor() {
+        afterRenderEffect(() => this.updateTitle());
     }
 
     /**
@@ -53,10 +61,24 @@ export class CorePageTitleDirective implements AfterViewInit, OnDestroy {
     }
 
     /**
-     * Publish the current heading text as document title.
+     * Publish the explicit title or current heading text as the page title.
      */
     protected updateTitle(): void {
-        const title = this.element.textContent?.trim() ?? '';
+        const pageTitle = this.pageTitle();
+
+        if (pageTitle) {
+            this.mutationObserver?.disconnect();
+            this.mutationObserver = undefined;
+        } else if (!this.mutationObserver) {
+            this.mutationObserver = new MutationObserver(() => this.updateTitle());
+            this.mutationObserver.observe(this.element, {
+                characterData: true,
+                childList: true,
+                subtree: true,
+            });
+        }
+
+        const title = (pageTitle || this.element.textContent)?.trim() ?? '';
 
         if (title === this.title) {
             return;

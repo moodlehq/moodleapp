@@ -88,6 +88,26 @@ export class CorePageTitleService {
     }
 
     /**
+     * Get the page title for a route, without additional title parts.
+     *
+     * @param route The page's activated route.
+     * @returns Best-matching title, or an empty string if none was found.
+     */
+    getTitle(route: ActivatedRoute): string {
+        return this.findBestMatch(this.urlFromRoute(route));
+    }
+
+    /**
+     * Get the full composed title for a route.
+     *
+     * @param route The page's activated route.
+     * @returns Full title, including the site or app name.
+     */
+    getFullTitle(route: ActivatedRoute): string {
+        return this.composeFullTitle(this.getTitle(route));
+    }
+
+    /**
      * Compute the URL identifying a page from its `ActivatedRoute`.
      * The resulting URL contains the resolved path from the root up to (and including) this route,
      * excluding any child routes activated on top of it.
@@ -104,14 +124,24 @@ export class CorePageTitleService {
     }
 
     /**
-     * Set `document.title` from a resolved title string, appending the app name.
+     * Set `document.title` from a resolved page title.
      *
-     * @param title Title without the app-name suffix.
+     * @param title Page title without additional title parts.
      */
     protected apply(title: string): void {
+        this.title.setTitle(this.composeFullTitle(title));
+    }
+
+    /**
+     * Compose the full title from the page title and additional title parts.
+     *
+     * @param title Page title without additional title parts.
+     * @returns Full title, including the site or app name.
+     */
+    protected composeFullTitle(title: string): string {
         const siteName = CoreSites.getCurrentSite()?.getInfo()?.sitename ?? CoreConstants.CONFIG.appname;
 
-        this.title.setTitle(title ? `${title} | ${siteName}` : siteName);
+        return title ? `${title} | ${siteName}` : siteName;
     }
 
     /**
