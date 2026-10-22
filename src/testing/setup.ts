@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import './polyfills';
+
 import { setupZoneTestEnv } from 'jest-preset-angular/setup-env/zone';
 
 import { setCreateSingletonMethodProxy, setSingletonsInjector } from '@singletons';

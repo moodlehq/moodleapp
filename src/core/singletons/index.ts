@@ -52,6 +52,7 @@ import { CAPACITOR_FILE_TRANSFER } from '@services/native/file-transfer';
 import { CAPACITOR_FILE_OPENER } from '@services/native/file-opener';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
+import { CAPACITOR_ZIP } from '@services/native/zip';
 
 /**
  * Injector instance used to resolve singletons.
@@ -173,6 +174,7 @@ export const Camera = makeSingleton(CAPACITOR_CAMERA);
 export const Filesystem = makeSingleton(CAPACITOR_FILESYSTEM);
 export const FileTransfer = makeSingleton(CAPACITOR_FILE_TRANSFER);
 export const FileOpener = makeSingleton(CAPACITOR_FILE_OPENER);
+export const Zip = makeSingleton(CAPACITOR_ZIP);
 
 // Convert some Angular and Ionic injectables to singletons.
 export const NgZone = makeSingleton(NgZoneService);

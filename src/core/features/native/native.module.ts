@@ -23,7 +23,6 @@ import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
-import { Zip } from '@features/native/plugins/zip';
 import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
 /**
@@ -48,6 +47,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { FileOpener } = await import('./plugins/file-opener');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Keyboard } = await import('@services/native/keyboard');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { Zip } = await import('@features/native/plugins/zip');
 
     const { Device } = await import('@services/native/device');
 
@@ -85,7 +86,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         StatusBar,
         WebIntent,
         WebView,
-        Zip,
         provideAppInitializer(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
             (<any> window).FileTransfer = FileTransferCompat;

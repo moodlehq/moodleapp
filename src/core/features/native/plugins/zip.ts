@@ -13,23 +13,39 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
+import { CoreFile } from '@services/file';
+import { CorePlatform } from '@services/platform';
+import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Zip plugin wrapper.
+ *
+ * @deprecated since 6.0. Use CoreFile.unzipFile directly instead.
  */
 @Injectable({ providedIn: 'root' })
 export class Zip {
 
     /**
-     * Extracts files from a ZIP archive
+     * Extracts files from a ZIP archive.
      *
-     * @param source Source ZIP file
-     * @param destination Destination folder
-     * @param onProgress Callback to be called on progress update
+     * @param source Source ZIP file.
+     * @param destination Destination folder.
+     * @param onProgress Callback to be called on progress update.
      * @returns 0 is success, -1 is error
      */
-    unzip(source: string, destination: string, onProgress?: (ev: { loaded: number; total: number }) => void): Promise<number> {
-        return new Promise(resolve => window.zip.unzip(source, destination, (result: number) => resolve(result), onProgress));
+    async unzip(source: string, destination: string, onProgress?: (progress: ProgressEvent) => void): Promise<number> {
+        try {
+            if (CorePlatform.isMobile()) {
+                source = source.startsWith('/') ? CoreFileUtils.convertToFileUrl(source) : source;
+                destination = destination.startsWith('/') ? CoreFileUtils.convertToFileUrl(destination) : destination;
+            }
+
+            await CoreFile.unzipFile(source, destination, onProgress, false);
+
+            return 0;
+        } catch {
+            return -1;
+        }
     }
 
 }
