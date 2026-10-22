@@ -1,0 +1,92 @@
+diff --git a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/SystemBars.java b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/SystemBars.java
+index 8b9de88..695c791 100644
+--- a/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/SystemBars.java
++++ b/node_modules/@capacitor/android/capacitor/src/main/java/com/getcapacitor/plugin/SystemBars.java
+@@ -191,15 +191,14 @@ public class SystemBars extends Plugin {
+         View view = getActivity().getWindow().getDecorView();
+ 
+         ViewCompat.setOnApplyWindowInsetsListener(view, (v, insets) -> {
+-            boolean shouldPassthroughInsets = getWebViewMajorVersion() >= WEBVIEW_VERSION_WITH_SAFE_AREA_FIX && hasViewportCover;
++            boolean shouldPassthroughInsets = (INSETS_HANDLING_CSS.equals(insetsHandling) || getWebViewMajorVersion() >= WEBVIEW_VERSION_WITH_SAFE_AREA_FIX) && hasViewportCover;
+ 
+             Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+             Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+-            boolean keyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
+ 
+             if (shouldPassthroughInsets) {
+-                // We need to correct for a possible shown IME
+-                v.setPadding(0, 0, 0, keyboardVisible ? imeInsets.bottom : 0);
++                // Do not set any padding, even when the keyboard is visible.
++                v.setPadding(0, 0, 0, 0);
+ 
+                 WindowInsetsCompat newInsets = new WindowInsetsCompat.Builder(insets)
+                     .setInsets(
+@@ -208,9 +207,14 @@ public class SystemBars extends Plugin {
+                             systemBarsInsets.left,
+                             systemBarsInsets.top,
+                             systemBarsInsets.right,
+-                            getBottomInset(systemBarsInsets, keyboardVisible)
++                            // Assume keyboard is open when the IME inset is larger than the system bars inset.
++                            imeInsets.bottom > systemBarsInsets.bottom ? 0 : systemBarsInsets.bottom
+                         )
+                     )
++                    .setInsets(
++                        WindowInsetsCompat.Type.ime(),
++                        Insets.of(0, 0, 0, imeInsets.bottom > systemBarsInsets.bottom ? imeInsets.bottom : 0)
++                    )
+                     .build();
+ 
+                 injectSafeAreaCSS(newInsets);
+@@ -223,7 +227,7 @@ public class SystemBars extends Plugin {
+                 systemBarsInsets.left,
+                 systemBarsInsets.top,
+                 systemBarsInsets.right,
+-                keyboardVisible ? imeInsets.bottom : systemBarsInsets.bottom
++                Math.max(systemBarsInsets.bottom, imeInsets.bottom)
+             );
+ 
+             // Returning `WindowInsetsCompat.CONSUMED` breaks recalculation of safe area insets
+@@ -231,6 +235,7 @@ public class SystemBars extends Plugin {
+             // See: https://issues.chromium.org/issues/461332423
+             WindowInsetsCompat newInsets = new WindowInsetsCompat.Builder(insets)
+                 .setInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout(), Insets.of(0, 0, 0, 0))
++                .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 0))
+                 .build();
+ 
+             injectSafeAreaCSS(newInsets);
+@@ -245,16 +250,15 @@ public class SystemBars extends Plugin {
+         }
+ 
+         Insets systemBarsInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+-        boolean keyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime());
++        Insets imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime());
+ 
+         // Convert pixels to density-independent pixels
+         float density = getActivity().getResources().getDisplayMetrics().density;
+         float topPx = systemBarsInsets.top / density;
+         float rightPx = systemBarsInsets.right / density;
+-        // For native insets the value gets automatically corrected when the IME is visible (in newer WebView versions),
+-        // but for these injected values we have to handle that manually (for all WebView versions).
+-        float bottomPx = (keyboardVisible ? 0 : systemBarsInsets.bottom) / density;
++        float bottomPx = systemBarsInsets.bottom / density;
+         float leftPx = systemBarsInsets.left / density;
++        float keyboardHeight = imeInsets.bottom / density;
+ 
+         // Execute JavaScript to inject the CSS
+         getBridge().executeOnMainThread(() -> {
+@@ -267,12 +271,14 @@ public class SystemBars extends Plugin {
+                       document.documentElement.style.setProperty("--safe-area-inset-right", "%dpx");
+                       document.documentElement.style.setProperty("--safe-area-inset-bottom", "%dpx");
+                       document.documentElement.style.setProperty("--safe-area-inset-left", "%dpx");
++                      document.documentElement.style.setProperty("--keyboard-height", "%dpx");
+                     } catch(e) { console.error('Error injecting safe area CSS:', e); }
+                     """,
+                     (int) topPx,
+                     (int) rightPx,
+                     (int) bottomPx,
+-                    (int) leftPx
++                    (int) leftPx,
++                    (int) keyboardHeight
+                 );
+ 
+                 bridge.getWebView().evaluateJavascript(script, null);

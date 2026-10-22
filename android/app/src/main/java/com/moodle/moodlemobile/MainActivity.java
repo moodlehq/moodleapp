@@ -3,6 +3,7 @@ package com.moodle.moodlemobile;
 import android.os.Bundle;
 import android.webkit.WebSettings;
 
+import androidx.activity.EdgeToEdge;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
@@ -16,6 +17,9 @@ public class MainActivity extends BridgeActivity {
 		settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
 		settings.setDisplayZoomControls(false);
 		settings.setSupportZoom(true);
+
+        // Necessary for enabling edge-to-edge mode on Android 14 and below.
+        EdgeToEdge.enable(this);
 	}
 
 }
