@@ -5,6 +5,16 @@
         --background: var(--dependant-background);
     }
 
+    // The question is the heading of the answers below it, so it must stand out and not be truncated.
+    .addon-mod_feedback-item-name.item-heading {
+        font: var(--mdl-typography-subtitle-font-md);
+        --color: var(--ion-text-color);
+        color: var(--ion-text-color);
+        white-space: normal;
+        overflow: visible;
+        text-overflow: initial;
+    }
+
 }
 
 :host-context(:root.dark) {
