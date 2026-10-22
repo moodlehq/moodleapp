@@ -16,6 +16,7 @@ import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CorePlatform } from '@services/platform';
 import { AsyncInstance, AsyncObject, asyncInstance } from '@/core/utils/async-instance';
+import { MoodleAppCapacitorPlugins } from 'capacitor-plugin-moodleapp';
 
 /**
  * Native plugin manager.
@@ -23,8 +24,8 @@ import { AsyncInstance, AsyncObject, asyncInstance } from '@/core/utils/async-in
 @Injectable({ providedIn: 'root' })
 export class CoreNativeService {
 
-    private plugins: Partial<Record<keyof MoodleAppPlugins, AsyncInstance<AsyncObject>>> = {};
-    private mocks: Partial<Record<keyof MoodleAppPlugins, MoodleAppPlugins[keyof MoodleAppPlugins]>> = {};
+    private plugins: Partial<Record<keyof CoreNativePlugins, AsyncInstance<AsyncObject>>> = {};
+    private mocks: Partial<Record<keyof CoreNativePlugins, CoreNativePlugins[keyof CoreNativePlugins]>> = {};
 
     /**
      * Get a native plugin instance.
@@ -32,7 +33,7 @@ export class CoreNativeService {
      * @param plugin Plugin name.
      * @returns Plugin instance, null if plugin is not supported for current platform.
      */
-    plugin<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin): AsyncInstance<MoodleAppPlugins[Plugin]> | null {
+    plugin<Plugin extends keyof CoreNativePlugins>(plugin: Plugin): AsyncInstance<CoreNativePlugins[Plugin]> | null {
         if (plugin === 'installReferrer' && !CorePlatform.isAndroid()) {
             return null;
         }
@@ -41,7 +42,7 @@ export class CoreNativeService {
             this.plugins[plugin] = asyncInstance(async () => {
                 await CorePlatform.ready();
 
-                const instance = CorePlatform.isMobile() ? window.cordova?.MoodleApp?.[plugin] : this.mocks[plugin];
+                const instance = CorePlatform.isMobile() ? MoodleAppCapacitorPlugins[plugin] : this.mocks[plugin];
                 if (!instance) {
                     throw new Error(`Plugin ${plugin} not found.`);
                 }
@@ -50,7 +51,7 @@ export class CoreNativeService {
             });
         }
 
-        return this.plugins[plugin] as AsyncInstance<MoodleAppPlugins[Plugin]>;
+        return this.plugins[plugin] as AsyncInstance<CoreNativePlugins[Plugin]>;
     }
 
     /**
@@ -59,10 +60,12 @@ export class CoreNativeService {
      * @param plugin Plugin name.
      * @param instance Instance to use.
      */
-    registerBrowserMock<Plugin extends keyof MoodleAppPlugins>(plugin: Plugin, instance: MoodleAppPlugins[Plugin]): void {
+    registerBrowserMock<Plugin extends keyof CoreNativePlugins>(plugin: Plugin, instance: CoreNativePlugins[Plugin]): void {
         this.mocks[plugin] = instance;
     }
 
 }
 
 export const CoreNative = makeSingleton(CoreNativeService);
+
+type CoreNativePlugins = typeof MoodleAppCapacitorPlugins;

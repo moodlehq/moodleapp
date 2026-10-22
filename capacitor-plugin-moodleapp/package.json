@@ -1,0 +1,16 @@
+{
+  "name": "capacitor-plugin-moodleapp",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Capacitor plugins with custom functionality for the Moodle App",
+  "license": "Apache-2.0",
+  "types": "./src/index.ts",
+  "capacitor": {
+    "android": {
+      "src": "android"
+    },
+    "ios": {
+      "src": "ios"
+    }
+  }
+}

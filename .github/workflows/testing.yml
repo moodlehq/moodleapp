@@ -16,9 +16,7 @@ jobs:
         with:
           node-version-file: ".nvmrc"
       - name: Install npm packages
-        run: |
-          npm ci --no-audit
-          npm ci --no-audit --prefix cordova-plugin-moodleapp
+        run: npm ci --no-audit
       - name: Install languages
         run: |
           npx gulp lang
@@ -61,13 +59,10 @@ jobs:
       - name: Run Linters (ignore warnings)
         run: |
           npm run lint -- --quiet
-          npm run lint --prefix cordova-plugin-moodleapp
       - name: Run tests
         run: npm run test:ci
       - name: Production builds
-        run: |
-          npm run build:prod
-          npm run prod --prefix cordova-plugin-moodleapp
+        run: npm run build:prod
         env:
           MOODLE_APP_CIRCULAR_DEPENDENCIES: true
       - name: Circular dependencies
@@ -86,7 +81,7 @@ jobs:
           # In order to support Chrome 93 and iOS 15 we need to find Static initialization blocks are not present in the code.
           # See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Static_initialization_blocks
           # acorn is used by es-check but cannot check for this feature only, so we need to check it manually.
-          if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js cordova-plugin-moodleapp/www/*.js; then
+          if grep -qE '(^|[^-])\bstatic[ ]*\{' www/*.js; then
             echo "::error::Static initialization blocks are not supported in Chrome 93 and iOS 15."
             echo "❌ Static initialization blocks are not supported in Chrome 93 and iOS 15." >> $GITHUB_STEP_SUMMARY
             exit 1

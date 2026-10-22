@@ -23,6 +23,7 @@ let package = Package(
         .package(name: "CapacitorScreenOrientation", path: "../../../node_modules/@capacitor/screen-orientation"),
         .package(name: "CapacitorSplashScreen", path: "../../../node_modules/@capacitor/splash-screen"),
         .package(name: "CapawesomeCapacitorFilePicker", path: "../../../node_modules/@capawesome/capacitor-file-picker"),
+        .package(name: "CapacitorPluginMoodleapp", path: "../../../capacitor-plugin-moodleapp"),
         .package(name: "MoodlehqCordovaPluginInappbrowser", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginInappbrowser"),
         .package(name: "MoodlehqCordovaPluginIonicKeyboard", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginIonicKeyboard"),
         .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
@@ -34,8 +35,7 @@ let package = Package(
         .package(name: "CordovaPluginWkuserscript", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginWkuserscript"),
         .package(name: "CordovaPluginWkwebviewCookies", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginWkwebviewCookies"),
         .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage"),
-        .package(name: "TotalpaveCordovaPluginInsets", path: "../../capacitor-cordova-ios-plugins/sources/TotalpaveCordovaPluginInsets"),
-        .package(name: "CordovaPluginMoodleapp", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginMoodleapp")
+        .package(name: "TotalpaveCordovaPluginInsets", path: "../../capacitor-cordova-ios-plugins/sources/TotalpaveCordovaPluginInsets")
     ],
     targets: [
         .target(
@@ -54,6 +54,7 @@ let package = Package(
                 .product(name: "CapacitorScreenOrientation", package: "CapacitorScreenOrientation"),
                 .product(name: "CapacitorSplashScreen", package: "CapacitorSplashScreen"),
                 .product(name: "CapawesomeCapacitorFilePicker", package: "CapawesomeCapacitorFilePicker"),
+                .product(name: "CapacitorPluginMoodleapp", package: "CapacitorPluginMoodleapp"),
                 .product(name: "MoodlehqCordovaPluginInappbrowser", package: "MoodlehqCordovaPluginInappbrowser"),
                 .product(name: "MoodlehqCordovaPluginIonicKeyboard", package: "MoodlehqCordovaPluginIonicKeyboard"),
                 .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
@@ -65,8 +66,7 @@ let package = Package(
                 .product(name: "CordovaPluginWkuserscript", package: "CordovaPluginWkuserscript"),
                 .product(name: "CordovaPluginWkwebviewCookies", package: "CordovaPluginWkwebviewCookies"),
                 .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage"),
-                .product(name: "TotalpaveCordovaPluginInsets", package: "TotalpaveCordovaPluginInsets"),
-                .product(name: "CordovaPluginMoodleapp", package: "CordovaPluginMoodleapp")
+                .product(name: "TotalpaveCordovaPluginInsets", package: "TotalpaveCordovaPluginInsets")
             ]
         )
     ]
