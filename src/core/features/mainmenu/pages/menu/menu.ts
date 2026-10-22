@@ -90,7 +90,6 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
 
     protected subscription?: Subscription;
     protected navSubscription?: Subscription;
-    protected keyboardObserver?: CoreEventObserver;
     protected badgeUpdateObserver?: CoreEventObserver;
     protected resizeListener?: CoreEventObserver;
     protected backButtonFunction: (event: BackButtonEvent) => void;
@@ -342,7 +341,6 @@ export default class CoreMainMenuPage implements OnInit, OnDestroy {
         this.subscription?.unsubscribe();
         this.navSubscription?.unsubscribe();
         document.removeEventListener('ionBackButton', this.backButtonFunction);
-        this.keyboardObserver?.off();
         this.badgeUpdateObserver?.off();
         this.resizeListener?.off();
     }

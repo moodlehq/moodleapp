@@ -39,9 +39,7 @@ import {
 import { Badge as BadgeService } from '@awesome-cordova-plugins/badge/ngx';
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
-import { Keyboard as KeyboardService } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-bar/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
 
@@ -165,9 +163,7 @@ export function makeSingleton<Service extends object = object>(
 // Convert ionic-native services to singleton.
 export const Badge = makeSingleton(BadgeService);
 export const InAppBrowser = makeSingleton(InAppBrowserService);
-export const Keyboard = makeSingleton(KeyboardService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
-export const StatusBar = makeSingleton(StatusBarService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
 export const WebView = makeSingleton(WebViewService);

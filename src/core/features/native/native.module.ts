@@ -16,7 +16,6 @@ import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
 import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { Keyboard } from '@awesome-cordova-plugins/keyboard/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
@@ -47,6 +46,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { Chooser } = await import('@features/native/plugins/chooser');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { FileOpener } = await import('./plugins/file-opener');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { Keyboard } = await import('@services/native/keyboard');
 
     const { Device } = await import('@services/native/device');
 
@@ -77,7 +78,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     providers: [
         Badge,
         InAppBrowser,
-        Keyboard,
         LocalNotifications,
         Push,
         QRScanner,
