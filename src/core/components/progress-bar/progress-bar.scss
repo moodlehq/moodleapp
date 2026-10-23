@@ -1,9 +1,6 @@
 @use "src/theme/globals" as *;
 
 :host {
-    display: flex;
-    width: 100%;
-
     --line-height: 40px;
     --bar-margin: 16px 0;
     --height: var(--core-progressbar-height);
@@ -21,6 +18,12 @@
         }
     }
 
+    .core-progress-container {
+        display: flex;
+        width: 100%;
+        align-items: center;
+    }
+
     .core-progress-text {
         line-height: var(--line-height);
         font-size: var(--text-size);
@@ -29,24 +32,16 @@
         text-align: center;
     }
 
-    progress {
-        -webkit-appearance: none;
-        appearance: none;
+    .core-progress-bar {
         height: var(--height);
         margin: var(--bar-margin);
-        padding: 0;
-        display: block;
-        width: 100%;
+        display: flex;
         flex: 1;
+        background-color: var(--progressbar-background);
+        border-radius: var(--height);
 
-        &[value]::-webkit-progress-bar {
-            background-color: var(--progressbar-background);
-            border-radius: var(--height);
-            border: 0;
-            box-shadow: none;
-        }
-
-        &[value]::-webkit-progress-value {
+        .core-progress-value {
+            width: var(--progress-value);
             background-color: var(--progressbar-color);
             border-radius: var(--height);
             transition: width 500ms ease-in-out;
