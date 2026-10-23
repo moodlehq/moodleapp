@@ -1,0 +1,18 @@
+diff --git a/node_modules/@capacitor/keyboard/ios/Sources/KeyboardPlugin/Keyboard.m b/node_modules/@capacitor/keyboard/ios/Sources/KeyboardPlugin/Keyboard.m
+index 54a6694..55af5aa 100644
+--- a/node_modules/@capacitor/keyboard/ios/Sources/KeyboardPlugin/Keyboard.m
++++ b/node_modules/@capacitor/keyboard/ios/Sources/KeyboardPlugin/Keyboard.m
+@@ -359,6 +359,8 @@ double stageManagerOffset;
+       break;
+     }
+     default:
++      // Set the keyboard height CSS variable.
++      [self.bridge evalWithJs: [NSString stringWithFormat:@"document.documentElement.style.setProperty('--keyboard-height', '%dpx');", self.paddingBottom]];
+       break;
+   }
+   [self resetScrollView];
+@@ -521,4 +523,3 @@ static IMP WKOriginalImp;
+
+ @end
+ #pragma clang diagnostic pop
+-
