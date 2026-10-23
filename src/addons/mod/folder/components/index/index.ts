@@ -109,14 +109,14 @@ export class AddonModFolderIndexComponent extends CoreCourseModuleMainResourceCo
             const compareA = a.filename.toLowerCase();
             const compareB = b.filename.toLowerCase();
 
-            return compareA.localeCompare(compareB);
+            return compareA.localeCompare(compareB, undefined, {numeric: true, sensitivity: 'base'});
         });
 
         this.contents.files.sort((a, b) => {
             const compareA = a.filename.toLowerCase();
             const compareB = b.filename.toLowerCase();
 
-            return compareA.localeCompare(compareB);
+            return compareA.localeCompare(compareB, undefined, {numeric: true, sensitivity: 'base'});
         });
     }
 
