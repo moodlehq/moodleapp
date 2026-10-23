@@ -23,6 +23,7 @@ jest.mock('@capacitor/core', () => ({
         readJournal: jest.fn(),
         writeJournal: jest.fn(),
         renameNoReplace: jest.fn(),
+        removeDatabaseFiles: jest.fn(),
     })),
 }));
 
@@ -33,6 +34,7 @@ describe('SQLiteMigration bridge', () => {
         readJournal: jest.Mock;
         writeJournal: jest.Mock;
         renameNoReplace: jest.Mock;
+        removeDatabaseFiles: jest.Mock;
     };
     let nativeRegister: jest.MockedFunction<typeof registerPlugin>;
     let wrapper: SQLiteMigration;
@@ -96,7 +98,12 @@ describe('SQLiteMigration bridge', () => {
         expect(native.writeJournal).not.toHaveBeenCalled();
     });
 
-    it.each(['list', 'listJournalNames', 'readJournal', 'writeJournal', 'renameNoReplace'] as const)(
+    it('passes durable file removal through the native intent guard', async () => {
+        await wrapper.removeDatabaseFiles(name);
+        expect(native.removeDatabaseFiles).toHaveBeenCalledWith({ name });
+    });
+
+    it.each(['list', 'listJournalNames', 'readJournal', 'writeJournal', 'renameNoReplace', 'removeDatabaseFiles'] as const)(
         'propagates native %s failures rather than returning missing state or success',
         async (method) => {
             const error = new Error('Native filesystem failure');
@@ -107,6 +114,7 @@ describe('SQLiteMigration bridge', () => {
                 readJournal: () => storage.readJournal(name),
                 writeJournal: () => storage.writeJournal(name, { version: 1, name, suffixes: [''], state: 'renaming' }),
                 renameNoReplace: () => storage.renameNoReplace(name, name + 'SQLite.db'),
+                removeDatabaseFiles: () => wrapper.removeDatabaseFiles(name),
             };
 
             await expect(calls[method]()).rejects.toBe(error);

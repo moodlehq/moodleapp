@@ -19,10 +19,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import org.json.JSONObject;
 
 /**
  * File primitives for the Cordova-to-Capacitor SQLite rename protocol.
- * This does not open/recover databases. Startup must keep all connections closed until it finishes.
+ * This does not open/recover databases. Renaming requires all connections to remain closed.
+ * Later deletion requires the affected database's connections and registrations to be closed.
  * Only Moodle database names in the existing native database directory are accepted.
  */
 @CapacitorPlugin(name = "MoodleAppSQLiteMigration")
@@ -86,23 +88,10 @@ public class SQLiteMigrationPlugin extends Plugin {
     @PluginMethod
     public synchronized void readJournal(PluginCall call) {
         try {
-            File file = new File(journalDirectory(), logicalName(call) + ".json");
-            if (!exists(file)) {
+            String journal = readJournalText(logicalName(call));
+            if (journal == null) {
                 call.resolve(new JSObject());
                 return;
-            }
-            requireRegular(file);
-            if (file.length() > MAX_JOURNAL_BYTES) throw new IOException("SQLite migration journal is too large.");
-            String journal;
-            try (FileInputStream input = new FileInputStream(Os.open(file.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW, 0))) {
-                byte[] bytes = new byte[MAX_JOURNAL_BYTES + 1];
-                int length = 0;
-                int count;
-                while ((count = input.read(bytes, length, bytes.length - length)) > 0) length += count;
-                if (length > MAX_JOURNAL_BYTES) throw new IOException("SQLite migration journal is too large.");
-                input.getFD().sync();
-                syncDirectory(file.getParentFile());
-                journal = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(bytes, 0, length)).toString();
             }
             call.resolve(new JSObject().put("journal", journal));
         } catch (Exception error) {
@@ -148,6 +137,64 @@ public class SQLiteMigrationPlugin extends Plugin {
             call.resolve();
         } catch (Exception error) {
             call.reject("Cannot rename SQLite migration file.", error);
+        }
+    }
+
+    @PluginMethod
+    public synchronized void removeDatabaseFiles(PluginCall call) {
+        try {
+            String name = logicalName(call);
+            String text = readJournalText(name);
+            if (text == null) throw new IOException("SQLite deletion intent is missing.");
+            JSONObject journal = new JSONObject(text);
+            if (!Integer.valueOf(2).equals(journal.get("version")) || !name.equals(journal.get("name"))
+                || !"deleting".equals(journal.get("state"))) throw new IOException("Invalid SQLite deletion intent.");
+            File directory = databaseDirectory();
+            if (!exists(directory)) {
+                syncDirectory(directory.getParentFile());
+                call.resolve();
+                return;
+            }
+            String[] files = directory.list();
+            if (files == null) throw new IOException("Cannot list SQLite directory.");
+            String principal = name + "SQLite.db";
+            for (String file : files) {
+                if (file.equals(name) || file.startsWith(name + "-")
+                    || (file.startsWith(principal + "-") && !file.equals(principal + "-wal")
+                        && !file.equals(principal + "-shm") && !file.equals(principal + "-journal"))) {
+                    throw new IOException("Conflicting SQLite deletion file.");
+                }
+            }
+            // Preflight the complete set before any unlink. Connections must already be closed.
+            for (String suffix : new String[] { "", "-wal", "-shm", "-journal" }) {
+                File file = new File(directory, principal + suffix);
+                if (exists(file)) requireRegular(file);
+            }
+            for (String suffix : new String[] { "", "-wal", "-shm", "-journal" }) {
+                File file = new File(directory, principal + suffix);
+                if (exists(file) && !file.delete()) throw new IOException("Cannot remove SQLite file.");
+            }
+            syncDirectory(directory);
+            call.resolve();
+        } catch (Exception error) {
+            call.reject("Cannot durably remove SQLite database files.", error);
+        }
+    }
+
+    private String readJournalText(String name) throws Exception {
+        File file = new File(journalDirectory(), name + ".json");
+        if (!exists(file)) return null;
+        requireRegular(file);
+        if (file.length() > MAX_JOURNAL_BYTES) throw new IOException("SQLite migration journal is too large.");
+        try (FileInputStream input = new FileInputStream(Os.open(file.getPath(), OsConstants.O_RDONLY | OsConstants.O_NOFOLLOW, 0))) {
+            byte[] bytes = new byte[MAX_JOURNAL_BYTES + 1];
+            int length = 0;
+            int count;
+            while ((count = input.read(bytes, length, bytes.length - length)) > 0) length += count;
+            if (length > MAX_JOURNAL_BYTES) throw new IOException("SQLite migration journal is too large.");
+            input.getFD().sync();
+            syncDirectory(file.getParentFile());
+            return StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(bytes, 0, length)).toString();
         }
     }
 

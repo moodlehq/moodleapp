@@ -36,4 +36,6 @@ export default async function(): Promise<void> {
         CoreSites.initializeDatabase(),
         CoreStorage.initializeDatabase(),
     ]);
+
+    await CoreDB.completeDatabaseInitialization('MoodleMobile');
 }

@@ -7,7 +7,8 @@ import Foundation
 
 /**
  * File primitives for the Cordova-to-Capacitor SQLite rename protocol, not a SQLite connection.
- * All DB connections must remain closed while it runs. The bridge is not wired to startup yet.
+ * Renaming requires all DB connections to remain closed. Later deletion requires the affected
+ * database's connections and registrations to be closed. The bridge is not wired to app startup yet.
  * Paths are fixed to Moodle's existing Library/LocalDatabase and a separate metadata directory.
  */
 @objc(SQLiteMigrationPlugin)
@@ -19,7 +20,8 @@ public class SQLiteMigrationPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "listJournalNames", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "readJournal", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "writeJournal", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "renameNoReplace", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "renameNoReplace", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "removeDatabaseFiles", returnType: CAPPluginReturnPromise)
     ]
 
     private let queue = DispatchQueue(label: "com.moodle.sqlite-migration")
@@ -62,19 +64,7 @@ public class SQLiteMigrationPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc public func readJournal(_ call: CAPPluginCall) {
         perform(call) {
             let name = try self.logicalName(call)
-            let file = try self.journalDirectory().appendingPathComponent(name + ".json")
-            guard try self.exists(file) else { return [:] }
-            try self.requireType(file, directory: false)
-            let fd = Darwin.open(file.path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
-            guard fd >= 0 else { throw self.posixFailure() }
-            let handle = FileHandle(fileDescriptor: fd, closeOnDealloc: true)
-            let bytes = try handle.read(upToCount: self.maxJournalBytes + 1) ?? Data()
-            guard bytes.count <= self.maxJournalBytes, let journal = String(data: bytes, encoding: .utf8) else {
-                throw self.failure("Invalid SQLite migration journal encoding or size.")
-            }
-            guard Darwin.fsync(fd) == 0 else { throw self.posixFailure() }
-            try self.syncDirectory(file.deletingLastPathComponent())
-            try handle.close()
+            guard let journal = try self.readJournalText(name) else { return [:] }
             return ["journal": journal]
         }
     }
@@ -125,6 +115,63 @@ public class SQLiteMigrationPlugin: CAPPlugin, CAPBridgedPlugin {
             try self.syncDirectory(directory)
             return [:]
         }
+    }
+
+    @objc public func removeDatabaseFiles(_ call: CAPPluginCall) {
+        perform(call) {
+            let name = try self.logicalName(call)
+            guard let text = try self.readJournalText(name),
+                  let data = text.data(using: .utf8),
+                  let journal = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  journal["version"] as? Int == 2, journal["name"] as? String == name,
+                  journal["state"] as? String == "deleting" else {
+                throw self.failure("Invalid or missing SQLite deletion intent.")
+            }
+            let directory = try self.databaseDirectory()
+            guard try self.exists(directory) else {
+                try self.syncDirectory(directory.deletingLastPathComponent())
+                return [:]
+            }
+            let principal = name + "SQLite.db"
+            let expected = ["", "-wal", "-shm", "-journal"].map { principal + $0 }
+            let files = try FileManager.default.contentsOfDirectory(atPath: directory.path)
+            for file in files {
+                if file == name || file.hasPrefix(name + "-") ||
+                    (file.hasPrefix(principal + "-") && !expected.contains(file)) {
+                    throw self.failure("Conflicting SQLite deletion file.")
+                }
+            }
+            // Check the complete set before any unlink. Connections must already be closed.
+            for file in expected {
+                let url = directory.appendingPathComponent(file)
+                if try self.exists(url) { try self.requireType(url, directory: false) }
+            }
+            for file in expected {
+                let url = directory.appendingPathComponent(file)
+                if try self.exists(url) {
+                    guard Darwin.unlink(url.path) == 0 else { throw self.posixFailure() }
+                }
+            }
+            try self.syncDirectory(directory)
+            return [:]
+        }
+    }
+
+    private func readJournalText(_ name: String) throws -> String? {
+        let file = try journalDirectory().appendingPathComponent(name + ".json")
+        guard try exists(file) else { return nil }
+        try requireType(file, directory: false)
+        let fd = Darwin.open(file.path, O_RDONLY | O_NOFOLLOW | O_CLOEXEC)
+        guard fd >= 0 else { throw posixFailure() }
+        let handle = FileHandle(fileDescriptor: fd, closeOnDealloc: true)
+        let bytes = try handle.read(upToCount: maxJournalBytes + 1) ?? Data()
+        guard bytes.count <= maxJournalBytes, let journal = String(data: bytes, encoding: .utf8) else {
+            throw failure("Invalid SQLite migration journal encoding or size.")
+        }
+        guard Darwin.fsync(fd) == 0 else { throw posixFailure() }
+        try syncDirectory(file.deletingLastPathComponent())
+        try handle.close()
+        return journal
     }
 
     private func perform(_ call: CAPPluginCall, operation: @escaping () throws -> JSObject) {

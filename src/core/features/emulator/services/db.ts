@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { asyncInstance } from '@/core/utils/async-instance';
-import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
+import { SQLiteDBConnection } from '@classes/sqlitedb';
 import { WaSQLiteObject } from '@features/emulator/classes/wa-sqlite-object';
 import { CoreDbProvider } from '@services/db';
 
@@ -32,7 +32,7 @@ export class CoreDbProviderMock extends CoreDbProvider {
     /**
      * @inheritdoc
      */
-    protected createDatabase(name: string): SQLiteObject {
+    protected createDatabase(name: string): SQLiteDBConnection {
         return asyncInstance(async () => {
             await this.ready();
 

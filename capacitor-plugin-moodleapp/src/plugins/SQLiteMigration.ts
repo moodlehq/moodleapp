@@ -18,7 +18,8 @@ const NativeSQLiteMigration = registerPlugin<NativeSQLiteMigrationPlugin>('Moodl
 
 /**
  * File primitives for the SQLite driver migration, not general-purpose filesystem access.
- * The caller must keep all SQLite connections closed until its rename protocol completes.
+ * Keep all SQLite connections closed until the rename protocol completes.
+ * Later per-database deletion requires that database's connections and registrations to be closed.
  */
 export class SQLiteMigration {
 
@@ -82,6 +83,16 @@ export class SQLiteMigration {
         await NativeSQLiteMigration.renameNoReplace({ source, destination });
     }
 
+    /**
+     * Durably remove only plugin-named files under a persisted deletion intent, without opening SQLite.
+     * Interrupted removals are retried against the same intent; legacy or unknown files reject.
+     *
+     * @param name Logical database name.
+     */
+    async removeDatabaseFiles(name: string): Promise<void> {
+        await NativeSQLiteMigration.removeDatabaseFiles({ name });
+    }
+
 }
 
 type NativeSQLiteMigrationPlugin = {
@@ -90,4 +101,5 @@ type NativeSQLiteMigrationPlugin = {
     readJournal(options: { name: string }): Promise<{ journal?: string }>;
     writeJournal(options: { name: string; journal: string }): Promise<void>;
     renameNoReplace(options: { source: string; destination: string }): Promise<void>;
+    removeDatabaseFiles(options: { name: string }): Promise<void>;
 };

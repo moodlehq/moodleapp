@@ -47,20 +47,8 @@ export class CoreSQLiteMigrationStartup {
     protected async initialize(): Promise<readonly string[]> {
         const files = await this.storage.list();
         const recordedNames = await this.storage.listJournalNames();
-        const names = new Set(recordedNames);
-
-        for (const file of files) {
-            // Unrelated native database files are not owned by this migration.
-            if (!file.startsWith('MoodleMobile') && !file.startsWith('Site-')) {
-                continue;
-            }
-
-            const principal = file.replace(/-(wal|shm|journal)$/, '');
-            names.add(principal.endsWith('SQLite.db') ? principal.slice(0, -'SQLite.db'.length) : principal);
-        }
-
-        const databases = [...names].sort();
-        if (databases.length > 0 && !names.has('MoodleMobile')) {
+        const databases = CoreSQLiteMigrationStartup.getDatabaseNames(files, recordedNames);
+        if (databases.length > 0 && !databases.includes('MoodleMobile')) {
             throw new CoreError('SQLite migration global database is missing.');
         }
 
@@ -73,6 +61,29 @@ export class CoreSQLiteMigrationStartup {
         }
 
         return Object.freeze(databases);
+    }
+
+    /**
+     * Discover owned names from both files and metadata, without interpreting their lifecycle state.
+     *
+     * @param files Closed-database inventory.
+     * @param recordedNames Persisted or interrupted metadata names.
+     * @returns Sorted logical names.
+     */
+    static getDatabaseNames(files: string[], recordedNames: string[]): string[] {
+        const names = new Set(recordedNames);
+
+        for (const file of files) {
+            // Unrelated native database files are not owned by this migration.
+            if (!file.startsWith('MoodleMobile') && !file.startsWith('Site-')) {
+                continue;
+            }
+
+            const principal = file.replace(/-(wal|shm|journal)$/, '');
+            names.add(principal.endsWith('SQLite.db') ? principal.slice(0, -'SQLite.db'.length) : principal);
+        }
+
+        return [...names].sort();
     }
 
 }
