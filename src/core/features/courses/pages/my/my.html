@@ -47,11 +47,10 @@
                 }
             </div>
         </ion-item>
-        <ion-list>
-            @if (loadedBlock?.visible) {
-                <core-block [block]="loadedBlock" contextLevel="user" [instanceId]="userId" labelledBy="core-courses-my-title" />
-            }
-        </ion-list>
+
+        @if (loadedBlock?.visible) {
+            <core-block [block]="loadedBlock" contextLevel="user" [instanceId]="userId" labelledBy="core-courses-my-title" />
+        }
 
         @if (hasSideBlocks) {
             <core-block-side-blocks-button slot="fixed" contextLevel="user" [instanceId]="userId" [myDashboardPage]="myPageCourses" />
