@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnInit, computed, inject, input, linkedSignal, signal } from '@angular/core';
-import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
+import { Component, OnInit, inject, input, linkedSignal, signal } from '@angular/core';
 import { IonRouterOutlet } from '@ionic/angular';
 import { CoreSites } from '@services/sites';
 import { CoreModals } from '@services/overlays/modals';
@@ -21,6 +20,7 @@ import CoreMainMenuPage from '@features/mainmenu/pages/menu/menu';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuPlacement } from '@features/mainmenu/constants';
+import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 
 /**
  * Component to display an avatar on the header to open user menu.
@@ -39,32 +39,32 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
 
     readonly alwaysShow = input(false, { transform: toBoolean });
 
-    readonly siteInfo = signal<CoreSiteInfo | undefined>(undefined);
     readonly showButton = linkedSignal(() => this.shouldShowButton());
 
-    readonly user = computed(() => {
-        const site = this.siteInfo();
-
-        return site ? {
-            id: site.userid,
-            profileimageurl: site.userpictureurl,
-            firstname: site.firstname,
-            lastname: site.lastname,
-            fullname: site.fullname,
-        } : undefined;
-    });
+    protected readonly user = signal<CoreUserProfile | undefined>(undefined);
 
     protected routerOutlet = inject(IonRouterOutlet);
     protected menuPage = inject(CoreMainMenuPage, { optional: true });
 
-    constructor() {
-        this.siteInfo.set(CoreSites.getCurrentSite()?.getInfo());
-    }
-
     /**
      * @inheritdoc
      */
-    ngOnInit(): void {
+    async ngOnInit(): Promise<void> {
+        const currentSite = CoreSites.getRequiredCurrentSite();
+        try {
+            const userId = currentSite.getUserId();
+            this.user.set(await CoreUser.getProfile(userId));
+        } catch {
+            const siteInfo = currentSite.getInfo();
+            if (siteInfo) {
+                this.user.set({
+                    id: siteInfo.userid,
+                    fullname: siteInfo.fullname,
+                    profileimageurl: siteInfo.userpictureurl,
+                });
+            }
+        }
+
         this.showButton.set(this.shouldShowButton());
     }
 
@@ -74,7 +74,7 @@ export class CoreMainMenuUserButtonComponent implements OnInit {
      * @returns True if the button should be shown, false otherwise.
      */
     protected shouldShowButton(): boolean {
-        if (!this.siteInfo()) {
+        if (!this.user()) {
             return false;
         }
 
