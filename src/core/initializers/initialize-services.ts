@@ -22,6 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreNativeDevice } from '@services/native/device';
+import { CoreAppBadge } from '@services/app-badge';
 
 /**
  * Initializes various core components asynchronously.
@@ -44,5 +45,6 @@ export default async function(): Promise<void> {
         // @todo Capacitor. Initialize CoreKeyboard when supported.
         // CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
+        CoreAppBadge.initialize(),
     ]);
 }

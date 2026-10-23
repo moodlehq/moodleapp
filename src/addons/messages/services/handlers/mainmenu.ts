@@ -34,6 +34,7 @@ import {
     ADDONS_MESSAGES_COMPONENT_NAME,
 } from '@addons/messages/constants';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
+import { CoreAppBadge } from '@services/app-badge';
 
 /**
  * Handler to inject an option into main menu.
@@ -97,7 +98,7 @@ export class AddonMessagesMainMenuHandlerService implements CoreMainMenuHandler,
         );
 
         // Register Badge counter.
-        CorePushNotificationsDelegate.registerCounterHandler(AddonMessagesMainMenuHandlerService.name);
+        CoreAppBadge.registerBadgeCounterHandler(AddonMessagesMainMenuHandlerService.name);
     }
 
     /**

@@ -13,40 +13,21 @@
 // limitations under the License.
 
 import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreAppSchema } from '@services/app-db';
+import { CoreAppDB, CoreAppSchema } from '@services/app-db';
+import { APP_SCHEMA as BADGE_SCHEMA, CORE_APP_BADGE_TABLE_NAME } from '@services/database/app-badge';
 import { CoreSiteSchema } from '@services/sites';
 
 /**
  * Database variables for CorePushNotificationsProvider service.
  * Keep "addon" in some names for backwards compatibility.
  */
-export const BADGE_TABLE_NAME = 'addon_pushnotifications_badge';
-export const BADGE_TABLE_PRIMARY_KEYS = ['siteid', 'addon'] as const;
 export const PENDING_UNREGISTER_TABLE_NAME = 'addon_pushnotifications_pending_unregister';
 export const REGISTERED_DEVICES_TABLE_NAME = 'addon_pushnotifications_registered_devices_2';
 export const REGISTERED_DEVICES_TABLE_PRIMARY_KEYS = ['appid', 'uuid'] as const;
 export const APP_SCHEMA: CoreAppSchema = {
     name: 'CorePushNotificationsProvider',
-    version: 1,
+    version: 2,
     tables: [
-        {
-            name: BADGE_TABLE_NAME,
-            columns: [
-                {
-                    name: 'siteid',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'addon',
-                    type: 'TEXT',
-                },
-                {
-                    name: 'number',
-                    type: 'INTEGER',
-                },
-            ],
-            primaryKeys: [...BADGE_TABLE_PRIMARY_KEYS],
-        },
         {
             name: PENDING_UNREGISTER_TABLE_NAME,
             columns: [
@@ -70,6 +51,21 @@ export const APP_SCHEMA: CoreAppSchema = {
             ],
         },
     ],
+    async migrate(db: SQLiteDB, oldVersion: number): Promise<void> {
+        if (oldVersion < 2) {
+            await CoreAppDB.createTablesFromSchema(BADGE_SCHEMA);
+
+            await db.migrateTable(
+                'addon_pushnotifications_badge',
+                CORE_APP_BADGE_TABLE_NAME,
+                (record) => ({
+                    siteId: record.siteid,
+                    addon: record.addon,
+                    counter: record.number,
+                }),
+            );
+        }
+    },
 };
 export const SITE_SCHEMA: CoreSiteSchema = {
     name: 'AddonPushNotificationsProvider',
@@ -121,17 +117,6 @@ export const SITE_SCHEMA: CoreSiteSchema = {
         }
     },
 };
-
-/**
- * Data stored in DB for badge.
- */
-export type CorePushNotificationsBadgeDBRecord = {
-    siteid: string;
-    addon: string;
-    number: number; // eslint-disable-line id-denylist
-};
-
-export type CorePushNotificationsBadgeDBPrimaryKeys = typeof BADGE_TABLE_PRIMARY_KEYS[number];
 
 /**
  * Data stored in DB for pending unregisters.

@@ -31,7 +31,7 @@ import { CoreLogger } from '@static/logger';
 import { CoreUrl, CoreUrlParams } from '@static/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
+import { CoreAppBadge } from '@services/app-badge';
 import { CorePath } from '@static/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
@@ -1219,7 +1219,7 @@ export class CoreLoginHelperProvider {
 
         // Add site counter and classify sites.
         await Promise.all(sites.map(async (site) => {
-            site.badge = await CorePromiseUtils.ignoreErrors(CorePushNotifications.getSiteCounter(site.id)) || 0;
+            site.badge = await CoreAppBadge.getSiteCounter(site.id);
 
             if (site.id === currentSiteId) {
                 accountsList.currentSite = site;
