@@ -1,13 +1,16 @@
 @if (progressNumber() >= 0) {
 
-    <progress max="100" [value]="progressNumber()" role="progressbar" [attr.aria-valuenow]="progressNumber()"
+    <div class="core-progress-container" role="progressbar" aria-valuemax="100" [attr.aria-valuenow]="progressNumber()"
         [attr.aria-valuetext]="progressBarValueText()" [attr.aria-describedby]="ariaDescribedBy()">
-    </progress>
-    <div class="core-progress-text">
-        @if (a11yText(); as a11yTextValue) {
-            <span class="sr-only">{{ a11yTextValue | translate }}</span>
-        }
-        {{ textToDisplay() }}
+        <div class="core-progress-bar">
+            <div class="core-progress-value" [style.--progress-value.%]="progressNumber()"></div>
+        </div>
+        <div class="core-progress-text">
+            @if (a11yText(); as a11yTextValue) {
+                <span class="sr-only">{{ a11yTextValue | translate }}</span>
+            }
+            {{ textToDisplay() }}
+        </div>
     </div>
 
 } @else {

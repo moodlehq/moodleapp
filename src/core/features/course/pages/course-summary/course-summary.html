@@ -38,7 +38,7 @@
                             </h1>
                             @if (course.categoryname) {
                                 <ion-chip color="primary" class="core-course-category ion-text-nowrap">
-                                    <ion-label role="group">
+                                    <ion-label role="paragraph">
                                         <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
                                         <core-format-text [text]="course.categoryname" contextLevel="coursecat"
                                             [contextInstanceId]="course.categoryid" />

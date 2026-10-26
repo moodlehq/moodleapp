@@ -1,6 +1,6 @@
 <ion-card class="ion-activatable" [class.core-course-list-item]="layout === 'list' || layout === 'listwithenrol'"
     [class.core-course-list-card]="layout === 'card' || layout === 'summarycard'" [class.item-dimmed]="course.hidden" (click)="openCourse()"
-    tappable>
+    tappable role="listitem" attr.aria-labelledby="core-courses-course-list-item-fullname-{{course.id}}">
 
     @if (layout === 'card' || layout === 'summarycard') {
         <core-course-image [course]="course" class="card-top" />
@@ -20,13 +20,13 @@
                     </p>
                 }
 
-                <p class="item-heading">
+                <div class="item-heading">
                     @if (course.isfavourite) {
                         <ion-icon name="fas-star" [attr.aria-label]="'core.courses.aria:favourite' | translate" />
                     }
 
-                    <span (ariaButtonClick)="openCourse()">
-                        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}</span>
+                    <span (ariaButtonClick)="openCourse()" id="core-courses-course-list-item-fullname-{{course.id}}" >
+                        <span class="sr-only">{{ 'core.courses.aria:coursename' | translate }}:</span>
                         <core-format-text [text]="course.fullname" contextLevel="course" [contextInstanceId]="course.id" />
                     </span>
 
@@ -43,12 +43,12 @@
                         <ion-icon class="core-icon-downloaded" name="fam-cloud-done" color="success" role="status"
                             [attr.aria-label]="'core.downloaded' | translate" />
                     }
-                </p>
+                </div>
 
                 @if (course.categoryname) {
                     <ion-chip color="primary" class="core-course-category core-course-additional-info ion-text-nowrap">
-                        <ion-label role="group">
-                            <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}</span>
+                        <ion-label role="paragraph">
+                            <span class="sr-only">{{ 'core.courses.aria:coursecategory' | translate }}:</span>
                             <core-format-text [text]="course.categoryname" contextLevel="coursecat"
                                 [contextInstanceId]="course.categoryid" />
                         </ion-label>
