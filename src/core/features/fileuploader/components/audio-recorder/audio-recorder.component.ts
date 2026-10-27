@@ -38,6 +38,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreAnyError } from '@classes/errors/error';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreTime } from '@static/time';
+import { CorePromiseUtils } from '@static/promise-utils';
 
 @Component({
     selector: 'core-fileuploader-audio-recorder',
@@ -123,6 +124,9 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
             media.recorder.onresume = () => this.recordingState.set('recording');
             media.recorder.onstop = async () => {
                 const blob = new Blob(audioChunks, { type: 'audio/mp3' });
+
+                // Release the microphone as soon as the recording ends.
+                this.stopStream(media);
 
                 this.recording.set(blob);
                 this.recordingState.set('inactive');
@@ -238,11 +242,26 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
             }
         }
 
+        const media = this.media();
+        if (media) {
+            this.stopStream(media);
+            CorePromiseUtils.ignoreErrors(media.audioContext.close());
+        }
+
         this.clearPreview();
 
         this.media.set(null);
         this.recording.set(null);
         this.recordingState.set('inactive');
+    }
+
+    /**
+     * Stop all the tracks of the media stream, releasing the microphone.
+     *
+     * @param media Media instances.
+     */
+    protected stopStream(media: AudioRecorderMedia): void {
+        media.stream.getTracks().forEach(track => track.stop());
     }
 
     /**
@@ -271,6 +290,8 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 
         return {
             analyser,
+            audioContext,
+            stream: mediaStream,
             recorder: new Mp3MediaRecorder(mediaStream, { worker: this.startWorker(), audioContext }),
         };
     }
@@ -298,6 +319,8 @@ export class CoreFileUploaderAudioRecorderComponent extends CoreModalComponent<C
 interface AudioRecorderMedia {
     recorder: Mp3MediaRecorder;
     analyser: AnalyserNode;
+    audioContext: AudioContext;
+    stream: MediaStream;
 }
 
 /**
