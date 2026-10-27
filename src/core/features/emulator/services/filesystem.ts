@@ -400,7 +400,7 @@ export class FilesystemMock implements FilesystemPlugin {
      * @returns Download result.
      */
     async downloadFile(options: DownloadFileOptions): Promise<DownloadFileResult> {
-        // @todo Capacitor: Evaluate when migrating File-Transfer.
+        // This function is deprecated in Filesystem in favour of File-Transfer plugin. Don't implement it.
         void options;
         throw new Error('downloadFile not implemented.');
     }
@@ -413,7 +413,7 @@ export class FilesystemMock implements FilesystemPlugin {
      * @returns Listener handle.
      */
     async addListener(eventName: 'progress', listenerFunc: ProgressListener): Promise<PluginListenerHandle> {
-        // @todo Capacitor: Evaluate when migrating File-Transfer.
+        // This function is deprecated in Filesystem in favour of File-Transfer plugin. Don't implement it.
         void eventName;
         void listenerFunc;
         throw new Error('addListener not implemented.');
@@ -423,7 +423,7 @@ export class FilesystemMock implements FilesystemPlugin {
      * Remove all listeners for this plugin.
      */
     async removeAllListeners(): Promise<void> {
-        // @todo Capacitor: Evaluate when migrating File-Transfer.
+        // This function is deprecated in Filesystem in favour of File-Transfer plugin. Don't implement it.
         return;
     }
 
