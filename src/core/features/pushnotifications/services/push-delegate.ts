@@ -20,6 +20,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CorePushNotificationsNotificationBasicData } from './pushnotifications';
+import { CoreAppBadge } from '@services/app-badge';
 
 /**
  * Interface that all click handlers must implement.
@@ -67,7 +68,6 @@ export class CorePushNotificationsDelegateService {
     protected logger: CoreLogger;
     protected observables: { [s: string]: Subject<unknown> } = {};
     protected clickHandlers: { [s: string]: CorePushNotificationsClickHandler } = {};
-    protected counterHandlers: Record<string, string> = {};
 
     constructor() {
         this.logger = CoreLogger.getInstance('CorePushNotificationsDelegate');
@@ -184,14 +184,10 @@ export class CorePushNotificationsDelegateService {
      * Register a push notifications handler for update badge counter.
      *
      * @param name Handler's name.
+     * @deprecated since 6.0. Use CoreAppBadge.registerBadgeCounterHandler instead.
      */
     registerCounterHandler(name: string): void {
-        if (this.counterHandlers[name] === undefined) {
-            this.logger.debug(`Registered handler '${name}' as badge counter handler.`);
-            this.counterHandlers[name] = name;
-        } else {
-            this.logger.log(`Handler '${name}' as badge counter handler already registered.`);
-        }
+        CoreAppBadge.registerBadgeCounterHandler(name);
     }
 
     /**
@@ -199,18 +195,22 @@ export class CorePushNotificationsDelegateService {
      *
      * @param name Handler's name.
      * @returns If handler name is present.
+     * @deprecated since 6.0. Cannot be used anymore.
      */
     isCounterHandlerRegistered(name: string): boolean {
-        return this.counterHandlers[name] !== undefined;
+        void name;
+
+        return false;
     }
 
     /**
      * Get all counter badge handlers.
      *
      * @returns with all the handler names.
+     * @deprecated since 6.0. Cannot be used anymore.
      */
     getCounterHandlers(): Record<string, string> {
-        return this.counterHandlers;
+        return {};
     }
 
 }

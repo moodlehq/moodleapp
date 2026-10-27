@@ -14,7 +14,6 @@
 
 import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
-import { Badge } from '@awesome-cordova-plugins/badge/ngx';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
@@ -49,6 +48,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { Keyboard } = await import('@services/native/keyboard');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Zip } = await import('@features/native/plugins/zip');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { Badge } = await import('./plugins/badge');
 
     const { Device } = await import('@services/native/device');
 
@@ -77,7 +78,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
 
 @NgModule({
     providers: [
-        Badge,
         InAppBrowser,
         LocalNotifications,
         Push,

@@ -20,6 +20,7 @@ dependencies {
     implementation project(':capacitor-network')
     implementation project(':capacitor-screen-orientation')
     implementation project(':capacitor-splash-screen')
+    implementation project(':capawesome-capacitor-badge')
     implementation project(':capawesome-capacitor-file-picker')
     implementation project(':capgo-capacitor-zip')
     implementation project(':capacitor-plugin-moodleapp')
@@ -28,7 +29,6 @@ dependencies {
     implementation "androidx.core:core:1.12.0"
 }
 apply from: "../../node_modules/@moodlehq/cordova-plugin-qrscanner/src/android/qrscanner.gradle"
-apply from: "../../node_modules/cordova-plugin-badge/src/android/badge.gradle"
 apply from: "../../node_modules/cordova-plugin-local-notification/src/android/build/localnotification.gradle"
 
 if (hasProperty('postBuildExtras')) {
