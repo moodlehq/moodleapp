@@ -31,7 +31,7 @@ jobs:
             echo "❌ There are lang strings to be decided on langindex.json" >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
-          gulp
+          npx gulp
           langcount=`jq -r '. | length' src/assets/lang/en.json`
           langindexcount=`jq -r '. | length' scripts/langindex.json`
           if [ $langcount -ne $langindexcount ]; then
