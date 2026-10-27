@@ -315,17 +315,16 @@ export class FileEntry extends Entry {
             return blobPromise.then((blob) => ({ blob, stat }));
         // eslint-disable-next-line promise/always-return
         }).then(({ blob, stat }) => {
-            // @todo Capacitor: Test this after cordova plugin file has been removed, plugin overrides File class.
             const file = new File([blob], this.name, {
                 type: blob.type,
                 lastModified: stat.mtime,
             });
 
-            Object.assign(file, {
-                localURL: this.toURL(),
-                start: 0,
-                end: blob.size,
-                lastModifiedDate: stat.mtime,
+            Object.defineProperties(file, {
+                localURL: { value: this.toURL(), configurable: true, writable: true },
+                start: { value: 0, configurable: true, writable: true },
+                end: { value: blob.size, configurable: true, writable: true },
+                lastModifiedDate: { value: new Date(stat.mtime), configurable: true, writable: true },
             });
 
             successCallback(file);
