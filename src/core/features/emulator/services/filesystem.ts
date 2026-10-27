@@ -43,7 +43,7 @@ import {
     type WriteFileOptions,
     type WriteFileResult,
 } from '@capacitor/filesystem';
-import { type FileError } from '@/core/classes/native/filesystem';
+import type { FileError, Metadata } from '@/core/classes/native/filesystem';
 import { CoreFileUtils } from '@static/file-utils';
 
 /**
@@ -76,7 +76,7 @@ interface WebkitWindow {
      * @see https://developer.mozilla.org/en-US/docs/Web/API/Window/requestFileSystem
      */
     requestFileSystem(
-        type: LocalFileSystem,
+        type: number,
         size: number,
         successCallback: (fileSystem: FileSystemWithToURL) => void,
         errorCallback?: (fileError: FileError) => void,
@@ -86,7 +86,7 @@ interface WebkitWindow {
      * @deprecated since 4.4
      */
     webkitRequestFileSystem(
-        type: LocalFileSystem,
+        type: number,
         size: number,
         successCallback: (fileSystem: FileSystemWithToURL) => void,
         errorCallback?: (fileError: FileError) => void,
@@ -113,12 +113,47 @@ interface WebkitWindow {
 
 }
 
-type FileSystemWithToURL = Omit<FileSystem, 'root'> & {
-    root: FileSystemDirectoryEntryWithToURL;
+/**
+ * Legacy webkit methods that are not included in the DOM typings.
+ */
+type WebkitEntryMethods = {
+    toURL(): string;
+    getMetadata(successCallback: (metadata: Metadata) => void, errorCallback?: (error: DOMException) => void): void;
+    copyTo(
+        parent: DirectoryEntry,
+        newName: string,
+        successCallback: (entry: Entry) => void,
+        errorCallback?: (error: DOMException) => void,
+    ): void;
+    moveTo(
+        parent: DirectoryEntry,
+        newName: string,
+        successCallback: (entry: Entry) => void,
+        errorCallback?: (error: DOMException) => void,
+    ): void;
+    remove(successCallback: () => void, errorCallback?: (error: DOMException) => void): void;
 };
 
-type FileSystemDirectoryEntryWithToURL = FileSystemDirectoryEntry & {
-    toURL(): string;
+type Entry = FileSystemEntry & WebkitEntryMethods;
+
+type FileEntry = FileSystemFileEntry & WebkitEntryMethods & {
+    createWriter(successCallback: (writer: FileWriter) => void, errorCallback?: (error: DOMException) => void): void;
+};
+
+type DirectoryEntry = FileSystemDirectoryEntry & WebkitEntryMethods & {
+    removeRecursively(successCallback: () => void, errorCallback?: (error: DOMException) => void): void;
+};
+
+type FileWriter = {
+    readonly length: number;
+    onerror: ((event: unknown) => void) | null;
+    onwriteend: (() => void) | null;
+    seek(offset: number): void;
+    write(data: Blob): void;
+};
+
+type FileSystemWithToURL = Omit<FileSystem, 'root'> & {
+    root: DirectoryEntry;
 };
 
 /**
@@ -404,7 +439,7 @@ export class FilesystemMock implements FilesystemPlugin {
 
         return new Promise<DirectoryEntry>((resolve, reject): void => {
             parentDir.getDirectory(name, { create: true }, (dirEntry) => {
-                resolve(dirEntry);
+                resolve(dirEntry as DirectoryEntry);
             }, (dirError) => {
                 reject(this.toFileError(dirError));
             });
@@ -423,7 +458,7 @@ export class FilesystemMock implements FilesystemPlugin {
 
         return new Promise<FileEntry>((resolve, reject): void => {
             parentDir.getFile(name, { create: true }, (fileEntry) => {
-                resolve(fileEntry);
+                resolve(fileEntry as FileEntry);
             }, (fileError) => {
                 reject(this.toFileError(fileError));
             });
@@ -614,10 +649,10 @@ export class FilesystemMock implements FilesystemPlugin {
      * @param directoryReader The directory reader.
      * @returns Promise resolved with the list of files/dirs.
      */
-    protected readEntries(directoryReader: DirectoryReader): Promise<Entry[]> {
+    protected readEntries(directoryReader: FileSystemDirectoryReader): Promise<Entry[]> {
         return new Promise<Entry[]>((resolve, reject): void => {
-            directoryReader.readEntries((entries: Entry[]) => {
-                resolve(entries);
+            directoryReader.readEntries((entries) => {
+                resolve(entries as Entry[]);
             }, (error) => {
                 reject(this.toFileError(error));
             });

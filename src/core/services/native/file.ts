@@ -62,7 +62,22 @@ export class File {
 	documentsDirectory = '';
 	sharedDirectory = '';
 
-	cordovaFileError = window.FileError;
+	cordovaFileError = {
+		1: 'NOT_FOUND_ERR',
+		2: 'SECURITY_ERR',
+		3: 'ABORT_ERR',
+		4: 'NOT_READABLE_ERR',
+		5: 'ENCODING_ERR',
+		6: 'NO_MODIFICATION_ALLOWED_ERR',
+		7: 'INVALID_STATE_ERR',
+		8: 'SYNTAX_ERR',
+		9: 'INVALID_MODIFICATION_ERR',
+		10: 'QUOTA_EXCEEDED_ERR',
+		11: 'TYPE_MISMATCH_ERR',
+		12: 'PATH_EXISTS_ERR',
+		13: 'WRONG_ENTRY_TYPE',
+		14: 'DIR_READ_ERR',
+	};
 
 	/**
 	 * Create FileMock service.
