@@ -12,6 +12,9 @@ public class MainActivity extends BridgeActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		// Replace Capacitor's WebChromeClient with one that asks for confirmation before recording audio or video.
+		getBridge().getWebView().setWebChromeClient(new MoodleWebChromeClient(getBridge()));
+
 		WebSettings settings = getBridge().getWebView().getSettings();
 		settings.setBuiltInZoomControls(true);
 		settings.setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
