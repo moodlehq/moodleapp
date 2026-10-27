@@ -52,7 +52,6 @@ const config: CapacitorConfig = {
       scheme: 'http',
       iosScheme: 'moodleappfs',
       WKWebViewOnly: 'true',
-      WKFullScreenEnabled: 'true',
       AndroidXEnabled: 'true',
       GradlePluginGoogleServicesEnabled: 'true',
       StatusBarOverlaysWebView: 'false',
