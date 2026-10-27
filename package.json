@@ -89,7 +89,6 @@
         "chart.js": "4.5.1",
         "cordova-plugin-customurlscheme": "5.0.2",
         "cordova-plugin-device": "^3.0.0",
-        "cordova-plugin-file": "8.1.3",
         "cordova-plugin-local-notification": "1.2.3",
         "cordova-plugin-wkuserscript": "1.0.1",
         "cordova-plugin-wkwebview-cookies": "1.0.1",
