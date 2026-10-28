@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { NativeSettings } from './plugins/NativeSettings';
 import { SecureStorage } from './plugins/SecureStorage';
@@ -21,6 +22,7 @@ export type { SecureStorage } from './plugins/SecureStorage';
 
 // Wrapped in plain classes because Capacitor proxies are thenables and break when resolved from a promise.
 export const MoodleAppCapacitorPlugins = {
+    diskSpace: new DiskSpace(),
     installReferrer: new InstallReferrer(),
     nativeSettings: new NativeSettings(),
     secureStorage: new SecureStorage(),

@@ -145,7 +145,7 @@ export class CoreAlertsService {
         const readableSize = CoreText.bytesToSize(size.size, 2);
 
         const getAvailableSpace = async (): Promise<string> => {
-            const availableBytes = await CoreFile.getPlatformAvailableBytes(size.size);
+            const availableBytes = await CoreFile.calculateFreeSpace();
 
             if (availableBytes === null) {
                 return '';

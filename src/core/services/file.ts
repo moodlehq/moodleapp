@@ -27,6 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { CorePath } from '@static/path';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreNative } from '@features/native/services/native';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
@@ -450,22 +451,35 @@ export class CoreFileProvider {
 
     /**
      * Calculate the free space in the disk.
-     * Please notice that this function isn't reliable and it's not documented in the Cordova File plugin.
+     * In mobile devices it's the free space of the whole storage volume, not only the app folder.
      *
-     * @returns Promise resolved with the estimated free space in bytes.
+     * @returns Promise resolved with the free space in bytes. In browsers, it's an estimate.
      */
-    async calculateFreeSpace(): Promise<number> {
-        // Capacitor Filesystem doesn't expose free disk space; use Storage Manager API as an estimate.
-        // @todo Capacitor: this is not good enough. In a device this says 10GB when there's only 4.7GB available.
+    async calculateFreeSpace(): Promise<number | null> {
+        if (CorePlatform.isMobile()) {
+            try {
+                return await CoreNative.plugin('diskSpace')?.getFreeSpace() ?? Number.MAX_SAFE_INTEGER;
+            } catch (error) {
+                this.logger.error('Error getting free space from native plugin', error);
+
+                return null;
+            }
+        }
+
+        // In browser, use the Storage Manager API as an estimate.
         if (typeof navigator.storage?.estimate !== 'function') {
             return Number.MAX_SAFE_INTEGER;
         }
 
         const estimate = await navigator.storage.estimate();
-        const quota = estimate.quota ?? 0;
-        const usage = estimate.usage ?? 0;
 
-        return Math.max(quota - usage, 0);
+        if (estimate.quota === undefined || estimate.usage === undefined) {
+            this.logger.error('Error getting free space using navigator.storage');
+
+            return null;
+        }
+
+        return Math.max(estimate.quota - estimate.usage, 0);
     }
 
     /**
@@ -478,11 +492,12 @@ export class CoreFileProvider {
      *
      * @param size - The size in bytes that is intended to be used or downloaded.
      * @returns A promise that resolves to the number of available bytes, or `null` if the value is not reliable.
+     * @deprecated since 6.0. Use CoreFile.calculateFreeSpace instead.
      */
     async getPlatformAvailableBytes(size: number): Promise<number | null> {
-        const availableBytes = await CoreFile.calculateFreeSpace();
+        const availableBytes = await this.calculateFreeSpace();
 
-        if (CorePlatform.isAndroid()) {
+        if (CorePlatform.isAndroid() || availableBytes === null) {
             return availableBytes;
         }
 
