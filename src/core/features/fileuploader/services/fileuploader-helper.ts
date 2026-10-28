@@ -83,6 +83,9 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
+        }
 
         const modal = await CoreLoadings.show();
 
@@ -130,7 +133,7 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param size File size.
      * @param _alwaysConfirm Unused parameter kept for compatibility.
-     * @param allowOffline True to allow uploading in offline.
+     * @param _allowOffline Unused parameter kept for compatibility.
      * @param wifiThreshold Threshold for WiFi connection. Default: CoreFileUploaderProvider.WIFI_SIZE_WARNING.
      * @param limitedThreshold Threshold for limited connection. Default: CoreFileUploaderProvider.LIMITED_SIZE_WARNING.
      * @returns Promise resolved when the user confirms or if there's no need to show a modal.
@@ -138,16 +141,12 @@ export class CoreFileUploaderHelperProvider {
     async confirmUploadFile(
         size: number,
         _alwaysConfirm?: boolean,
-        allowOffline?: boolean,
+        _allowOffline?: boolean,
         wifiThreshold?: number,
         limitedThreshold?: number,
     ): Promise<void> {
         if (size === 0) {
             return;
-        }
-
-        if (!allowOffline && !CoreNetwork.isOnline()) {
-            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
         wifiThreshold = wifiThreshold === undefined ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
@@ -805,6 +804,10 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
+        }
+
         const path = fileEntry.toURL();
         const fileName = name || fileEntry.name;
 
@@ -816,7 +819,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         if (upload) {
-            await this.confirmUploadFile(size, undefined, allowOffline);
+            await this.confirmUploadFile(size);
         }
 
         if (upload) {
@@ -914,6 +917,10 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
+        }
+
         maxSize = this.getMaxUploadSize(maxSize);
 
         if (maxSize !== undefined && maxSize !== -1 && file.size > maxSize) {
@@ -921,7 +928,7 @@ export class CoreFileUploaderHelperProvider {
         }
 
         if (upload) {
-            await this.confirmUploadFile(file.size, undefined, allowOffline);
+            await this.confirmUploadFile(file.size);
         }
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
