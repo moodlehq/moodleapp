@@ -234,12 +234,10 @@ export class CoreFileUploaderHelperProvider {
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize !== -1) {
-            const fileEntry = await CoreFile.getFile(path);
+            const fileSize = await CoreFile.getFileSize(path);
 
-            const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
-
-            if (fileData.size > maxSize) {
-                throw this.createMaxBytesError(maxSize, fileEntry.name);
+            if (fileSize > maxSize) {
+                throw this.createMaxBytesError(maxSize, fileName);
             }
         }
 
@@ -862,7 +860,6 @@ export class CoreFileUploaderHelperProvider {
             return errorUploading(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
-        let file: File | undefined;
         let size = 0;
 
         if (checkSize) {
@@ -874,8 +871,8 @@ export class CoreFileUploaderHelperProvider {
             }
         }
 
-        if (maxSize != -1 && size > maxSize && file) {
-            throw this.createMaxBytesError(maxSize, file.name);
+        if (maxSize !== -1 && size > maxSize) {
+            throw this.createMaxBytesError(maxSize, CoreFileUtils.getFileAndDirectoryFromPath(path).name);
         }
 
         if (size > 0) {
