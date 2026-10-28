@@ -113,57 +113,65 @@ export class CoreStylesService {
             try {
                 await this.addSite(data.siteId);
 
-                // User has logged in, remove tmp styles and enable loaded styles.
-                if (data.siteId == CoreSites.getCurrentSiteId()) {
-                    this.unloadTmpStyles();
-                    this.enableSiteStyles(data.siteId);
+                if (data.siteId !== CoreSites.getCurrentSiteId()) {
+                    return;
                 }
+
+                // User has logged in, remove tmp styles and enable loaded styles.
+                await this.unloadTmpStyles();
+                await this.enableSiteStyles(data.siteId);
             } catch (error) {
                 this.logger.error('Error adding styles for new site', error);
             }
         });
 
         // Update styles when current site is updated.
-        CoreEvents.on(CoreEvents.SITE_UPDATED, (data) => {
-            if (data.siteId === CoreSites.getCurrentSiteId()) {
-                this.load(data.siteId).catch((error) => {
-                    this.logger.error('Error loading site after site update', error);
-                });
+        CoreEvents.on(CoreEvents.SITE_UPDATED, async (data) => {
+            if (data.siteId !== CoreSites.getCurrentSiteId()) {
+                return;
+            }
+
+            try {
+                await this.load(data.siteId);
+            } catch (error) {
+                this.logger.error('Error loading site after site update', error);
             }
         });
 
         // Enable styles of current site on login.
-        CoreEvents.on(CoreEvents.LOGIN, (data) => {
-            this.unloadTmpStyles();
-            this.enableSiteStyles(data.siteId);
+        CoreEvents.on(CoreEvents.LOGIN, async (data) => {
+            await this.unloadTmpStyles();
+            await this.enableSiteStyles(data.siteId);
         });
 
         // Disable added styles on logout.
         CoreEvents.on(CoreEvents.LOGOUT, () => {
-            this.clear();
+            void this.clear();
         });
 
         // Remove site styles when a site is deleted.
         CoreEvents.on(CoreEvents.SITE_DELETED, (site) => {
-            this.removeSite(site.getId());
+            void this.removeSite(site.getId());
         });
 
         // Load temporary styles when site config is checked in login/reconnect.
-        CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, (data) => {
+        CoreEvents.on(CoreEvents.LOGIN_SITE_CHECKED, async (data) => {
             if (data.siteId) {
                 // Reconnecting to a site, enable the site styles.
-                this.enableSiteStyles(data.siteId);
+                await this.enableSiteStyles(data.siteId);
 
                 return;
             }
 
-            this.loadTmpStyles(data.config).catch((error) => {
+            try {
+                await this.loadTmpStyles(data.config);
+            } catch (error) {
                 this.logger.error('Error loading tmp styles', error);
-            });
+            }
         });
 
         // Unload temporary styles when site config is "unchecked" in login.
-        CoreEvents.on(CoreEvents.LOGIN_SITE_UNCHECKED, ({ loginSuccessful }) => {
+        CoreEvents.on(CoreEvents.LOGIN_SITE_UNCHECKED, async ({ loginSuccessful }) => {
             if (loginSuccessful) {
                 // The tmp styles have been added for a site we've logged into, so we'll wait for the final
                 // site styles to be loaded before removing the tmp styles so there is no blink effect.
@@ -171,8 +179,8 @@ export class CoreStylesService {
             }
 
             // User didn't access the site, unload tmp styles and site styles if any.
-            this.unloadTmpStyles();
-            this.clear();
+            await this.unloadTmpStyles();
+            await this.clear();
         });
     }
 
@@ -274,7 +282,7 @@ export class CoreStylesService {
     /**
      * Clear styles added to the DOM, disabling them all.
      */
-    protected clear(): void {
+    protected async clear(): Promise<void> {
         let styles: HTMLStyleElement[] = [];
         // Disable all the styles.
         this.styleHandlers.forEach((handler) => {
@@ -285,7 +293,7 @@ export class CoreStylesService {
             this.disableStyleElement(style, true);
         });
 
-        CoreApp.setSystemUIColors();
+        await CoreApp.setSystemUIColors();
     }
 
     /**
@@ -350,7 +358,7 @@ export class CoreStylesService {
      *
      * @param siteId Site ID. If not defined, current site.
      */
-    protected enableSiteStyles(siteId?: string): void {
+    protected async enableSiteStyles(siteId?: string): Promise<void> {
         siteId = siteId || CoreSites.getCurrentSiteId();
 
         if (this.stylesEls[siteId]) {
@@ -358,7 +366,7 @@ export class CoreStylesService {
                 this.disableStyleElementByName(siteId, sourceName, false);
             }
 
-            CoreApp.setSystemUIColors();
+            await CoreApp.setSystemUIColors();
         }
     }
 
@@ -388,7 +396,7 @@ export class CoreStylesService {
         }));
 
         if (!disabled) {
-            CoreApp.setSystemUIColors();
+            await CoreApp.setSystemUIColors();
         }
     }
 
@@ -406,7 +414,7 @@ export class CoreStylesService {
             await this.setStyle(CoreStylesService.TMP_SITE_ID, handler, config);
         }));
 
-        CoreApp.setSystemUIColors();
+        await CoreApp.setSystemUIColors();
     }
 
     /**
@@ -441,7 +449,7 @@ export class CoreStylesService {
      *
      * @param siteId Site ID.
      */
-    protected removeSite(siteId: string): void {
+    protected async removeSite(siteId: string): Promise<void> {
         if (siteId && this.stylesEls[siteId]) {
             for (const sourceName in this.stylesEls[siteId]) {
                 const styleElementId = this.getStyleId(siteId, sourceName);
@@ -454,15 +462,15 @@ export class CoreStylesService {
             }
             delete this.stylesEls[siteId];
 
-            CoreApp.setSystemUIColors();
+            await CoreApp.setSystemUIColors();
         }
     }
 
     /**
      * Unload styles for a temporary site.
      */
-    protected unloadTmpStyles(): void {
-        this.removeSite(CoreStylesService.TMP_SITE_ID);
+    protected async unloadTmpStyles(): Promise<void> {
+        await this.removeSite(CoreStylesService.TMP_SITE_ID);
     }
 
 }

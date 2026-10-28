@@ -238,9 +238,10 @@ export class CoreAppProvider {
     /**
      * Set System UI Colors.
      */
-    setSystemUIColors(): void {
-        this.setStatusBarColor();
-        this.setAndroidNavigationBarColor();
+    async setSystemUIColors(): Promise<void> {
+        await this.setStatusBarColor();
+        await this.setAndroidNavigationBarColor();
+
     }
 
     /**
@@ -248,7 +249,7 @@ export class CoreAppProvider {
      *
      * @param color RGB color to use as status bar background. If not set the css variable will be read.
      */
-    setStatusBarColor(color?: string): void {
+    async setStatusBarColor(color?: string): Promise<void> {
         if (!CorePlatform.isMobile()) {
             return;
         }
@@ -260,7 +261,11 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        CoreNativeStatusBar.backgroundColorByHexString(color);
+        try {
+            await CoreNativeStatusBar.setStatusBarColor(color);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -268,7 +273,7 @@ export class CoreAppProvider {
      *
      * @param color RGB color to use as background. If not set the css variable will be read.
      */
-    protected setAndroidNavigationBarColor(color?: string): void {
+    protected async setAndroidNavigationBarColor(color?: string): Promise<void> {
         if (!CorePlatform.isAndroid()) {
             return;
         }
@@ -280,7 +285,11 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
-        CoreNativeStatusBar.navigationBackgroundColorByHexString(color);
+        try {
+            await CoreNativeStatusBar.setNavigationBarColor(color);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**

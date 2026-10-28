@@ -26,6 +26,7 @@ import { CoreNativeDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
 import { CoreKeyboard } from '@static/keyboard';
 import { CoreFile } from '@services/file';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Initializes various core components asynchronously.
@@ -51,5 +52,6 @@ export default async function(): Promise<void> {
         CoreKeyboard.initialize(injector),
         CoreAutoLogout.initialize(),
         CoreAppBadge.initialize(),
+        CoreNativeStatusBar.initialize(),
     ]);
 }

@@ -163,11 +163,15 @@ export class CoreScreenService {
             return;
         }
 
-        document.addEventListener('fullscreenchange', () => {
-            if (document.fullscreenElement) {
-                CoreNativeStatusBar.hide();
-            } else {
-                CoreNativeStatusBar.show();
+        document.addEventListener('fullscreenchange', async () => {
+            try {
+                if (document.fullscreenElement) {
+                    await CoreNativeStatusBar.hide();
+                } else {
+                    await CoreNativeStatusBar.show();
+                }
+            } catch {
+                // Ignore errors.
             }
         });
     }

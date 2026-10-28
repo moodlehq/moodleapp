@@ -13,93 +13,129 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { cordova } from '@awesome-cordova-plugins/core';
-import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-bar/ngx';
+import { SystemBars as CapacitorSystemBars, SystemBarsStyle, SystemBarType } from '@capacitor/core';
 import { makeSingleton } from '@singletons';
-
-const CordovaStatusBar = makeSingleton(StatusBarService);
+import { CorePlatform } from '@services/platform';
+import { CoreColors } from '@static/colors';
+import { CoreLogger } from '@static/logger';
 
 /**
- * Service wrapping the Moodle Cordova StatusBar fork.
+ * Controls edge-to-edge system bar icon styles and visibility.
  */
 @Injectable({ providedIn: 'root' })
 export class StatusBar {
 
+    protected logger = CoreLogger.getInstance('CoreNativeStatusBar');
+    protected statusStyle?: SystemBarsStyle;
+    protected navigationStyle?: SystemBarsStyle;
+    protected initialized = false;
+
     /**
-     * Whether the status bar is currently visible.
+     * Restore app-specific icon styles after resuming the app.
+     */
+    initialize(): void {
+        if (this.initialized || !CorePlatform.isMobile()) {
+            return;
+        }
+
+        this.initialized = true;
+
+        CorePlatform.resume.subscribe(async () => {
+            if (this.statusStyle) {
+                try {
+                    await CapacitorSystemBars.setStyle({ style: this.statusStyle, bar: SystemBarType.StatusBar });
+                } catch (error) {
+                    this.logger.error('Could not restore status bar appearance', error);
+                }
+            }
+            if (this.navigationStyle && CorePlatform.isAndroid()) {
+                try {
+                    await CapacitorSystemBars.setStyle({ style: this.navigationStyle, bar: SystemBarType.NavigationBar });
+                } catch (error) {
+                    this.logger.error('Could not restore navigation bar appearance', error);
+                }
+            }
+        });
+    }
+
+    /**
+     * Set the status bar text style to contrast with the supplied background colour.
      *
-     * @returns Visibility reported by the Cordova plugin.
+     * @param color Background colour in any supported CSS format.
      */
-    get isVisible(): boolean {
-        return CordovaStatusBar.isVisible;
-    }
+    async setStatusBarColor(color: string): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
 
-    set isVisible(visible: boolean) {
-        CordovaStatusBar.isVisible = visible;
+        const style = this.getStyle(color);
+        await CapacitorSystemBars.setStyle({ style, bar: SystemBarType.StatusBar });
+        this.statusStyle = style;
     }
 
     /**
-     * Set whether the status bar overlays the WebView.
+     * Set the Android navigation bar icon style to contrast with the supplied background colour.
      *
-     * @param doesOverlay Whether the status bar overlays the WebView.
+     * @param color Background colour in any supported CSS format.
      */
-    overlaysWebView(doesOverlay: boolean): void {
-        CordovaStatusBar.overlaysWebView(doesOverlay);
+    async setNavigationBarColor(color: string): Promise<void> {
+        if (!CorePlatform.isAndroid()) {
+            return;
+        }
+
+        const style = this.getStyle(color);
+        await CapacitorSystemBars.setStyle({ style, bar: SystemBarType.NavigationBar });
+        this.navigationStyle = style;
     }
 
     /**
-     * Use dark status bar text on a light background.
+     * Hide the system bars, including the home indicator on iOS.
      */
-    styleDefault(): void {
-        CordovaStatusBar.styleDefault();
+    async hide(): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        await CapacitorSystemBars.hide();
     }
 
     /**
-     * Use light status bar text on a dark background.
+     * Show the system bars, including the home indicator on iOS.
      */
-    styleLightContent(): void {
-        CordovaStatusBar.styleLightContent();
+    async show(): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        await CapacitorSystemBars.show();
     }
 
     /**
-     * Set the status bar background using a Cordova colour name.
+     * Preserve the fork's platform-specific contrast thresholds.
      *
-     * @param colorName Background colour name.
+     * @param color Background colour in any supported CSS format.
+     * @returns Background theme used by Capacitor to select contrasting icons.
      */
-    backgroundColorByName(colorName: string): void {
-        CordovaStatusBar.backgroundColorByName(colorName);
-    }
+    protected getStyle(color: string): SystemBarsStyle {
+        const cssColor = /^(?:[\da-f]{3}|[\da-f]{6}|[\da-f]{8})$/i.test(color) ? `#${color}` : color;
+        const rgba = CoreColors.getColorRGBA(cssColor);
+        if (rgba.length < 3) {
+            throw new Error(`Invalid system bar colour: ${color}`);
+        }
 
-    /**
-     * Set the status bar background colour and contrasting text style.
-     *
-     * @param hexString Background colour, including CSS hexadecimal shorthand.
-     */
-    backgroundColorByHexString(hexString: string): void {
-        CordovaStatusBar.backgroundColorByHexString(hexString);
-    }
+        // Preserve the existing white background used when blending translucent colours.
+        // Computed CSS colours can round alpha, changing the contrast at the threshold.
+        const alpha = /^#[\da-f]{8}$/i.test(cssColor) ? parseInt(cssColor.slice(-2), 16) / 255 : rgba[3] ?? 1;
+        const [red, green, blue] = rgba.slice(0, 3)
+            .map(component => Math.round(component * alpha + 255 * (1 - alpha)) / 255);
+        const linear = (component: number) => component <= 0.04045
+            ? component / 12.92
+            : ((component + 0.055) / 1.055) ** 2.4;
+        const brightness = CorePlatform.isAndroid()
+            ? 0.2126 * linear(red) + 0.7152 * linear(green) + 0.0722 * linear(blue)
+            : (299 * red + 587 * green + 114 * blue) / 1000;
 
-    /**
-     * Set the Android navigation bar background colour and contrasting icon style.
-     *
-     * @param hexString Background colour, including CSS hexadecimal shorthand.
-     */
-    navigationBackgroundColorByHexString(hexString: string): void {
-        cordova(CordovaStatusBar, 'navigationBackgroundColorByHexString', { sync: true }, [hexString]);
-    }
-
-    /**
-     * Hide the status bar, including the navigation bar on Android.
-     */
-    hide(): void {
-        CordovaStatusBar.hide();
-    }
-
-    /**
-     * Show the status bar, including the navigation bar on Android.
-     */
-    show(): void {
-        CordovaStatusBar.show();
+        return brightness < 0.5 ? SystemBarsStyle.Dark : SystemBarsStyle.Light;
     }
 
 }

@@ -19,7 +19,10 @@ const config: CapacitorConfig = {
       launchAutoHide: false,
     },
     SystemBars: {
-      insetsHandling: 'css'
+      insetsHandling: 'css',
+      initialViewportFitValueHint: 'cover',
+      style: 'LIGHT',
+      hidden: false,
     },
   },
   cordova: {
@@ -54,9 +57,6 @@ const config: CapacitorConfig = {
       WKWebViewOnly: 'true',
       AndroidXEnabled: 'true',
       GradlePluginGoogleServicesEnabled: 'true',
-      StatusBarOverlaysWebView: 'false',
-      StatusBarBackgroundColor: '#FFFFFF',
-      NavigationBarBackgroundColor: '#FFFFFF',
       AndroidEdgeToEdge: 'true'
     }
   }

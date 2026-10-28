@@ -193,7 +193,7 @@ export class CoreIframeComponent implements OnDestroy {
                 return;
             }
             untracked(() => {
-                this.toggleFullscreen(orientation === CoreScreenOrientation.LANDSCAPE);
+                void this.toggleFullscreen(orientation === CoreScreenOrientation.LANDSCAPE);
             });
         });
 
@@ -204,7 +204,7 @@ export class CoreIframeComponent implements OnDestroy {
             this.autoFullscreenOnRotate();
 
             untracked(() => {
-                this.configureFullScreen();
+                void this.configureFullScreen();
             });
         });
     }
@@ -240,10 +240,10 @@ export class CoreIframeComponent implements OnDestroy {
     /**
      * Configure fullscreen based on the inputs.
      */
-    protected configureFullScreen(): void {
+    protected async configureFullScreen(): Promise<void> {
         const autoFullscreenOnRotate = this.autoFullscreenOnRotate();
         if (!this.showFullscreenOnToolbar() && !autoFullscreenOnRotate) {
-            this.disableFullScreen();
+            await this.disableFullScreen();
             this.fullScreenInitialized = true;
 
             return;
@@ -288,7 +288,7 @@ export class CoreIframeComponent implements OnDestroy {
 
         if (!this.fullScreenInitialized && autoFullscreenOnRotate) {
             // Only change full screen value if it's being initialized.
-            this.toggleFullscreen(CoreScreen.isLandscape);
+            await this.toggleFullscreen(CoreScreen.isLandscape);
         }
 
         this.fullScreenInitialized = true;
@@ -407,19 +407,19 @@ export class CoreIframeComponent implements OnDestroy {
     /**
      * @inheritdoc
      */
-    ngOnDestroy(): void {
+    async ngOnDestroy(): Promise<void> {
         window.removeEventListener('message', this.messageListenerFunction);
         this.clearLoadingTimeout();
-        this.disableFullScreen();
+        await this.disableFullScreen();
     }
 
     /**
      * Disable fullscreen mode and remove any listeners or styles related to it.
      */
-    protected disableFullScreen(): void {
+    protected async disableFullScreen(): Promise<void> {
         // Full screen disabled, stop watchers if enabled.
         if (this.fullscreen()) {
-            this.toggleFullscreen(false);
+            await this.toggleFullscreen(false);
         }
 
         this.navSubscription?.unsubscribe();
@@ -436,17 +436,21 @@ export class CoreIframeComponent implements OnDestroy {
      * @param enable Whether to enable or disable fullscreen mode. If not set, it will toggle the current state.
      * @param notifyIframe Whether to notify the iframe about the change. Defaults to true.
      */
-    toggleFullscreen(enable?: boolean, notifyIframe = true): void {
+    async toggleFullscreen(enable?: boolean, notifyIframe = true): Promise<void> {
         if (enable !== undefined) {
             this.fullscreen.set(enable);
         } else {
             this.fullscreen.set(!this.fullscreen());
         }
 
-        if (this.fullscreen()) {
-            CoreNativeStatusBar.hide();
-        } else {
-            CoreNativeStatusBar.show();
+        try {
+            if (this.fullscreen()) {
+                await CoreNativeStatusBar.hide();
+            } else {
+                await CoreNativeStatusBar.show();
+            }
+        } catch {
+            // Ignore errors.
         }
 
         if (this.style) {
@@ -475,9 +479,9 @@ export class CoreIframeComponent implements OnDestroy {
      */
     protected async onIframeMessage(event: MessageEvent): Promise<void> {
         if (event.data === 'enterFullScreen' && this.showFullscreenOnToolbar() && !this.fullscreen()) {
-            this.toggleFullscreen(true, false);
+            await this.toggleFullscreen(true, false);
         } else if (event.data === 'exitFullScreen' && this.fullscreen()) {
-            this.toggleFullscreen(false, false);
+            await this.toggleFullscreen(false, false);
         }
     }
 
