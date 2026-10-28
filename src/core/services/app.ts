@@ -27,6 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSSO } from '@static/sso';
 import { CoreRedirectData, CoreRedirects } from '@static/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Factory to provide some global functionalities.
@@ -259,8 +260,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        // @todo Capacitor
-        // StatusBar.backgroundColorByHexString(color);
+        CoreNativeStatusBar.backgroundColorByHexString(color);
     }
 
     /**
@@ -280,8 +280,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
-        // @todo Capacitor
-        // (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
+        CoreNativeStatusBar.navigationBackgroundColorByHexString(color);
     }
 
     /**
