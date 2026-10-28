@@ -27,6 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { CorePath } from '@static/path';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreNative } from '@features/native/services/native';
 import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
@@ -415,18 +416,18 @@ export class CoreFileProvider {
 
     /**
      * Get file object from a FileEntry.
+     * Use this function only if strictly needed, since it loads the file in memory.
      *
      * @param entry Relative path to the file.
      * @returns Promise to be resolved when the file is retrieved.
      */
     async getFileObjectFromFileEntry(entry: FileEntry): Promise<File> {
-        // @todo Capacitor: evaluate if we want to deprecate this function and try to always work with paths or FileEntry objects.
         // File type is used a lot in file uploader, check this after FileTransfer has been migrated.
         this.logger.debug(`Get file object of: ${entry.toURL()}`);
 
         const uri = this.normalizePathForFilesystem(entry.toURL());
 
-        // Guess extension from the extension, Capacitor doesn't provide a way to obtain the MIME type.
+        // Guess mimetype from the extension, Capacitor doesn't provide a way to obtain the MIME type.
         const extension = CoreMimetype.getFileExtension(entry.name);
         const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
 
@@ -434,40 +435,51 @@ export class CoreFileProvider {
             this.readAsArrayBuffer(uri),
             Filesystem.stat({ path: uri }),
         ]);
-        const blob = new Blob([data], { type: mimeType });
         const lastModified = stat.mtime ?? Date.now();
+        const file = new File([data], entry.name, { type: mimeType, lastModified });
 
-        // @todo Capacitor: Use the File class once cordova plugin file has been removed. Cordova plugin overrides File class.
-        // return new File([blob], entry.name, { type: blob.type, lastModified: Date.now() });
-        return Object.assign(blob, {
-            name: entry.name,
-            localURL: entry.toURL(),
-            start: 0,
-            end: blob.size,
-            lastModifiedDate: lastModified,
-            lastModified,
-            webkitRelativePath: '',
+        // Keep the legacy Cordova properties. lastModifiedDate is getter-only in some browsers, so define it instead of assigning.
+        Object.defineProperties(file, {
+            localURL: { value: entry.toURL(), configurable: true, writable: true },
+            start: { value: 0, configurable: true, writable: true },
+            end: { value: file.size, configurable: true, writable: true },
+            lastModifiedDate: { value: new Date(lastModified), configurable: true, writable: true },
         });
+
+        return file;
     }
 
     /**
      * Calculate the free space in the disk.
-     * Please notice that this function isn't reliable and it's not documented in the Cordova File plugin.
+     * In mobile devices it's the free space of the whole storage volume, not only the app folder.
      *
-     * @returns Promise resolved with the estimated free space in bytes.
+     * @returns Promise resolved with the free space in bytes. In browsers, it's an estimate.
      */
-    async calculateFreeSpace(): Promise<number> {
-        // Capacitor Filesystem doesn't expose free disk space; use Storage Manager API as an estimate.
-        // @todo Capacitor: this is not good enough. In a device this says 10GB when there's only 4.7GB available.
+    async calculateFreeSpace(): Promise<number | null> {
+        if (CorePlatform.isMobile()) {
+            try {
+                return await CoreNative.plugin('diskSpace')?.getFreeSpace() ?? Number.MAX_SAFE_INTEGER;
+            } catch (error) {
+                this.logger.error('Error getting free space from native plugin', error);
+
+                return null;
+            }
+        }
+
+        // In browser, use the Storage Manager API as an estimate.
         if (typeof navigator.storage?.estimate !== 'function') {
             return Number.MAX_SAFE_INTEGER;
         }
 
         const estimate = await navigator.storage.estimate();
-        const quota = estimate.quota ?? 0;
-        const usage = estimate.usage ?? 0;
 
-        return Math.max(quota - usage, 0);
+        if (estimate.quota === undefined || estimate.usage === undefined) {
+            this.logger.error('Error getting free space using navigator.storage');
+
+            return null;
+        }
+
+        return Math.max(estimate.quota - estimate.usage, 0);
     }
 
     /**
@@ -480,11 +492,12 @@ export class CoreFileProvider {
      *
      * @param size - The size in bytes that is intended to be used or downloaded.
      * @returns A promise that resolves to the number of available bytes, or `null` if the value is not reliable.
+     * @deprecated since 6.0. Use CoreFile.calculateFreeSpace instead.
      */
     async getPlatformAvailableBytes(size: number): Promise<number | null> {
-        const availableBytes = await CoreFile.calculateFreeSpace();
+        const availableBytes = await this.calculateFreeSpace();
 
-        if (CorePlatform.isAndroid()) {
+        if (CorePlatform.isAndroid() || availableBytes === null) {
             return availableBytes;
         }
 
@@ -640,7 +653,6 @@ export class CoreFileProvider {
         this.logger.debug(`Read file from file data with format ${format}`);
 
         return new Promise((resolve, reject): void => {
-            // @todo Capacitor: Test this once cordova plugin file has been removed.
             const reader = new FileReader();
 
             reader.onloadend = (event): void => {
@@ -727,7 +739,6 @@ export class CoreFileProvider {
                 await Filesystem.writeFile({ path: absolutePath, data, encoding: Encoding.UTF8, recursive: true });
             }
         } else {
-            // @todo Capacitor: Test this once cordova plugin file has been removed.
             const base64 = await this.blobToBase64(data);
 
             if (append) {
@@ -772,7 +783,6 @@ export class CoreFileProvider {
         offset = 0,
         append?: boolean,
     ): Promise<FileEntry> {
-        // @todo Capacitor: Test this once cordova plugin file has been removed.
         offset = offset || 0;
 
         try {

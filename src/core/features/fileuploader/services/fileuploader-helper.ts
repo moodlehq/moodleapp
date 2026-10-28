@@ -83,6 +83,9 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         mimetypes?: string[],
     ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
+        }
 
         const modal = await CoreLoadings.show();
 
@@ -122,13 +125,7 @@ export class CoreFileUploaderHelperProvider {
             throw new CoreError('The picked file has no readable content.');
         }
 
-        if (maxSize !== undefined && maxSize !== -1 && blob.size > maxSize) {
-            throw this.createMaxBytesError(maxSize, result.name);
-        }
-
-        const file = new File([blob], result.name, { type: result.mimeType ?? blob.type });
-
-        return this.copyAndUploadFile(file, upload, result.name);
+        return this.uploadBlob(blob, result.name, result.mimeType, upload, maxSize);
     }
 
     /**
@@ -136,7 +133,7 @@ export class CoreFileUploaderHelperProvider {
      *
      * @param size File size.
      * @param _alwaysConfirm Unused parameter kept for compatibility.
-     * @param allowOffline True to allow uploading in offline.
+     * @param _allowOffline Unused parameter kept for compatibility.
      * @param wifiThreshold Threshold for WiFi connection. Default: CoreFileUploaderProvider.WIFI_SIZE_WARNING.
      * @param limitedThreshold Threshold for limited connection. Default: CoreFileUploaderProvider.LIMITED_SIZE_WARNING.
      * @returns Promise resolved when the user confirms or if there's no need to show a modal.
@@ -144,16 +141,12 @@ export class CoreFileUploaderHelperProvider {
     async confirmUploadFile(
         size: number,
         _alwaysConfirm?: boolean,
-        allowOffline?: boolean,
+        _allowOffline?: boolean,
         wifiThreshold?: number,
         limitedThreshold?: number,
     ): Promise<void> {
         if (size === 0) {
             return;
-        }
-
-        if (!allowOffline && !CoreNetwork.isOnline()) {
-            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
         wifiThreshold = wifiThreshold === undefined ? CoreFileUploaderProvider.WIFI_SIZE_WARNING : wifiThreshold;
@@ -176,15 +169,79 @@ export class CoreFileUploaderHelperProvider {
      * @param upload True if the file should be uploaded, false to return the copy of the file.
      * @param name Name to use when uploading the file. If not defined, use the file's name.
      * @returns Promise resolved when the file is uploaded.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
      */
     async copyAndUploadFile(file: File, upload: true, name?: string): Promise<CoreWSUploadFileResult>;
+    /**
+     * Create a temporary copy of a file and upload it.
+     *
+     * @param file File to copy and upload.
+     * @param upload True if the file should be uploaded, false to return the copy of the file.
+     * @param name Name to use when uploading the file. If not defined, use the file's name.
+     * @returns Promise resolved when the file is uploaded.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
+     */
     async copyAndUploadFile(file: File, upload: false, name?: string): Promise<FileEntry>;
+    /**
+     * Create a temporary copy of a file and upload it.
+     *
+     * @param file File to copy and upload.
+     * @param upload True if the file should be uploaded, false to return the copy of the file.
+     * @param name Name to use when uploading the file. If not defined, use the file's name.
+     * @returns Promise resolved when the file is uploaded.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
+     */
     async copyAndUploadFile(file: File, upload?: boolean, name?: string): Promise<CoreWSUploadFileResult | FileEntry>;
     async copyAndUploadFile(file: File, upload = false, name?: string): Promise<CoreWSUploadFileResult | FileEntry> {
-        name = name || file.name;
+        return this.uploadBlob(file, name || file.name, file.type, upload);
+    }
 
+    /**
+     * Upload a blob (e.g. the one returned by the file picker in browser), or return a temporary copy of it.
+     * Only use this function if you already have a Blob. If you have a path or FileEntry, use other upload functions.
+     *
+     * @param blob Blob to upload.
+     * @param name Name of the file.
+     * @param mimetype Mimetype of the file. If not defined, use the blob's type.
+     * @param upload True if the file should be uploaded, false to return the copy of the file.
+     * @param maxSize Max size of the file. If not defined or -1, no max size.
+     * @returns Promise resolved when the file is uploaded or copied.
+     */
+    protected async uploadBlob(
+        blob: Blob,
+        name: string,
+        mimetype: string | undefined,
+        upload?: boolean,
+        maxSize?: number,
+    ): Promise<CoreWSUploadFileResult | FileEntry> {
+        if (maxSize !== undefined && maxSize !== -1 && blob.size > maxSize) {
+            throw this.createMaxBytesError(maxSize, name);
+        }
+
+        const fileEntry = await this.writeBlobInTmpFolder(blob, name);
+
+        if (!upload) {
+            return fileEntry;
+        }
+
+        const options = CoreFileUploader.getFileUploadOptions({
+            name,
+            mimetype: mimetype ?? blob.type,
+            deleteAfterUpload: true, // Delete the copy after upload.
+        });
+
+        return this.uploadFile(fileEntry.toURL(), -1, false, options);
+    }
+
+    /**
+     * Write a blob in a new file in the temporary folder, showing a progress modal.
+     *
+     * @param blob Blob to write.
+     * @param name Name to use for the file. A suffix is added if a file with that name already exists.
+     * @returns Promise resolved with the file entry of the new file.
+     */
+    protected async writeBlobInTmpFolder(blob: Blob, name: string): Promise<FileEntry> {
         const modal = await CoreLoadings.show('core.fileuploader.readingfile', true);
-        let fileEntry: FileEntry | undefined;
 
         try {
             // Get unique name for the copy.
@@ -193,25 +250,17 @@ export class CoreFileUploaderHelperProvider {
             const filePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, newName);
 
             // Write the data into the file.
-            fileEntry = await CoreFile.writeFileDataInFile(
-                file,
+            return await CoreFile.writeFileDataInFile(
+                blob,
                 filePath,
                 (progress: CoreFileProgressEvent) => this.showProgressModal(modal, 'core.fileuploader.readingfileperc', progress),
             );
         } catch (error) {
             this.logger.error('Error reading file to upload.', error);
-            modal.dismiss();
 
             throw error;
-        }
-
-        modal.dismiss();
-
-        if (upload) {
-            // Pass true to delete the copy after the upload.
-            return this.uploadGenericFile(fileEntry.toURL(), name, file.type, true);
-        } else {
-            return fileEntry;
+        } finally {
+            modal.dismiss();
         }
     }
 
@@ -222,6 +271,7 @@ export class CoreFileUploaderHelperProvider {
      * @param shouldDelete True if original file should be deleted (move), false otherwise (copy).
      * @param maxSize Max size of the file. If not defined or -1, no max size.
      * @param defaultExt Default extension to use if the file doesn't have any.
+     * @param name Name to use for the copy. If not defined, use the file's name.
      * @returns Promise resolved with the copied file.
      */
     protected async copyToTmpFolder(
@@ -229,17 +279,16 @@ export class CoreFileUploaderHelperProvider {
         shouldDelete: boolean,
         maxSize?: number,
         defaultExt?: string,
+        name?: string,
     ): Promise<FileEntry> {
-        const fileName = CoreFileUtils.getFileAndDirectoryFromPath(path).name;
+        const fileName = name || CoreFileUtils.getFileAndDirectoryFromPath(path).name;
 
         // Check that size isn't too large.
         if (maxSize !== undefined && maxSize !== -1) {
-            const fileEntry = await CoreFile.getFile(path);
+            const fileSize = await CoreFile.getFileSize(path);
 
-            const fileData = await CoreFile.getFileObjectFromFileEntry(fileEntry);
-
-            if (fileData.size > maxSize) {
-                throw this.createMaxBytesError(maxSize, fileEntry.name);
+            if (fileSize > maxSize) {
+                throw this.createMaxBytesError(maxSize, fileName);
             }
         }
 
@@ -432,14 +481,18 @@ export class CoreFileUploaderHelperProvider {
      * @param deleteAfterUpload Whether the file should be deleted after upload.
      * @param siteId Id of the site to upload the file to. If not defined, use current site.
      * @returns Promise resolved when the file is uploaded.
+     * @deprecated since 6.0. It's not used anymore.
      */
     async showConfirmAndUploadInSite(fileEntry: FileEntry, deleteAfterUpload?: boolean, siteId?: string): Promise<void> {
         try {
-            const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+            const path = fileEntry.toURL();
+            const size = await CoreFile.getFileSize(path);
 
-            await this.confirmUploadFile(file.size);
+            await this.confirmUploadFile(size);
 
-            await this.uploadGenericFile(fileEntry.toURL(), file.name, file.type, deleteAfterUpload, siteId);
+            const options = CoreFileUploader.getFileUploadOptions({ name: fileEntry.name, deleteAfterUpload });
+
+            await this.uploadFile(path, -1, false, options, siteId);
 
             CoreToasts.show({
                 message: 'core.fileuploader.fileuploaded',
@@ -602,6 +655,7 @@ export class CoreFileUploaderHelperProvider {
      * @param deleteAfterUpload Whether the file should be deleted after upload.
      * @param siteId Id of the site to upload the file to. If not defined, use current site.
      * @returns Promise resolved when the file is uploaded.
+     * @deprecated since 6.0. Use uploadFile instead.
      */
     uploadGenericFile(
         uri: string,
@@ -750,16 +804,55 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
-        const file = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
+        }
 
-        const result = await this.uploadFileObject(file, maxSize, upload, allowOffline, name);
+        const path = fileEntry.toURL();
+        const fileName = name || fileEntry.name;
+
+        const size = await CoreFile.getFileSize(path);
+        maxSize = this.getMaxUploadSize(maxSize);
+
+        if (maxSize !== undefined && maxSize !== -1 && size > maxSize) {
+            throw this.createMaxBytesError(maxSize, CoreFileUtils.getFileAndDirectoryFromPath(path).name);
+        }
+
+        let result: CoreWSUploadFileResult | FileEntry;
+
+        if (upload) {
+            await this.confirmUploadFile(size);
+
+            // The original file is deleted after a successful upload, not by uploadFile, so it's kept if the user cancels.
+            const options = CoreFileUploader.getFileUploadOptions({ name: fileName });
+            result = await this.uploadFile(path, maxSize ?? -1, false, options);
+        } else {
+            result = await this.copyToTmpFolder(path, false, maxSize, undefined, fileName);
+        }
 
         if (deleteAfter) {
-            // We have uploaded and deleted a copy of the file. Now delete the original one if we have permission.
             await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(fileEntry));
         }
 
         return result;
+    }
+
+    /**
+     * Get the max size to use in an upload, using the max size allowed by the site if maxSize is 0.
+     *
+     * @param maxSize Max size of the file. If not defined or -1, no max size.
+     * @returns Max size to use.
+     */
+    protected getMaxUploadSize(maxSize: number | undefined): number | undefined {
+        if (maxSize === 0) {
+            const siteInfo = CoreSites.getCurrentSite()?.getInfo();
+
+            if (siteInfo && siteInfo.usermaxuploadfilesize) {
+                return siteInfo.usermaxuploadfilesize;
+            }
+        }
+
+        return maxSize;
     }
 
     /**
@@ -771,6 +864,7 @@ export class CoreFileUploaderHelperProvider {
      * @param allowOffline True to allow selecting in offline, false to require connection.
      * @param name Name to use when uploading the file. If not defined, use the file's name.
      * @returns Promise resolved when done.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
      */
     async uploadFileObject(
         file: File,
@@ -779,6 +873,17 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult>;
+    /**
+     * Upload a file given the file object.
+     *
+     * @param file The file object.
+     * @param maxSize Max size of the file. If not defined or -1, no max size.
+     * @param upload True if the file should be uploaded, false to return the picked file.
+     * @param allowOffline True to allow selecting in offline, false to require connection.
+     * @param name Name to use when uploading the file. If not defined, use the file's name.
+     * @returns Promise resolved when done.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
+     */
     async uploadFileObject(
         file: File,
         maxSize: undefined | number,
@@ -786,6 +891,17 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<FileEntry>;
+    /**
+     * Upload a file given the file object.
+     *
+     * @param file The file object.
+     * @param maxSize Max size of the file. If not defined or -1, no max size.
+     * @param upload True if the file should be uploaded, false to return the picked file.
+     * @param allowOffline True to allow selecting in offline, false to require connection.
+     * @param name Name to use when uploading the file. If not defined, use the file's name.
+     * @returns Promise resolved when done.
+     * @deprecated since 6.0. Use uploadFileEntry or uploadFile with the file path instead, to avoid loading the file in memory.
+     */
     async uploadFileObject(
         file: File,
         maxSize: undefined | number,
@@ -800,24 +916,22 @@ export class CoreFileUploaderHelperProvider {
         allowOffline?: boolean,
         name?: string,
     ): Promise<CoreWSUploadFileResult | FileEntry> {
-        if (maxSize === 0) {
-            const siteInfo = CoreSites.getCurrentSite()?.getInfo();
-
-            if (siteInfo && siteInfo.usermaxuploadfilesize) {
-                maxSize = siteInfo.usermaxuploadfilesize;
-            }
+        if (!allowOffline && !CoreNetwork.isOnline()) {
+            throw new CoreError(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
+
+        maxSize = this.getMaxUploadSize(maxSize);
 
         if (maxSize !== undefined && maxSize !== -1 && file.size > maxSize) {
             throw this.createMaxBytesError(maxSize, file.name);
         }
 
         if (upload) {
-            await this.confirmUploadFile(file.size, undefined, allowOffline);
+            await this.confirmUploadFile(file.size);
         }
 
         // We have the data of the file to be uploaded, but not its URL (needed). Create a copy of the file to upload it.
-        return this.copyAndUploadFile(file, upload, name);
+        return this.uploadBlob(file, name || file.name, file.type, upload, maxSize);
     }
 
     /**
@@ -862,7 +976,6 @@ export class CoreFileUploaderHelperProvider {
             return errorUploading(Translate.instant('core.fileuploader.errormustbeonlinetoupload'));
         }
 
-        let file: File | undefined;
         let size = 0;
 
         if (checkSize) {
@@ -874,8 +987,8 @@ export class CoreFileUploaderHelperProvider {
             }
         }
 
-        if (maxSize != -1 && size > maxSize && file) {
-            throw this.createMaxBytesError(maxSize, file.name);
+        if (maxSize !== -1 && size > maxSize) {
+            throw this.createMaxBytesError(maxSize, CoreFileUtils.getFileAndDirectoryFromPath(path).name);
         }
 
         if (size > 0) {

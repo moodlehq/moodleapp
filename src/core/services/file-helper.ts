@@ -368,10 +368,9 @@ export class CoreFileHelperProvider {
                 const siteId = CoreSites.getCurrentSiteId();
 
                 const path = await CoreFilepool.getFilePathByUrl(siteId, fileUrl);
-                const fileEntry = await CoreFile.getFile(path);
-                const fileObject = await CoreFile.getFileObjectFromFileEntry(fileEntry);
+                const fileSize = await CoreFile.getFileSize(path);
 
-                return fileObject.size;
+                return fileSize;
             } catch {
                 // Error getting the file, maybe it's not downloaded. Get remote size.
                 const size = await CoreWS.getRemoteFileSize(fileUrl);
@@ -386,9 +385,7 @@ export class CoreFileHelperProvider {
 
         // If it's a local file, get its size.
         if ('name' in file) {
-            const fileObject = await CoreFile.getFileObjectFromFileEntry(file);
-
-            return fileObject.size;
+            return await CoreFile.getFileSize(file.toURL());
         }
 
         throw new CoreError('Couldn\'t determine file size');

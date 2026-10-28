@@ -37,7 +37,6 @@ import {
 } from '@ionic/angular';
 
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { WebView as WebViewService } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
@@ -165,7 +164,6 @@ export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const SQLite = makeSingleton(SQLiteService);
 export const WebIntent = makeSingleton(WebIntentService);
-export const WebView = makeSingleton(WebViewService);
 
 // Convert Capacitor classes to singletons to be able to provide mocks for webapp.
 export const Camera = makeSingleton(CAPACITOR_CAMERA);

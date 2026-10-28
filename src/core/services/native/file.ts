@@ -21,6 +21,8 @@ import {
 } from '@classes/native/filesystem';
 import { CoreFile, CoreFileFormat } from '@services/file';
 import { CorePath } from '@static/path';
+import { CorePlatform } from '@services/platform';
+import { CoreBytesConstants } from '@/core/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Filesystem } from '@singletons';
 import { CoreFileUtils } from '@static/file-utils';
@@ -62,7 +64,22 @@ export class File {
 	documentsDirectory = '';
 	sharedDirectory = '';
 
-	cordovaFileError = window.FileError;
+	cordovaFileError = {
+		1: 'NOT_FOUND_ERR',
+		2: 'SECURITY_ERR',
+		3: 'ABORT_ERR',
+		4: 'NOT_READABLE_ERR',
+		5: 'ENCODING_ERR',
+		6: 'NO_MODIFICATION_ALLOWED_ERR',
+		7: 'INVALID_STATE_ERR',
+		8: 'SYNTAX_ERR',
+		9: 'INVALID_MODIFICATION_ERR',
+		10: 'QUOTA_EXCEEDED_ERR',
+		11: 'TYPE_MISMATCH_ERR',
+		12: 'PATH_EXISTS_ERR',
+		13: 'WRONG_ENTRY_TYPE',
+		14: 'DIR_READ_ERR',
+	};
 
 	/**
 	 * Create FileMock service.
@@ -72,14 +89,17 @@ export class File {
 	}
 
 	/**
-	 * Get free disk space in bytes.
+	 * Get free disk space, keeping the units that Cordova returned.
 	 *
-	 * @returns Remaining free disk space in bytes.
+	 * @returns Remaining free disk space, in bytes in iOS and in KB in Android.
 	 */
 	async getFreeDiskSpace(): Promise<number> {
-		// @todo Capacitor: Once calculateFreeSpace is properly implemented, evaluate if we should convert the
-		// units to keep backwards compatibility with Cordova. Cordova returned bytes in iOS and KB in Android.
-		return CoreFile.calculateFreeSpace();
+		const bytes = await CoreFile.calculateFreeSpace();
+		if (bytes === null) {
+			return -1;
+		}
+
+		return CorePlatform.isAndroid() ? Math.floor(bytes / CoreBytesConstants.KILOBYTE) : bytes;
 	}
 
 	/**

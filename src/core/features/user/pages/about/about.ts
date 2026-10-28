@@ -40,7 +40,6 @@ import {
 } from '@features/user/constants';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreFile } from '@services/file';
-import { CoreFileUtils } from '@static/file-utils';
 
 /**
  * Page that displays info about a user.
@@ -230,9 +229,6 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
         try {
             let fileEntry = await CoreFileUploaderHelper.selectFile(maxSize, false, title, mimetypes);
             const fileObject = await CoreFile.getFileObjectFromFileEntry(fileEntry);
-            // @todo Capacitor: Test this once cordova plugin file has been removed. Meanwhile this will fail.
-            // In devices, fileObject is already a Blob.
-            const image = await CoreFileUtils.filetoBlob(fileObject);
 
             const { CoreViewerImageEditComponent } = await import('@features/viewer/components/image-edit/image-edit');
 
@@ -240,13 +236,12 @@ export default class CoreUserAboutPage implements OnInit, OnDestroy {
                 component: CoreViewerImageEditComponent,
                 cssClass: 'core-modal-fullscreen',
                 componentProps: {
-                    image,
+                    image: fileObject,
                 },
             });
 
             if (editedImageBlob) {
                 // Override the file entry with the edited image.
-                // @todo Capacitor: Test this once cordova plugin file has been removed.
                 fileEntry = await CoreFile.writeFile(fileEntry.toURL(), editedImageBlob);
             } else {
                 return;
