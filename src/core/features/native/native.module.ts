@@ -21,7 +21,6 @@ import { QRScanner } from './plugins/qrscanner';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
-import { WebView } from '@awesome-cordova-plugins/ionic-webview/ngx';
 import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
 /**
@@ -50,6 +49,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { Zip } = await import('@features/native/plugins/zip');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Badge } = await import('./plugins/badge');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { WebView } = await import('./plugins/webview');
 
     const { Device } = await import('@services/native/device');
 
@@ -85,7 +86,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         SQLite,
         StatusBar,
         WebIntent,
-        WebView,
         provideAppInitializer(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
             (<any> window).FileTransfer = FileTransferCompat;
