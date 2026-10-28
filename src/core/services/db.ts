@@ -63,6 +63,7 @@ export class CoreDbProvider {
      */
     protected async initialize(): Promise<void> {
         await CorePlatform.ready();
+        await this.manager.ready();
         await this.lifecycle.prepareGlobalDatabase();
         const global = this.manager.getConnection('MoodleMobile');
         await global.open();

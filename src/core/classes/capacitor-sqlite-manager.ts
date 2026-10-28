@@ -149,12 +149,18 @@ export class CoreCapacitorSQLiteManager {
     }
 
     /**
-     * Share the all-database migration barrier, including its failure, across every operation.
+     * Release registrations retained across WebView reloads before native inventory or recovery.
+     * Share this barrier, including its failure, across every operation.
      *
      * @returns Promise resolved when native lifecycle operations are safe.
      */
-    protected ready(): Promise<void> {
-        this.initialization ??= Promise.resolve().then(() => this.lifecycle.ready());
+    ready(): Promise<void> {
+        this.initialization ??= Promise.resolve().then(async () => {
+            // This new JavaScript manager owns no connections yet; native registrations may outlive the WebView.
+            await this.sqlite.checkConnectionsConsistency({ dbNames: [], openModes: [] });
+
+            return this.lifecycle.ready();
+        });
 
         return this.initialization;
     }
@@ -254,7 +260,7 @@ export class CoreCapacitorSQLiteManager {
 }
 
 export type CoreCapacitorSQLiteManagerDriver = CoreCapacitorSQLiteDriver &
-    Pick<CapacitorSQLitePlugin, 'createConnection' | 'closeConnection' | 'deleteDatabase'>;
+    Pick<CapacitorSQLitePlugin, 'createConnection' | 'closeConnection' | 'deleteDatabase' | 'checkConnectionsConsistency'>;
 
 /**
  * Native database checks shared by every connection operation.
