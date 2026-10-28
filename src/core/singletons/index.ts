@@ -39,7 +39,6 @@ import {
 import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
-import { WebIntent as WebIntentService } from '@awesome-cordova-plugins/web-intent/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -163,7 +162,6 @@ export function makeSingleton<Service extends object = object>(
 export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const SQLite = makeSingleton(SQLiteService);
-export const WebIntent = makeSingleton(WebIntentService);
 
 // Convert Capacitor classes to singletons to be able to provide mocks for webapp.
 export const Camera = makeSingleton(CAPACITOR_CAMERA);

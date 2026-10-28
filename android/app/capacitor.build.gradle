@@ -24,7 +24,6 @@ dependencies {
     implementation project(':capawesome-capacitor-file-picker')
     implementation project(':capgo-capacitor-zip')
     implementation project(':capacitor-plugin-moodleapp')
-    implementation "androidx.core:core:1.1.0"
     implementation "androidx.core:core:1.12.0"
 }
 apply from: "../../node_modules/@moodlehq/cordova-plugin-qrscanner/src/android/qrscanner.gradle"
