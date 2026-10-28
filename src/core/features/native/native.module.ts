@@ -19,7 +19,6 @@ import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { StatusBar } from '@awesome-cordova-plugins/status-bar/ngx';
 import { WebIntent } from '@awesome-cordova-plugins/web-intent/ngx';
 import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
@@ -51,6 +50,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { Badge } = await import('./plugins/badge');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { WebView } = await import('./plugins/webview');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { StatusBar } = await import('./plugins/status-bar');
 
     const { Device } = await import('@services/native/device');
 
@@ -84,7 +85,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Push,
         QRScanner,
         SQLite,
-        StatusBar,
         WebIntent,
         provideAppInitializer(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any

@@ -78,6 +78,7 @@
         "@moodlehq/cordova-plugin-inappbrowser": "7.0.0-moodle.1",
         "@moodlehq/cordova-plugin-intent": "2.2.0-moodle.3",
         "@moodlehq/cordova-plugin-qrscanner": "3.0.1-moodle.8",
+        "@moodlehq/cordova-plugin-statusbar": "^4.0.0-moodle.7",
         "@ngx-translate/core": "18.0.0",
         "@ngx-translate/http-loader": "18.0.0",
         "@stylistic/eslint-plugin": "5.10.0",

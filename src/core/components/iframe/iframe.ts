@@ -47,6 +47,7 @@ import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non
 import { BackButtonEvent } from '@ionic/angular';
 import { BackButtonPriority } from '@/core/constants';
 import { CoreFile } from '@services/file';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Component to render an iframe, handling auto-login if needed, fixing iOS cookies, check if content should be opened
@@ -444,12 +445,11 @@ export class CoreIframeComponent implements OnDestroy {
             this.fullscreen.set(!this.fullscreen());
         }
 
-        // @todo Capacitor
-        // if (this.fullscreen()) {
-        //     StatusBar.hide();
-        // } else {
-        //     StatusBar.show();
-        // }
+        if (this.fullscreen()) {
+            CoreNativeStatusBar.hide();
+        } else {
+            CoreNativeStatusBar.show();
+        }
 
         if (this.style) {
             // Done this way because of the shadow DOM.
