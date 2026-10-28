@@ -13,61 +13,55 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { cordova } from '@awesome-cordova-plugins/core';
-import { StatusBar as StatusBarService } from '@awesome-cordova-plugins/status-bar/ngx';
+import { SystemBars as CapacitorSystemBars, SystemBarsStyle, SystemBarType } from '@capacitor/core';
 import { makeSingleton } from '@singletons';
-
-const CordovaStatusBar = makeSingleton(StatusBarService);
+import { CorePlatform } from '@services/platform';
+import { CoreColors } from '@static/colors';
+import { CoreLogger } from '@static/logger';
+import { MoodleAppCapacitorPlugins } from 'capacitor-plugin-moodleapp';
 
 /**
- * Service wrapping the Moodle Cordova StatusBar fork.
+ * Controls edge-to-edge system bars while retaining the legacy StatusBar API.
  */
 @Injectable({ providedIn: 'root' })
 export class StatusBar {
 
-    /**
-     * Whether the status bar is currently visible.
-     *
-     * @returns Visibility reported by the Cordova plugin.
-     */
-    get isVisible(): boolean {
-        return CordovaStatusBar.isVisible;
-    }
-
-    set isVisible(visible: boolean) {
-        CordovaStatusBar.isVisible = visible;
-    }
+    protected logger = CoreLogger.getInstance('CoreNativeStatusBar');
+    protected pending: Promise<void> = Promise.resolve();
+    protected statusStyle?: SystemBarsStyle;
+    protected navigationStyle?: SystemBarsStyle;
+    protected statusColor?: string;
+    protected navigationColor?: string;
+    protected initialized = false;
 
     /**
-     * Set whether the status bar overlays the WebView.
-     *
-     * @param doesOverlay Whether the status bar overlays the WebView.
+     * Restore app-specific icon styles after resuming the app.
      */
-    overlaysWebView(doesOverlay: boolean): void {
-        CordovaStatusBar.overlaysWebView(doesOverlay);
-    }
+    initialize(): void {
+        if (this.initialized || !CorePlatform.isMobile()) {
+            return;
+        }
 
-    /**
-     * Use dark status bar text on a light background.
-     */
-    styleDefault(): void {
-        CordovaStatusBar.styleDefault();
-    }
+        this.initialized = true;
+        document.body.classList.add('core-native-system-bars');
 
-    /**
-     * Use light status bar text on a dark background.
-     */
-    styleLightContent(): void {
-        CordovaStatusBar.styleLightContent();
-    }
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
 
-    /**
-     * Set the status bar background using a Cordova colour name.
-     *
-     * @param colorName Background colour name.
-     */
-    backgroundColorByName(colorName: string): void {
-        CordovaStatusBar.backgroundColorByName(colorName);
+        CorePlatform.resume.subscribe(() => {
+            this.enqueue('restore appearance', async () => {
+                if (this.statusStyle) {
+                    await CapacitorSystemBars.setStyle({ style: this.statusStyle, bar: SystemBarType.StatusBar });
+                }
+                if (this.navigationStyle && CorePlatform.isAndroid()) {
+                    await CapacitorSystemBars.setStyle({ style: this.navigationStyle, bar: SystemBarType.NavigationBar });
+                }
+                if (this.navigationColor && CorePlatform.isAndroid()) {
+                    await MoodleAppCapacitorPlugins.systemBars.setNavigationBarColor({ color: this.navigationColor });
+                }
+            });
+        });
     }
 
     /**
@@ -75,8 +69,17 @@ export class StatusBar {
      *
      * @param hexString Background colour, including CSS hexadecimal shorthand.
      */
-    backgroundColorByHexString(hexString: string): void {
-        CordovaStatusBar.backgroundColorByHexString(hexString);
+    setStatusBarColor(hexString: string): void {
+        this.enqueue('set status bar background', async () => {
+            const color = this.normalizeColor(hexString);
+            if (color === this.statusColor) {
+                return;
+            }
+
+            document.documentElement.style.setProperty('--core-status-bar-background', color);
+            await this.setStatusStyle(this.getStyle(color));
+            this.statusColor = color;
+        });
     }
 
     /**
@@ -84,22 +87,109 @@ export class StatusBar {
      *
      * @param hexString Background colour, including CSS hexadecimal shorthand.
      */
-    navigationBackgroundColorByHexString(hexString: string): void {
-        cordova(CordovaStatusBar, 'navigationBackgroundColorByHexString', { sync: true }, [hexString]);
+    setNavigationBarColor(hexString: string): void {
+        if (!CorePlatform.isAndroid()) {
+            return;
+        }
+
+        this.enqueue('set navigation bar background', async () => {
+            const color = this.normalizeColor(hexString);
+            if (color === this.navigationColor) {
+                return;
+            }
+
+            document.documentElement.style.setProperty('--core-navigation-bar-background', color);
+            await MoodleAppCapacitorPlugins.systemBars.setNavigationBarColor({ color });
+            const style = this.getStyle(color);
+            await CapacitorSystemBars.setStyle({ style, bar: SystemBarType.NavigationBar });
+            this.navigationStyle = style;
+            this.navigationColor = color;
+        });
     }
 
     /**
      * Hide the status bar, including the navigation bar on Android.
      */
     hide(): void {
-        CordovaStatusBar.hide();
+        this.enqueue('hide system bars', async () => {
+            await CapacitorSystemBars.hide(CorePlatform.isAndroid() ? undefined : { bar: SystemBarType.StatusBar });
+            document.body.classList.add('core-status-bar-hidden');
+        });
     }
 
     /**
      * Show the status bar, including the navigation bar on Android.
      */
     show(): void {
-        CordovaStatusBar.show();
+        this.enqueue('show system bars', async () => {
+            await CapacitorSystemBars.show(CorePlatform.isAndroid() ? undefined : { bar: SystemBarType.StatusBar });
+            document.body.classList.remove('core-status-bar-hidden');
+        });
+    }
+
+    /**
+     * Serialise native operations and report failures for the legacy synchronous API.
+     *
+     * @param action Operation description for error reporting.
+     * @param operation Native operation.
+     */
+    protected enqueue(action: string, operation: () => Promise<void>): void {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        this.pending = this.pending.then(async () => {
+            await CorePlatform.ready();
+
+            return operation();
+        }).catch(error => {
+            this.logger.error(`Could not ${action}`, error);
+        });
+    }
+
+    /**
+     * Normalise the fork's optional hash and three-digit hexadecimal colour syntax.
+     *
+     * @param color Hexadecimal colour.
+     * @returns Six-digit hexadecimal colour.
+     */
+    protected normalizeColor(color: string): string {
+        if (!/^#?(?:[\da-f]{3}|[\da-f]{6})$/i.test(color)) {
+            throw new Error(`Invalid system bar colour: ${color}`);
+        }
+
+        const hex = color.replace('#', '');
+
+        return `#${hex.length === 3 ? hex.split('').map(component => component.repeat(2)).join('') : hex}`.toUpperCase();
+    }
+
+    /**
+     * Preserve the fork's platform-specific contrast thresholds.
+     *
+     * @param color Normalised opaque colour.
+     * @returns Background theme used by Capacitor to select contrasting icons.
+     */
+    protected getStyle(color: string): SystemBarsStyle {
+        const [red, green, blue] = CoreColors.getColorRGBA(color).map(component => component / 255);
+        const linear = (component: number) => component <= 0.04045
+            ? component / 12.92
+            : ((component + 0.055) / 1.055) ** 2.4;
+        const brightness = CorePlatform.isAndroid()
+            ? 0.2126 * linear(red) + 0.7152 * linear(green) + 0.0722 * linear(blue)
+            : (299 * red + 587 * green + 114 * blue) / 1000;
+
+        return brightness < 0.5 ? SystemBarsStyle.Dark : SystemBarsStyle.Light;
+    }
+
+    /**
+     * Apply the top bar icon style and retain it for resume.
+     *
+     * @param style Background theme.
+     */
+    protected async setStatusStyle(style: SystemBarsStyle): Promise<void> {
+        await CapacitorSystemBars.setStyle({ style, bar: SystemBarType.StatusBar });
+        this.statusStyle = style;
+        this.statusColor = undefined;
     }
 
 }

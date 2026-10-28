@@ -260,7 +260,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        CoreNativeStatusBar.backgroundColorByHexString(color);
+        CoreNativeStatusBar.setStatusBarColor(color);
     }
 
     /**
@@ -280,7 +280,7 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
-        CoreNativeStatusBar.navigationBackgroundColorByHexString(color);
+        CoreNativeStatusBar.setNavigationBarColor(color);
     }
 
     /**
