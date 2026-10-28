@@ -43,6 +43,12 @@ export type CoreFileUploaderOptions = CoreWSFileUploadOptions & {
      * Whether the file should be deleted after the upload (if success).
      */
     deleteAfterUpload?: boolean;
+
+    /**
+     * Name the file should have in the server. If it's different from the name of the file path, a temporary copy
+     * with that name is uploaded instead, because the file transfer uses the name in the path.
+     */
+    fileName?: string;
 };
 
 /**
@@ -353,6 +359,7 @@ export class CoreFileUploaderProvider {
             CoreMimetype.getFileExtension(params.name),
         );
         options.deleteAfterUpload = !!params.deleteAfterUpload;
+        options.fileName = params.name || undefined;
         options.itemId = params.itemId || 0;
         options.fileArea = params.fileArea;
 
@@ -619,16 +626,51 @@ export class CoreFileUploaderProvider {
         const ftOptions = CoreUtils.clone(options);
 
         delete ftOptions.deleteAfterUpload;
+        delete ftOptions.fileName;
 
         const site = await CoreSites.getSite(siteId);
+        const copyPath = await this.copyToTmpWithName(uri, options.fileName);
 
-        const result = await site.uploadFile(uri, ftOptions, onProgress);
+        let result: CoreWSUploadFileResult;
+
+        try {
+            result = await site.uploadFile(copyPath ?? uri, ftOptions, onProgress);
+        } finally {
+            if (copyPath) {
+                // Always delete the copy, it was only created for the upload.
+                await CorePromiseUtils.ignoreErrors(CoreFile.removeFile(copyPath));
+            }
+        }
 
         if (deleteAfterUpload) {
             await CorePromiseUtils.ignoreErrors(CoreFile.removeFile(uri));
         }
 
         return result;
+    }
+
+    /**
+     * Create a copy of a file in the temporary folder if the file name is different from the name in its path.
+     *
+     * @param path File path.
+     * @param fileName Name the file should have when uploaded.
+     * @returns Promise resolved with the path of the copy, undefined if no copy was needed.
+     */
+    protected async copyToTmpWithName(path: string, fileName?: string): Promise<string | undefined> {
+        if (!fileName || CoreFileUtils.getFileAndDirectoryFromPath(path).name === fileName) {
+            return;
+        }
+
+        // Capacitor file transfer doesn't support overriding the multipart filename.
+        // Copy the file to a temporary path with the expected basename so Moodle receives the logical file name.
+        // Otherwise Moodle could receive the file name with a hash, like it's done in filepool.
+        // See https://github.com/ionic-team/capacitor-file-transfer/issues/85
+        const uniqueName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName);
+        const copyPath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, uniqueName);
+
+        await CoreFile.copyFile(path, copyPath);
+
+        return copyPath;
     }
 
     /**
@@ -703,8 +745,6 @@ export class CoreFileUploaderProvider {
         let fileName = '';
         let fileEntry: FileEntry | undefined;
 
-        const isOnline = !CoreFileUtils.isFileEntry(file);
-
         if (CoreFileUtils.isFileEntry(file)) {
             // Local file, we already have the file entry.
             fileName = file.name;
@@ -731,30 +771,16 @@ export class CoreFileUploaderProvider {
         // Now upload the file.
         const extension = CoreMimetype.getFileExtension(fileName);
         const mimetype = extension ? CoreMimetype.getMimeType(extension) : undefined;
-        let filePath = fileEntry.toURL();
-
-        if (isOnline && fileName && CoreFileUtils.getFileAndDirectoryFromPath(filePath).name !== fileName) {
-            // Capacitor file transfer doesn't support overriding the multipart filename.
-            // Copy the file to a temporary path with the expected basename so Moodle receives the logical file name.
-            // Otherwise Moodle could receive the file name with a hash, like it's done in filepool.
-            // See https://github.com/ionic-team/capacitor-file-transfer/issues/85
-            const uploadFileName = await CoreFile.getUniqueNameInFolder(CoreFileProvider.TMPFOLDER, fileName);
-            const uploadFilePath = CorePath.concatenatePaths(CoreFileProvider.TMPFOLDER, uploadFileName);
-
-            await CoreFile.copyFile(filePath, uploadFilePath);
-
-            filePath = uploadFilePath;
-        }
 
         const options = this.getFileUploadOptions({
             name: fileName,
             mimetype: mimetype,
-            deleteAfterUpload: isOnline,
+            deleteAfterUpload: false,
             fileArea: 'draft',
             itemId,
         });
 
-        const result = await this.uploadFile(filePath, options, undefined, siteId);
+        const result = await this.uploadFile(fileEntry.toURL(), options, undefined, siteId);
 
         return result.itemid;
     }

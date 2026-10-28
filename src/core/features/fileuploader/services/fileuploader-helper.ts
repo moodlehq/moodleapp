@@ -818,24 +818,23 @@ export class CoreFileUploaderHelperProvider {
             throw this.createMaxBytesError(maxSize, CoreFileUtils.getFileAndDirectoryFromPath(path).name);
         }
 
+        let result: CoreWSUploadFileResult | FileEntry;
+
         if (upload) {
             await this.confirmUploadFile(size);
+
+            // The original file is deleted after a successful upload, not by uploadFile, so it's kept if the user cancels.
+            const options = CoreFileUploader.getFileUploadOptions({ name: fileName });
+            result = await this.uploadFile(path, maxSize ?? -1, false, options);
+        } else {
+            result = await this.copyToTmpFolder(path, false, maxSize, undefined, fileName);
         }
-
-        if (upload) {
-            const options = CoreFileUploader.getFileUploadOptions({ name: fileName, deleteAfterUpload: deleteAfter });
-
-            return this.uploadFile(path, maxSize ?? -1, false, options);
-        }
-
-        const copy = await this.copyToTmpFolder(path, false, maxSize, undefined, fileName);
 
         if (deleteAfter) {
-            // We have copied the file. Now delete the original one if we have permission.
             await CorePromiseUtils.ignoreErrors(CoreFile.removeFileByFileEntry(fileEntry));
         }
 
-        return copy;
+        return result;
     }
 
     /**
