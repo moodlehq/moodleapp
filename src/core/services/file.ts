@@ -416,18 +416,18 @@ export class CoreFileProvider {
 
     /**
      * Get file object from a FileEntry.
+     * Use this function only if strictly needed, since it loads the file in memory.
      *
      * @param entry Relative path to the file.
      * @returns Promise to be resolved when the file is retrieved.
      */
     async getFileObjectFromFileEntry(entry: FileEntry): Promise<File> {
-        // @todo Capacitor: evaluate if we want to deprecate this function and try to always work with paths or FileEntry objects.
         // File type is used a lot in file uploader, check this after FileTransfer has been migrated.
         this.logger.debug(`Get file object of: ${entry.toURL()}`);
 
         const uri = this.normalizePathForFilesystem(entry.toURL());
 
-        // Guess extension from the extension, Capacitor doesn't provide a way to obtain the MIME type.
+        // Guess mimetype from the extension, Capacitor doesn't provide a way to obtain the MIME type.
         const extension = CoreMimetype.getFileExtension(entry.name);
         const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
 
