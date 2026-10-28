@@ -434,20 +434,18 @@ export class CoreFileProvider {
             this.readAsArrayBuffer(uri),
             Filesystem.stat({ path: uri }),
         ]);
-        const blob = new Blob([data], { type: mimeType });
         const lastModified = stat.mtime ?? Date.now();
+        const file = new File([data], entry.name, { type: mimeType, lastModified });
 
-        // @todo Capacitor: Use the File class once cordova plugin file has been removed. Cordova plugin overrides File class.
-        // return new File([blob], entry.name, { type: blob.type, lastModified: Date.now() });
-        return Object.assign(blob, {
-            name: entry.name,
-            localURL: entry.toURL(),
-            start: 0,
-            end: blob.size,
-            lastModifiedDate: lastModified,
-            lastModified,
-            webkitRelativePath: '',
+        // Keep the legacy Cordova properties. lastModifiedDate is getter-only in some browsers, so define it instead of assigning.
+        Object.defineProperties(file, {
+            localURL: { value: entry.toURL(), configurable: true, writable: true },
+            start: { value: 0, configurable: true, writable: true },
+            end: { value: file.size, configurable: true, writable: true },
+            lastModifiedDate: { value: new Date(lastModified), configurable: true, writable: true },
         });
+
+        return file;
     }
 
     /**
@@ -640,7 +638,6 @@ export class CoreFileProvider {
         this.logger.debug(`Read file from file data with format ${format}`);
 
         return new Promise((resolve, reject): void => {
-            // @todo Capacitor: Test this once cordova plugin file has been removed.
             const reader = new FileReader();
 
             reader.onloadend = (event): void => {
@@ -727,7 +724,6 @@ export class CoreFileProvider {
                 await Filesystem.writeFile({ path: absolutePath, data, encoding: Encoding.UTF8, recursive: true });
             }
         } else {
-            // @todo Capacitor: Test this once cordova plugin file has been removed.
             const base64 = await this.blobToBase64(data);
 
             if (append) {
@@ -772,7 +768,6 @@ export class CoreFileProvider {
         offset = 0,
         append?: boolean,
     ): Promise<FileEntry> {
-        // @todo Capacitor: Test this once cordova plugin file has been removed.
         offset = offset || 0;
 
         try {

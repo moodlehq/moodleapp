@@ -105,23 +105,10 @@ export class CoreFileUtils {
      *
      * @param fileEntry File to transform.
      * @returns Promise resolved with the Blob.
+     * @deprecated since 6.0. File inherits from Blob, no need to transform it.
      */
     static filetoBlob(fileEntry: File): Promise<Blob> {
-        // @todo Capacitor: Still needed? File inherits from Blob. Check after remove cordova plugin.
-        return new Promise((resolve, reject): void => {
-            const reader = new FileReader();
-            reader.onload = () => {
-                if (!reader.result) {
-                    reject(new Error('FileReader returned no result.'));
-
-                    return;
-                }
-                resolve(new Blob([new Uint8Array(reader.result as ArrayBuffer)], { type: fileEntry.type }));
-            };
-            reader.onerror = reject;
-
-            return reader.readAsArrayBuffer(fileEntry);
-        });
+        return Promise.resolve(fileEntry);
     }
 
     /**
