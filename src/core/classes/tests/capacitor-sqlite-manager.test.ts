@@ -34,6 +34,12 @@ describe('CoreCapacitorSQLiteManager', () => {
         registered = new Set();
         opened = new Set();
         driver = {
+            checkConnectionsConsistency: jest.fn(async () => {
+                registered.clear();
+                opened.clear();
+
+                return { result: false };
+            }),
             createConnection: jest.fn(async ({ database = '' }) => {
                 if (registered.has(database)) {
                     throw new Error('Duplicate registration');
@@ -116,6 +122,40 @@ describe('CoreCapacitorSQLiteManager', () => {
         ready.resolve();
         await Promise.all([read, other, deletion]);
         expect(lifecycle.ready).toHaveBeenCalledTimes(1);
+    });
+
+    it('releases registrations from an earlier WebView before lifecycle recovery and registers only once', async () => {
+        registered.add(name);
+        opened.add(name);
+        jest.mocked(lifecycle.ready).mockImplementation(async () => {
+            expect(registered.size).toBe(0);
+            expect(opened.size).toBe(0);
+        });
+
+        await Promise.all([
+            manager.ready(),
+            manager.getConnection(name).executeSql('SELECT 1'),
+            manager.getConnection(name).executeSql('SELECT 2'),
+        ]);
+
+        expect(driver.checkConnectionsConsistency).toHaveBeenCalledTimes(1);
+        expect(driver.checkConnectionsConsistency).toHaveBeenCalledWith({ dbNames: [], openModes: [] });
+        expect(driver.createConnection).toHaveBeenCalledTimes(1);
+        expect(registered.has(name)).toBe(true);
+    });
+
+    it('blocks inventory, queries and deletion if retained connections cannot be released', async () => {
+        const error = new Error('Cannot close retained connection');
+        jest.mocked(driver.checkConnectionsConsistency).mockRejectedValue(error);
+
+        await expect(manager.ready()).rejects.toBe(error);
+        await expect(manager.getConnection(name).executeSql('SELECT 1')).rejects.toBe(error);
+        await expect(manager.deleteDatabase(name)).rejects.toBe(error);
+
+        expect(driver.checkConnectionsConsistency).toHaveBeenCalledTimes(1);
+        expect(lifecycle.ready).not.toHaveBeenCalled();
+        expect(lifecycle.prepareDelete).not.toHaveBeenCalled();
+        expect(driver.createConnection).not.toHaveBeenCalled();
     });
 
     it('latches startup errors across names and never reaches the plugin', async () => {
@@ -367,6 +407,7 @@ describe('CoreCapacitorSQLiteManager', () => {
     });
 
     it('does not close a registration it did not successfully acquire', async () => {
+        await manager.ready();
         registered.add(name);
         await expect(manager.getConnection(name).open()).rejects.toThrow('Duplicate registration');
         expect(driver.closeConnection).not.toHaveBeenCalled();

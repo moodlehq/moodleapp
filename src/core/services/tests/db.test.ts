@@ -184,6 +184,11 @@ describe('CoreDbProvider native lifecycle', () => {
             }),
         };
         driver = {
+            checkConnectionsConsistency: jest.fn(async () => {
+                registered.clear();
+
+                return { result: false };
+            }),
             isDatabase: jest.fn(async ({ database = '' }) => ({ result: files.has(database + 'SQLite.db') })),
             createConnection: jest.fn(async ({ database = '' }) => {
                 if (registered.has(database)) {
@@ -254,6 +259,27 @@ describe('CoreDbProvider native lifecycle', () => {
         await provider.completeDatabaseInitialization('MoodleMobile');
         expect(records.get('MoodleMobile')).toMatchObject({ state: 'ready' });
         expect(provider.getDB('MoodleMobile')).toBe(db);
+    });
+
+    it('reopens retained native databases after a WebView reload without losing saved data', async () => {
+        seed();
+        engine().exec('INSERT INTO core_config VALUES (\'retained\', \'value\')');
+        await provider.ready();
+        expect(registered.has('MoodleMobile')).toBe(true);
+
+        provider = new TestDbProvider(storage, driver);
+        jest.spyOn(provider, 'loggingEnabled').mockReturnValue(false);
+        jest.mocked(storage.list).mockImplementationOnce(async () => {
+            expect(registered.size).toBe(0);
+
+            return [...files];
+        });
+
+        const rows = await provider.getDB('MoodleMobile').getAllRecords('core_config');
+
+        expect(rows).toEqual([{ name: 'retained', value: 'value' }]);
+        expect(driver.checkConnectionsConsistency).toHaveBeenCalledTimes(2);
+        expect(registered.has('MoodleMobile')).toBe(true);
     });
 
     it('does not reserve an unknown site on getDB or failed open', async () => {
