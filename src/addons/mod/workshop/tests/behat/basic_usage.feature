@@ -100,7 +100,6 @@ Feature: Test basic usage of workshop activity in app
     Then I should see "calculated: 1"
 
     When I close the browser tab opened by the app
-    And I pull to refresh in the app
     Then I should find "Grading evaluation phase" in the app
 
     # Closed
@@ -111,7 +110,6 @@ Feature: Test basic usage of workshop activity in app
     Then I should see "Closed"
 
     When I close the browser tab opened by the app
-    And I pull to refresh in the app
     Then I should find "Closed" in the app
     And I should find "Conclusion 1" in the app
     And the following events should have been logged for "student1" in the app:

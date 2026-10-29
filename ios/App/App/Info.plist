@@ -404,12 +404,14 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>moodlemobile</string>
-			</array>
-		</dict>
+	<dict>
+		<key>CFBundleURLName</key>
+		<string>com.moodle.moodlemobile</string>
+		<key>CFBundleURLSchemes</key>
+		<array>
+		<string>moodlemobile</string>
+		</array>
+	</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
