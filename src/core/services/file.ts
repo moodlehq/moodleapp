@@ -96,26 +96,10 @@ export class CoreFileProvider {
 
     protected logger = CoreLogger.getInstance('CoreFileProvider');
     protected initialized = false;
-    protected basePath = '';
-    protected isHTMLAPI = false;
+    protected fileSystemPath = '';
 
-    /**
-     * Sets basePath to use with HTML API. Reserved for core use.
-     *
-     * @param path Base path to use.
-     */
-    setHTMLBasePath(path: string): void {
-        this.isHTMLAPI = true;
-        this.basePath = path;
-    }
-
-    /**
-     * Checks if we're using HTML API.
-     *
-     * @returns True if uses HTML API, false otherwise.
-     */
-    usesHTMLAPI(): boolean {
-        return this.isHTMLAPI;
+    get basePath(): string {
+        return this.fileSystemPath;
     }
 
     /**
@@ -123,28 +107,35 @@ export class CoreFileProvider {
      *
      * @returns Promise to be resolved when the initialization is finished.
      */
-    async init(): Promise<void> {
+    async initialize(): Promise<void> {
         if (this.initialized) {
             return;
         }
 
         await CorePlatform.ready();
 
+        let fsUri = '';
         if (CorePlatform.isAndroid()) {
             // Capacitor returns .../files for Directory.External. Use the parent to keep compatibility with Cordova paths.
             const { uri } = await Filesystem.getUri({ directory: Directory.External, path: '' });
-            this.basePath = CoreText.addEndingSlash(uri.replace(/\/files\/?$/, ''));
+            fsUri = uri.replace(/\/files\/?$/, '');
         } else if (CorePlatform.isIOS()) {
             const { uri } = await Filesystem.getUri({ directory: Directory.Documents, path: '' });
-            this.basePath = CoreText.addEndingSlash(uri);
-        } else if (this.basePath === '') {
-            this.logger.error('Error getting device OS.');
-
-            return Promise.reject(new CoreError('Error getting device OS to initialize file system.'));
+            fsUri = uri;
+        } else {
+            // Options is not used for browsers, just get the URI.
+            const { uri } = await Filesystem.getUri({ directory: Directory.External, path: '' });
+            fsUri = uri;
         }
 
+        if (fsUri === '') {
+            return Promise.reject(new CoreError('Error initializing file system: base path not set.'));
+        }
+
+        this.fileSystemPath = CoreText.addEndingSlash(fsUri);
+
         this.initialized = true;
-        this.logger.debug(`FS initialized: ${this.basePath}`);
+        this.logger.debug(`FS initialized: ${this.fileSystemPath}`);
     }
 
     /**
@@ -164,7 +155,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the file is retrieved.
      */
     async getFile(path: string): Promise<FileEntry> {
-        await this.init();
         this.logger.debug(`Get file: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -184,8 +174,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the directory is retrieved.
      */
     async getDir(path: string): Promise<DirectoryEntry> {
-        await this.init();
-
         this.logger.debug(`Get directory: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -223,8 +211,6 @@ export class CoreFileProvider {
         failIfExists?: boolean,
         base?: string,
     ): Promise<FileEntry | DirectoryEntry> {
-        await this.init();
-
         const absolutePath = this.toAbsoluteAndNormalize(base ? CorePath.concatenatePaths(base, path) : path);
 
         this.logger.debug(`Create ${isDirectory ? 'dir' : 'file'} ${path}`);
@@ -301,11 +287,8 @@ export class CoreFileProvider {
      * Removes a directory and all its contents.
      *
      * @param path Relative path to the directory.
-     * @returns Promise to be resolved when the directory is deleted.
      */
     async removeDir(path: string): Promise<void> {
-        await this.init();
-
         this.logger.debug(`Remove directory: ${path}`);
 
         await Filesystem.rmdir({ path: this.toAbsoluteAndNormalize(path), recursive: true });
@@ -315,11 +298,8 @@ export class CoreFileProvider {
      * Removes a file and all its contents.
      *
      * @param path Relative path to the file.
-     * @returns Promise to be resolved when the file is deleted.
      */
     async removeFile(path: string): Promise<void> {
-        await this.init();
-
         this.logger.debug(`Remove file: ${path}`);
 
         await Filesystem.deleteFile({ path: this.toAbsoluteAndNormalize(path) });
@@ -329,7 +309,6 @@ export class CoreFileProvider {
      * Removes a file given its FileEntry.
      *
      * @param entry File Entry.
-     * @returns Promise resolved when the file is deleted.
      */
     async removeFileByFileEntry(entry: Entry): Promise<void> {
         if (entry.isDirectory) {
@@ -346,8 +325,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the contents are retrieved.
      */
     async getDirectoryContents(path: string): Promise<(FileEntry | DirectoryEntry)[]> {
-        await this.init();
-
         this.logger.debug(`Get contents of dir: ${path}`);
 
         const { files } = await Filesystem.readdir({ path: this.toAbsoluteAndNormalize(path) });
@@ -715,8 +692,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the file is written.
      */
     async writeFile(path: string, data: string | Blob, append?: boolean): Promise<FileEntry> {
-        await this.init();
-
         this.logger.debug(`Write file: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -857,32 +832,30 @@ export class CoreFileProvider {
      * Get the base path where the application files are stored.
      *
      * @returns Promise to be resolved when the base path is retrieved.
+     * @deprecated since 6.0. Use basePath getter instead. Not needed a promise anymore.
      */
     async getBasePath(): Promise<string> {
-        await this.init();
-
-        return CoreText.addEndingSlash(this.basePath);
+        return this.basePath;
     }
 
     /**
      * Get the base path where the application files are stored in the format to be used for downloads.
      *
      * @returns Promise to be resolved when the base path is retrieved.
-     * @deprecated since 6.0. Use getBasePathInstant() instead. Capacitor doesn't provide a cdvfile URL.
+     * @deprecated since 6.0. Use basePath getter instead. Capacitor doesn't provide a cdvfile URL.
      */
     async getBasePathToDownload(): Promise<string> {
-        await this.init();
-
-        return this.getBasePathInstant();
+        return this.basePath;
     }
 
     /**
      * Get the base path where the application files are stored. Returns the value instantly, without waiting for it to be ready.
      *
      * @returns Base path. If the service hasn't been initialized it will return an invalid value.
+     * @deprecated since 6.0. Use basePath getter instead.
      */
     getBasePathInstant(): string {
-        return CoreText.addEndingSlash(this.basePath);
+        return this.basePath;
     }
 
     /**
@@ -968,8 +941,6 @@ export class CoreFileProvider {
         if (!fileIsInAppFolder) {
             return this.copyOrMoveExternalFile(from, to, copy);
         }
-
-        await this.init();
 
         const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
@@ -1201,7 +1172,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the entry is copied/moved.
      */
     protected async copyOrMoveExternalFile(from: string, to: string, copy?: boolean): Promise<FileEntry> {
-        await this.init();
 
         // Create the destination dir if it doesn't exist.
         const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);

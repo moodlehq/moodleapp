@@ -82,7 +82,7 @@ export default class CoreSettingsDeviceInfoPage {
     deviceInfo: CoreSettingsDeviceInfo;
     deviceOsTranslated?: string;
     currentLangName?: string;
-    fsClickable = false;
+    canNavigatoToFilesystemRoot = !CorePlatform.isMobile(); // Wether is using Filesystem HTML API.
     showDevOptions = false;
     displaySiteUrl = false;
 
@@ -179,9 +179,8 @@ export default class CoreSettingsDeviceInfoPage {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        const basepath = await CoreFile.getBasePath();
+        const basepath = CoreFile.basePath;
         this.deviceInfo.fileSystemRoot = basepath;
-        this.fsClickable = CoreFile.usesHTMLAPI();
 
         const showDevOptionsOnConfig = await CoreConfig.get(CoreSettingsDeviceInfoPage.SHOW_DEV_OPTIONS, 0);
         this.devOptionsForced = CoreConstants.isDevOrTestingBuild();

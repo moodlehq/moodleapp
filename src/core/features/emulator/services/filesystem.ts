@@ -25,7 +25,6 @@ import {
     type DownloadFileResult,
     Encoding,
     type FilesystemPlugin,
-    type GetUriOptions,
     type GetUriResult,
     type MkdirOptions,
     type PermissionStatus,
@@ -162,6 +161,7 @@ type FileSystemWithToURL = Omit<FileSystem, 'root'> & {
 export class FilesystemMock implements FilesystemPlugin {
 
     protected loadingPromise?: Promise<string>;
+    protected basePath?: string;
 
     /**
      * Check read/write permissions.
@@ -331,11 +331,14 @@ export class FilesystemMock implements FilesystemPlugin {
     /**
      * Return full file URI for a path and directory.
      *
-     * @param options GetUri options.
      * @returns URI.
      */
-    async getUri(options: GetUriOptions): Promise<GetUriResult> {
-        return { uri: options.path };
+    async getUri(): Promise<GetUriResult> {
+        if (!this.basePath) {
+            this.basePath = await this.load();
+        }
+
+        return { uri: this.basePath };
     }
 
     /**

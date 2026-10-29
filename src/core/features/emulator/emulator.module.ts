@@ -14,8 +14,6 @@
 
 import { NgModule, provideAppInitializer } from '@angular/core';
 
-import { CoreEmulatorHelper } from './services/emulator-helper';
-
 // Ionic Native services.
 import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camera';
 import { CAPACITOR_FILE_OPENER, resolveCapacitorFileOpener } from '@services/native/file-opener';
@@ -91,8 +89,6 @@ import { CAPACITOR_ZIP, resolveCapacitorZip } from '@services/native/zip';
             }
 
             CoreNative.registerBrowserMock('secureStorage', new SecureStorageMock());
-
-            await CoreEmulatorHelper.load();
         }),
     ],
 })

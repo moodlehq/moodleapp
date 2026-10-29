@@ -77,7 +77,7 @@ export class CoreH5PPlayer {
         const site = await CoreSites.getSite(siteId);
 
         const contentId = this.getContentId(id);
-        const basePath = CoreFile.getBasePathInstant();
+        const basePath = CoreFile.basePath;
         const contentUrl = CoreFile.convertFileSrc(
             CorePath.concatenatePaths(
                 basePath,
