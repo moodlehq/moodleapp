@@ -67,15 +67,15 @@
             <ion-item (longPress)="copyItemInfo($event)">
                 <ion-label class="ion-text-wrap">
                     <p class="item-heading">{{ 'core.settings.filesystemroot' | translate }}</p>
-                    @if (fsClickable) {
-                        <p>
+                    <p>
+                        @if (canNavigatoToFilesystemRoot) {
                             <a [href]="deviceInfo.fileSystemRoot" core-link [autoLogin]="false">
                                 {{ deviceInfo.fileSystemRoot }}
                             </a>
-                        </p>
-                    } @else {
-                        <p>{{ deviceInfo.fileSystemRoot }}</p>
-                    }
+                        } @else {
+                            {{ deviceInfo.fileSystemRoot }}
+                        }
+                    </p>
                 </ion-label>
             </ion-item>
         }

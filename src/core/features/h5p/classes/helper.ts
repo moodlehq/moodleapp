@@ -125,7 +125,7 @@ export class CoreH5PHelper {
 
         // H5P doesn't currently support xAPI State. It implements a mechanism in contentUserDataAjax() in h5p.js to update user
         // data. However, in our case, we're overriding this method to call the xAPI State web services.
-        const basePath = CoreFile.getBasePathInstant();
+        const basePath = CoreFile.basePath;
         const ajaxPaths = {
             contentUserData: '',
         };

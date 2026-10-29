@@ -25,6 +25,7 @@ import { CoreTime } from '@static/time';
 import { CoreNativeDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
 import { CoreKeyboard } from '@static/keyboard';
+import { CoreFile } from '@services/file';
 
 /**
  * Initializes various core components asynchronously.
@@ -35,6 +36,7 @@ export default async function(): Promise<void> {
     // Native plugins initializations.
     await Promise.all([
         CoreNativeDevice.initialize(),
+        CoreFile.initialize(),
     ]);
 
     await Promise.all([
