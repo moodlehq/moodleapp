@@ -15,16 +15,19 @@
 import { CoreKeyboard } from '@static/keyboard';
 import { Keyboard } from '@capacitor/keyboard';
 import { NgZone } from '@singletons';
+import { CorePlatform } from '@services/platform';
 
 /**
  * Initializes keyboard event listeners and ensures Angular zone is properly managed for change detection.
  */
 export default function(): void {
-    const zone = NgZone.instance;
+    if (!CorePlatform.isMobile()) {
+        return;
+    }
 
     // Execute callbacks in the Angular zone, so change detection doesn't stop working.
-    Keyboard.addListener('keyboardDidShow', data => zone.run(() => CoreKeyboard.onKeyboardShow(data.keyboardHeight)));
-    Keyboard.addListener('keyboardDidHide', () => zone.run(() => CoreKeyboard.onKeyboardHide()));
-    Keyboard.addListener('keyboardWillShow', data => zone.run(() => CoreKeyboard.onKeyboardWillShow(data.keyboardHeight)));
-    Keyboard.addListener('keyboardWillHide', () => zone.run(() => CoreKeyboard.onKeyboardWillHide()));
+    Keyboard.addListener('keyboardDidShow', data => NgZone.run(() => CoreKeyboard.onKeyboardShow(data.keyboardHeight)));
+    Keyboard.addListener('keyboardDidHide', () => NgZone.run(() => CoreKeyboard.onKeyboardHide()));
+    Keyboard.addListener('keyboardWillShow', data => NgZone.run(() => CoreKeyboard.onKeyboardWillShow(data.keyboardHeight)));
+    Keyboard.addListener('keyboardWillHide', () => NgZone.run(() => CoreKeyboard.onKeyboardWillHide()));
 }
