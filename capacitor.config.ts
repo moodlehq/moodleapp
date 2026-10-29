@@ -1,4 +1,5 @@
 import type { CapacitorConfig } from '@capacitor/cli';
+import { KeyboardResize } from '@capacitor/keyboard';
 
 const config: CapacitorConfig = {
   appId: 'com.moodle.moodlemobile',
@@ -12,7 +13,7 @@ const config: CapacitorConfig = {
   },
   plugins: {
     Keyboard: {
-      resize: 'none'
+      resize: KeyboardResize.None,
     },
     SplashScreen: {
       launchAutoHide: false,
