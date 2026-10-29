@@ -179,7 +179,7 @@ export default class CoreSettingsDeviceInfoPage {
         this.displaySiteUrl = !!this.deviceInfo.siteUrl &&
             (currentSite ?? CoreSitesFactory.makeUnauthenticatedSite(this.deviceInfo.siteUrl)).shouldDisplayInformativeLinks();
 
-        const basepath = await CoreFile.getBasePath();
+        const basepath = CoreFile.getBasePathInstant();
         this.deviceInfo.fileSystemRoot = basepath;
         this.fsClickable = CoreFile.usesHTMLAPI();
 

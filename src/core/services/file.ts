@@ -32,6 +32,7 @@ import { Capacitor } from '@capacitor/core';
 import { Directory, Encoding } from '@capacitor/filesystem';
 import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
 import type { ZipProgressEvent } from '@capgo/capacitor-zip';
+import { FilesystemMock } from '@features/emulator/services/filesystem';
 
 /**
  * Progress event used when writing a file data into a file.
@@ -100,16 +101,6 @@ export class CoreFileProvider {
     protected isHTMLAPI = false;
 
     /**
-     * Sets basePath to use with HTML API. Reserved for core use.
-     *
-     * @param path Base path to use.
-     */
-    setHTMLBasePath(path: string): void {
-        this.isHTMLAPI = true;
-        this.basePath = path;
-    }
-
-    /**
      * Checks if we're using HTML API.
      *
      * @returns True if uses HTML API, false otherwise.
@@ -123,7 +114,7 @@ export class CoreFileProvider {
      *
      * @returns Promise to be resolved when the initialization is finished.
      */
-    async init(): Promise<void> {
+    async initialize(): Promise<void> {
         if (this.initialized) {
             return;
         }
@@ -137,10 +128,17 @@ export class CoreFileProvider {
         } else if (CorePlatform.isIOS()) {
             const { uri } = await Filesystem.getUri({ directory: Directory.Documents, path: '' });
             this.basePath = CoreText.addEndingSlash(uri);
-        } else if (this.basePath === '') {
-            this.logger.error('Error getting device OS.');
+        } else {
+            const filesystemInstance = Filesystem.instance;
 
-            return Promise.reject(new CoreError('Error getting device OS to initialize file system.'));
+            if (filesystemInstance instanceof FilesystemMock) {
+                this.basePath = await filesystemInstance.load();
+                this.isHTMLAPI = true;
+            }
+        }
+
+        if (this.basePath === '') {
+            return Promise.reject(new CoreError('Error initializing file system: base path not set.'));
         }
 
         this.initialized = true;
@@ -164,7 +162,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the file is retrieved.
      */
     async getFile(path: string): Promise<FileEntry> {
-        await this.init();
         this.logger.debug(`Get file: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -184,8 +181,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the directory is retrieved.
      */
     async getDir(path: string): Promise<DirectoryEntry> {
-        await this.init();
-
         this.logger.debug(`Get directory: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -223,8 +218,6 @@ export class CoreFileProvider {
         failIfExists?: boolean,
         base?: string,
     ): Promise<FileEntry | DirectoryEntry> {
-        await this.init();
-
         const absolutePath = this.toAbsoluteAndNormalize(base ? CorePath.concatenatePaths(base, path) : path);
 
         this.logger.debug(`Create ${isDirectory ? 'dir' : 'file'} ${path}`);
@@ -301,11 +294,8 @@ export class CoreFileProvider {
      * Removes a directory and all its contents.
      *
      * @param path Relative path to the directory.
-     * @returns Promise to be resolved when the directory is deleted.
      */
     async removeDir(path: string): Promise<void> {
-        await this.init();
-
         this.logger.debug(`Remove directory: ${path}`);
 
         await Filesystem.rmdir({ path: this.toAbsoluteAndNormalize(path), recursive: true });
@@ -315,11 +305,8 @@ export class CoreFileProvider {
      * Removes a file and all its contents.
      *
      * @param path Relative path to the file.
-     * @returns Promise to be resolved when the file is deleted.
      */
     async removeFile(path: string): Promise<void> {
-        await this.init();
-
         this.logger.debug(`Remove file: ${path}`);
 
         await Filesystem.deleteFile({ path: this.toAbsoluteAndNormalize(path) });
@@ -329,7 +316,6 @@ export class CoreFileProvider {
      * Removes a file given its FileEntry.
      *
      * @param entry File Entry.
-     * @returns Promise resolved when the file is deleted.
      */
     async removeFileByFileEntry(entry: Entry): Promise<void> {
         if (entry.isDirectory) {
@@ -346,8 +332,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the contents are retrieved.
      */
     async getDirectoryContents(path: string): Promise<(FileEntry | DirectoryEntry)[]> {
-        await this.init();
-
         this.logger.debug(`Get contents of dir: ${path}`);
 
         const { files } = await Filesystem.readdir({ path: this.toAbsoluteAndNormalize(path) });
@@ -715,8 +699,6 @@ export class CoreFileProvider {
      * @returns Promise to be resolved when the file is written.
      */
     async writeFile(path: string, data: string | Blob, append?: boolean): Promise<FileEntry> {
-        await this.init();
-
         this.logger.debug(`Write file: ${path}`);
 
         const absolutePath = this.toAbsoluteAndNormalize(path);
@@ -857,11 +839,10 @@ export class CoreFileProvider {
      * Get the base path where the application files are stored.
      *
      * @returns Promise to be resolved when the base path is retrieved.
+     * @deprecated since 6.0. Use getBasePathInstant() instead. Not needed a promise anymore.
      */
     async getBasePath(): Promise<string> {
-        await this.init();
-
-        return CoreText.addEndingSlash(this.basePath);
+        return this.getBasePathInstant();
     }
 
     /**
@@ -871,8 +852,6 @@ export class CoreFileProvider {
      * @deprecated since 6.0. Use getBasePathInstant() instead. Capacitor doesn't provide a cdvfile URL.
      */
     async getBasePathToDownload(): Promise<string> {
-        await this.init();
-
         return this.getBasePathInstant();
     }
 
@@ -968,8 +947,6 @@ export class CoreFileProvider {
         if (!fileIsInAppFolder) {
             return this.copyOrMoveExternalFile(from, to, copy);
         }
-
-        await this.init();
 
         const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
 
@@ -1201,7 +1178,6 @@ export class CoreFileProvider {
      * @returns Promise resolved when the entry is copied/moved.
      */
     protected async copyOrMoveExternalFile(from: string, to: string, copy?: boolean): Promise<FileEntry> {
-        await this.init();
 
         // Create the destination dir if it doesn't exist.
         const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);

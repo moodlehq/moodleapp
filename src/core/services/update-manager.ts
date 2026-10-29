@@ -26,7 +26,6 @@ import { CoreRedirects } from '@static/redirects';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CoreFile } from './file';
-import { CorePlatform } from './platform';
 import { NO_SITE_ID } from '@features/login/constants';
 
 /**
@@ -67,15 +66,16 @@ export class CoreUpdateManagerProvider {
         const promises: Promise<unknown>[] = [];
         const versionCode = CoreConstants.CONFIG.versioncode;
 
-        const [versionApplied, previousAppFolder, currentAppFolder] = await Promise.all([
+        const [versionApplied, previousAppFolder] = await Promise.all([
             CoreConfig.get<number>(CoreUpdateManagerProvider.VERSION_APPLIED, 0),
             CoreConfig.get<string>(CoreUpdateManagerProvider.PREVIOUS_APP_FOLDER, ''),
-            CorePlatform.isMobile() ? CorePromiseUtils.ignoreErrors(CoreFile.getBasePath(), '') : '',
         ]);
 
         if (versionCode > versionApplied) {
             promises.push(this.checkCurrentSiteAllowed());
         }
+
+        const currentAppFolder = CoreFile.getBasePathInstant();
 
         if (
             (versionCode >= 3950 && versionApplied < 3950 && versionApplied > 0) ||

@@ -23,6 +23,7 @@ import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreNativeDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
+import { CoreFile } from '@services/file';
 
 /**
  * Initializes various core components asynchronously.
@@ -46,5 +47,6 @@ export default async function(): Promise<void> {
         // CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
         CoreAppBadge.initialize(),
+        CoreFile.initialize(),
     ]);
 }
