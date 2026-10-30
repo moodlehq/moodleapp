@@ -26,11 +26,6 @@
             </intent-filter>
 
             <intent-filter>
-                <action android:name="com.darryncampbell.cordova.plugin.intent.ACTION" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -51,14 +46,6 @@
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
-        </provider>
-
-        <provider
-            android:authorities="${applicationId}.darryncampbell.cordova.plugin.intent.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true"
-            android:name="com.darryncampbell.cordova.plugin.intent.CordovaPluginIntentFileProvider">
-            <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/provider_paths" />
         </provider>
 
         <provider

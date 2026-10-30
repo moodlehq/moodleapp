@@ -34,7 +34,7 @@ export class CoreNativeService {
      * @returns Plugin instance, null if plugin is not supported for current platform.
      */
     plugin<Plugin extends keyof CoreNativePlugins>(plugin: Plugin): AsyncInstance<CoreNativePlugins[Plugin]> | null {
-        if (plugin === 'installReferrer' && !CorePlatform.isAndroid()) {
+        if ((plugin === 'installReferrer' || plugin === 'intentLauncher') && !CorePlatform.isAndroid()) {
             return null;
         }
 

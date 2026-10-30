@@ -14,16 +14,19 @@
 
 import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
+import { IntentLauncher } from './plugins/IntentLauncher';
 import { NativeSettings } from './plugins/NativeSettings';
 import { SecureStorage } from './plugins/SecureStorage';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
+export type { IntentLauncherViewOptions } from './plugins/IntentLauncher';
 export type { SecureStorage } from './plugins/SecureStorage';
 
 // Wrapped in plain classes because Capacitor proxies are thenables and break when resolved from a promise.
 export const MoodleAppCapacitorPlugins = {
     diskSpace: new DiskSpace(),
     installReferrer: new InstallReferrer(),
+    intentLauncher: new IntentLauncher(),
     nativeSettings: new NativeSettings(),
     secureStorage: new SecureStorage(),
 };

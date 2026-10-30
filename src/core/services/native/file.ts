@@ -465,7 +465,7 @@ export class File {
 		const temporaryUri = await this.getDirectoryUri(Directory.Temporary);
 		const externalCacheUri = await this.getDirectoryUri(Directory.ExternalCache);
 
-		const basePath = await CoreFile.getBasePath();
+		const basePath = CoreFile.getBasePathInstant();
 		const defaultDataDirectory = dataUri || basePath;
 		const defaultCacheDirectory = cacheUri || CorePath.concatenatePaths(basePath, 'cache');
 		const defaultDocumentsDirectory = documentsUri || defaultDataDirectory;
