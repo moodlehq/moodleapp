@@ -16,6 +16,7 @@ import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { NativeSettings } from './plugins/NativeSettings';
 import { SecureStorage } from './plugins/SecureStorage';
+import { SystemBars } from './plugins/SystemBars';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
 export type { SecureStorage } from './plugins/SecureStorage';
@@ -26,4 +27,5 @@ export const MoodleAppCapacitorPlugins = {
     installReferrer: new InstallReferrer(),
     nativeSettings: new NativeSettings(),
     secureStorage: new SecureStorage(),
+    systemBars: new SystemBars(),
 };

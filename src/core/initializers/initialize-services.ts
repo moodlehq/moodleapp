@@ -23,6 +23,7 @@ import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreNativeDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Initializes various core components asynchronously.
@@ -32,6 +33,7 @@ export default async function(): Promise<void> {
     await Promise.all([
         CoreNativeDevice.initialize(),
     ]);
+    CoreNativeStatusBar.initialize();
 
     await Promise.all([
         CoreConfig.initialize(),

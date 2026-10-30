@@ -1,0 +1,53 @@
+// Android edge-to-edge: use the real insets reported by Capacitor, with env() as a fallback.
+:root.plt-capacitor.plt-android:not(.force-safe-area-margins) {
+    --ion-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --ion-safe-area-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+    --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+    --ion-safe-area-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
+// Class added by CoreNativeStatusBar on mobile. The app draws under transparent system bars,
+// so paint the area behind them using fixed strips that match the safe area insets.
+body.core-native-system-bars {
+    &::before,
+    &::after {
+        content: "";
+        position: fixed;
+        left: 0;
+        right: 0;
+        pointer-events: none;
+        z-index: 100000;
+    }
+
+    // Status bar. Colour set by CoreNativeStatusBar.setStatusBarColor.
+    &::before {
+        top: 0;
+        height: var(--root-safe-area-top, 0px);
+        background: var(--core-status-bar-background, var(--core-header-toolbar-background));
+    }
+
+    // Navigation bar. Colour set by CoreNativeStatusBar.setNavigationBarColor.
+    &::after {
+        bottom: 0;
+        height: var(--root-safe-area-bottom, 0px);
+        background: var(--core-navigation-bar-background, var(--ion-background-color));
+    }
+
+    // Class toggled by CoreNativeStatusBar.hide/show: no strip while the bar is hidden.
+    &.core-status-bar-hidden::before {
+        display: none;
+    }
+}
+
+// On Android, hiding the status bar also hides the navigation bar.
+:root.plt-android body.core-status-bar-hidden::after {
+    display: none;
+}
+
+// Debug helper to simulate safe area insets on any device.
+:root.force-safe-area-margins {
+    --ion-safe-area-left: 40px;
+    --ion-safe-area-right: 40px;
+    --ion-safe-area-top: 40px;
+    --ion-safe-area-bottom: 40px;
+}

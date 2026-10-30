@@ -1,12 +1,5 @@
 @import "./globals";
 
-:root.force-safe-area-margins {
-    --ion-safe-area-left: 40px;
-    --ion-safe-area-right: 40px;
-    --ion-safe-area-top: 40px;
-    --ion-safe-area-bottom: 40px;
-}
-
 :root {
     --zoom-ratio: 1;
     --zoom-level: calc(100% * var(--zoom-ratio));  // @deprecated since 5.1.
