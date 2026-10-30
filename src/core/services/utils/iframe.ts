@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 
 import { makeSingleton } from '@singletons';
 import { FrameElement } from '@classes/element-controllers/FrameElementController';
@@ -120,16 +119,6 @@ export class CoreIframeUtilsProvider {
      */
     treatFrameLinks(element: CoreFrameElement, contentDocument: Document): void {
         CoreIframe.treatFrameLinks(contentDocument);
-    }
-
-    /**
-     * Inject code to the iframes because we cannot access the online ones.
-     *
-     * @param userScriptWindow Window.
-     * @deprecated since 5.0. Use CoreIframe.injectiOSScripts instead.
-     */
-    injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
-        CoreIframe.injectiOSScripts(userScriptWindow);
     }
 
     /**
