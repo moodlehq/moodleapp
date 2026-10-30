@@ -31,6 +31,7 @@ import { CoreOpener } from '@static/opener';
 import { BackButtonPriority } from '@/core/constants';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
+import { CoreNative } from '@features/native/services/native';
 
 register();
 
@@ -70,10 +71,13 @@ export class AppComponent implements OnInit, AfterViewInit {
             CoreWindow.open(url, name);
         };
 
-        // Treat URLs that try to override the app.
-        win.onOverrideUrlLoading = (url: string) => {
-            CoreWindow.open(url);
-        };
+        if (CorePlatform.isMobile()) {
+            CoreNative.plugin('preventOverride')?.addListener((url) => {
+                CoreWindow.open(url);
+            }).catch(error => {
+                this.logger.error('Failed to register URL override listener', error);
+            });
+        }
 
         // Quit app with back button.
         document.addEventListener('ionBackButton', (event) => {
