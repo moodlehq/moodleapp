@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { WKUserScriptWindow } from 'cordova-plugin-wkuserscript';
 import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
-
 import { CoreNetwork } from '@services/network';
-import { CoreFile } from '@services/file';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CoreOpener } from '@static/opener';
@@ -329,8 +326,8 @@ export class CoreIframe {
         if (contentDocument.body) {
             // Search sub frames.
             CoreIframe.FRAME_TAGS.forEach((tag) => {
-                const elements = Array.from(contentDocument.body.querySelectorAll(tag));
-                elements.forEach((subElement: CoreFrameElement) => {
+                const elements = Array.from(contentDocument.body.querySelectorAll<CoreFrameElement>(tag));
+                elements.forEach((subElement) => {
                     CoreIframe.treatFrame(subElement, true);
                 });
             });
@@ -499,19 +496,10 @@ export class CoreIframe {
     /**
      * Inject code to the iframes because we cannot access the online ones.
      *
-     * @param userScriptWindow Window.
+     * @deprecated since 6.0. Now this is handled by PreventOverride plugin, no longer needed to inject scripts.
      */
-    static injectiOSScripts(userScriptWindow: WKUserScriptWindow): void {
-        // @todo Capacitor: It's no longer possible to obtain the path to the www folder without adding custom native logic.
-        // 2 options: Fetch file contents using fetch and pass the code, or modify WKUserScript to get files from www folder.
-        // eslint-disable-next-line @typescript-eslint/no-deprecated
-        const wwwPath = CoreFile.getWWWAbsolutePath();
-        const linksPath = CorePath.concatenatePaths(wwwPath, 'assets/js/iframe-treat-links.js').replace(/%20/g, ' ');
-
-        userScriptWindow.WKUserScript?.addScript({ id: 'CoreIframeUtilsLinksScript', file: linksPath });
-
-        // Handle post messages received by iframes.
-        window.addEventListener('message', (event) => CoreIframe.handleIframeMessage(event));
+    static injectiOSScripts(): void {
+        return;
     }
 
     /**
