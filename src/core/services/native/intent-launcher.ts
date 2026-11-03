@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { CoreConstants } from '@/core/constants';
 import { Injectable } from '@angular/core';
-import { ActivityAction, IntentLauncher } from '@capgo/capacitor-intent-launcher';
+import { ActivityAction, IntentLauncher, IOSSettings } from '@capgo/capacitor-intent-launcher';
+import { CorePlatform } from '@services/platform';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -28,7 +30,29 @@ export class IntentLauncherService {
      * @param options ViewActivityIntent containing the data and type for the activity to be started.
      */
     async startViewActivity(options: ViewActivityIntent): Promise<void> {
+        if (!CorePlatform.isAndroid()) {
+            return;
+        }
+
         await IntentLauncher.startActivityAsync({ data: options.data, type: options.type, action: ActivityAction.VIEW });
+    }
+
+    /**
+     * Opens the native app settings of the device.
+     */
+    async openNativeAppSettings(): Promise<void> {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        if (CorePlatform.isIOS()) {
+            await IntentLauncher.openIOSSettings({ option: IOSSettings.App });
+        } else {
+            await IntentLauncher.startActivityAsync({
+                action: ActivityAction.APPLICATION_DETAILS_SETTINGS,
+                data: 'package:' + CoreConstants.CONFIG.app_id,
+            });
+        }
     }
 
 }
