@@ -29,7 +29,7 @@ import { FrameElement } from '@classes/element-controllers/FrameElementControlle
 import { CoreMimetype } from '@static/mimetype';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSite } from '@classes/sites/site';
-import { CoreNative } from '@features/native/services/native';
+import { CoreIntentLauncher } from '@services/native/intent-launcher';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreFileUtils } from '@static/file-utils';
@@ -565,7 +565,7 @@ export class CoreIframe {
                 {
                     text: Translate.instant('core.opensettings'),
                     handler: (): void => {
-                        CoreNative.plugin('nativeSettings')?.open();
+                        CoreIntentLauncher.openNativeAppSettings();
                     },
                 },
             ],

@@ -25,7 +25,7 @@ import { AlertButton } from '@ionic/angular';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
 import { CoreAnalytics } from '@services/analytics';
-import { CoreNative } from '@features/native/services/native';
+import { CoreIntentLauncher } from '@services/native/intent-launcher';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorService } from '@features/editor/services/editor';
@@ -274,7 +274,7 @@ export default class CoreSettingsGeneralPage {
         ev.stopPropagation();
         ev.preventDefault();
 
-        CoreNative.plugin('nativeSettings')?.open();
+        CoreIntentLauncher.openNativeAppSettings();
     }
 
 }
