@@ -20,7 +20,7 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
-import { Translate, FileOpener, WebIntent, InAppBrowser, NgZone } from '@singletons';
+import { Translate, FileOpener, InAppBrowser, NgZone } from '@singletons';
 import { CoreConstants, CoreConfigSettingKey } from '../constants';
 import { CoreFile } from '@services/file';
 import { CorePromiseUtils } from './promise-utils';
@@ -34,6 +34,7 @@ import { CoreNativeCapacitorFileOpenerErrorCode } from '@features/native/constan
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreFileUtils } from './file-utils';
 import { FileOpenerOptions } from '@capacitor-community/file-opener';
+import { CoreIntentLauncher } from '@services/native/intent-launcher';
 
 /**
  * Static class with helper functions to handler open files and urls.
@@ -236,13 +237,12 @@ export class CoreOpener {
             }
 
             const options = {
-                action: WebIntent.ACTION_VIEW,
-                url,
+                data: url,
                 type: mimetype,
             };
 
             try {
-                await WebIntent.startActivity(options);
+                await CoreIntentLauncher.startViewActivity(options);
 
                 CoreAnalytics.logEvent({
                     type: CoreAnalyticsEventType.OPEN_LINK,
