@@ -15,6 +15,7 @@
 import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { NativeSettings } from './plugins/NativeSettings';
+import { PreventOverride } from './plugins/PreventOverride';
 import { SecureStorage } from './plugins/SecureStorage';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
@@ -25,5 +26,6 @@ export const MoodleAppCapacitorPlugins = {
     diskSpace: new DiskSpace(),
     installReferrer: new InstallReferrer(),
     nativeSettings: new NativeSettings(),
+    preventOverride: new PreventOverride(),
     secureStorage: new SecureStorage(),
 };
