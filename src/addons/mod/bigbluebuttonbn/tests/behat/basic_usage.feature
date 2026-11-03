@@ -92,7 +92,9 @@ Feature: Test basic usage of BBB activity in app
 
   @lms_from5.2
   Scenario: Wait for moderator
-    Given the following "activities" exist:
+    Given the following config values are set as admin:
+      | bigbluebuttonbn_waitformoderator_cache_ttl | 0 |
+    And the following "activities" exist:
       | activity        | name     | intro                | course | idnumber | wait | moderators          |
       | bigbluebuttonbn | Test BBB | Test BBB description | C1     | bbb1     | 1    | role:editingteacher |
     And I entered the bigbluebuttonbn activity "Test BBB" on course "Course 1" as "student1" in the app
