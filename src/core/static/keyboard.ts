@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { effect, Signal, signal } from '@angular/core';
+import { Injector, Signal, signal } from '@angular/core';
+import { effectWithInjectionContext } from '@/core/utils/signals';
 import { CorePlatform } from '@services/platform';
 import { Keyboard } from '@capacitor/keyboard';
 import { CoreEvents } from '@static/events';
@@ -38,9 +39,11 @@ export class CoreKeyboard {
      * This sets up the reactive effect that keeps the `keyboard-is-open` body
      * class in sync with the keyboard visibility signal. Keyboard event
      * subscriptions are registered elsewhere.
+     *
+     * @param injector Injector used to create the effect.
      */
-    static initialize(): void {
-        effect(() => {
+    static initialize(injector: Injector): void {
+        effectWithInjectionContext(injector)(() => {
             document.body.classList.toggle('keyboard-is-open', CoreKeyboard.IS_KEYBOARD_SHOWN());
         });
     }
