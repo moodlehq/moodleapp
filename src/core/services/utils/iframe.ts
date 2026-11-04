@@ -122,16 +122,6 @@ export class CoreIframeUtilsProvider {
     }
 
     /**
-     * Fix cookies for an iframe URL.
-     *
-     * @param url URL of the iframe.
-     * @deprecated since 5.0. Use CoreIframe.fixIframeCookies instead.
-     */
-    async fixIframeCookies(url: string): Promise<void> {
-        await CoreIframe.fixIframeCookies(url);
-    }
-
-    /**
      * Check whether the help should be displayed in current OS.
      *
      * @returns Boolean.

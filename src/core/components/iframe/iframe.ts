@@ -387,8 +387,6 @@ export class CoreIframeComponent implements OnDestroy {
                 // and there was no easy way to make the iframe responsive.
                 url = CoreUrl.getVimeoPlayerUrl(url, currentSite) ?? url;
             }
-
-            await CoreIframe.fixIframeCookies(url);
         }
 
         if (updateId !== this.srcUpdateId) {

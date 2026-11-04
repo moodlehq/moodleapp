@@ -1139,8 +1139,6 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 checkAutoLoginUrl: src !== finalUrl,
             });
 
-            await CoreIframe.fixIframeCookies(finalUrl);
-
             iframe.src = finalUrl;
             CoreIframe.treatFrame(iframe, false);
 
@@ -1155,8 +1153,6 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 iframe.src = '';
             }
         }
-
-        await CoreIframe.fixIframeCookies(src);
 
         if (src !== iframe.src) {
             // URL was converted, update it in the iframe.
@@ -1197,8 +1193,6 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                 if (site && !site.isVersionGreaterEqualThan('3.7')) {
                     vimeoUrl += `&width=${width}&height=${height}`;
                 }
-
-                await CoreIframe.fixIframeCookies(vimeoUrl);
 
                 iframe.src = vimeoUrl;
 
