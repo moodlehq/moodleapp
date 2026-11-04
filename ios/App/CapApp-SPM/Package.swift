@@ -32,8 +32,7 @@ let package = Package(
         .package(name: "MoodlehqCordovaPluginInappbrowser", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginInappbrowser"),
         .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
         .package(name: "CordovaPluginDevice", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginDevice"),
-        .package(name: "CordovaPluginLocalNotification", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginLocalNotification"),
-        .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage")
+        .package(name: "CordovaPluginLocalNotification", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginLocalNotification")
     ],
     targets: [
         .target(
@@ -61,8 +60,7 @@ let package = Package(
                 .product(name: "MoodlehqCordovaPluginInappbrowser", package: "MoodlehqCordovaPluginInappbrowser"),
                 .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
                 .product(name: "CordovaPluginDevice", package: "CordovaPluginDevice"),
-                .product(name: "CordovaPluginLocalNotification", package: "CordovaPluginLocalNotification"),
-                .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage")
+                .product(name: "CordovaPluginLocalNotification", package: "CordovaPluginLocalNotification")
             ]
         )
     ]
