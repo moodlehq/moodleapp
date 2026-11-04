@@ -54,7 +54,6 @@
         "@awesome-cordova-plugins/in-app-browser": "9.2.0",
         "@awesome-cordova-plugins/local-notifications": "9.2.0",
         "@awesome-cordova-plugins/push": "9.2.0",
-        "@awesome-cordova-plugins/sqlite": "9.2.0",
         "@capacitor-community/file-opener": "^8.0.1",
         "@capacitor-community/sqlite": "8.1.1",
         "@capacitor/android": "^8.5.2",
@@ -87,7 +86,6 @@
         "chart.js": "4.5.1",
         "cordova-plugin-device": "^3.0.0",
         "cordova-plugin-local-notification": "1.2.3",
-        "cordova-sqlite-storage": "7.0.0",
         "core-js": "3.50.0",
         "dayjs": "1.11.23",
         "ionicons": "8.1.0",
@@ -102,7 +100,6 @@
         "ts-md5": "2.0.1",
         "tslib": "2.8.1",
         "video.js": "8.23.4",
-        "wa-sqlite": "1.0.0",
         "zone.js": "0.15.1"
     },
     "devDependencies": {

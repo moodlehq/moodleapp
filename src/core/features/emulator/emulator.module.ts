@@ -32,7 +32,7 @@ import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreNative } from '@features/native/services/native';
 import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 import { CoreDbProvider } from '@services/db';
-import { CoreDbProviderMock } from '@features/emulator/services/db';
+import { CoreDbServiceMock } from '@features/emulator/services/db';
 import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
 import { CAPACITOR_FILE_TRANSFER, resolveCapacitorFileTransfer } from '@services/native/file-transfer';
 import { FileTransferMock } from './services/file-transfer';
@@ -81,7 +81,9 @@ import { CAPACITOR_ZIP, resolveCapacitorZip } from '@services/native/zip';
         },
         {
             provide: CoreDbProvider,
-            useFactory: (): CoreDbProvider => CorePlatform.isMobile() ? new CoreDbProvider() : new CoreDbProviderMock(),
+            useFactory: (): CoreDbProvider => CorePlatform.isMobile()
+                ? new CoreDbProvider()
+                : new CoreDbServiceMock(),
         },
         provideAppInitializer(async () => {
             if (CorePlatform.isMobile()) {
