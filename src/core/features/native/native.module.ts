@@ -16,7 +16,6 @@ import { NgModule, Type } from '@angular/core';
 
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
-import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 /**
  * Get native services.
@@ -26,6 +25,9 @@ import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
  * service somewhere else and rename it to avoid confusing it with services/native.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { SQLite } = await import('./plugins/sqlite');
+
     return [
         LocalNotifications,
         Push,
@@ -37,7 +39,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     providers: [
         LocalNotifications,
         Push,
-        SQLite,
     ],
 })
 export class CoreNativeModule {}
