@@ -32,7 +32,6 @@ let package = Package(
         .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
         .package(name: "CordovaPluginDevice", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginDevice"),
         .package(name: "CordovaPluginLocalNotification", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginLocalNotification"),
-        .package(name: "CordovaPluginWkwebviewCookies", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginWkwebviewCookies"),
         .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage")
     ],
     targets: [
@@ -61,7 +60,6 @@ let package = Package(
                 .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
                 .product(name: "CordovaPluginDevice", package: "CordovaPluginDevice"),
                 .product(name: "CordovaPluginLocalNotification", package: "CordovaPluginLocalNotification"),
-                .product(name: "CordovaPluginWkwebviewCookies", package: "CordovaPluginWkwebviewCookies"),
                 .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage")
             ]
         )

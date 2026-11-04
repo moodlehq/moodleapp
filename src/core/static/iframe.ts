@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { WKWebViewCookiesWindow } from 'cordova-plugin-wkwebview-cookies';
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
@@ -505,30 +504,10 @@ export class CoreIframe {
     /**
      * Fix cookies for an iframe URL.
      *
-     * @param url URL of the iframe.
+     * @deprecated since 6.0. The fix was only for old iOS versions (e.g. iOS 13), it's no longer needed.
      */
-    static async fixIframeCookies(url: string): Promise<void> {
-        if (!CorePlatform.isIOS() || !url || CoreUrl.isLocalFileUrl(url)) {
-            // No need to fix cookies.
-            return;
-        }
-
-        // Save a "fake" cookie for the iframe's domain to fix a bug in WKWebView.
-        try {
-            const win = <WKWebViewCookiesWindow> window;
-            const urlParts = CoreUrl.parse(url);
-
-            if (urlParts?.domain && win.WKWebViewCookies) {
-                await win.WKWebViewCookies.setCookie({
-                    name: 'MoodleAppCookieForWKWebView',
-                    value: '1',
-                    domain: urlParts.domain,
-                });
-            }
-        } catch (err) {
-            // Ignore errors.
-            CoreIframe.logger.error('Error setting cookie', err);
-        }
+    static async fixIframeCookies(): Promise<void> {
+        return;
     }
 
     /**
