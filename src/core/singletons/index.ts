@@ -37,7 +37,6 @@ import {
 } from '@ionic/angular';
 
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -159,7 +158,6 @@ export function makeSingleton<Service extends object = object>(
 
 // Convert ionic-native services to singleton.
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
-export const SQLite = makeSingleton(SQLiteService);
 
 // Convert Capacitor classes to singletons to be able to provide mocks for webapp.
 export const Camera = makeSingleton(CAPACITOR_CAMERA);
