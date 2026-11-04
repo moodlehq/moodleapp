@@ -92,8 +92,8 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
     constructor() {
         effect(async () => {
             const site = this.siteEffective();
-            untracked(() => {
-                void this.updateSiteConfig(site);
+            untracked(async () => {
+                await this.updateSiteConfig(site);
                 void this.loadInfo(site);
             });
         });
@@ -107,8 +107,8 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
         this.updateSiteObserver = CoreEvents.on(CoreEvents.SITE_UPDATED, async () => {
             const site = this.siteEffective();
 
-            untracked(() => {
-                void this.updateSiteConfig(site);
+            untracked(async () => {
+                await this.updateSiteConfig(site);
                 void this.loadInfo(site);
             });
         }, this.siteId());
@@ -144,15 +144,18 @@ export class CoreSiteLogoComponent implements OnInit, OnDestroy {
         this.siteName.set(siteName || '');
 
         if (!this.showLogo() || (this.logoType() === CoreSiteLogoType.TOP && site.getShowTopLogo(this.siteConfig()) === 'hidden')) {
+            this.siteLogo.set(undefined);
+
             return;
         }
 
         // Get the public config to avoid race conditions when retrieving the logo.
         const publicConfig = await CorePromiseUtils.ignoreErrors(site.getPublicConfig());
 
-        this.siteLogo.set(this.logoType() === CoreSiteLogoType.TOP
+        const siteLogo = this.logoType() === CoreSiteLogoType.TOP
             ? site.getTopLogoUrl(publicConfig)
-            : site.getLogoUrl(publicConfig));
+            : site.getLogoUrl(publicConfig);
+        this.siteLogo.set(siteLogo);
 
         this.logoError.set(false);
         this.logoLoaded.set(true);
