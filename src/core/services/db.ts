@@ -27,7 +27,7 @@ import { CoreLogger } from '@static/logger';
  * This service allows interacting with the local database to store and retrieve data.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreDbProvider {
+export class CoreDbService {
 
     protected dbInstances: { [name: string]: SQLiteDB } = {};
     protected initialization?: Promise<void>;
@@ -180,7 +180,7 @@ export class CoreDbProvider {
     }
 
 }
-export const CoreDB = makeSingleton(CoreDbProvider);
+export const CoreDB = makeSingleton(CoreDbService);
 
 type CoreNativeSQLiteDriver = CoreCapacitorSQLiteManagerDriver &
     Pick<CapacitorSQLitePlugin, 'getMigratableDbList' | 'moveDatabasesAndAddSuffix' | 'getDatabaseList'>;
