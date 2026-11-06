@@ -20,6 +20,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CorePlatform } from '@services/platform';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Screen breakpoints.
@@ -162,14 +163,17 @@ export class CoreScreenService {
             return;
         }
 
-        // @todo Capacitor
-        // document.addEventListener('fullscreenchange', () => {
-        //     if (document.fullscreenElement) {
-        //         StatusBar.hide();
-        //     } else {
-        //         StatusBar.show();
-        //     }
-        // });
+        document.addEventListener('fullscreenchange', async () => {
+            try {
+                if (document.fullscreenElement) {
+                    await CoreNativeStatusBar.hide();
+                } else {
+                    await CoreNativeStatusBar.show();
+                }
+            } catch {
+                // Ignore errors.
+            }
+        });
     }
 
     /**

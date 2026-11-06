@@ -445,11 +445,13 @@ export class CoreSettingsHelperProvider {
      */
     setColorScheme(colorScheme: CoreColorScheme): void {
         this.currentColorScheme = colorScheme;
-        if (colorScheme === CoreColorScheme.SYSTEM && this.prefersDark) {
-            this.toggleDarkMode(this.prefersDark.matches);
-        } else {
-            this.toggleDarkMode(colorScheme === CoreColorScheme.DARK);
-        }
+
+        const darkMode =  colorScheme === CoreColorScheme.SYSTEM && this.prefersDark
+            ? this.prefersDark.matches
+            : colorScheme === CoreColorScheme.DARK;
+
+        this.toggleDarkMode(darkMode);
+
     }
 
     /**
@@ -480,12 +482,14 @@ export class CoreSettingsHelperProvider {
     protected toggleDarkMode(enable = false): void {
         const isDark = this.isDarkModeEnabled();
 
-        if (isDark !== enable) {
-            CoreHTMLClasses.toggleModeClass('dark', enable);
-            this.darkModeObservable.next(enable);
-
-            CoreApp.setSystemUIColors();
+        if (isDark === enable) {
+            return;
         }
+
+        CoreHTMLClasses.toggleModeClass('dark', enable);
+        this.darkModeObservable.next(enable);
+
+        void CoreApp.setSystemUIColors();
     }
 
     /**

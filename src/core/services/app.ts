@@ -27,6 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSSO } from '@static/sso';
 import { CoreRedirectData, CoreRedirects } from '@static/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
+import { CoreNativeStatusBar } from '@services/native/status-bar';
 
 /**
  * Factory to provide some global functionalities.
@@ -237,9 +238,10 @@ export class CoreAppProvider {
     /**
      * Set System UI Colors.
      */
-    setSystemUIColors(): void {
-        this.setStatusBarColor();
-        this.setAndroidNavigationBarColor();
+    async setSystemUIColors(): Promise<void> {
+        await this.setStatusBarColor();
+        await this.setAndroidNavigationBarColor();
+
     }
 
     /**
@@ -247,7 +249,7 @@ export class CoreAppProvider {
      *
      * @param color RGB color to use as status bar background. If not set the css variable will be read.
      */
-    setStatusBarColor(color?: string): void {
+    async setStatusBarColor(color?: string): Promise<void> {
         if (!CorePlatform.isMobile()) {
             return;
         }
@@ -259,8 +261,11 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set status bar color ${color}`);
 
-        // @todo Capacitor
-        // StatusBar.backgroundColorByHexString(color);
+        try {
+            await CoreNativeStatusBar.setStatusBarColor(color);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**
@@ -268,7 +273,7 @@ export class CoreAppProvider {
      *
      * @param color RGB color to use as background. If not set the css variable will be read.
      */
-    protected setAndroidNavigationBarColor(color?: string): void {
+    protected async setAndroidNavigationBarColor(color?: string): Promise<void> {
         if (!CorePlatform.isAndroid()) {
             return;
         }
@@ -280,8 +285,11 @@ export class CoreAppProvider {
 
         this.logger.debug(`Set navigation bar color ${color}`);
 
-        // @todo Capacitor
-        // (<any> window).StatusBar.navigationBackgroundColorByHexString(color);
+        try {
+            await CoreNativeStatusBar.setNavigationBarColor(color);
+        } catch {
+            // Ignore errors.
+        }
     }
 
     /**

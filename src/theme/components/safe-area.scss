@@ -1,0 +1,15 @@
+// Android edge-to-edge: use the real insets reported by Capacitor, with env() as a fallback.
+:root.plt-capacitor.plt-android:not(.force-safe-area-margins) {
+    --ion-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+    --ion-safe-area-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+    --ion-safe-area-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+    --ion-safe-area-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+}
+
+// Debug helper to simulate safe area insets on any device.
+:root.force-safe-area-margins {
+    --ion-safe-area-left: 40px;
+    --ion-safe-area-right: 40px;
+    --ion-safe-area-top: 40px;
+    --ion-safe-area-bottom: 40px;
+}

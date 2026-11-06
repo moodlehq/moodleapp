@@ -160,7 +160,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         // We have to set the current color but we don't know when the change will be made.
         // This problem is only related to Android, so on iOS it will be only set once.
         if (!CorePlatform.isAndroid()) {
-            CoreApp.setSystemUIColors();
+            void CoreApp.setSystemUIColors();
 
             return;
         }
@@ -168,7 +168,7 @@ export class AppComponent implements OnInit, AfterViewInit {
         const promise = new CorePromisedValue<void>();
 
         const interval = window.setInterval(() => {
-            CoreApp.setSystemUIColors();
+            void CoreApp.setSystemUIColors();
         });
         setTimeout(() => {
             clearInterval(interval);
