@@ -71,6 +71,7 @@
         "@capacitor/splash-screen": "^8.0.2",
         "@capawesome/capacitor-badge": "^8.0.4",
         "@capawesome/capacitor-file-picker": "^8.1.0",
+        "@capgo/capacitor-inappbrowser": "^8.27.1",
         "@capgo/capacitor-intent-launcher": "^8.3.36",
         "@capgo/capacitor-zip": "^8.2.2",
         "@ionic/angular": "^8.8.19",
