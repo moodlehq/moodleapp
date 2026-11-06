@@ -37,7 +37,7 @@ import { LocalNotificationsMock } from './services/local-notifications';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreDbProvider } from '@services/db';
+import { CoreDbService } from '@services/db';
 import { CoreDbServiceMock } from '@features/emulator/services/db';
 import { FileTransferMock } from './services/file-transfer';
 
@@ -79,9 +79,9 @@ import { FileTransferMock } from './services/file-transfer';
                 : new LocalNotificationsMock(),
         },
         {
-            provide: CoreDbProvider,
-            useFactory: (): CoreDbProvider => CorePlatform.isMobile()
-                ? new CoreDbProvider()
+            provide: CoreDbService,
+            useFactory: (): CoreDbService => CorePlatform.isMobile()
+                ? new CoreDbService()
                 : new CoreDbServiceMock(),
         },
     ],

@@ -15,7 +15,7 @@
 import { DatabaseSync } from 'node:sqlite';
 import { CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
 import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
-import { CoreDbProvider } from '@services/db';
+import { CoreDbService } from '@services/db';
 import { CorePlatform } from '@services/platform';
 import { mock, mockSingleton } from '@/testing/utils';
 import { SQLiteDBConnection } from '@classes/sqlitedb';
@@ -24,7 +24,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 type TestSQLiteDriver = CoreCapacitorSQLiteManagerDriver &
     Pick<CapacitorSQLitePlugin, 'getMigratableDbList' | 'moveDatabasesAndAddSuffix' | 'getDatabaseList'>;
 
-class PendingDbProvider extends CoreDbProvider {
+class PendingDbProvider extends CoreDbService {
 
     initialize = jest.fn(async () => this.pending);
     pending = new CorePromisedValue<void>();
@@ -35,7 +35,7 @@ class PendingDbProvider extends CoreDbProvider {
 
 }
 
-class TestDbProvider extends CoreDbProvider {
+class TestDbProvider extends CoreDbService {
 
     constructor(driver: TestSQLiteDriver) {
         super();
@@ -112,12 +112,12 @@ describe('CoreDB readiness', () => {
     });
 });
 
-describe('CoreDbProvider native database access', () => {
+describe('CoreDbService native database access', () => {
     let engines: Map<string, DatabaseSync>;
     let files: Set<string>;
     let registered: Set<string>;
     let driver: TestSQLiteDriver;
-    let provider: CoreDbProvider;
+    let provider: CoreDbService;
     const globalSchemaStatements = [
         'CREATE TABLE schema_versions (name TEXT PRIMARY KEY, version INTEGER)',
         'INSERT INTO schema_versions VALUES (\'CoreSitesProvider\', 2)',
