@@ -21,5 +21,13 @@
                 -webkit-transform: none;
             }
         }
+
+        // Same for dropdown questions. ion-select uses shadow DOM, so its label is only reachable through ::part.
+        ion-select::part(label) {
+            transform: none;
+            -webkit-transform: none;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
     }
 }
