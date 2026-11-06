@@ -13,7 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { Observable } from 'rxjs';
+import { InAppBrowserObject, InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreFilepool } from '@services/filepool';
@@ -21,7 +22,7 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
-import { Translate, FileOpener, InAppBrowser, NgZone, makeSingleton } from '@singletons';
+import { Translate, FileOpener, NgZone, makeSingleton } from '@singletons';
 import { CoreConstants, CoreConfigSettingKey } from '../constants';
 import { CoreFile } from '@services/file';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -44,7 +45,7 @@ import { CoreIntentLauncher } from '@services/native/intent-launcher';
 export class CoreOpenerService {
 
     protected logger = CoreLogger.getInstance('CoreOpenerService');
-    protected iabInstance?: InAppBrowserObject;
+    protected iabInstance?: CoreInAppBrowserInstance;
 
     /**
      * Show a confirm before opening a link in browser, unless the user previously marked to not show again.
@@ -286,9 +287,9 @@ export class CoreOpenerService {
     /**
      * Get inapp browser instance (if any).
      *
-     * @returns IAB instance, undefined if not open.
+     * @returns IAB bridge instance, undefined if not open.
      */
-    getInAppBrowserInstance(): InAppBrowserObject | undefined  {
+    getInAppBrowserInstance(): CoreInAppBrowserInstance | undefined  {
         return this.iabInstance;
     }
 
@@ -307,11 +308,11 @@ export class CoreOpenerService {
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
-     * @returns The opened window.
+     * @returns The opened window bridge instance.
      */
-    openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): InAppBrowserObject {
+    openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): CoreInAppBrowserInstance {
         const { originalUrl, ...otherOptions } = options || {};
-        const iabOptions: InAppBrowserOptions = {
+        const iabOptions: CoreInAppBrowserOptions = {
             ...otherOptions,
             usewkwebview: 'yes', // Force WKWebView in iOS.
             enableViewPortScale: otherOptions?.enableViewPortScale ?? 'yes', // Enable zoom on iOS by default.
@@ -333,7 +334,8 @@ export class CoreOpenerService {
             });
         }
 
-        this.iabInstance = InAppBrowser.create(url, '_blank', iabOptions);
+        const nativeInstance = InAppBrowser.create(url, '_blank', iabOptions);
+        this.iabInstance = new CoreInAppBrowserInstance(nativeInstance);
 
         const loadStartUrls: string[] = [];
 
@@ -387,7 +389,7 @@ export class CoreOpenerService {
      * @param options Original options.
      * @returns Calculated options.
      */
-    protected calculateInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
+    protected calculateInAppBrowserToolbarColors(options: CoreInAppBrowserOptions): CoreInAppBrowserOptions {
         let bgColor = options.toolbarcolor;
         let textColor: string | undefined;
         let locationTextColor: string | undefined;
@@ -423,12 +425,99 @@ export class CoreOpenerService {
     }
 
 }
+
+/**
+ * InAppBrowser instance bridge.
+ * Adapts InAppBrowserObject to expose only the methods actually used in the app.
+ * This facilitates future migration to alternative browser implementations.
+ */
+export class CoreInAppBrowserInstance {
+
+    /**
+     * Creates an instance wrapper around an InAppBrowserObject.
+     *
+     * @param nativeInstance The underlying Cordova InAppBrowserObject.
+     */
+    constructor(protected nativeInstance: InAppBrowserObject) {}
+
+    /**
+     * Register a listener for an InAppBrowser event.
+     *
+     * @param event Event name: 'loadstart', 'loadstop', 'message', 'exit', etc.
+     * @returns Observable that emits when the event occurs. Unsubscribe to stop listening.
+     */
+    on(event: string): Observable<any> {
+        return this.nativeInstance.on(event);
+    }
+
+    /**
+     * Execute JavaScript code in the InAppBrowser context.
+     *
+     * @param script Script to execute: { code?: string; file?: string }
+     * @param script.code JavaScript code to execute.
+     * @param script.file Path to a JavaScript file to execute.
+     * @returns Promise resolving to the script result.
+     */
+    executeScript(script: { code?: string; file?: string }): Promise<unknown> {
+        return this.nativeInstance.executeScript(script);
+    }
+
+    /**
+     * Close the InAppBrowser window.
+     */
+    close(): void {
+        this.nativeInstance.close();
+    }
+
+}
 export const CoreOpener = makeSingleton(CoreOpenerService);
+
+const InAppBrowser = makeSingleton(InAppBrowserService);
+
+/**
+ * Core InAppBrowser options used in the Moodle App.
+ * Subset of full Cordova InAppBrowser options, containing only those we actually use.
+ */
+export type CoreInAppBrowserOptions = {
+    /** Allow in-line HTML5 media playback (iOS only). */
+    allowInlineMediaPlayback?: 'yes' | 'no';
+    /**
+     * Set to yes to have the session cookie cache cleared before the new window is opened.
+     * For WKWebView, requires iOS 11+ on target device.
+     */
+    clearsessioncache?: 'yes' | 'no';
+    /**
+     * (Android) Set to a string to use as the close button's caption instead of a X. Note that you need to localize this value
+     * yourself.
+     * (iOS) Set to a string to use as the Done button's caption. Note that you need to localize this value yourself.
+     */
+    closebuttoncaption?: string;
+    /** Enable viewport scaling. */
+    enableViewPortScale?: 'yes' | 'no';
+    /** Set the location bar visibility. */
+    location?: 'yes' | 'no';
+    /** Set the close button color (hex string, e.g., #00ff00). */
+    closebuttoncolor?: string;
+    /** Set the navigation button color (hex string, e.g., #00ff00). */
+    navigationbuttoncolor?: string;
+    /** Set the location bar background color (hex string, e.g., #00ff00). */
+    locationcolor?: string;
+    /** Set the location bar text color (hex string, e.g., #00ff00). */
+    locationtextcolor?: string;
+    /** Set the toolbar background color (hex string, e.g., #00ff00). */
+    toolbarcolor?: string;
+    /** Make toolbar translucent/transparent (iOS only). */
+    toolbartranslucent?: 'yes' | 'no';
+    /** Show/hide zoom controls (Android only). */
+    zoomcontrols?: 'yes' | 'no';
+    /** Use WKWebView engine (iOS only). */
+    usewkwebview?: 'yes' | 'no';
+};
 
 /**
  * Options for opening in InAppBrowser.
  */
-export type CoreOpenerOpenInAppBrowserOptions = InAppBrowserOptions & {
+export type CoreOpenerOpenInAppBrowserOptions = CoreInAppBrowserOptions & {
     originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
 };
 

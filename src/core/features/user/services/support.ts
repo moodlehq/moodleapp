@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { CoreOpener, CoreInAppBrowserInstance } from '@services/opener';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
@@ -25,7 +25,6 @@ import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreOpener } from '@services/opener';
 
 /**
  * Handle site support.
@@ -96,7 +95,7 @@ export class CoreUserSupportService {
      * @param subject Title to fill into the form.
      * @param message Details to fill into the form.
      */
-    protected populateSupportForm(browser: InAppBrowserObject, subject?: string | null, message?: string | null): void {
+    protected populateSupportForm(browser: CoreInAppBrowserInstance, subject?: string | null, message?: string | null): void {
         if (!CorePlatform.isMobile()) {
             return;
         }
@@ -123,7 +122,7 @@ export class CoreUserSupportService {
      * @param browser In App browser.
      * @param lang Language used in the support page.
      */
-    protected async listenSupportFormSubmission(browser: InAppBrowserObject, lang: string | null): Promise<void> {
+    protected async listenSupportFormSubmission(browser: CoreInAppBrowserInstance, lang: string | null): Promise<void> {
         if (!CorePlatform.isMobile()) {
             return;
         }

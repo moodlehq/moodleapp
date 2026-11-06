@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { CoreInAppBrowserOptions, CoreInAppBrowserInstance, CoreOpener, CoreOpenerOpenInBrowserOptions } from '@services/opener';
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
@@ -26,7 +26,6 @@ import {
 } from '@services/ws';
 import { CoreTime } from '@static/time';
 import { CoreUrl } from '@static/url';
-import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@services/opener';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';
@@ -478,8 +477,12 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @param alertMessage If defined, an alert will be shown before opening the inappbrowser.
      * @returns Promise resolved when done.
      */
-    async openInAppWithAutoLogin(url: string, options?: InAppBrowserOptions, alertMessage?: string): Promise<InAppBrowserObject> {
-        const iabInstance = <InAppBrowserObject> await this.openWithAutoLogin(true, url, options, alertMessage);
+    async openInAppWithAutoLogin(
+        url: string,
+        options?: CoreInAppBrowserOptions,
+        alertMessage?: string,
+    ): Promise<CoreInAppBrowserInstance> {
+        const iabInstance = <CoreInAppBrowserInstance> await this.openWithAutoLogin(true, url, options, alertMessage);
 
         return iabInstance;
     }
@@ -496,9 +499,9 @@ export class CoreSite extends CoreAuthenticatedSite {
     async openWithAutoLogin(
         inApp: boolean,
         url: string,
-        options: InAppBrowserOptions & CoreOpenerOpenInBrowserOptions = {},
+        options: CoreInAppBrowserOptions & CoreOpenerOpenInBrowserOptions = {},
         alertMessage?: string,
-    ): Promise<InAppBrowserObject | void> {
+    ): Promise<CoreInAppBrowserInstance | void> {
         // Get the URL to open.
         const autoLoginUrl = await this.getAutoLoginUrl(url);
 
