@@ -107,7 +107,6 @@ describe('Capacitor browser database provider', () => {
             isTransactionActive: jest.fn(async ({ database }) => ({ result: engine(database).isTransaction })),
         };
         provider = new CoreDbServiceMock(driver, initialize);
-        jest.spyOn(provider, 'loggingEnabled').mockReturnValue(false);
     });
 
     afterEach(() => {

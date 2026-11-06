@@ -50,7 +50,6 @@ describe('CoreDB readiness', () => {
 
     beforeEach(() => {
         provider = new PendingDbProvider();
-        jest.spyOn(provider, 'loggingEnabled').mockReturnValue(false);
         connection = mock<SQLiteDBConnection>({
             executeSql: jest.fn(async () => ({ rows: { length: 0, item: () => undefined }, rowsAffected: 0 })),
             close: jest.fn(async () => undefined),
@@ -243,7 +242,6 @@ describe('CoreDbProvider native lifecycle', () => {
             isTransactionActive: jest.fn(async ({ database }) => ({ result: engine(database).isTransaction })),
         };
         provider = new TestDbProvider(storage, driver);
-        jest.spyOn(provider, 'loggingEnabled').mockReturnValue(false);
     });
 
     afterEach(() => {
@@ -268,7 +266,6 @@ describe('CoreDbProvider native lifecycle', () => {
         expect(registered.has('MoodleMobile')).toBe(true);
 
         provider = new TestDbProvider(storage, driver);
-        jest.spyOn(provider, 'loggingEnabled').mockReturnValue(false);
         jest.mocked(storage.list).mockImplementationOnce(async () => {
             expect(registered.size).toBe(0);
 
