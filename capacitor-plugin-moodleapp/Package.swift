@@ -7,7 +7,7 @@ let package = Package(
     products: [
         .library(
             name: "CapacitorPluginMoodleapp",
-            targets: ["DiskSpacePlugin", "PreventOverridePlugin", "SecureStoragePlugin"])
+            targets: ["DiskSpacePlugin", "PreventOverridePlugin", "SecureStoragePlugin", "SQLiteMigrationPlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0")
@@ -30,6 +30,12 @@ let package = Package(
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm")
             ],
-            path: "ios/Sources/SecureStoragePlugin")
+            path: "ios/Sources/SecureStoragePlugin"),
+        .target(
+            name: "SQLiteMigrationPlugin",
+            dependencies: [
+                .product(name: "Capacitor", package: "capacitor-swift-pm")
+            ],
+            path: "ios/Sources/SQLiteMigrationPlugin")
     ]
 )

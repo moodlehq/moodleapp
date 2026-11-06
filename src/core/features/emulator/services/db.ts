@@ -25,8 +25,17 @@ export class CoreDbProviderMock extends CoreDbProvider {
     /**
      * @inheritdoc
      */
+    protected async initialize(): Promise<void> {
+        // The current browser driver does not require native platform readiness.
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected createDatabase(name: string): SQLiteObject {
         return asyncInstance(async () => {
+            await this.ready();
+
             const db = new WaSQLiteObject(name);
 
             await db.open();

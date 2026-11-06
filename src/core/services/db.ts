@@ -40,6 +40,27 @@ export class CoreDbProvider {
     queryLogs: CoreDbQueryLog[] = [];
 
     protected dbInstances: { [name: string]: SQLiteDB } = {};
+    protected initialization?: Promise<void>;
+
+    /**
+     * Share driver readiness across startup, early connections and deletion.
+     * A failed initialisation remains blocked until the application is restarted.
+     *
+     * @returns Promise resolved when database access is safe.
+     */
+    ready(): Promise<void> {
+        this.initialization ??= this.initialize();
+
+        return this.initialization;
+    }
+
+    /**
+     * Prepare the active driver before allowing database access.
+     * The Capacitor provider must complete native adoption here, never in the Cordova provider.
+     */
+    protected async initialize(): Promise<void> {
+        await CorePlatform.ready();
+    }
 
     /**
      * Check whether database queries should be logged.
@@ -236,7 +257,7 @@ export class CoreDbProvider {
         // but doing so would mean that the getDB() method should also return a promise.
         // Given that it is heavily used throughout the app, we want to avoid it for now.
         return asyncInstance(async () => {
-            await CorePlatform.ready();
+            await this.ready();
 
             return SQLite.create({ name, location: 'default' });
         }, {});
@@ -248,6 +269,8 @@ export class CoreDbProvider {
      * @param name DB name.
      */
     async deleteDB(name: string): Promise<void> {
+        await this.ready();
+
         if (this.dbInstances[name] !== undefined) {
             await this.dbInstances[name].close();
 
