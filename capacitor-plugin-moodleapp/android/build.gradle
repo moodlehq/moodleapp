@@ -1,10 +1,18 @@
 apply plugin: 'com.android.library'
 
 android {
+    // SQLite migration needs renameat2(RENAME_NOREPLACE), not a check-then-overwrite move.
+    ndkVersion = '28.2.13676358'
     namespace = 'com.moodle.moodlemobile.plugins'
     compileSdk = project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 36
     defaultConfig {
         minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 24
+    }
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+            version '3.22.1'
+        }
     }
     lint {
         abortOnError = false

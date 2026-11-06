@@ -97,8 +97,8 @@ export class CoreAppDBService {
             // Set installed version.
             await this.schemaVersionsTable.insert({ name: schema.name, version: schema.version });
         } catch (error) {
-            // Only log the error, don't throw it.
             this.logger.error(`Error applying schema to app DB: ${schema.name}`, error);
+            CoreDB.onDatabaseInitializationError(DBNAME, error);
         }
     }
 

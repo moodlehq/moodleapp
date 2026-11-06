@@ -16,6 +16,7 @@ import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { PreventOverride } from './plugins/PreventOverride';
 import { SecureStorage } from './plugins/SecureStorage';
+import { SQLiteMigration } from './plugins/SQLiteMigration';
 
 export type { InstallReferrerResult } from './plugins/InstallReferrer';
 export type { SecureStorage } from './plugins/SecureStorage';
@@ -26,4 +27,5 @@ export const MoodleAppCapacitorPlugins = {
     installReferrer: new InstallReferrer(),
     preventOverride: new PreventOverride(),
     secureStorage: new SecureStorage(),
+    sqliteMigration: new SQLiteMigration(),
 };

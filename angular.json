@@ -36,6 +36,11 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
+                "glob": "sql-wasm.wasm",
+                "input": "node_modules/sql.js/dist",
+                "output": "assets/lib/sql.js"
+              },
+              {
                 "glob": "**/*",
                 "input": "src/assets",
                 "output": "assets"
