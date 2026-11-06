@@ -16,7 +16,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { CoreDbServiceMock, CoreBrowserSQLiteDriver } from '@features/emulator/services/db';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { CoreDbProvider } from '@services/db';
+import { CoreDbService } from '@services/db';
 import { getDatabaseProviders } from '@services/database';
 import { mockSingleton } from '@/testing/utils';
 import { Injector } from '@angular/core';
@@ -265,7 +265,7 @@ describe('Capacitor browser database provider', () => {
 
     it.each([false, true])('defaults to native storage without the emulator module (mobile: %s)', mobile => {
         mockSingleton(CorePlatform, { isMobile: () => mobile });
-        const selected = Injector.create({ providers: [CoreDbProvider, ...getDatabaseProviders()] }).get(CoreDbProvider);
-        expect(selected instanceof CoreDbProvider).toBe(true);
+        const selected = Injector.create({ providers: [CoreDbService, ...getDatabaseProviders()] }).get(CoreDbService);
+        expect(selected instanceof CoreDbService).toBe(true);
     });
 });

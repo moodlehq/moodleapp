@@ -42,7 +42,7 @@ The browser provider was registered by the emulator module. The native provider 
 ## Current architecture
 
 ```text
-CoreDbProvider is the native default through providedIn: 'root'
+CoreDbService is the native default through providedIn: 'root'
 emulator.module.ts overrides CoreDB with platform selection
     |
     +-- db.ts (Android/iOS)
@@ -82,8 +82,8 @@ Browser selection belongs to the emulator module, as before migration. Productio
 | File | Responsibility |
 | --- | --- |
 | [database/index.ts](src/core/services/database/index.ts) | Registers shared site schemas, not the database driver. |
-| [emulator.module.ts](src/core/features/emulator/emulator.module.ts) | Overrides `CoreDbProvider` with native/browser selection for builds that include the emulator. |
-| [db.ts](src/core/services/db.ts) | Default native Capacitor provider, wrapper caching, synchronous `getDB()`, query logging and the shared `ready()` barrier. Coordinates native readiness, global opening, site reconciliation, schema completion and deletion through the lifecycle and connection manager. |
+| [emulator.module.ts](src/core/features/emulator/emulator.module.ts) | Overrides `CoreDbService` with native/browser selection for builds that include the emulator. |
+| [db.ts](src/core/services/db.ts) | Default native Capacitor provider, wrapper caching, synchronous `getDB()` and the shared `ready()` barrier. Coordinates native readiness, global opening, site reconciliation, schema completion and deletion through the lifecycle and connection manager. |
 | [sqlitedb.ts](src/core/classes/sqlitedb.ts) | Application-facing SQL, table and record helpers, plus the app-owned connection contract. |
 | [capacitor-sqlite-manager.ts](src/core/classes/capacitor-sqlite-manager.ts) | Owns native registrations and shared connection state; coordinates opening, closing and deletion. Handles obtained before deletion cannot access a later database with the same name. |
 | [capacitor-sqlite-object.ts](src/core/classes/capacitor-sqlite-object.ts) | Adapts plugin queries to `rows.length`, `rows.item()`, `rowsAffected` and `insertId`; serialises SQL and implements atomic batches. Browser use supplies an additional persistence callback. |
