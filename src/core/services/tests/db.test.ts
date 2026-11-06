@@ -21,7 +21,7 @@ import {
     CoreSQLiteNativeLifecycle,
     CoreSQLiteNativeLifecycleDriver,
 } from '@classes/sqlite-native-lifecycle';
-import { CoreDbProvider } from '@services/db';
+import { CoreDbService } from '@services/db';
 import { CorePlatform } from '@services/platform';
 import { mock, mockSingleton } from '@/testing/utils';
 import { SQLiteDBConnection } from '@classes/sqlitedb';
@@ -29,7 +29,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 
 type TestSQLiteDriver = CoreCapacitorSQLiteManagerDriver & CoreSQLiteNativeLifecycleDriver;
 
-class PendingDbProvider extends CoreDbProvider {
+class PendingDbProvider extends CoreDbService {
 
     initialize = jest.fn(async () => this.pending);
     pending = new CorePromisedValue<void>();
@@ -40,7 +40,7 @@ class PendingDbProvider extends CoreDbProvider {
 
 }
 
-class TestDbProvider extends CoreDbProvider {
+class TestDbProvider extends CoreDbService {
 
     constructor(driver: TestSQLiteDriver) {
         super();
@@ -117,12 +117,12 @@ describe('CoreDB readiness', () => {
     });
 });
 
-describe('CoreDbProvider native lifecycle', () => {
+describe('CoreDbService native lifecycle', () => {
     let engines: Map<string, DatabaseSync>;
     let files: Set<string>;
     let registered: Set<string>;
     let driver: TestSQLiteDriver;
-    let provider: CoreDbProvider;
+    let provider: CoreDbService;
     const globalSchema = `CREATE TABLE schema_versions (name TEXT PRIMARY KEY, version INTEGER);
         INSERT INTO schema_versions VALUES ('CoreSitesProvider', 2);
         CREATE TABLE sites_2 (id TEXT PRIMARY KEY, siteUrl TEXT);

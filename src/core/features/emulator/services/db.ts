@@ -17,13 +17,13 @@ import { CoreCapacitorSQLiteObject, CoreCapacitorSQLiteDriver } from '@classes/c
 import { CoreError } from '@classes/errors/error';
 import { CoreQueueRunner } from '@classes/queue-runner';
 import { SQLiteDBConnection } from '@classes/sqlitedb';
-import { CoreDbProvider } from '@services/db';
+import { CoreDbService } from '@services/db';
 
 /**
  * Browser SQLite storage. The old moodleapp-idb store is deliberately neither opened nor removed.
  * Each logical database has one connection and queue, including forceNew wrappers.
  */
-export class CoreDbServiceMock extends CoreDbProvider {
+export class CoreDbServiceMock extends CoreDbService {
 
     protected entries = new Map<string, BrowserConnectionEntry>();
 

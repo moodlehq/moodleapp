@@ -14,7 +14,7 @@
 
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
-import { CoreDB, CoreDbProvider } from '@services/db';
+import { CoreDB, CoreDbService } from '@services/db';
 import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
 import { CoreBrowser } from '@static/browser';
 import { CoreConstants } from '../constants';
@@ -24,7 +24,7 @@ type DevelopmentWindow = Window & {
     browser?: typeof CoreBrowser;
     appDBService?: CoreAppDBService;
     configProvider?: CoreConfigProvider;
-    dbService?: CoreDbProvider;
+    dbService?: CoreDbService;
     urlSchemes?: CoreCustomURLSchemesProvider;
     pushNotifications?: CorePushNotificationsProvider;
 };

@@ -9,6 +9,7 @@ For more information about upgrading, read the official documentation: https://m
 - The method CoreWS.sendHTTPRequest no longer supports 'utf8' and 'multipart' serializers. Data is always sent either in JSON format or in urlencoded format.
 - Due to the Capacitor migration, navigator.splashcreen no longer exists. You can use the exported SplashScreen instance instead, but it's deprecated and will stop working in the future. Plugins shouldn't control the splash screen.
 - Due to the Capacitor migration, global "navigator.connection" and "window.Connection" are now missing.
+- CoreDbProvider is no longer supported for site plugins.
 
 5.3.0
 =====
