@@ -16,7 +16,6 @@ import { AfterViewInit, Component, OnInit, viewChild } from '@angular/core';
 import { IonRouterOutlet, IonicModule } from '@ionic/angular';
 import { BackButtonEvent } from '@ionic/core';
 
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreApp } from '@services/app';
 import { CoreNavigator } from '@services/navigator';
 import { CorePageTitle } from '@services/page-title';
@@ -27,7 +26,6 @@ import { CoreLogger } from '@static/logger';
 import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@static/wait';
-import { CoreOpener } from '@services/opener';
 import { BackButtonPriority } from '@/core/constants';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';
@@ -55,16 +53,6 @@ export class AppComponent implements OnInit, AfterViewInit {
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const win = <any> window;
-
-        CorePlatform.resume.subscribe(() => {
-            // Wait a second before setting it to false since in iOS there could be some frozen WS calls.
-            setTimeout(() => {
-                if (CoreLoginHelper.isWaitingForBrowser() && !CoreOpener.isInAppBrowserOpen()) {
-                    CoreLoginHelper.stopWaitingForBrowser();
-                    CoreLoginHelper.checkLogout();
-                }
-            }, 1000);
-        });
 
         // "Expose" CoreWindow.open.
         win.openWindowSafely = (url: string, name?: string): void => {

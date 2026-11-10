@@ -52,8 +52,11 @@ export interface CoreEventsData {
     [CoreEvents.MANUAL_COMPLETION_CHANGED]: CoreEventManualCompletionChangedData;
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.IAB_LOAD_STOP]: InAppBrowserEvent;
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.IAB_MESSAGE]: Record<string, unknown>;
     [CoreEvents.LOGIN]: { siteId: string };
     [CoreEvents.LOGIN_SITE_CHECKED]: CoreEventLoginSiteCheckedData;
@@ -106,10 +109,24 @@ export class CoreEvents {
     static readonly SITE_PLUGINS_COURSE_RESTRICT_UPDATED = 'site_plugins_course_restrict_updated';
     static readonly LOGIN_SITE_CHECKED = 'login_site_checked';
     static readonly LOGIN_SITE_UNCHECKED = 'login_site_unchecked';
+
+    /**
+     * @deprecated since 6.0. Use onLoaded in the CoreInAppBrowserInstance instead.
+     */
     static readonly IAB_LOAD_START = 'inappbrowser_load_start';
-    static readonly IAB_LOAD_STOP = 'inappbrowser_load_stop';
+    /**
+     * @deprecated since 6.0. Use onClose in the CoreInAppBrowserInstance instead.
+     */
     static readonly IAB_EXIT = 'inappbrowser_exit';
+    /**
+     * @deprecated since 6.0. Use onLoaded in the CoreInAppBrowserInstance instead.
+     */
+    static readonly IAB_LOAD_STOP = 'inappbrowser_load_stop';
+    /**
+     * @deprecated since 6.0. Use onMessage in the CoreInAppBrowserInstance instead.
+     */
     static readonly IAB_MESSAGE = 'inappbrowser_message';
+
     static readonly APP_LAUNCHED_URL = 'app_launched_url'; // App opened with a certain URL (custom URL scheme).
     static readonly FILE_SHARED = 'file_shared';
     /**

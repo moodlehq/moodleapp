@@ -93,7 +93,7 @@ export class AddonNotificationsPushClickHandlerService implements CorePushNotifi
             switch (notification.customdata.appurlopenin) {
                 case CoreLinkOpenMethod.INAPPBROWSER:
                 case 'inapp': // For backwards compatibility, accept 'inapp' too. @deprecated since 5.2.
-                    CoreOpener.openInApp(url);
+                    CoreOpener.openInAppAsync(url);
 
                     return;
 

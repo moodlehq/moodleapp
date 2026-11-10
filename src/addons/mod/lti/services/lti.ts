@@ -240,7 +240,7 @@ export class AddonModLtiProvider {
 
         const launcherUrl = this.generateLauncher(url, params);
 
-        CoreOpener.openInApp(launcherUrl);
+        await CoreOpener.openInAppAsync(launcherUrl);
     }
 
     /**
