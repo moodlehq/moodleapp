@@ -21,7 +21,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents, CoreEventSiteData } from '@static/events';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CorePath } from '@static/path';
 import { CoreSiteWSPreSets } from '@classes/sites/authenticated-site';
 import { CorePrompts } from '@services/overlays/prompts';

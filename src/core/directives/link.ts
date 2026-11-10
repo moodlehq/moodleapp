@@ -18,7 +18,7 @@ import { SafeUrl } from '@angular/platform-browser';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { DATA_APP_OPEN_IN, DATA_APP_OPEN_IN_LEGACY, CoreConstants, CoreLinkOpenMethod } from '@/core/constants';
 import { CoreContentLinksHelper } from '@features/contentlinks/services/contentlinks-helper';
 import { CoreCustomURLSchemes } from '@services/urlschemes';

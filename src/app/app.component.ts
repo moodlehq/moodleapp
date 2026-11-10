@@ -27,7 +27,7 @@ import { CoreLogger } from '@static/logger';
 import { CorePromisedValue } from '@classes/promised-value';
 import { register } from 'swiper/element/bundle';
 import { CoreWait } from '@static/wait';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { BackButtonPriority } from '@/core/constants';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { App } from '@capacitor/app';

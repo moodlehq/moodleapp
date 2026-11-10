@@ -20,7 +20,7 @@ import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**

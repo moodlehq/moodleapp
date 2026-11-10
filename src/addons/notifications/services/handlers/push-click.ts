@@ -24,7 +24,7 @@ import { AddonNotifications } from '../notifications';
 import { AddonNotificationsHelper } from '../notifications-helper';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME, ADDONS_NOTIFICATIONS_MENU_FEATURE_NAME } from '@addons/notifications/constants';
 import { CoreLinkOpenMethod } from '@/core/constants';
 

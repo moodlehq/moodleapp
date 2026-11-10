@@ -33,7 +33,7 @@ import { ADDON_MOD_BBB_COMPONENT_LEGACY, ADDON_MOD_BBB_MODNAME } from '../../con
 import { CoreLoadings } from '@services/overlays/loadings';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreSharedModule } from '@/core/shared.module';

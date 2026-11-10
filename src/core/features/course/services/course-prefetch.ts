@@ -59,7 +59,7 @@ import {
     CoreCourseDownloadStatusIcon,
 } from '../constants';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from './course-helper';

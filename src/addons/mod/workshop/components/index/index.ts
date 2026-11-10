@@ -56,7 +56,7 @@ import {
     AddonModWorkshopPhase,
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { AddonModWorkshopSubmissionComponent } from '../submission/submission';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';

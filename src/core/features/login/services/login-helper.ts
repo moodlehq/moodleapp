@@ -61,7 +61,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@static/sso';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
 import {

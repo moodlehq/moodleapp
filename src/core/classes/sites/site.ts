@@ -26,7 +26,7 @@ import {
 } from '@services/ws';
 import { CoreTime } from '@static/time';
 import { CoreUrl } from '@static/url';
-import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenInBrowserOptions } from '@services/opener';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
 import { SQLiteDB } from '@classes/sqlitedb';
 import { CoreError } from '@classes/errors/error';

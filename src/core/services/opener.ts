@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { Injectable } from '@angular/core';
 import { InAppBrowserObject, InAppBrowserOptions } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
@@ -20,40 +21,37 @@ import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
-import { Translate, FileOpener, InAppBrowser, NgZone } from '@singletons';
+import { Translate, FileOpener, InAppBrowser, NgZone, makeSingleton } from '@singletons';
 import { CoreConstants, CoreConfigSettingKey } from '../constants';
 import { CoreFile } from '@services/file';
-import { CorePromiseUtils } from './promise-utils';
-import { CoreUrl } from './url';
-import { CoreLogger } from './logger';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreUrl } from '@static/url';
+import { CoreLogger } from '@static/logger';
 import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@static/events';
-import { CoreColors } from './colors';
+import { CoreColors } from '@static/colors';
 import { CorePrompts } from '@services/overlays/prompts';
 import { CoreNativeCapacitorFileOpenerErrorCode } from '@features/native/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreFileUtils } from './file-utils';
+import { CoreFileUtils } from '@static/file-utils';
 import { FileOpenerOptions } from '@capacitor-community/file-opener';
 import { CoreIntentLauncher } from '@services/native/intent-launcher';
 
 /**
- * Static class with helper functions to handler open files and urls.
+ * Service with helper functions to handle opening files and URLs.
  */
-export class CoreOpener {
+@Injectable({ providedIn: 'root' })
+export class CoreOpenerService {
 
-    protected static logger = CoreLogger.getInstance('CoreOpener');
-
-    // Avoid creating instances.
-    private constructor() {
-        // Nothing to do.
-    }
+    protected logger = CoreLogger.getInstance('CoreOpenerService');
+    protected iabInstance?: InAppBrowserObject;
 
     /**
      * Show a confirm before opening a link in browser, unless the user previously marked to not show again.
      *
      * @param url URL to open.
      */
-    protected static async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
+    protected async confirmOpenBrowserIfNeeded(url: string): Promise<void> {
         if (!CoreUrl.isHttpURL(url)) {
             // Only ask confirm for http(s), other cases usually launch external apps.
             return;
@@ -85,7 +83,7 @@ export class CoreOpener {
      * @param path The local path of the file to be open.
      * @param options Options.
      */
-    static async openFile(path: string, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
+    async openFile(path: string, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
         // Convert the path to a native path if needed.
         path = CoreFile.unconvertFileSrc(path);
 
@@ -114,7 +112,7 @@ export class CoreOpener {
                     ? [
                         {
                             text: Translate.instant('core.openinbrowser'),
-                            handler: () => CoreOpener.openInBrowser(url),
+                            handler: () => this.openInBrowser(url),
                         },
                         {
                             text: Translate.instant('core.cancel'),
@@ -137,7 +135,7 @@ export class CoreOpener {
                 const openOptions: FileOpenerOptions = {
                     filePath: path,
                     contentType: mimetype,
-                    openWithDefault: !CoreOpener.shouldOpenWithDialog(options),
+                    openWithDefault: !this.shouldOpenWithDialog(options),
                 };
                 await FileOpener.open(openOptions);
             } catch (error) {
@@ -176,8 +174,8 @@ export class CoreOpener {
                 await openFile(path, deprecatedMimetype);
             }
         } catch (error) {
-            CoreOpener.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
-            CoreOpener.logger.error('Error: ', JSON.stringify(error));
+            this.logger.error(`Error opening file ${path} with mimetype ${mimetype}`);
+            this.logger.error('Error: ', JSON.stringify(error));
 
             if (!extension || extension.includes('/') || extension.includes('\\')) {
                 // Extension not found.
@@ -193,16 +191,16 @@ export class CoreOpener {
 
     /**
      * Open a URL using a browser.
-     * Do not use for files, refer to {@link CoreOpener.openFile}.
+     * Do not use for files, refer to {@link CoreOpenerService.openFile}.
      *
      * @param url The URL to open.
      * @param options Options.
      */
-    static async openInBrowser(url: string, options: CoreOpenerOpenInBrowserOptions = {}): Promise<void> {
+    async openInBrowser(url: string, options: CoreOpenerOpenInBrowserOptions = {}): Promise<void> {
         const originaUrl = CoreUrl.unfixPluginfileURL(options.originalUrl ?? url);
         if (options.showBrowserWarning || options.showBrowserWarning === undefined) {
             try {
-                await CoreOpener.confirmOpenBrowserIfNeeded(originaUrl);
+                await this.confirmOpenBrowserIfNeeded(originaUrl);
             } catch {
                 // Cancelled, stop.
                 return;
@@ -226,7 +224,7 @@ export class CoreOpener {
      * @param url The URL of the file.
      * @returns Promise resolved when opened.
      */
-    static async openOnlineFile(url: string): Promise<void> {
+    async openOnlineFile(url: string): Promise<void> {
         if (CorePlatform.isAndroid()) {
             // In Android we need the mimetype to open it.
             const mimetype = await CorePromiseUtils.ignoreErrors(CoreMimetype.getMimeTypeFromUrl(url));
@@ -251,15 +249,15 @@ export class CoreOpener {
 
                 return;
             } catch (error) {
-                CoreOpener.logger.error(`Error opening online file ${url} with mimetype ${mimetype}`);
-                CoreOpener.logger.error('Error: ', JSON.stringify(error));
+                this.logger.error(`Error opening online file ${url} with mimetype ${mimetype}`);
+                this.logger.error('Error: ', JSON.stringify(error));
 
                 throw new Error(Translate.instant('core.erroropenfilenoapp'));
             }
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
-        CoreOpener.openInApp(url);
+        this.openInApp(url);
     }
 
     /**
@@ -268,23 +266,21 @@ export class CoreOpener {
      * @param options Options.
      * @returns Boolean.
      */
-    static shouldOpenWithDialog(options: CoreOpenerOpenFileOptions = {}): boolean {
+    shouldOpenWithDialog(options: CoreOpenerOpenFileOptions = {}): boolean {
         const openFileAction = options.iOSOpenFileAction ?? CoreConstants.CONFIG.iOSDefaultOpenFileAction;
 
         return CorePlatform.isIOS() && openFileAction === OpenFileAction.OPEN_WITH;
     }
 
-    private static iabInstance?: InAppBrowserObject;
-
     /**
      * Close the InAppBrowser window.
      */
-    static closeInAppBrowser(): void {
-        if (!CoreOpener.iabInstance) {
+    closeInAppBrowser(): void {
+        if (!this.iabInstance) {
             return;
         }
 
-        CoreOpener.iabInstance.close();
+        this.iabInstance.close();
     }
 
     /**
@@ -292,8 +288,8 @@ export class CoreOpener {
      *
      * @returns IAB instance, undefined if not open.
      */
-    static getInAppBrowserInstance(): InAppBrowserObject | undefined  {
-        return CoreOpener.iabInstance;
+    getInAppBrowserInstance(): InAppBrowserObject | undefined  {
+        return this.iabInstance;
     }
 
     /**
@@ -301,19 +297,19 @@ export class CoreOpener {
      *
      * @returns Whether it's open.
      */
-    static isInAppBrowserOpen(): boolean {
-        return !!CoreOpener.iabInstance;
+    isInAppBrowserOpen(): boolean {
+        return !!this.iabInstance;
     }
 
     /**
      * Open a URL using InAppBrowser.
-     * Do not use for files, refer to CoreOpener.openFile.
+     * Do not use for files, refer to CoreOpenerService.openFile.
      *
      * @param url The URL to open.
      * @param options Override default options passed to InAppBrowser.
      * @returns The opened window.
      */
-    static openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): InAppBrowserObject {
+    openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): InAppBrowserObject {
         const { originalUrl, ...otherOptions } = options || {};
         const iabOptions: InAppBrowserOptions = {
             ...otherOptions,
@@ -322,7 +318,7 @@ export class CoreOpener {
             allowInlineMediaPlayback: options?.allowInlineMediaPlayback ?? 'yes', // Allow playing inline videos in iOS.
             toolbartranslucent: options?.toolbartranslucent ?? 'no', // Make toolbar opaque in iOS by default.
             zoomcontrols: options?.zoomcontrols ?? 'no', // Disable zoom controls in Android by default.
-            ...CoreOpener.calculateInAppBrowserToolbarColors(options || {}),
+            ...this.calculateInAppBrowserToolbarColors(options || {}),
         };
 
         if (!iabOptions.location && CorePlatform.isIOS() && CoreFileUtils.isFileUrl(url)) {
@@ -337,11 +333,11 @@ export class CoreOpener {
             });
         }
 
-        CoreOpener.iabInstance = InAppBrowser.create(url, '_blank', iabOptions);
+        this.iabInstance = InAppBrowser.create(url, '_blank', iabOptions);
 
         const loadStartUrls: string[] = [];
 
-        const loadStartSubscription = CoreOpener.iabInstance.on('loadstart').subscribe((event) => {
+        const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
             NgZone.run(() => {
                 // Store the last loaded URLs (max 10).
                 loadStartUrls.push(event.url);
@@ -353,26 +349,26 @@ export class CoreOpener {
             });
         });
 
-        const loadStopSubscription = CoreOpener.iabInstance.on('loadstop').subscribe((event) => {
+        const loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
             NgZone.run(() => {
                 CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
             });
         });
 
-        const messageSubscription = CoreOpener.iabInstance.on('message').subscribe((event) => {
+        const messageSubscription = this.iabInstance.on('message').subscribe((event) => {
             NgZone.run(() => {
                 CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
             });
         });
 
-        const exitSubscription = CoreOpener.iabInstance.on('exit').subscribe((event) => {
+        const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
             NgZone.run(() => {
                 loadStartSubscription.unsubscribe();
                 loadStopSubscription.unsubscribe();
                 messageSubscription.unsubscribe();
                 exitSubscription.unsubscribe();
 
-                CoreOpener.iabInstance = undefined;
+                this.iabInstance = undefined;
                 CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
             });
         });
@@ -382,7 +378,7 @@ export class CoreOpener {
             link: CoreUrl.unfixPluginfileURL(originalUrl ?? url),
         });
 
-        return CoreOpener.iabInstance;
+        return this.iabInstance;
     }
 
     /**
@@ -391,7 +387,7 @@ export class CoreOpener {
      * @param options Original options.
      * @returns Calculated options.
      */
-    protected static calculateInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
+    protected calculateInAppBrowserToolbarColors(options: InAppBrowserOptions): InAppBrowserOptions {
         let bgColor = options.toolbarcolor;
         let textColor: string | undefined;
         let locationTextColor: string | undefined;
@@ -427,6 +423,7 @@ export class CoreOpener {
     }
 
 }
+export const CoreOpener = makeSingleton(CoreOpenerService);
 
 /**
  * Options for opening in InAppBrowser.

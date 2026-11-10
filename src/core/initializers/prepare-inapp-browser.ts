@@ -19,7 +19,7 @@ import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-s
 import { CoreSites } from '@services/sites';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { Translate } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CoreAlerts } from '@services/overlays/alerts';

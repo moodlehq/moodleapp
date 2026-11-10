@@ -69,7 +69,7 @@ import { CoreQueueRunner } from '@classes/queue-runner';
 import { CoreAppDB } from './app-db';
 import { CoreRedirects } from '@static/redirects';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreAlerts } from './overlays/alerts';
 import { CoreErrorLogs } from '@static/error-logs';
 import { CoreSilentError } from '@classes/errors/silenterror';

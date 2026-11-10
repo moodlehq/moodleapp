@@ -30,7 +30,7 @@ import { CoreText } from '@static/text';
 import { CoreTime } from '@static/time';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../constants';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreOpenerOpenFileOptions } from '@static/opener';
+import { CoreOpenerOpenFileOptions } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { ModResourceDisplay } from '@addons/mod/constants';
 import { CoreCoursePrefetch } from '@features/course/services/course-prefetch';

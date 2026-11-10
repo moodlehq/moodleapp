@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 
 /**
  * Retains the legacy InAppBrowser service.

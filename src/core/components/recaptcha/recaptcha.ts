@@ -17,7 +17,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 import { CoreLang, CoreLangFormat } from '@services/lang';
 import { CoreSites } from '@services/sites';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CorePath } from '@static/path';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';

@@ -36,7 +36,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLang } from '@services/lang';
 import { CoreBrowser } from '@static/browser';
 import { CoreText } from '@static/text';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 
 /**
  * Behat runtime servive with public API.

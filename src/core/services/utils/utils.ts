@@ -23,7 +23,7 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreArray } from '@static/array';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils, OrderedPromiseData } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@services/opener';
 import { CoreCountries, CoreCountry } from '@static/countries';
 import { CoreObject } from '@static/object';
 import { CoreSites } from '@services/sites';

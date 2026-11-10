@@ -25,7 +25,7 @@ import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 
 /**
  * Handle site support.

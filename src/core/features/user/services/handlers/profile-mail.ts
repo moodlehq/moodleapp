@@ -20,7 +20,7 @@ import {
     CoreUserProfileButtonHandlerData,
 } from '../user-delegate';
 import { CoreSites } from '@services/sites';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreUserProfile } from '../user';
 import { makeSingleton } from '@singletons';
 
