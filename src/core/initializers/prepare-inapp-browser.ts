@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { CoreSiteError } from '@classes/errors/siteerror';
-import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreSites } from '@services/sites';
@@ -31,6 +30,7 @@ let lastInAppUrl: string | null = null;
  */
 export default function(): void {
     // Check URLs loaded in any InAppBrowser.
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     CoreEvents.on(CoreEvents.IAB_LOAD_START, async (event) => {
         // URLs with a custom scheme can be prefixed with "http://" or "https://", we need to remove this.
         const protocol = CoreUrl.getUrlProtocol(event.url);
@@ -73,7 +73,7 @@ export default function(): void {
         // At this point, URL schemes will stop working in IAB, and in Android the IAB is showing a "Webpage not available" error.
         // Re-loading the page inside the existing IAB doesn't fix it, we need to re-load the whole IAB.
         if (lastInAppUrl) {
-            CoreOpener.openInApp(lastInAppUrl);
+            await CoreOpener.openInAppAsync(lastInAppUrl);
         } else {
             // No last URL loaded, close the InAppBrowser.
             CoreOpener.closeInAppBrowser();
@@ -81,12 +81,8 @@ export default function(): void {
     });
 
     // Check InAppBrowser closed.
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
     CoreEvents.on(CoreEvents.IAB_EXIT, () => {
         lastInAppUrl = null;
-
-        if (CoreLoginHelper.isWaitingForBrowser()) {
-            CoreLoginHelper.stopWaitingForBrowser();
-            CoreLoginHelper.checkLogout();
-        }
     });
 }

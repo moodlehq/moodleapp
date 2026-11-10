@@ -1021,9 +1021,9 @@ export class TestingBehatRuntimeService {
     /**
      * Browser tab was closed.
      */
-    browserTabClosed(): void {
+    async browserTabClosed(): Promise<void> {
         // Call the function to close the IAB (if any) to force triggering the exit event.
-        CoreOpener.closeInAppBrowser();
+        await CoreOpener.closeInAppBrowser();
     }
 
 }

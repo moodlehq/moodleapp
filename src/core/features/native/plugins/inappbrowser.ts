@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreInAppBrowserOptions, CoreInAppBrowserInstance, CoreOpener } from '@services/opener';
+import { CoreInAppBrowserInstance, CoreOpener, CoreOpenerOpenInAppBrowserOptions } from '@services/opener';
 
 /**
  * Retains the legacy InAppBrowser service.
@@ -35,15 +35,16 @@ export class InAppBrowser {
      * @param options Options for the InAppBrowser. Can be a string in comma-separated format (key1=value1,key2=value2)
      *  or a JSON string, or an options object.
      * @returns CoreInAppBrowserInstance bridge.
-     * @deprecated since 6.0. Use CoreOpener.openInApp instead.
+     * @deprecated since 6.0. Use CoreOpener.openInAppAsync instead.
      */
     create(
         url: string,
         target?: string,
-        options?: string | CoreInAppBrowserOptions,
+        options?: string | CoreOpenerOpenInAppBrowserOptions,
     ): CoreInAppBrowserInstance {
         const parsedOptions = parseInAppBrowserOptions(options);
 
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
         return CoreOpener.openInApp(url, parsedOptions);
     }
 
@@ -57,7 +58,7 @@ export class InAppBrowser {
  *  or a JSON string, or an options object.
  * @returns Parsed InAppBrowser options as an object.
  */
-function parseInAppBrowserOptions(options?: string | CoreInAppBrowserOptions): CoreInAppBrowserOptions {
+function parseInAppBrowserOptions(options?: string | CoreOpenerOpenInAppBrowserOptions): CoreOpenerOpenInAppBrowserOptions {
     if (!options) {
         return {};
     }
@@ -67,7 +68,7 @@ function parseInAppBrowserOptions(options?: string | CoreInAppBrowserOptions): C
     }
 
     // Parse string format: "key1=value1,key2=value2" or JSON string
-    const parsed: CoreInAppBrowserOptions = {};
+    const parsed: CoreOpenerOpenInAppBrowserOptions = {};
 
     try {
         // Try JSON parsing first
@@ -84,6 +85,7 @@ function parseInAppBrowserOptions(options?: string | CoreInAppBrowserOptions): C
     pairs.forEach(pair => {
         const [key, value] = pair.split('=').map(s => s.trim());
         if (key && value) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (parsed as any)[key] = value;
         }
     });

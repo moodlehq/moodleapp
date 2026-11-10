@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreInAppBrowserOptions, CoreInAppBrowserInstance, CoreOpener, CoreOpenerOpenInBrowserOptions } from '@services/opener';
+import {
+    CoreInAppBrowserInstance,
+    CoreOpener,
+    CoreOpenerOpenInBrowserOptions,
+    CoreOpenerOpenInAppBrowserOptions,
+} from '@services/opener';
 
 import { CoreNetwork } from '@services/network';
 import { CoreDB } from '@services/db';
@@ -479,12 +484,10 @@ export class CoreSite extends CoreAuthenticatedSite {
      */
     async openInAppWithAutoLogin(
         url: string,
-        options?: CoreInAppBrowserOptions,
+        options?: CoreOpenerOpenInAppBrowserOptions,
         alertMessage?: string,
     ): Promise<CoreInAppBrowserInstance> {
-        const iabInstance = <CoreInAppBrowserInstance> await this.openWithAutoLogin(true, url, options, alertMessage);
-
-        return iabInstance;
+        return await this.openWithAutoLogin(true, url, options, alertMessage);
     }
 
     /**
@@ -496,14 +499,28 @@ export class CoreSite extends CoreAuthenticatedSite {
      * @param alertMessage If defined, an alert will be shown before opening the browser/inappbrowser.
      * @returns Promise resolved when done. Resolve param is returned only if inApp=true.
      */
-    async openWithAutoLogin(
+    protected async openWithAutoLogin(
+        inApp: true,
+        url: string,
+        options: CoreOpenerOpenInAppBrowserOptions | undefined,
+        alertMessage?: string,
+    ): Promise<CoreInAppBrowserInstance>;
+    protected async openWithAutoLogin(
+        inApp: false,
+        url: string,
+        options: CoreOpenerOpenInBrowserOptions,
+        alertMessage?: string,
+    ): Promise<void>;
+    protected async openWithAutoLogin(
         inApp: boolean,
         url: string,
-        options: CoreInAppBrowserOptions & CoreOpenerOpenInBrowserOptions = {},
+        options: CoreOpenerOpenInAppBrowserOptions | CoreOpenerOpenInBrowserOptions = {},
         alertMessage?: string,
     ): Promise<CoreInAppBrowserInstance | void> {
         // Get the URL to open.
         const autoLoginUrl = await this.getAutoLoginUrl(url);
+
+        options.originalUrl = url;
 
         if (alertMessage) {
             // Show an alert first.
@@ -514,25 +531,27 @@ export class CoreSite extends CoreAuthenticatedSite {
             });
 
             await alert.onDidDismiss();
-            options.showBrowserWarning = false; // A warning already shown, no need to show another.
+            // A warning already shown, no need to show another.
+            (options as CoreOpenerOpenInBrowserOptions).showBrowserWarning = false;
         }
-
-        options.originalUrl = url;
 
         // Open the URL.
         if (inApp) {
+            const inAppOptions = options as CoreOpenerOpenInAppBrowserOptions;
             if (
-                options.clearsessioncache === undefined && autoLoginUrl !== url &&
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                (inAppOptions.clearCookiesOnOpen === undefined && inAppOptions.clearsessioncache === undefined)
+                && autoLoginUrl !== url &&
                 (
                     CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'all' ||
                     (CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'android' && CorePlatform.isAndroid()) ||
                     (CoreConstants.CONFIG.clearIABSessionWhenAutoLogin === 'ios' && CorePlatform.isIOS())
                 )
             ) {
-                options.clearsessioncache = 'yes';
+                inAppOptions.clearCookiesOnOpen = true;
             }
 
-            return CoreOpener.openInApp(autoLoginUrl, options);
+            return CoreOpener.openInAppAsync(autoLoginUrl, inAppOptions);
         } else {
             return CoreOpener.openInBrowser(autoLoginUrl, options);
         }

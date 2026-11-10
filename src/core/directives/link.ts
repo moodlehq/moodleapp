@@ -213,7 +213,7 @@ export class CoreLinkDirective implements OnInit {
                 if (this.autoLogin && site) {
                     await site.openInAppWithAutoLogin(href);
                 } else {
-                    CoreOpener.openInApp(href);
+                    await CoreOpener.openInAppAsync(href);
                 }
             } else {
                 if (this.autoLogin && site) {

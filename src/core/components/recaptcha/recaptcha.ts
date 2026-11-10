@@ -72,24 +72,21 @@ export class CoreRecaptchaComponent implements OnInit {
         // The app cannot render the recaptcha directly because it has problems with the local protocols and domains.
         const src = CorePath.concatenatePaths(this.siteUrl, `webservice/recaptcha.php?lang=${this.lang}`);
 
-        const inAppBrowserWindow = CoreOpener.openInApp(src);
-        if (!inAppBrowserWindow) {
+        const inAppBrowser = await CoreOpener.openInAppAsync(src);
+        if (!inAppBrowser) {
             return;
         }
 
         // Set the callbacks once the page is loaded.
-        const loadStopSubscription = inAppBrowserWindow.on('loadstop').subscribe(() => {
-            inAppBrowserWindow.executeScript({
-                code:
-                    'window.recaptchacallback = (value) => webkit.messageHandlers.cordova_iab.postMessage(' +
-                        'JSON.stringify({ action: "callback", value }));' +
-                    'window.recaptchaexpiredcallback = () => webkit.messageHandlers.cordova_iab.postMessage(' +
-                        'JSON.stringify({ action: "expired" }));',
-            });
-        });
+        inAppBrowser.executeScriptOnLoad(
+            'window.recaptchacallback = (value) => window.mobileApp.postMessage(' +
+                'JSON.stringify({detail: { action: "callback", value } }));' +
+            'window.recaptchaexpiredcallback = () => window.mobileApp.postMessage(' +
+                'JSON.stringify({detail: { action: "expired" } }));',
+        );
 
         // Listen for events.
-        const messageSubscription = inAppBrowserWindow.on('message').subscribe((event) => {
+        inAppBrowser.onMessage((event) => {
             if (!event.data) {
                 return;
             }
@@ -101,9 +98,7 @@ export class CoreRecaptchaComponent implements OnInit {
                 this.model[this.modelValueName] = event.data.value;
 
                 // Close the InAppBrowser now.
-                inAppBrowserWindow.close();
-                messageSubscription.unsubscribe();
-                loadStopSubscription.unsubscribe();
+                inAppBrowser.close();
             }
         });
     }

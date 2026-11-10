@@ -45,7 +45,6 @@ import { CoreCollapsibleItemDirective } from './collapsible-item';
 import { CoreCancellablePromise } from '@classes/cancellable-promise';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreDom } from '@static/dom';
-import { CoreEvents } from '@static/events';
 import { CoreRefreshContext, CORE_REFRESH_CONTEXT } from '@/core/utils/refresh-context';
 import { CorePlatform } from '@services/platform';
 import { ElementController } from '@classes/element-controllers/ElementController';
@@ -978,11 +977,11 @@ export class CoreFormatTextDirective implements OnDestroy, AsyncDirective {
                     await CoreViewer.openIframeViewer((element.textContent || element.innerText || '').trim(), url);
                 } else if (openIn === CoreLinkOpenMethod.INAPPBROWSER || openIn === CoreLinkOpenMethod.APP) {
                     // For backwards compatibility, consider APP as INAPPBROWSER. @deprecated since 5.2.
-                    await site.openInAppWithAutoLogin(url);
+                    const inAppBrowser = await site.openInAppWithAutoLogin(url);
 
                     if (refreshOnResume && this.refreshContext) {
                         // Refresh the context when the IAB is closed.
-                        CoreEvents.once(CoreEvents.IAB_EXIT, () => {
+                        inAppBrowser.onClose(() => {
                             this.refreshContext?.refreshContext();
                         });
                     }

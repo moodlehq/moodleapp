@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { InAppBrowserObject, InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { Observable, Subject } from 'rxjs';
+import { InAppBrowser as CapgoInAppBrowser, OpenWebViewOptions, ToolBarType } from '@capgo/capacitor-inappbrowser';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreFilepool } from '@services/filepool';
@@ -34,9 +34,11 @@ import { CoreColors } from '@static/colors';
 import { CorePrompts } from '@services/overlays/prompts';
 import { CoreNativeCapacitorFileOpenerErrorCode } from '@features/native/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
-import { CoreFileUtils } from '@static/file-utils';
 import { FileOpenerOptions } from '@capacitor-community/file-opener';
 import { CoreIntentLauncher } from '@services/native/intent-launcher';
+import { CorePromisedValue } from '@classes/promised-value';
+import { PluginListenerHandle } from '@capacitor/core';
+import { CoreCustomURLSchemes } from './urlschemes';
 
 /**
  * Service with helper functions to handle opening files and URLs.
@@ -258,7 +260,7 @@ export class CoreOpenerService {
         }
 
         // In the rest of platforms we need to open them in InAppBrowser.
-        this.openInApp(url);
+        await this.openInAppAsync(url);
     }
 
     /**
@@ -274,32 +276,38 @@ export class CoreOpenerService {
     }
 
     /**
-     * Close the InAppBrowser window.
+     * Get the web view options for opening a URL in InAppBrowser.
+     *
+     * @param url The URL to open.
+     * @param options Options passed to InAppBrowser.
+     * @returns The web view options.
      */
-    closeInAppBrowser(): void {
-        if (!this.iabInstance) {
-            return;
+    protected getWebViewOptions(url: string, options?: CoreOpenerOpenInAppBrowserOptions): OpenWebViewOptions {
+        const { originalUrl, ...otherOptions } = options || {};
+
+        const openWebViewOptions = this.mapCordovaInAppBrowserOptions({ ...otherOptions });
+
+        openWebViewOptions.toolbarColor = this.calculateInAppBrowserToolbarColor(openWebViewOptions?.toolbarColor);
+
+        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
+            url = CoreUrl.addParamsToUrl(url, { lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) }, {
+                checkAutoLoginUrl: originalUrl !== url,
+            });
         }
 
-        this.iabInstance.close();
-    }
+        openWebViewOptions.enableZoom = openWebViewOptions.enableZoom ?? true;
 
-    /**
-     * Get inapp browser instance (if any).
-     *
-     * @returns IAB bridge instance, undefined if not open.
-     */
-    getInAppBrowserInstance(): CoreInAppBrowserInstance | undefined  {
-        return this.iabInstance;
-    }
+        const debug = CoreConstants.BUILD.isDevelopment;
 
-    /**
-     * Check if inapp browser is open.
-     *
-     * @returns Whether it's open.
-     */
-    isInAppBrowserOpen(): boolean {
-        return !!this.iabInstance;
+        return {
+            ...openWebViewOptions,
+            toolbarType: ToolBarType.NAVIGATION,
+            url,
+            title: '', // Empty title will show domain of the visited webpage on Android and empty on iOS by default.
+            isInspectable: debug, // Enable web view inspection on iOs in development mode.
+            customUserAgent: navigator.userAgent,
+            enableReloadGesture: true,
+        };
     }
 
     /**
@@ -310,69 +318,47 @@ export class CoreOpenerService {
      * @param options Override default options passed to InAppBrowser.
      * @returns The opened window bridge instance.
      */
+    async openInAppAsync(url: string, options?: CoreOpenerOpenInAppBrowserOptions): Promise<CoreInAppBrowserInstance> {
+        const { originalUrl } = options || {};
+
+        const wvOptions = this.getWebViewOptions(url, options);
+
+        const data = await CapgoInAppBrowser.openWebView(wvOptions);
+
+        const iabInstance = new CoreInAppBrowserInstance(url, data.id);
+
+        CoreAnalytics.logEvent({
+            type: CoreAnalyticsEventType.OPEN_LINK,
+            link: CoreUrl.unfixPluginfileURL(originalUrl ?? url),
+        });
+
+        this.iabInstance = iabInstance;
+
+        return iabInstance;
+    }
+
+    /**
+     * Open a URL using InAppBrowser. Synchronously.
+     * Do not use for files, refer to CoreOpenerService.openFile.
+     *
+     * @param url The URL to open.
+     * @param options Override default options passed to InAppBrowser.
+     * @returns The opened window bridge instance.
+     * @deprecated since 6.0. In the future this function will be async.
+     */
     openInApp(url: string, options?: CoreOpenerOpenInAppBrowserOptions): CoreInAppBrowserInstance {
-        const { originalUrl, ...otherOptions } = options || {};
-        const iabOptions: CoreInAppBrowserOptions = {
-            ...otherOptions,
-            usewkwebview: 'yes', // Force WKWebView in iOS.
-            enableViewPortScale: otherOptions?.enableViewPortScale ?? 'yes', // Enable zoom on iOS by default.
-            allowInlineMediaPlayback: options?.allowInlineMediaPlayback ?? 'yes', // Allow playing inline videos in iOS.
-            toolbartranslucent: options?.toolbartranslucent ?? 'no', // Make toolbar opaque in iOS by default.
-            zoomcontrols: options?.zoomcontrols ?? 'no', // Disable zoom controls in Android by default.
-            ...this.calculateInAppBrowserToolbarColors(options || {}),
-        };
+        const { originalUrl } = options || {};
 
-        if (!iabOptions.location && CorePlatform.isIOS() && CoreFileUtils.isFileUrl(url)) {
-            // The URL uses file protocol, don't show it on iOS.
-            // In Android we keep it because otherwise we lose the whole toolbar.
-            iabOptions.location = 'no';
-        }
+        const wvOptions = this.getWebViewOptions(url, options);
 
-        if (CoreSites.getCurrentSite()?.containsUrl(url)) {
-            url = CoreUrl.addParamsToUrl(url, { lang: CoreLang.getCurrentLanguageSync(CoreLangFormat.LMS) }, {
-                checkAutoLoginUrl: originalUrl !== url,
-            });
-        }
+        const iabInstance = new CoreInAppBrowserInstance(url);
 
-        const nativeInstance = InAppBrowser.create(url, '_blank', iabOptions);
-        this.iabInstance = new CoreInAppBrowserInstance(nativeInstance);
+        CapgoInAppBrowser.openWebView(wvOptions).then((data) => {
+            iabInstance.setId(data.id);
 
-        const loadStartUrls: string[] = [];
-
-        const loadStartSubscription = this.iabInstance.on('loadstart').subscribe((event) => {
-            NgZone.run(() => {
-                // Store the last loaded URLs (max 10).
-                loadStartUrls.push(event.url);
-                if (loadStartUrls.length > 10) {
-                    loadStartUrls.shift();
-                }
-
-                CoreEvents.trigger(CoreEvents.IAB_LOAD_START, event);
-            });
-        });
-
-        const loadStopSubscription = this.iabInstance.on('loadstop').subscribe((event) => {
-            NgZone.run(() => {
-                CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, event);
-            });
-        });
-
-        const messageSubscription = this.iabInstance.on('message').subscribe((event) => {
-            NgZone.run(() => {
-                CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
-            });
-        });
-
-        const exitSubscription = this.iabInstance.on('exit').subscribe((event) => {
-            NgZone.run(() => {
-                loadStartSubscription.unsubscribe();
-                loadStopSubscription.unsubscribe();
-                messageSubscription.unsubscribe();
-                exitSubscription.unsubscribe();
-
-                this.iabInstance = undefined;
-                CoreEvents.trigger(CoreEvents.IAB_EXIT, event);
-            });
+            return;
+        }).finally(() => {
+            // Nothing to do here.
         });
 
         CoreAnalytics.logEvent({
@@ -380,144 +366,450 @@ export class CoreOpenerService {
             link: CoreUrl.unfixPluginfileURL(originalUrl ?? url),
         });
 
-        return this.iabInstance;
+        this.iabInstance = iabInstance;
+
+        return iabInstance;
     }
 
     /**
-     * Given some IAB options, calculate the right toolbar colors properties.
+     * Calculate the appropriate toolbar color for the InAppBrowser on Android.
      *
-     * @param options Original options.
-     * @returns Calculated options.
+     * @param toolbarColor Original color.
+     * @returns Calculated toolbar color.
      */
-    protected calculateInAppBrowserToolbarColors(options: CoreInAppBrowserOptions): CoreInAppBrowserOptions {
-        let bgColor = options.toolbarcolor;
-        let textColor: string | undefined;
-        let locationTextColor: string | undefined;
-
-        if (!bgColor) {
-            if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
-                bgColor = CoreColors.getToolbarBackgroundColor();
-            } else if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
-                bgColor = CoreConstants.CONFIG.iabToolbarColors.background;
-                textColor = CoreConstants.CONFIG.iabToolbarColors.text;
-            } else {
-                // Android default color is light gray, in iOS default color was black but now it's transparent. Use black instead.
-                bgColor = CorePlatform.isAndroid() ? '#CCCCCC' : '#000000';
-            }
+    protected calculateInAppBrowserToolbarColor(toolbarColor?: string): string | undefined {
+        if (!CorePlatform.isAndroid()) {
+            return;
         }
 
-        if (!textColor) {
-            textColor = CoreColors.isWhiteContrastingBetter(bgColor) ? '#ffffff' : '#000000';
-        }
-        if (!options.locationtextcolor) {
-            locationTextColor = options.locationcolor ?
-                CoreColors.isWhiteContrastingBetter(options.locationcolor) ? '#ffffff' : '#000000' :
-                textColor;
+        if (toolbarColor) {
+            return toolbarColor;
         }
 
-        return {
-            toolbarcolor: bgColor,
-            closebuttoncolor: options.closebuttoncolor || textColor,
-            navigationbuttoncolor: options.navigationbuttoncolor || textColor,
-            locationcolor: options.locationcolor || bgColor,
-            locationtextcolor: options.locationtextcolor || locationTextColor,
-        };
-    }
+        if (CoreConstants.CONFIG.iabToolbarColors === 'auto') {
+            return CoreColors.getToolbarBackgroundColor();
+        }
 
-}
-
-/**
- * InAppBrowser instance bridge.
- * Adapts InAppBrowserObject to expose only the methods actually used in the app.
- * This facilitates future migration to alternative browser implementations.
- */
-export class CoreInAppBrowserInstance {
-
-    /**
-     * Creates an instance wrapper around an InAppBrowserObject.
-     *
-     * @param nativeInstance The underlying Cordova InAppBrowserObject.
-     */
-    constructor(protected nativeInstance: InAppBrowserObject) {}
-
-    /**
-     * Register a listener for an InAppBrowser event.
-     *
-     * @param event Event name: 'loadstart', 'loadstop', 'message', 'exit', etc.
-     * @returns Observable that emits when the event occurs. Unsubscribe to stop listening.
-     */
-    on(event: string): Observable<any> {
-        return this.nativeInstance.on(event);
+        if (CoreConstants.CONFIG.iabToolbarColors && typeof CoreConstants.CONFIG.iabToolbarColors === 'object') {
+            return CoreConstants.CONFIG.iabToolbarColors.background;
+        }
     }
 
     /**
-     * Execute JavaScript code in the InAppBrowser context.
+     * Maps Cordova-style InAppBrowser options to the format expected by the underlying browser implementation.
      *
-     * @param script Script to execute: { code?: string; file?: string }
-     * @param script.code JavaScript code to execute.
-     * @param script.file Path to a JavaScript file to execute.
-     * @returns Promise resolving to the script result.
+     * @param options InAppBrowser options to translate.
+     * @returns Translated InAppBrowser options.
      */
-    executeScript(script: { code?: string; file?: string }): Promise<unknown> {
-        return this.nativeInstance.executeScript(script);
+    protected mapCordovaInAppBrowserOptions(options: CoreOpenerOpenInAppBrowserOptions): CoreInAppBrowserOptions {
+        const mappedOptions: CoreInAppBrowserOptions = { };
+
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        if (options.clearsessioncache === 'yes' && options.clearCookiesOnOpen === undefined) {
+            mappedOptions.clearCookiesOnOpen = true;
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        } else if (options.clearsessioncache === 'no' && options.clearCookiesOnOpen === undefined) {
+            mappedOptions.clearCookiesOnOpen = false;
+        } else {
+            mappedOptions.clearCookiesOnOpen = options.clearCookiesOnOpen;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        mappedOptions.toolbarColor = options.toolbarColor ?? options.toolbarcolor;
+
+        return mappedOptions;
     }
 
     /**
      * Close the InAppBrowser window.
      */
-    close(): void {
-        this.nativeInstance.close();
+    async closeInAppBrowser(): Promise<void> {
+        if (this.iabInstance) {
+            await this.iabInstance.close();
+
+            delete this.iabInstance;
+        } else {
+            // Will close the currently open InAppBrowser instance via Capgo.
+            await CapgoInAppBrowser.close();
+        }
+    }
+
+    /**
+     * Get inapp browser instance (if any).
+     *
+     * @returns IAB bridge instance, undefined if not open.
+     * @deprecated since 6.0. Use the InAppBrowserInstance returned by openInAppAsync  instead.
+     */
+    getInAppBrowserInstance(): CoreInAppBrowserInstance | undefined  {
+        return this.iabInstance;
+    }
+
+    /**
+     * Check if inapp browser is open.
+     *
+     * @returns Whether it's open.
+     * @deprecated since 6.0. Use the InAppBrowserInstance returned by openInApp instead.
+     */
+    isInAppBrowserOpen(): boolean {
+        return !!this.iabInstance;
     }
 
 }
 export const CoreOpener = makeSingleton(CoreOpenerService);
 
-const InAppBrowser = makeSingleton(InAppBrowserService);
+/**
+ * InAppBrowser instance bridge.
+ * Adapts InAppBrowserObject to expose only the methods actually used in the app.
+ * This facilitates future migration to alternative browser implementations.
+ *
+ * Supports both Cordova InAppBrowserObject and Capgo instances (identified by ID).
+ */
+export class CoreInAppBrowserInstance {
+
+    protected idPromise = new CorePromisedValue<string>();
+    protected subscriptions: PluginListenerHandle[] = [];
+    protected id?: string;
+
+    constructor(protected url: string, id?: string) {
+        if (id) {
+            this.setId(id);
+        }
+
+        this.onUrlChange((data) => {
+            this.url = data.url;
+        });
+
+        this.customAppSchemeIntercepted((eventData) => {
+            if (CoreCustomURLSchemes.isCustomURL(eventData.url)) {
+                // Close the browser if our app is handling the link.
+                this.close();
+
+                return;
+            }
+        });
+
+        this.onClose(async () => {
+            // Add a small delay to allow pending onClosed handlers to be executed before removing subscriptions.
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Remove all subscriptions for this instance.
+            await Promise.all(this.subscriptions.map((handle) => handle.remove()));
+        });
+    }
+
+    /**
+     * Register a listener for an InAppBrowser event.
+     *
+     * @param event Event name: 'loadstart', 'loadstop', 'message', 'exit' etc.
+     * @returns Observable that emits when the event occurs. Unsubscribe to stop listening.
+     * @deprecated since 6.0. Use onLoaded, onMessage or onClose instead.
+     */
+    on(event: 'loadstart' | 'loadstop' | 'message' | 'exit'): Observable<unknown> {
+        const subject = new Subject<unknown>();
+
+        if (event === 'loadstart') {
+            // Load start event mapped to URL change to have the url available immediately.
+            this.onUrlChange(() => {
+                subject.next({ url: this.url });
+            });
+        } else if (event === 'loadstop') {
+            this.onLoaded(() => {
+                subject.next({ url: this.url });
+            });
+        } else if (event === 'message') {
+            this.onMessage((data) => {
+                subject.next(data);
+            });
+        } else if (event === 'exit') {
+            this.onClose(() => {
+                subject.next({});
+            });
+        }
+
+        return subject.asObservable();
+    }
+
+    /**
+     * Register a listener for URL change events.
+     *
+     * @param listenerFunc Function to call when the URL changes.
+     */
+    protected async onUrlChange(listenerFunc: (event: { url: string }) => void): Promise<void> {
+        const handle = await CapgoInAppBrowser.addListener('urlChangeEvent', (eventData) => {
+            if (eventData.id === this.id) {
+                listenerFunc({ url: eventData.url });
+            }
+        });
+        this.subscriptions.push(handle);
+    }
+
+    /**
+     * Register a listener for custom app scheme interception events.
+     *
+     * @param listenerFunc Function to call when a custom app scheme is intercepted.
+     */
+    async customAppSchemeIntercepted(listenerFunc: (event: { url: string }) => void): Promise<void> {
+        const handle = await CapgoInAppBrowser.addListener('customSchemeIntercepted', (eventData) => {
+            if (eventData.id === this.id && eventData.opened) {
+                listenerFunc({
+                    url: eventData.url,
+                });
+            }
+        });
+        this.subscriptions.push(handle);
+    }
+
+    /**
+     * Register a listener for close events.
+     *
+     * @param listenerFunc Function to call when the browser is closed.
+     */
+    async onClose(listenerFunc: () => void): Promise<void> {
+        const handle = await CapgoInAppBrowser.addListener('closeEvent', (eventData) => {
+            if (eventData.id === this.id) {
+                listenerFunc();
+            }
+        });
+        this.subscriptions.push(handle);
+    }
+
+    /**
+     * Wait until the browser is closed.
+     *
+     * @returns Promise resolved when the browser is closed.
+     */
+    async waitClosed(): Promise<void> {
+        return new Promise((resolve) => {
+            this.onClose(() => {
+                resolve();
+            });
+        });
+    }
+
+    /**
+     * Register a listener for load stop events.
+     *
+     * @param listenerFunc Function to call when the page finishes loading.
+     * @returns Promise resolved with the plugin listener handle.
+     */
+    async onLoaded(listenerFunc: (event: { url: string }) => void): Promise<PluginListenerHandle> {
+        const handle = await CapgoInAppBrowser.addListener('browserPageLoaded', (eventData) => {
+            if (eventData.id === this.id) {
+                listenerFunc({ url: this.url });
+            }
+        });
+        this.subscriptions.push(handle);
+
+        return handle;
+    }
+
+    /**
+     * Register a listener for message events from the webview.
+     *
+     * @param listenerFunc Function to call when a message is received.
+     * @returns Promise resolved with the plugin listener handle.
+     */
+    async onMessage(listenerFunc: (event: {
+        data: Record<string, any>;  // eslint-disable-line @typescript-eslint/no-explicit-any
+        url: string;
+    }) => void): Promise<PluginListenerHandle> {
+        const handle = await CapgoInAppBrowser.addListener('messageFromWebview', (eventData) => {
+            if (eventData.id === this.id) {
+                delete(eventData.id);
+                const data = eventData.detail ?
+                    eventData.detail :
+                    eventData.rawMessage ? JSON.parse(eventData.rawMessage) : '';
+
+                listenerFunc({ data, url: this.url });
+            }
+        });
+        this.subscriptions.push(handle);
+
+        return handle;
+    }
+
+    /**
+     * Set the Capgo InAppBrowser instance ID.
+     *
+     * @param id Capgo InAppBrowser instance ID.
+     */
+    setId(id: string): void {
+        // Only set once.
+        if (this.id) {
+            return;
+        }
+
+        this.id = id;
+        this.idPromise.resolve(id);
+
+        this.setLegacyEventHandlers();
+    }
+
+    /**
+     * Set up legacy event handlers for the InAppBrowser instance.
+     * This includes load start, load stop, message, and close events.
+     * This events are deprecated since 6.0 and will be removed in future versions.
+     */
+    protected setLegacyEventHandlers(): void {
+        this.onUrlChange((event) => {
+            NgZone.run(() => {
+                const e = new Event('loadstart');
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                CoreEvents.trigger(CoreEvents.IAB_LOAD_START, {
+                    ...event,
+                    ...e,
+                });
+            });
+        });
+
+        this.onClose(() => {
+            NgZone.run(() => {
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                CoreEvents.trigger(CoreEvents.IAB_EXIT);
+            });
+        });
+
+        this.onLoaded((event) => {
+            NgZone.run(() => {
+                const e = new Event('loadstop');
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                CoreEvents.trigger(CoreEvents.IAB_LOAD_STOP, {
+                    ...event,
+                    ...e,
+                });
+            });
+        });
+
+        this.onMessage((event) => {
+            NgZone.run(() => {
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                CoreEvents.trigger(CoreEvents.IAB_MESSAGE, event.data);
+            });
+        });
+    }
+
+    /**
+     * Execute JavaScript code in the InAppBrowser context.
+     *
+     * @param script Script to execute: { code?: string; file?: string } or a string containing JavaScript code.
+     * @returns Promise resolving when the script has been executed.
+     */
+    async executeScript(script: string): Promise<void>;
+    /**
+     * @param script Script to execute: { code?: string; file?: string }
+     * @param script.code JavaScript code to execute.
+     * @param script.file Path to a JavaScript file to execute.
+     *
+     * @deprecated since 6.0. File-based scripts are not supported. Use code directly instead.
+     */
+    async executeScript(script: { code?: string; file?: string }): Promise<void>;
+    async executeScript(script: string | { code?: string; file?: string }): Promise<void> {
+        const code = typeof script === 'string' ? script : script.code;
+
+        // For Capgo, only code is supported (not file paths)
+        if (code) {
+            const id = await this.idPromise;
+
+            await CapgoInAppBrowser.executeScript({ id, code });
+
+            return;
+        }
+
+        if (script && typeof script !== 'string' && script.file) {
+            return Promise.reject(new Error('InAppBrowser does not support file-based scripts'));
+        }
+    }
+
+    /**
+     * Execute JavaScript code once the InAppBrowser has finished loading.
+     *
+     * @param code JavaScript code to execute once the InAppBrowser has loaded.
+     */
+    async executeScriptOnLoad(code: string): Promise<void> {
+        // Wait until the browser is loaded before executing the script.
+        const loadPromise = new CorePromisedValue<void>();
+
+        const subscription = await this.onLoaded(async () => {
+            loadPromise.resolve();
+
+            subscription.remove();
+        });
+
+        await loadPromise;
+
+        await this.executeScript(code);
+    }
+
+    /**
+     * Close the InAppBrowser window.
+     */
+    async close(): Promise<void> {
+        const id = await this.idPromise;
+
+        await CapgoInAppBrowser.close({ id });
+    }
+
+}
 
 /**
- * Core InAppBrowser options used in the Moodle App.
- * Subset of full Cordova InAppBrowser options, containing only those we actually use.
+ * Subset of full Cordova InAppBrowser options, containing only those we actually support in the app.
  */
-export type CoreInAppBrowserOptions = {
-    /** Allow in-line HTML5 media playback (iOS only). */
-    allowInlineMediaPlayback?: 'yes' | 'no';
+export type CoreInAppBrowserOptionsLegacy = {
     /**
      * Set to yes to have the session cookie cache cleared before the new window is opened.
      * For WKWebView, requires iOS 11+ on target device.
+     *
+     * @deprecated since 6.0. Use `clearCookiesOnOpen` instead.
      */
     clearsessioncache?: 'yes' | 'no';
     /**
-     * (Android) Set to a string to use as the close button's caption instead of a X. Note that you need to localize this value
-     * yourself.
-     * (iOS) Set to a string to use as the Done button's caption. Note that you need to localize this value yourself.
+     * Set the toolbar background color (hex string, e.g., #00ff00).
+     *
+     * @deprecated since 6.0. Use `toolbarColor` instead. (only Android).
      */
-    closebuttoncaption?: string;
-    /** Enable viewport scaling. */
-    enableViewPortScale?: 'yes' | 'no';
-    /** Set the location bar visibility. */
-    location?: 'yes' | 'no';
-    /** Set the close button color (hex string, e.g., #00ff00). */
-    closebuttoncolor?: string;
-    /** Set the navigation button color (hex string, e.g., #00ff00). */
-    navigationbuttoncolor?: string;
-    /** Set the location bar background color (hex string, e.g., #00ff00). */
-    locationcolor?: string;
-    /** Set the location bar text color (hex string, e.g., #00ff00). */
-    locationtextcolor?: string;
-    /** Set the toolbar background color (hex string, e.g., #00ff00). */
     toolbarcolor?: string;
-    /** Make toolbar translucent/transparent (iOS only). */
-    toolbartranslucent?: 'yes' | 'no';
-    /** Show/hide zoom controls (Android only). */
-    zoomcontrols?: 'yes' | 'no';
-    /** Use WKWebView engine (iOS only). */
-    usewkwebview?: 'yes' | 'no';
+};
+
+/**
+ * Core InAppBrowser options used in the Moodle App.
+ */
+type CoreInAppBrowserOptions = {
+
+    /**
+     * Clear all cookies from the InAppBrowser data store before the first navigation of this webview.
+     *
+     * Cordova `clearcache: 'yes'` parity. On Android, uses process-global `CookieManager.removeAllCookies()`
+     * and starts the first navigation after the wipe callback (does not block the UI thread). On iOS, clears
+     * cookies from the webview's `WKWebsiteDataStore` (isolated plugin store by default). On Web this is a no-op.
+     *
+     * @default false
+     */
+    clearCookiesOnOpen?: boolean;
+
+    /**
+     * enableZoom: enables pinch-to-zoom gestures in the Android WebView.
+     * When true, built-in zoom controls are enabled and the zoom buttons are hidden.
+     * **Android only** — ignored on iOS where zoom is enabled by default.
+     *
+     * @default true
+     * @example
+     * enableZoom: true
+     */
+    enableZoom?: boolean;
+
+    /**
+     * Toolbar background color in hex format (e.g., "#1A1A2E").
+     * Applied to both light and dark color schemes.
+     * Also sets the navigation bar color to match.
+     * **Android only** — ignored on iOS.
+     */
+    toolbarColor?: string;
 };
 
 /**
  * Options for opening in InAppBrowser.
  */
-export type CoreOpenerOpenInAppBrowserOptions = CoreInAppBrowserOptions & {
+export type CoreOpenerOpenInAppBrowserOptions = CoreInAppBrowserOptions & CoreInAppBrowserOptionsLegacy & {
     originalUrl?: string; // Original URL to open (in case the URL was treated, e.g. to add a token or an auto-login).
 };
 
