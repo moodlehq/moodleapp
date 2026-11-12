@@ -337,7 +337,10 @@ export class CoreCompileProvider {
             instance[name] = this.exportedObjects[name];
         }
 
-        instance['SplashScreen'] = SplashScreen; // @deprecated since 6.0. Plugins shouldn't control the splash screen.
+        /**
+         * @deprecated since 6.0. Plugins shouldn't control the splash screen.
+         */
+        instance['SplashScreen'] = SplashScreen;
     }
 
     /**

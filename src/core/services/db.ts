@@ -14,11 +14,13 @@
 
 import { Injectable } from '@angular/core';
 
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBConnection } from '@classes/sqlitedb';
 import { CoreBrowser } from '@static/browser';
-import { SQLite, makeSingleton } from '@singletons';
+import { makeSingleton } from '@singletons';
+import { CapacitorSQLite } from '@capacitor-community/sqlite';
+import { CoreCapacitorSQLiteManager } from '@classes/capacitor-sqlite-manager';
+import { CoreSQLiteNativeLifecycle } from '@classes/sqlite-native-lifecycle';
 import { CorePlatform } from '@services/platform';
-import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { asyncInstance } from '@/core/utils/async-instance';
 
 const tableNameRegex = new RegExp([
@@ -40,6 +42,62 @@ export class CoreDbProvider {
     queryLogs: CoreDbQueryLog[] = [];
 
     protected dbInstances: { [name: string]: SQLiteDB } = {};
+    protected initialization?: Promise<void>;
+    protected lifecycle = new CoreSQLiteNativeLifecycle(CapacitorSQLite);
+    protected manager = new CoreCapacitorSQLiteManager(CapacitorSQLite, this.lifecycle);
+
+    /**
+     * Share driver readiness across startup, early connections and deletion.
+     * A failed initialisation remains blocked until the application is restarted.
+     *
+     * @returns Promise resolved when database access is safe.
+     */
+    ready(): Promise<void> {
+        this.initialization ??= this.initialize();
+
+        return this.initialization;
+    }
+
+    /**
+     * Prepare the active driver before allowing database access.
+     */
+    protected async initialize(): Promise<void> {
+        await CorePlatform.ready();
+        await this.lifecycle.prepareGlobalDatabase();
+        const global = this.manager.getConnection('MoodleMobile');
+        await global.open();
+        await this.lifecycle.reconcileSites(global);
+    }
+
+    /**
+     * Reserve native database creation for an authenticated new site.
+     *
+     * @param siteId Authenticated site ID absent from the saved-site list.
+     */
+    async prepareSiteDatabase(siteId: string): Promise<void> {
+        await this.ready();
+        await this.lifecycle.prepareSiteDatabase(siteId);
+    }
+
+    /**
+     * Seal required schemas after successful app/site installation.
+     *
+     * @param name Logical database name.
+     */
+    async completeDatabaseInitialization(name: string): Promise<void> {
+        await this.ready();
+        await this.manager.completeInitialization(name);
+    }
+
+    /**
+     * Reject failed schema installation.
+     *
+     * @param name Logical database name.
+     * @param error Already logged schema-installation error.
+     */
+    onDatabaseInitializationError(name: string, error: unknown): never {
+        throw error;
+    }
 
     /**
      * Check whether database queries should be logged.
@@ -216,7 +274,7 @@ export class CoreDbProvider {
 
                 db = new Proxy(db, {
                     get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
-                }) as unknown as SQLiteObject;
+                });
             }
 
             this.dbInstances[name] = new SQLiteDB(name, db);
@@ -231,14 +289,14 @@ export class CoreDbProvider {
      * @param name Database name.
      * @returns Database connection.
      */
-    protected createDatabase(name: string): SQLiteObject {
-        // Ideally, this method would return a Promise instead of resorting to Duck typing;
-        // but doing so would mean that the getDB() method should also return a promise.
-        // Given that it is heavily used throughout the app, we want to avoid it for now.
-        return asyncInstance(async () => {
-            await CorePlatform.ready();
+    protected createDatabase(name: string): SQLiteDBConnection {
+        // Capture the handle before deletion can retire its generation.
+        const connection = this.manager.getConnection(name);
 
-            return SQLite.create({ name, location: 'default' });
+        return asyncInstance(async () => {
+            await this.ready();
+
+            return connection;
         }, {});
     }
 
@@ -248,25 +306,10 @@ export class CoreDbProvider {
      * @param name DB name.
      */
     async deleteDB(name: string): Promise<void> {
-        if (this.dbInstances[name] !== undefined) {
-            await this.dbInstances[name].close();
+        await this.ready();
 
-            delete this.dbInstances[name];
-        }
-
-        await this.deleteDatabase(name);
-    }
-
-    /**
-     * Delete database.
-     *
-     * @param name Database name.
-     */
-    protected async deleteDatabase(name: string): Promise<void> {
-        await SQLite.deleteDatabase({
-            name,
-            location: 'default',
-        });
+        await this.manager.deleteDatabase(name);
+        delete this.dbInstances[name];
     }
 
     /**
@@ -276,7 +319,7 @@ export class CoreDbProvider {
      * @param db Database to spy.
      * @returns Spy methods.
      */
-    protected getDatabaseSpies(dbName: string, db: SQLiteObject): Partial<SQLiteObject> {
+    protected getDatabaseSpies(dbName: string, db: SQLiteDBConnection): Partial<SQLiteDBConnection> {
         return {
             async executeSql(statement, params) {
                 const start = performance.now();

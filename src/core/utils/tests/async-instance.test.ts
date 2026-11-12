@@ -17,6 +17,31 @@ import { expectAnyType, expectSameTypes } from '@/testing/utils';
 
 describe('AsyncInstance', () => {
 
+    it('rejects concurrent and later calls when asynchronous initialisation fails', async () => {
+        const error = new Error('Database readiness failed');
+        const initialize = jest.fn(async () => {
+            throw error;
+        });
+        const service = asyncInstance<LazyService>(initialize);
+        const first = service.hello();
+        const second = service.goodbye();
+
+        await expect(first).rejects.toBe(error);
+        await expect(second).rejects.toBe(error);
+        await expect(service.hello()).rejects.toBe(error);
+        expect(initialize).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects every caller when the lazy constructor throws synchronously', async () => {
+        const error = new Error('Constructor failed');
+        const service = asyncInstance<LazyService>(() => {
+            throw error;
+        });
+
+        await expect(service.hello()).rejects.toBe(error);
+        await expect(service.goodbye()).rejects.toBe(error);
+    });
+
     it('initializes instances lazily', async () => {
         const asyncService = asyncInstance(() => new LazyService());
 

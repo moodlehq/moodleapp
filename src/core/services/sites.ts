@@ -74,6 +74,7 @@ import { CoreAlerts } from './overlays/alerts';
 import { CoreErrorLogs } from '@static/error-logs';
 import { CoreSilentError } from '@classes/errors/silenterror';
 import { CorePlatform } from './platform';
+import { CoreDB } from '@services/db';
 
 export const CORE_SITE_SCHEMAS = new InjectionToken<CoreSiteSchema[]>('CORE_SITE_SCHEMAS');
 export const CORE_SITE_CURRENT_SITE_ID_CONFIG = 'current_site_id';
@@ -148,7 +149,8 @@ class CoreSitesDB {
 
         // First create tables not registerd with name/version.
         const promise = site.getDb().createTableFromSchema(SCHEMA_VERSIONS_TABLE_SCHEMA)
-            .then(() => this.applySiteSchemas(site, this.siteSchemas));
+            .then(() => this.applySiteSchemas(site, this.siteSchemas))
+            .then(() => CoreDB.completeDatabaseInitialization(`Site-${siteId}`));
 
         this.siteSchemasMigration[siteId] = promise;
 
@@ -875,7 +877,8 @@ export class CoreSitesProvider {
             const siteId = this.createSiteID(info.siteurl, info.username);
 
             // Check if the site already exists.
-            const storedSite = await CorePromiseUtils.ignoreErrors(this.getSite(siteId));
+            const savedSites = await this.sitesTable.getMany({ id: siteId });
+            const storedSite = savedSites.length > 0 ? await this.getSite(siteId) : undefined;
             let site: CoreSite;
 
             if (storedSite) {
@@ -890,6 +893,7 @@ export class CoreSitesProvider {
             } else {
                 // New site, set site ID and info.
                 isNewSite = true;
+                await CoreDB.prepareSiteDatabase(siteId);
                 site = CoreSitesFactory.makeSite(siteId, siteUrl, token, { info, privateToken });
                 site.setOAuthId(oauthId);
 
@@ -1473,11 +1477,9 @@ export class CoreSitesProvider {
 
         await site.deleteDB();
 
-        // Site DB deleted, now delete the app from the list of sites.
+        // A native tombstone reconciles this row on restart if removal is interrupted or fails.
+        await this.sitesTable.deleteByPrimaryKey({ id: siteId });
         delete this.sites[siteId];
-
-        // DB remove shouldn't fail, but we'll go ahead even if it does.
-        await CorePromiseUtils.ignoreErrors(this.sitesTable.deleteByPrimaryKey({ id: siteId }));
 
         // Site deleted from sites list, now delete the folder.
         await site.deleteFolder();

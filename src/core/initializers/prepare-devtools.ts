@@ -24,7 +24,7 @@ type DevelopmentWindow = Window & {
     browser?: typeof CoreBrowser;
     appDBService?: CoreAppDBService;
     configProvider?: CoreConfigProvider;
-    dbProvider?: CoreDbProvider;
+    dbService?: CoreDbProvider;
     urlSchemes?: CoreCustomURLSchemesProvider;
     pushNotifications?: CorePushNotificationsProvider;
 };
@@ -38,7 +38,7 @@ function initializeDevelopmentWindow(window: DevelopmentWindow) {
     window.browser = CoreBrowser;
     window.appDBService = CoreAppDB.instance;
     window.configProvider = CoreConfig.instance;
-    window.dbProvider = CoreDB.instance;
+    window.dbService = CoreDB.instance;
     window.urlSchemes = CoreCustomURLSchemes.instance;
     window.pushNotifications = CorePushNotifications.instance;
 }
