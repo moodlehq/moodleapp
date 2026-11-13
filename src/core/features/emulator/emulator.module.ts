@@ -17,14 +17,12 @@ import { NgModule, provideAppInitializer } from '@angular/core';
 // Ionic Native services.
 import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camera';
 import { CAPACITOR_FILE_OPENER, resolveCapacitorFileOpener } from '@services/native/file-opener';
-import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 
 // Mock services.
 import { createCameraMock } from './services/camera';
 import { FilesystemMock } from './services/filesystem';
 import { FileOpenerMock } from './services/file-opener';
-import { InAppBrowserMock } from './services/inappbrowser';
 import { LocalNotificationsMock } from './services/local-notifications';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
@@ -64,10 +62,6 @@ import { CAPACITOR_ZIP, resolveCapacitorZip } from '@services/native/zip';
         {
             provide: CAPACITOR_FILE_OPENER,
             useFactory: () => CorePlatform.isMobile() ? resolveCapacitorFileOpener() : new FileOpenerMock(),
-        },
-        {
-            provide: InAppBrowser,
-            useFactory: (): InAppBrowser => CorePlatform.isMobile() ? new InAppBrowser() : new InAppBrowserMock(),
         },
         {
             provide: CAPACITOR_ZIP,

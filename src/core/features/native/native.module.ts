@@ -14,7 +14,6 @@
 
 import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
-import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
 import { QRScanner } from './plugins/qrscanner';
@@ -53,6 +52,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { WebIntent } = await import('./plugins/webintent');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { StatusBar } = await import('./plugins/status-bar');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { InAppBrowser } = await import('./plugins/inappbrowser');
 
     const { Device } = await import('@services/native/device');
 
@@ -81,7 +82,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
 
 @NgModule({
     providers: [
-        InAppBrowser,
         LocalNotifications,
         Push,
         QRScanner,

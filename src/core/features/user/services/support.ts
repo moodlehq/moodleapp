@@ -15,17 +15,14 @@
 import { Injectable } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { CoreOpener, CoreInAppBrowserInstance } from '@services/opener';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
-import { CoreEvents } from '@static/events';
-import { CoreSubscriptions } from '@static/subscriptions';
 import { AlertButton } from '@ionic/angular';
 import { CoreLang } from '@services/lang';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreAlerts } from '@services/overlays/alerts';
-import { CoreOpener } from '@static/opener';
 
 /**
  * Handle site support.
@@ -42,16 +39,22 @@ export class CoreUserSupportService {
         const supportConfig = options.supportConfig ?? CoreUserAuthenticatedSupportConfig.forCurrentSite();
         const supportPageUrl = supportConfig.getSupportPageUrl();
         const currentSite = CoreSites.getCurrentSite();
-        const browser = await (currentSite ?
+        const inAppBrowser = await (currentSite ?
             currentSite.openInAppWithAutoLogin(supportPageUrl) :
-            CoreOpener.openInApp(supportPageUrl));
+            CoreOpener.openInAppAsync(supportPageUrl));
 
-        if (browser && supportPageUrl.endsWith('/user/contactsitesupport.php')) {
-            this.populateSupportForm(browser, options.subject, options.message);
-            this.listenSupportFormSubmission(browser, supportConfig.getSupportPageLang());
+        if (supportPageUrl.endsWith('/user/contactsitesupport.php')) {
+            this.populateSupportForm(inAppBrowser, options.subject, options.message).then(() => {
+                // Listen for the support after the first load.
+                this.listenSupportFormSubmission(inAppBrowser, supportConfig.getSupportPageLang());
+
+                return;
+            }).catch(() => {
+                // Ignore errors.
+            });
         }
 
-        await CoreEvents.waitUntil(CoreEvents.IAB_EXIT);
+        await inAppBrowser.waitClosed();
     }
 
     /**
@@ -92,11 +95,15 @@ export class CoreUserSupportService {
     /**
      * Inject error details into contact support form.
      *
-     * @param browser In App browser containing the support form.
+     * @param inAppBrowser In App browser containing the support form.
      * @param subject Title to fill into the form.
      * @param message Details to fill into the form.
      */
-    protected populateSupportForm(browser: InAppBrowserObject, subject?: string | null, message?: string | null): void {
+    protected async populateSupportForm(
+        inAppBrowser: CoreInAppBrowserInstance,
+        subject?: string | null,
+        message?: string | null,
+    ): Promise<void> {
         if (!CorePlatform.isMobile()) {
             return;
         }
@@ -105,51 +112,44 @@ export class CoreUserSupportService {
             subject = Translate.instant('core.user.supportsubject', { subject });
         }
 
-        const unsubscribe = CoreSubscriptions.once(browser.on('loadstop'), () => {
-            browser.executeScript({
-                code: `
-                    document.querySelector('#id_subject').value = ${JSON.stringify(subject ?? '')};
-                    document.querySelector('#id_message').value = ${JSON.stringify(message ?? '')};
-                `,
-            });
-        });
-
-        CoreEvents.once(CoreEvents.IAB_EXIT, () => unsubscribe());
+        await inAppBrowser.executeScriptOnLoad(`
+            document.querySelector('#id_subject').value = ${JSON.stringify(subject ?? '')};
+            document.querySelector('#id_message').value = ${JSON.stringify(message ?? '')};
+        `);
     }
 
     /**
      * Set up listeners to close the browser when the contact form has been submitted.
      *
-     * @param browser In App browser.
+     * @param inAppBrowser In App browser.
      * @param lang Language used in the support page.
      */
-    protected async listenSupportFormSubmission(browser: InAppBrowserObject, lang: string | null): Promise<void> {
-        if (!CorePlatform.isMobile()) {
-            return;
-        }
-
+    protected async listenSupportFormSubmission(inAppBrowser: CoreInAppBrowserInstance, lang: string | null): Promise<void> {
         const appSuccessMessage = Translate.instant('core.user.supportmessagesent');
         const lmsSuccessMessage = lang && await CoreLang.getMessage('core.user.supportmessagesent', lang);
-        const subscription = browser.on('loadstop').subscribe(async () => {
-            const result = await browser.executeScript({
-                code: `
-                    [...document.querySelectorAll('.alert-success')].some(
-                        div =>
-                            div.textContent?.includes(${JSON.stringify(lmsSuccessMessage)}) ||
-                            div.textContent?.includes(${JSON.stringify(appSuccessMessage)})
-                    )
-                `,
-            });
 
-            if (!Array.isArray(result) || result[0] !== true) {
-                return;
-            }
+        // Execute this script on every load.
+        inAppBrowser.onLoaded(() => {
+            inAppBrowser.executeScript(`
+                const supportFormSubmitted = [...document.querySelectorAll('.alert-success')].some(
+                    div =>
+                        div.textContent?.includes(${JSON.stringify(lmsSuccessMessage)}) ||
+                        div.textContent?.includes(${JSON.stringify(appSuccessMessage)})
+                );
 
-            browser.close();
-            CoreAlerts.show({ message: appSuccessMessage });
+                if (supportFormSubmitted) {
+                   window.mobileApp.postMessage(JSON.stringify({detail: { supportFormSubmitted: true } }));
+                   window.mobileApp.close();
+                }
+            `);
         });
 
-        CoreEvents.once(CoreEvents.IAB_EXIT, () => subscription.unsubscribe());
+        inAppBrowser.onMessage((event) => {
+            if (event.data?.supportFormSubmitted) {
+                inAppBrowser.close();
+                CoreAlerts.show({ message: appSuccessMessage });
+            }
+        });
     }
 
 }

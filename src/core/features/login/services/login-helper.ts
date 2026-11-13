@@ -61,7 +61,7 @@ import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreSSO } from '@static/sso';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener } from '@static/opener';
+import { CoreInAppBrowserInstance, CoreOpener } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
 import {
@@ -108,7 +108,7 @@ export class CoreLoginHelperProvider {
     /**
      * Function called when an SSO InAppBrowser is closed or the app is resumed. Check if user needs to be logged out.
      */
-    checkLogout(): void {
+    protected checkLogout(): void {
         const currentSite = CoreSites.getCurrentSite();
 
         if (
@@ -131,7 +131,7 @@ export class CoreLoginHelperProvider {
     async forgottenPasswordClicked(siteUrl: string, username: string, siteConfig?: CoreSitePublicConfigResponse): Promise<void> {
         if (siteConfig && siteConfig.forgottenpasswordurl) {
             // URL set, open it.
-            CoreOpener.openInApp(siteConfig.forgottenpasswordurl);
+            await CoreOpener.openInAppAsync(siteConfig.forgottenpasswordurl);
 
             return;
         }
@@ -500,9 +500,8 @@ export class CoreLoginHelperProvider {
             this.logger.debug('openBrowserForSSOLogin loginUrl:', loginUrl);
 
             if (this.isSSOEmbeddedBrowser(typeOfLogin)) {
-                CoreOpener.openInApp(loginUrl, {
-                    clearsessioncache: 'yes', // Clear the session cache to allow for multiple logins.
-                    closebuttoncaption: Translate.instant('core.login.cancel'),
+                await CoreOpener.openInAppAsync(loginUrl, {
+                    clearCookiesOnOpen: true, // Clear the session cache to allow for multiple logins.
                 });
             } else {
                 CoreOpener.openInBrowser(loginUrl, { showBrowserWarning: false });
@@ -529,7 +528,7 @@ export class CoreLoginHelperProvider {
 
         await alert.onDidDismiss();
 
-        CoreOpener.openInApp(`${siteUrl}/login/change_password.php`);
+        await CoreOpener.openInAppAsync(`${siteUrl}/login/change_password.php`);
     }
 
     /**
@@ -539,8 +538,14 @@ export class CoreLoginHelperProvider {
      * @param path The relative path of the URL to open.
      * @param alertMessage The key of the message to display before opening the in app browser.
      * @param invalidateCache Whether to invalidate site's cache (e.g. when the user is forced to change password).
+     * @returns The in-app browser instance, or void if it could not be opened.
      */
-    async openInAppForEdit(siteId: string, path: string, alertMessage?: string, invalidateCache?: boolean): Promise<void> {
+    async openInAppForEdit(
+        siteId: string,
+        path: string,
+        alertMessage?: string,
+        invalidateCache?: boolean,
+    ): Promise<CoreInAppBrowserInstance | void> {
         if (!siteId || siteId !== CoreSites.getCurrentSiteId()) {
             // Site that triggered the event is not current site, nothing to do.
             return;
@@ -553,7 +558,7 @@ export class CoreLoginHelperProvider {
             return;
         }
 
-        if (!this.isOpenEditAlertShown && !this.waitingForBrowser) {
+        if (!this.isOpenEditAlertShown) {
             this.isOpenEditAlertShown = true;
 
             if (invalidateCache) {
@@ -566,17 +571,22 @@ export class CoreLoginHelperProvider {
                     Translate.instant('core.redirectingtosite')}`;
             }
 
+            let inAppBrowser: CoreInAppBrowserInstance;
             try {
-                await currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage);
+                inAppBrowser = await currentSite.openInAppWithAutoLogin(siteUrl + path, undefined, alertMessage);
             } finally {
                 this.isOpenEditAlertShown = false;
             }
 
-            await this.waitForBrowser();
+            inAppBrowser.onClose(() => {
+                CoreEvents.trigger(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, {
+                    path,
+                }, siteId);
 
-            CoreEvents.trigger(CoreEvents.COMPLETE_REQUIRED_PROFILE_DATA_FINISHED, {
-                path,
-            }, siteId);
+                this.checkLogout();
+            });
+
+            return inAppBrowser;
         }
     }
 
@@ -1050,6 +1060,7 @@ export class CoreLoginHelperProvider {
      * Return whether the app is waiting for browser.
      *
      * @returns Whether the app is waiting for browser.
+     * @deprecated since 6.0. Not used anymore.
      */
     isWaitingForBrowser(): boolean {
         return !!this.waitingForBrowser;
@@ -1057,6 +1068,8 @@ export class CoreLoginHelperProvider {
 
     /**
      * Start waiting when opening a browser/IAB.
+     *
+     * @deprecated since 6.0. Not used anymore.
      */
     async waitForBrowser(): Promise<void> {
         if (!this.waitingForBrowser) {
@@ -1068,6 +1081,8 @@ export class CoreLoginHelperProvider {
 
     /**
      * Stop waiting for browser.
+     *
+     * @deprecated since 6.0. Not used anymore.
      */
     stopWaitingForBrowser(): void {
         this.waitingForBrowser?.resolve();

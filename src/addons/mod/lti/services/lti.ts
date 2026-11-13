@@ -21,7 +21,7 @@ import { CoreFile } from '@services/file';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';
 import { ADDON_MOD_LTI_COMPONENT_LEGACY, ADDON_MOD_LTI_FEATURE_NAME } from '../constants';
@@ -240,7 +240,7 @@ export class AddonModLtiProvider {
 
         const launcherUrl = this.generateLauncher(url, params);
 
-        CoreOpener.openInApp(launcherUrl);
+        await CoreOpener.openInAppAsync(launcherUrl);
     }
 
     /**

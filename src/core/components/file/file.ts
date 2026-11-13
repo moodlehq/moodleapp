@@ -27,7 +27,7 @@ import { CoreWSFile } from '@services/ws';
 import { CorePlatform } from '@services/platform';
 import { toBoolean } from '@/core/transforms/boolean';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { Translate } from '@singletons';
 import { CoreBaseModule } from '@/core/base.module';
