@@ -20,6 +20,7 @@ import { CoreFilterHelper } from '@features/filter/services/filter-helper';
 import { LegendOptions, ChartTypeRegistry, ChartType, type Chart, LegendItem } from 'chart.js';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreFaIconDirective } from '@directives/fa-icon';
+import { CorePlatform } from '@services/platform';
 
 /**
  * This component shows a chart using chart.js.
@@ -122,6 +123,7 @@ export class CoreChartComponent implements OnDestroy, OnInit, OnChanges {
                 plugins: {
                     legend,
                 },
+                animation: CorePlatform.isAutomated() ? false : undefined, // disables all animations in automated tests
             },
         });
 

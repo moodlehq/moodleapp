@@ -32,7 +32,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
     const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
-    const { CoreDbProvider } = await import('@services/db');
     const { CoreErrorHelperService } = await import('@services/error-helper');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
     const { CoreFilepoolProvider } = await import('@services/filepool');
@@ -79,7 +78,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreConfigProvider,
         CoreCronDelegateService,
         CoreCustomURLSchemesProvider,
-        CoreDbProvider,
         CoreDomUtilsProvider,
         CoreErrorHelperService,
         CoreFileHelperProvider,

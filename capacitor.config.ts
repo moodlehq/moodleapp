@@ -15,6 +15,11 @@ const config: CapacitorConfig = {
     Keyboard: {
       resize: KeyboardResize.None,
     },
+    CapacitorSQLite: {
+      iosDatabaseLocation: 'Library/LocalDatabase',
+      iosIsEncryption: false,
+      androidIsEncryption: false,
+    },
     SplashScreen: {
       launchAutoHide: false,
     },
