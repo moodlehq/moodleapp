@@ -614,8 +614,14 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
         this.feedback = feedback;
         if (this.feedback) {
             const graders: CoreUserProfile[] = [];
+            const grader = await this.getGrader(this.feedback.grade?.grader);
+            if (grader) {
+                graders.push(grader);
+            }
+
             // If we have data about the grader, get its profile.
             if (this.feedback.markerfeedback && this.feedback.markerfeedback.length > 0) {
+
                 const markerGraders = await Promise.all(this.feedback.markerfeedback.map(async (markerFeedback) => {
                     if (markerFeedback.markerid > 0) {
                         return this.getGrader(markerFeedback.markerid);
@@ -624,12 +630,9 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
                     return undefined;
                 }));
                 graders.push(...markerGraders.filter((grader: CoreUserProfile | undefined) => !!grader));
-            } else {
-                const grader = await this.getGrader(this.feedback.grade?.grader);
-                if (grader) {
-                    graders.push(grader);
-                }
+
             }
+
             this.graders.set(graders);
             // Check if the grade uses advanced grading.
             this.feedback.advancedgrade = this.getAdvancedGrade(this.feedback.gradefordisplay);

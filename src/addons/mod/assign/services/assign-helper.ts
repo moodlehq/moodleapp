@@ -859,7 +859,7 @@ export class AddonModAssignHelperProvider {
             }
 
             if (title) {
-                return `<h2 style="font: var(--mdl-typography-heading5-font);">${title}</h2><div>${text}</div>`;
+                return `<h2 style="font: var(--mdl-typography-heading5-font); margin-top: 18px;">${title}</h2><div>${text}</div>`;
             }
         }
 
