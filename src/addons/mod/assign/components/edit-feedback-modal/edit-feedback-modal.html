@@ -42,7 +42,7 @@
                 <ion-item class="ion-text-wrap" *ngFor="let outcome of gradeInfo.outcomes">
                     @if (outcome.itemNumber) {
                         <ion-select name="outcome" [(ngModel)]="outcome.selectedId" interface="action-sheet"
-                            [disabled]="!!grade.disabled" [cancelText]="'core.cancel' | translate"
+                            [disabled]="!!outcome.disabled" [cancelText]="'core.cancel' | translate"
                             [interfaceOptions]="{header: outcome.name }">
                             <p class="item-heading" slot="label">{{ outcome.name }}</p>
                             <ion-select-option *ngFor="let grade of outcome.options" [value]="grade.value">

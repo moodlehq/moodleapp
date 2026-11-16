@@ -339,6 +339,7 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                         : undefined;
                 }
                 this.grade.modified = grade.gradedategraded;
+                this.grade.disabled = this.gradeIsDisabled(grade, assign);
             } else if (grade.outcomeid) {
 
                 // Only show outcomes with info on it, outcomeid could be null if outcomes are disabled on site.
@@ -351,12 +352,12 @@ export class AddonModAssignEditFeedbackModalComponent implements OnDestroy, OnIn
                             outcome.selectedId = CoreGradesHelper.getGradeValueFromLabel(outcome.options, outcome.selected);
                             this.originalGrades.outcomes[outcome.id] = outcome.selectedId;
                             outcome.itemNumber = grade.itemnumber;
+                            outcome.disabled = grade.gradeislocked || grade.gradeisoverridden;
                         }
                         outcomes.push(outcome);
                     }
                 });
             }
-            this.grade.disabled = this.gradeIsDisabled(grade, assign);
             this.grade.penalty = CoreGradesHelper.getPenaltyFromGrade(grade.gradeformatted);
         });
 
@@ -629,6 +630,7 @@ type AddonModAssignGradeOutcome = CoreCourseModuleGradeOutcome & {
     modified?: number;
     options?: CoreMenuItem<number>[];
     itemNumber?: number;
+    disabled?: boolean;
 };
 
 type AddonModAssignSubmissionOriginalGrades = {
