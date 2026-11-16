@@ -127,13 +127,9 @@ Feature: Activities overview common functionality
     Given the following config values are set as admin:
       | allowstealth | 1 |
     Given the following "activities" exist:
-      | activity | name        | course | section | visible |
-      | book     | Mar i Cel   | C1     | 1       | 0       |
-      | book     | Terra baixa | C1     | 1       | 1       |
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage with editing mode on
-    And I open "Terra baixa" actions menu
-    And I choose "Availability > Make available but don't show on course page" in the open action menu
+      | activity | name        | course | section | visible | visibleoncoursepage |
+      | book     | Mar i Cel   | C1     | 1       | 0       | 1                   |
+      | book     | Terra baixa | C1     | 1       | 1       | 0                   |
     And I entered the course "Course 1" as "student" in the app
     When I press "Activities" in the app
     And I press "Resources" in the app
