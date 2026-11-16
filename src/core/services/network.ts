@@ -18,6 +18,8 @@ import { Network } from '@awesome-cordova-plugins/network/ngx';
 import { makeSingleton } from '@singletons';
 import { Observable, Subject, merge } from 'rxjs';
 import { CoreHTMLClasses } from '@static/html-classes';
+import { CoreConfig } from '@services/config';
+import { CoreConstants } from '@/core/constants';
 
 enum CoreNetworkConnection {
     UNKNOWN = 'unknown',
@@ -43,6 +45,9 @@ export enum CoreNetworkConnectionType {
  */
 @Injectable({ providedIn: 'root' })
 export class CoreNetworkService extends Network {
+
+    // Config key to store the connection mode forced from the developer options.
+    protected static readonly FORCED_CONNECTION_MODE = 'CoreNetworkForcedConnectionMode';
 
     type!: string;
 
@@ -137,12 +142,65 @@ export class CoreNetworkService extends Network {
     /**
      * Set value of forceConnectionMode flag.
      * The app will think the device is offline or limited connection.
+     * This value is not stored, use setForcedConnectionModeSetting to store it.
      *
-     * @param value Value to set.
+     * @param value Value to set. Undefined to stop forcing a connection mode.
      */
-    setForceConnectionMode(value: CoreNetworkConnectionType): void {
+    setForceConnectionMode(value?: CoreNetworkConnectionType): void {
         this.forceConnectionMode = value;
         this.fireObservable();
+    }
+
+    /**
+     * Get the connection mode currently forced, if any.
+     *
+     * @returns Forced connection mode, undefined if not forced.
+     */
+    getForceConnectionMode(): CoreNetworkConnectionType | undefined {
+        return this.forceConnectionMode;
+    }
+
+    /**
+     * Force a connection mode and store it so it's applied again when the app restarts.
+     * Only meant to be used from the developer options in development and testing builds.
+     *
+     * @param value Value to set. Undefined to stop forcing a connection mode.
+     */
+    async setForcedConnectionModeSetting(value?: CoreNetworkConnectionType): Promise<void> {
+        if (value === undefined) {
+            await CoreConfig.delete(CoreNetworkService.FORCED_CONNECTION_MODE);
+        } else {
+            await CoreConfig.set(CoreNetworkService.FORCED_CONNECTION_MODE, value);
+        }
+
+        this.setForceConnectionMode(value);
+    }
+
+    /**
+     * Apply the connection mode stored from the developer options, if any.
+     * It's only applied in development and testing builds.
+     *
+     * @returns The connection mode applied, undefined if none.
+     */
+    async restoreForcedConnectionMode(): Promise<CoreNetworkConnectionType | undefined> {
+        if (!CoreConstants.isDevOrTestingBuild()) {
+            return;
+        }
+
+        const value = await CoreConfig.get<string>(CoreNetworkService.FORCED_CONNECTION_MODE, '');
+        const validValues: string[] = [
+            CoreNetworkConnectionType.WIFI,
+            CoreNetworkConnectionType.CELL,
+            CoreNetworkConnectionType.OFFLINE,
+        ];
+
+        if (!validValues.includes(value)) {
+            return;
+        }
+
+        this.setForceConnectionMode(value as CoreNetworkConnectionType);
+
+        return value as CoreNetworkConnectionType;
     }
 
     /**

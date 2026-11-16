@@ -26,6 +26,7 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@static/events';
 import { CoreFile } from '@services/file';
 import { CoreNavigator } from '@services/navigator';
+import { CoreNetwork, CoreNetworkConnectionType } from '@services/network';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
@@ -76,6 +77,10 @@ export default class CoreSettingsDevPage implements OnInit {
     autoLoginTimeBetweenRequests?: number;
     lastAutoLoginTime?: number;
 
+    readonly showNetworkOverride = CoreConstants.isDevOrTestingBuild();
+    readonly connectionTypes = CoreNetworkConnectionType;
+    forcedConnectionMode: CoreNetworkConnectionType | 'default' = 'default';
+
     readonly extraPageItems = signal<CoreSettingsHelperDevExtraPageItem[]>([]);
     readonly wsOverrides = signal<{ method: string; count: number }[]>([]);
     readonly totalOverrides = computed(() => this.wsOverrides().reduce((sum, override) => sum + override.count, 0));
@@ -86,6 +91,8 @@ export default class CoreSettingsDevPage implements OnInit {
 
         this.forceSafeAreaMargins = document.documentElement.classList.contains('force-safe-area-margins');
         this.safeAreaChanged();
+
+        this.forcedConnectionMode = CoreNetwork.getForceConnectionMode() ?? 'default';
 
         const currentSite = CoreSites.getCurrentSite();
         this.siteId = currentSite?.getId();
@@ -239,6 +246,19 @@ export default class CoreSettingsDevPage implements OnInit {
         await CoreConfig.delete(FAQ_QRCODE_INFO_DONE);
 
         CoreToasts.show({ message: 'User tours have been reset' });
+    }
+
+    /**
+     * Force or reset the network connection mode.
+     */
+    async forcedConnectionModeChanged(): Promise<void> {
+        const mode = this.forcedConnectionMode === 'default' ? undefined : this.forcedConnectionMode;
+
+        await CoreNetwork.setForcedConnectionModeSetting(mode);
+
+        CoreToasts.show({
+            message: mode ? `Network connection forced to ${mode}` : 'Network connection reset to device default',
+        });
     }
 
     /**
