@@ -26,14 +26,9 @@ Feature: Basic tests of Additional activities block
     Given the following config values are set as admin:
       | allowstealth | 1 |
     And the following "activities" exist:
-      | activity | course               | section | name          |
-      | forum    | Acceptance test site | 0       | Visible forum |
-      | forum    | Acceptance test site | 0       | My forum name |
-    And I log in as "admin"
-    And I am on site homepage
-    And I turn editing mode on
-    And I open "My forum name" actions menu in site main menu block
-    And I choose "Availability > Make available but don't show on course page" in the open action menu
+      | activity | course               | section | name          | visible | visibleoncoursepage |
+      | forum    | Acceptance test site | 0       | Visible forum | 1       | 1                   |
+      | forum    | Acceptance test site | 0       | My forum name | 1       | 0                   |
     And I entered the app as "student1"
     When I press "Site home" in the app
     And I press "Open block drawer" in the app
