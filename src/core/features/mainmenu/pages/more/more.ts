@@ -17,6 +17,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
 import { CoreQRScan } from '@services/qrscan';
+import { CoreAlerts } from '@services/overlays/alerts';
 import {
     CoreMainMenuDelegate,
     CoreMainMenuHandlerToDisplay,
@@ -164,24 +165,28 @@ export default class CoreMainMenuMorePage implements OnInit, OnDestroy {
      * Scan and treat a QR code.
      */
     async scanQR(): Promise<void> {
-        // Scan for a QR code.
-        const text = await CoreQRScan.scanQRWithUrlHandling();
+        try {
+            // Scan for a QR code.
+            const text = await CoreQRScan.scanQRWithUrlHandling();
 
-        if (!text) {
-            return;
-        }
+            if (!text) {
+                return;
+            }
 
-        // Check if it's a URL.
-        if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
-            await CoreContentLinksHelper.visitLink(CoreUrl.decodeURI(text), {
-                checkRoot: true,
-                openBrowserRoot: true,
-            });
-        } else {
-            // It's not a URL, open it in a modal so the user can see it and copy it.
-            CoreViewer.viewText(Translate.instant('core.qrscanner'), text, {
-                displayCopyButton: true,
-            });
+            // Check if it's a URL.
+            if (/^[^:]{2,}:\/\/[^ ]+$/i.test(text)) {
+                await CoreContentLinksHelper.visitLink(CoreUrl.decodeURI(text), {
+                    checkRoot: true,
+                    openBrowserRoot: true,
+                });
+            } else {
+                // It's not a URL, open it in a modal so the user can see it and copy it.
+                CoreViewer.viewText(Translate.instant('core.qrscanner'), text, {
+                    displayCopyButton: true,
+                });
+            }
+        } catch (error) {
+            CoreAlerts.showError(error);
         }
     }
 

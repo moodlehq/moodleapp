@@ -24,7 +24,7 @@ import {
     CoreLoginSiteSelectorListMethod,
 } from '@features/login/services/login-helper';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
-import { CoreConstants, CoreLinkSource } from '@/core/constants';
+import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreNavigator } from '@services/navigator';
@@ -515,45 +515,34 @@ export default class CoreLoginSitePage implements OnInit {
      * @returns Promise resolved when done.
      */
     async scanQR(): Promise<void> {
-        // Scan for a QR code.
-        const text = await CoreQRScan.scanQR();
+        try {
+            // Scan for a QR code.
+            const text = await CoreQRScan.scanQRWithUrlHandling();
 
-        if (!text) {
-            return;
-        }
-
-        if (CoreCustomURLSchemes.isCustomURL(text)) {
-            try {
-                await CoreCustomURLSchemes.handleCustomURL(text, { source: CoreLinkSource.QR_CODE });
-            } catch (error) {
-                if (error && error.data && error.data.isAuthenticationURL && error.data.siteUrl) {
-                    // An error occurred, but it's an authentication URL and we have the site URL.
-                    this.treatErrorInAuthenticationCustomURL(text, error);
-                } else {
-                    CoreCustomURLSchemes.treatHandleCustomURLError(error, text, 'CoreLoginSitePage');
-                }
+            if (!text) {
+                return;
             }
 
-            return;
-        }
+            // Not a custom URL scheme, check if it's a URL scheme to another app.
+            const scheme = CoreUrl.getUrlProtocol(text);
 
-        // Not a custom URL scheme, check if it's a URL scheme to another app.
-        const scheme = CoreUrl.getUrlProtocol(text);
+            if (scheme && scheme !== 'http' && scheme !== 'https') {
+                CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
 
-        if (scheme && scheme !== 'http' && scheme !== 'https') {
-            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+                return;
+            }
 
-            return;
-        }
+            const allowed = await CoreLoginHelper.isSiteUrlAllowed(text);
+            if (allowed) {
+                // Put the text in the field (if present).
+                this.siteForm.controls.siteUrl.setValue(text);
 
-        const allowed = await CoreLoginHelper.isSiteUrlAllowed(text);
-        if (allowed) {
-            // Put the text in the field (if present).
-            this.siteForm.controls.siteUrl.setValue(text);
-
-            this.connect(text);
-        } else {
-            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidsite'));
+                this.connect(text);
+            } else {
+                CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidsite'));
+            }
+        } catch (error) {
+            CoreAlerts.showError(error);
         }
     }
 

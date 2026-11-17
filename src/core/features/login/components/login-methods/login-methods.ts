@@ -123,7 +123,8 @@ export class CoreLoginMethodsComponent implements OnInit {
 
             await CoreLoginHelper.scanQR();
         } catch {
-            // Ignore errors.
+            // Ignore errors from showing instructions.
+            // Scan errors are handled and shown by CoreLoginHelper.scanQR().
         }
     }
 
