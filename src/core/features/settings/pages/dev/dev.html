@@ -42,6 +42,19 @@
                 <p class="item-heading">Always show login form</p>
             </ion-toggle>
         </ion-item>
+        @if (showNetworkOverride) {
+            <ion-item class="ion-text-wrap">
+                <ion-select [(ngModel)]="forcedConnectionMode" (ionChange)="forcedConnectionModeChanged()" interface="popover">
+                    <div slot="label">
+                        <p class="item-heading ion-text-wrap">Network connection</p>
+                    </div>
+                    <ion-select-option value="default">Device default</ion-select-option>
+                    <ion-select-option [value]="connectionTypes.OFFLINE">Offline</ion-select-option>
+                    <ion-select-option [value]="connectionTypes.CELL">Cellular</ion-select-option>
+                    <ion-select-option [value]="connectionTypes.WIFI">WiFi</ion-select-option>
+                </ion-select>
+            </ion-item>
+        }
         @if (siteId) {
 
             <ion-item class="ion-text-wrap">
