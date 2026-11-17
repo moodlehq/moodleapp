@@ -30,7 +30,6 @@ let package = Package(
         .package(name: "CapgoCapacitorIntentLauncher", path: "../../../node_modules/@capgo/capacitor-intent-launcher"),
         .package(name: "CapgoCapacitorZip", path: "../../../node_modules/@capgo/capacitor-zip"),
         .package(name: "CapacitorPluginMoodleapp", path: "../../../capacitor-plugin-moodleapp"),
-        .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
         .package(name: "CordovaPluginDevice", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginDevice"),
         .package(name: "CordovaPluginLocalNotification", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginLocalNotification"),
         .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage")
@@ -59,7 +58,6 @@ let package = Package(
                 .product(name: "CapgoCapacitorIntentLauncher", package: "CapgoCapacitorIntentLauncher"),
                 .product(name: "CapgoCapacitorZip", package: "CapgoCapacitorZip"),
                 .product(name: "CapacitorPluginMoodleapp", package: "CapacitorPluginMoodleapp"),
-                .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
                 .product(name: "CordovaPluginDevice", package: "CordovaPluginDevice"),
                 .product(name: "CordovaPluginLocalNotification", package: "CordovaPluginLocalNotification"),
                 .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage")
