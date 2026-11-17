@@ -35,7 +35,7 @@ import { EMAIL_SIGNUP_FEATURE_NAME } from '@features/login/constants';
 import { CoreInputErrorsMessages } from '@components/input-errors/input-errors';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { CoreLoadings } from '@services/overlays/loadings';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreUserProfileFieldComponent } from '@features/user/components/user-profile-field/user-profile-field';

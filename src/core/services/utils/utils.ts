@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { InAppBrowserObject } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { FileEntry } from '@classes/native/filesystem';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreRedirects } from '@static/redirects';
@@ -23,7 +22,6 @@ import { CoreFileEntry } from '@services/file-helper';
 import { CoreArray } from '@static/array';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils, OrderedPromiseData } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions, CoreOpenerOpenInBrowserOptions } from '@static/opener';
 import { CoreCountries, CoreCountry } from '@static/countries';
 import { CoreObject } from '@static/object';
 import { CoreSites } from '@services/sites';
@@ -151,35 +149,6 @@ export class CoreUtilsProvider {
      */
     async checkRedirect(url: string): Promise<boolean> {
         return CoreRedirects.checkRedirect(url);
-    }
-
-    /**
-     * Close the InAppBrowser window.
-     *
-     * @deprecated since 5.0. Use CoreOpener.closeInAppBrowser instead.
-     */
-    closeInAppBrowser(): void {
-        CoreOpener.closeInAppBrowser();
-    }
-
-    /**
-     * Get inapp browser instance (if any).
-     *
-     * @returns IAB instance, undefined if not open.
-     * @deprecated since 5.0. Use CoreOpener.getInAppBrowserInstance instead.
-     */
-    getInAppBrowserInstance(): InAppBrowserObject | undefined {
-        return CoreOpener.getInAppBrowserInstance();
-    }
-
-    /**
-     * Check if inapp browser is open.
-     *
-     * @returns Whether it's open.
-     * @deprecated since 5.0. Use CoreOpener.isInAppBrowserOpen instead.
-     */
-    isInAppBrowserOpen(): boolean {
-        return CoreOpener.isInAppBrowserOpen();
     }
 
     /**
@@ -467,53 +436,6 @@ export class CoreUtilsProvider {
     }
 
     /**
-     * Open a file using platform specific method.
-     *
-     * @param path The local path of the file to be open.
-     * @param options Options.
-     * @deprecated since 5.0. Use CoreOpener.openFile instead.
-     */
-    async openFile(path: string, options: CoreOpenerOpenFileOptions = {}): Promise<void> {
-        await CoreOpener.openFile(path, options);
-    }
-
-    /**
-     * Open a URL using InAppBrowser.
-     * Do not use for files, refer to {@link CoreOpener.openFile}.
-     *
-     * @param url The URL to open.
-     * @param options Override default options passed to InAppBrowser.
-     * @returns The opened window.
-     *
-     * @deprecated since 5.0. Use CoreOpener.openInApp instead.
-     */
-    openInApp(url: string, options?: CoreOpenerOpenFileOptions): InAppBrowserObject {
-        return CoreOpener.openInApp(url, options);
-    }
-
-    /**
-     * Open a URL using a browser.
-     *
-     * @param url The URL to open.
-     * @param options Options.
-     * @deprecated since 5.0. Use CoreOpener.openInBrowser instead.
-     */
-    async openInBrowser(url: string, options: CoreOpenerOpenInBrowserOptions = {}): Promise<void> {
-        await CoreOpener.openInBrowser(url, options);
-    }
-
-    /**
-     * Open an online file using platform specific method.
-     * Specially useful for audio and video since they can be streamed.
-     *
-     * @param url The URL of the file.
-     * @deprecated since 5.0. Use CoreOpener.openOnlineFile instead.
-     */
-    async openOnlineFile(url: string): Promise<void> {
-        await CoreOpener.openOnlineFile(url);
-    }
-
-    /**
      * Converts an object into an array, losing the keys.
      *
      * @param obj Object to convert.
@@ -748,17 +670,6 @@ export class CoreUtilsProvider {
         }
 
         return CorePromiseUtils.ignoreErrors(promise);
-    }
-
-    /**
-     * Given some options, check if a file should be opened with showOpenWithDialog.
-     *
-     * @param options Options.
-     * @returns Boolean.
-     * @deprecated since 5.0. Use CoreOpener.shouldOpenWithDialog instead.
-     */
-    shouldOpenWithDialog(options: CoreOpenerOpenFileOptions = {}): boolean {
-        return CoreOpener.shouldOpenWithDialog(options);
     }
 
 }

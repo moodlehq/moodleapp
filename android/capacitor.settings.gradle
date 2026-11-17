@@ -41,6 +41,9 @@ project(':capawesome-capacitor-badge').projectDir = new File('../node_modules/@c
 include ':capawesome-capacitor-file-picker'
 project(':capawesome-capacitor-file-picker').projectDir = new File('../node_modules/@capawesome/capacitor-file-picker/android')
 
+include ':capgo-capacitor-inappbrowser'
+project(':capgo-capacitor-inappbrowser').projectDir = new File('../node_modules/@capgo/capacitor-inappbrowser/android')
+
 include ':capgo-capacitor-intent-launcher'
 project(':capgo-capacitor-intent-launcher').projectDir = new File('../node_modules/@capgo/capacitor-intent-launcher/android')
 

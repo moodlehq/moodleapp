@@ -42,6 +42,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreLangProvider } = await import('@services/lang');
     const { CoreLocalNotificationsProvider } = await import('@services/local-notifications');
     const { CoreNavigatorService } = await import('@services/navigator');
+    const { CoreOpenerService } = await import('@services/opener');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
     const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
@@ -93,6 +94,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreLocalNotificationsProvider,
         CoreMimetypeUtilsProvider,
         CoreNavigatorService,
+        CoreOpenerService,
         CorePluginFileDelegateService,
         CorePlatformService,
         CoreQRScanService,

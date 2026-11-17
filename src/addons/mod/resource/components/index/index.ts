@@ -32,7 +32,7 @@ import { AddonModResourceHelper } from '../../services/resource-helper';
 import { CorePlatform } from '@services/platform';
 import { ADDON_MOD_RESOURCE_COMPONENT_LEGACY } from '../../constants';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { OpenFileAction } from '@static/opener';
+import { OpenFileAction } from '@services/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';

@@ -27,7 +27,7 @@ import { CoreNavigator } from '@services/navigator';
 import { CoreScreen } from '@services/screen';
 import { CoreSites } from '@services/sites';
 import { CoreErrorObject } from '@services/error-helper';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
 import { CorePromiseUtils } from '@static/promise-utils';

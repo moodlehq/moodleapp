@@ -96,7 +96,6 @@ import { CoreMedia } from '@static/media';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreNetwork } from '@services/network';
 import { CoreObject } from '@static/object';
-import { CoreOpener } from '@static/opener';
 import { CorePath } from '@static/path';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreSSO } from '@static/sso';
@@ -272,8 +271,13 @@ export class CoreCompileProvider {
             const libraryDef = libraries[i];
             if (typeof libraryDef === 'function' && libraryDef.name) {
                 try {
-                    // Inject the provider to the instance. We use the class name as the property name.
-                    instance[libraryDef.name.replace(/DelegateService$/, 'Delegate')] = injector.get<Provider>(libraryDef);
+                    // Special case for CoreOpenerService, we inject it as CoreOpener since is not a static provider anymore.
+                    if (libraryDef.name === 'CoreOpenerService') {
+                        instance['CoreOpener'] = injector.get<Provider>(libraryDef);
+                    } else {
+                        // Inject the provider to the instance. We use the class name as the property name.
+                        instance[libraryDef.name.replace(/DelegateService$/, 'Delegate')] = injector.get<Provider>(libraryDef);
+                    }
                 } catch (ex) {
                     this.logger.error('Error injecting provider', libraryDef.name, ex);
                 }
@@ -311,7 +315,6 @@ export class CoreCompileProvider {
         instance['CoreMedia'] = CoreMedia;
         instance['CoreMimetype'] = CoreMimetype;
         instance['CoreObject'] = CoreObject;
-        instance['CoreOpener'] = CoreOpener;
         instance['CorePath'] = CorePath;
         instance['CorePlatform'] = CorePlatform.instance;
         instance['CorePromiseUtils'] = CorePromiseUtils;

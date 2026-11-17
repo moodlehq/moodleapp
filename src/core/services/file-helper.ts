@@ -21,7 +21,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreUrl } from '@static/url';
-import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@services/opener';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';

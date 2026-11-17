@@ -22,7 +22,7 @@ import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
 import { CoreTime } from '@static/time';
-import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@services/opener';
 import { CoreForms } from '@static/form';
 import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';

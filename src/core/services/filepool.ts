@@ -59,7 +59,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@static/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/opener';
 import { CoreErrorHelper } from '@services/error-helper';
 import { FilesystemErrorCode } from '@services/native/filesystem';
 

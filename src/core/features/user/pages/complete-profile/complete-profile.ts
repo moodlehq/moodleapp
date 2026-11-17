@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Component, OnDestroy } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreUserSupport } from '@features/user/services/support';
-import { CoreOpener } from '@static/opener';
 import { CoreSharedModule } from '@/core/shared.module';
 
 /**
@@ -33,13 +31,10 @@ import { CoreSharedModule } from '@/core/shared.module';
         CoreSharedModule,
     ],
 })
-export default class CoreUserCompleteProfilePage implements OnDestroy {
+export default class CoreUserCompleteProfilePage {
 
     editingProfile = false;
     logoutLabel: string;
-
-    protected urlLoadedObserver?: CoreEventObserver;
-    protected browserClosedObserver?: CoreEventObserver;
 
     constructor() {
         this.logoutLabel = CoreLoginHelper.getLogoutLabel();
@@ -58,15 +53,28 @@ export default class CoreUserCompleteProfilePage implements OnDestroy {
     /**
      * Open the edit profile page in a browser.
      */
-    openCompleteProfilePage(): void {
-        CoreLoginHelper.openInAppForEdit(
+    async openCompleteProfilePage(): Promise<void> {
+        const inAppBrowser = await CoreLoginHelper.openInAppForEdit(
             CoreSites.getCurrentSiteId(),
             '/user/edit.php',
             undefined,
             true,
         );
+
+        if (!inAppBrowser) {
+            return;
+        }
+
         this.editingProfile = true;
-        this.detectProileEdited();
+
+        // Try to detect if the user edited the profile in browser.
+        inAppBrowser.onLoaded((event) => {
+            if (event.url.match(/\/user\/preferences.php/)) {
+                // Profile should be complete now.
+                inAppBrowser.close();
+                this.login();
+            }
+        });
     }
 
     /**
@@ -83,39 +91,6 @@ export default class CoreUserCompleteProfilePage implements OnDestroy {
     logout(): void {
         CoreSites.logout();
         this.editingProfile = false;
-    }
-
-    /**
-     * Try to detect if the user edited the profile in browser.
-     */
-    detectProileEdited(): void {
-        if (this.urlLoadedObserver) {
-            // Already listening (shouldn't happen).
-            return;
-        }
-
-        this.urlLoadedObserver = CoreEvents.on(CoreEvents.IAB_LOAD_START, (event) => {
-            if (event.url.match(/\/user\/preferences.php/)) {
-                // Profile should be complete now.
-                CoreOpener.closeInAppBrowser();
-                this.login();
-            }
-        });
-
-        this.browserClosedObserver = CoreEvents.on(CoreEvents.IAB_EXIT, () => {
-            this.urlLoadedObserver?.off();
-            this.browserClosedObserver?.off();
-            delete this.urlLoadedObserver;
-            delete this.browserClosedObserver;
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
-    ngOnDestroy(): void {
-        this.urlLoadedObserver?.off();
-        this.browserClosedObserver?.off();
     }
 
 }

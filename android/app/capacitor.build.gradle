@@ -22,6 +22,7 @@ dependencies {
     implementation project(':capacitor-splash-screen')
     implementation project(':capawesome-capacitor-badge')
     implementation project(':capawesome-capacitor-file-picker')
+    implementation project(':capgo-capacitor-inappbrowser')
     implementation project(':capgo-capacitor-intent-launcher')
     implementation project(':capgo-capacitor-zip')
     implementation project(':capacitor-plugin-moodleapp')

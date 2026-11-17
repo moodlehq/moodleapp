@@ -21,7 +21,7 @@ import { CoreText } from '@static/text';
 import { Md5 } from 'ts-md5';
 import { CoreLoadings } from './loadings';
 import { fixOverlayAriaHidden } from '@/core/utils/fix-aria-hidden';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreLogger } from '@static/logger';

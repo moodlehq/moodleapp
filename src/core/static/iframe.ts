@@ -15,7 +15,7 @@
 import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@static/opener';
+import { CoreOpener } from '@services/opener';
 
 import { NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';

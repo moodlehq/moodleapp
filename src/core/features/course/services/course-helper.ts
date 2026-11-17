@@ -61,7 +61,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 import { DownloadStatus } from '@/core/constants';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
-import { CoreOpenerOpenFileOptions } from '@static/opener';
+import { CoreOpenerOpenFileOptions } from '@services/opener';
 import {
     CoreCourseSectionWithStatus,
     CorePrefetchStatusInfo,

@@ -36,7 +36,6 @@ import {
     PopoverController as PopoverControllerService,
 } from '@ionic/angular';
 
-import { InAppBrowser as InAppBrowserService } from '@awesome-cordova-plugins/in-app-browser/ngx';
 import { LocalNotifications as LocalNotificationsService } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 
@@ -159,7 +158,6 @@ export function makeSingleton<Service extends object = object>(
 }
 
 // Convert ionic-native services to singleton.
-export const InAppBrowser = makeSingleton(InAppBrowserService);
 export const LocalNotifications = makeSingleton(LocalNotificationsService);
 export const SQLite = makeSingleton(SQLiteService);
 

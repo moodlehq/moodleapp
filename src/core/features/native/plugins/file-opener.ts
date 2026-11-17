@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreOpener, OpenFileAction } from '@static/opener';
+import { CoreOpener, OpenFileAction } from '@services/opener';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
