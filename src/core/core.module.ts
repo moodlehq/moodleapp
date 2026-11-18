@@ -61,8 +61,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { CoreGeolocationProvider } = await import('@services/geolocation');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTextUtilsProvider } = await import('@services/utils/text');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTimeUtilsProvider } = await import('@services/utils/time');
@@ -87,7 +85,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreFilepoolProvider,
         CoreFileProvider,
         CoreFileSessionProvider,
-        CoreGeolocationProvider,
         CoreGroupsProvider,
         CoreIframeUtilsProvider,
         CoreLangProvider,

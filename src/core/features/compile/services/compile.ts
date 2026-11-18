@@ -89,7 +89,6 @@ import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreDom } from '@static/dom';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreForms } from '@static/form';
-import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreIframe } from '@static/iframe';
 import { CoreKeyboard } from '@static/keyboard';
 import { CoreMedia } from '@static/media';
@@ -328,12 +327,6 @@ export class CoreCompileProvider {
         instance['CoreWindow'] = CoreWindow;
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
-
-        /**
-         * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
-         */
-        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line @typescript-eslint/no-deprecated
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line @typescript-eslint/no-deprecated
 
         // Inject exported objects.
         for (const name in this.exportedObjects) {

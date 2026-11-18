@@ -30,8 +30,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { MediaCapture } = await import('@services/native/media-capture');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Geolocation } = await import('@features/emulator/services/geolocation');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { Clipboard } = await import('@services/native/clipboard');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { File } = await import('@services/native/file');
@@ -66,7 +64,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         Device,
         File,
         FileOpener,
-        Geolocation,
         InAppBrowser,
         Keyboard,
         LocalNotifications,
