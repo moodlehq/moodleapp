@@ -53,7 +53,7 @@ import { CoreWait } from '@static/wait';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNative } from '@features/native/services/native';
-import { CoreNativeDevice } from '@services/native/device';
+import { CoreDevice } from '@services/native/device';
 
 /**
  * Service to handle push notifications.
@@ -305,8 +305,8 @@ export class CorePushNotificationsProvider {
             throw new CoreError('Cannot get register data because pushID is not set.');
         }
 
-        const deviceInfo = await CoreNativeDevice.getInfo();
-        const deviceId = await CoreNativeDevice.getId();
+        const deviceInfo = await CoreDevice.getInfo();
+        const deviceId = await CoreDevice.getId();
 
         return {
             appid:      CoreConstants.CONFIG.app_id,
@@ -468,7 +468,7 @@ export class CorePushNotificationsProvider {
         }
 
         this.logger.debug(`Unregister device on Moodle: '${site.getId()}'`);
-        const deviceId = await CoreNativeDevice.getId();
+        const deviceId = await CoreDevice.getId();
 
         const data: CoreUserRemoveUserDeviceWSParams = {
             appid: CoreConstants.CONFIG.app_id,

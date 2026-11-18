@@ -22,7 +22,7 @@ import { CoreNetwork } from '@services/network';
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
-import { CoreNativeDevice } from '@services/native/device';
+import { CoreDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
 import { CoreKeyboard } from '@static/keyboard';
 import { CoreFile } from '@services/file';
@@ -36,7 +36,7 @@ export default async function(): Promise<void> {
 
     // Native plugins initializations.
     await Promise.all([
-        CoreNativeDevice.initialize(),
+        CoreDevice.initialize(),
         CoreFile.initialize(),
     ]);
 

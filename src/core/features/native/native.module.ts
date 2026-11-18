@@ -54,7 +54,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { QRScanner } = await import('./plugins/qrscanner');
 
-    const { Device } = await import('@services/native/device');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { Device } = await import('./plugins/device');
 
     return [
         Badge,

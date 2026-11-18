@@ -32,7 +32,7 @@ import { CoreClipboard } from '@services/clipboard';
 import { GestureDetail } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_SETTINGS_DEV_PAGE_NAME } from '@features/settings/constants';
-import { CoreNativeDevice } from '@services/native/device';
+import { CoreDevice } from '@services/native/device';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -191,7 +191,7 @@ export default class CoreSettingsDeviceInfoPage {
             undefined;
         this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
 
-        const capacitorDeviceInfo = await CoreNativeDevice.getInfo();
+        const capacitorDeviceInfo = await CoreDevice.getInfo();
 
         if (capacitorDeviceInfo.platform) {
             this.deviceInfo.platform = capacitorDeviceInfo.platform;
@@ -206,7 +206,7 @@ export default class CoreSettingsDeviceInfoPage {
             this.deviceInfo.model = capacitorDeviceInfo.model;
         }
 
-        const capacitorDeviceId = await CoreNativeDevice.getId();
+        const capacitorDeviceId = await CoreDevice.getId();
 
         if (capacitorDeviceId.identifier) {
             this.deviceInfo.uuid = capacitorDeviceId.identifier;
