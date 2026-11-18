@@ -53,9 +53,9 @@ export interface CoreEventsData {
     [CoreEvents.SECTION_STATUS_CHANGED]: CoreEventSectionStatusChangedData;
     [CoreEvents.ACTIVITY_DATA_SENT]: CoreEventActivityDataSentData;
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    [CoreEvents.IAB_LOAD_START]: InAppBrowserEvent;
+    [CoreEvents.IAB_LOAD_START]: CoreInAppBrowserEvent;
     // eslint-disable-next-line @typescript-eslint/no-deprecated
-    [CoreEvents.IAB_LOAD_STOP]: InAppBrowserEvent;
+    [CoreEvents.IAB_LOAD_STOP]: CoreInAppBrowserEvent;
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     [CoreEvents.IAB_MESSAGE]: Record<string, unknown>;
     [CoreEvents.LOGIN]: { siteId: string };
@@ -512,4 +512,22 @@ export type CoreEventCourseModuleViewed = {
  */
 export type CoreEventCompleteRequiredProfileDataFinished = {
     path: string;
+};
+
+/**
+ * Data passed to InAppBrowser events.
+ *
+ * @deprecated since 6.0.0. Not used anymore.
+ */
+type CoreInAppBrowserEvent = Event & {
+    /** the eventname, either `loadstart`, `loadstop`, `loaderror`, `exit`, `message`, `customscheme`, or `beforeload`. */
+    type: string;
+    /** the URL that was loaded. */
+    url: string;
+    /** the error code, only in the case of `loaderror`. */
+    code?: number;
+    /** the error message, only in the case of `loaderror`. */
+    message?: string;
+    /** the message contents, only in the case of `message`. A stringified JSON object. */
+    data?: string;
 };
