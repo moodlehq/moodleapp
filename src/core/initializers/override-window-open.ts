@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { CorePlatform } from '@services/platform';
+import { CoreOpener } from '@services/opener';
 
 /**
  * Initializes the application and sets up the InAppBrowser if available.
@@ -20,10 +21,18 @@ import { CorePlatform } from '@services/platform';
 export default async function initializeApp(): Promise<void> {
     await CorePlatform.ready();
 
-    if (!window.cordova?.InAppBrowser) {
+    if (!CorePlatform.isMobile()) {
         return;
     }
 
+    // Override window.open to use InAppBrowser or Browser.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (<any> window).open = window.cordova.InAppBrowser.open;
+    (<any> window).open = (url: string, target?: string): any => {
+        if (target === '_system') {
+            CoreOpener.openInBrowser(url);
+
+            return;
+        }
+        CoreOpener.openInAppAsync(url);
+    };
 }

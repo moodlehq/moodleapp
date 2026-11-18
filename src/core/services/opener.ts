@@ -15,6 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { InAppBrowser as CapgoInAppBrowser, OpenWebViewOptions, ToolBarType } from '@capgo/capacitor-inappbrowser';
+import { CoreNative } from '@features/native/services/native';
 import { CoreErrorWithOptions } from '@classes/errors/errorwithoptions';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreFilepool } from '@services/filepool';
@@ -218,7 +219,12 @@ export class CoreOpenerService {
         }
 
         CoreAnalytics.logEvent({ type: CoreAnalyticsEventType.OPEN_LINK, link: originaUrl });
-        window.open(url, '_system');
+
+        if (CorePlatform.isMobile()) {
+            await CoreNative.plugin('browserLauncher')?.openInExternalBrowser(url);
+        } else {
+            window.open(url, '_system');
+        }
     }
 
     /**
