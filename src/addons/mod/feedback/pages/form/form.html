@@ -106,7 +106,7 @@
 
                             @case ('multichoice-c') {
 
-                                <ion-item *ngFor="let option of item.choices">
+                                <ion-item *ngFor="let option of item.choices" class="ion-text-wrap">
                                     <ion-checkbox [required]="item.required" name="{{item.typ}}_{{item.id}}" [(ngModel)]="option.checked"
                                         value="option.value">
                                         <core-format-text [component]="component" [componentId]="cmId" [text]="option.label"
@@ -204,7 +204,8 @@
 
 <ng-template #label let-item="item">
     @if (item.name) {
-        <p class="ion-text-wrap" [core-mark-required]="item.required" [attr.slot]="item.slottedLabel ? 'label' : undefined">
+        <p class="ion-text-wrap item-heading addon-mod_feedback-item-name" [core-mark-required]="item.required"
+            [attr.slot]="item.slottedLabel ? 'label' : undefined">
             @if (feedback!.autonumbering && item.itemnumber) {
                 <span>{{item.itemnumber}}. </span>
             }
