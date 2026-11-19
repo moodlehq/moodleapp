@@ -22,7 +22,7 @@ import { CoreUserParticipantsSource } from '@features/user/classes/participants-
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSearchBoxComponent } from '../../../search/components/search-box/search-box';

@@ -37,7 +37,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { LOADING_ICON } from '@/core/constants';
 import { CoreDom } from '@static/dom';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreText } from '@static/text';
 import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';

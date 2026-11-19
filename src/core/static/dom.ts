@@ -18,7 +18,7 @@ import { CoreEventObserver } from '@static/events';
 import { CorePlatform } from '@services/platform';
 import { CoreWait } from './wait';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
-import { CoreKeyboard } from './keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreError } from '@classes/errors/error';
 import { IonContent } from '@ionic/angular';
 import { CoreUrl, CoreUrlPartNames } from './url';

@@ -21,7 +21,7 @@ import {
     KeyboardStyle as CapacitorKeyboardStyle,
 } from '@capacitor/keyboard';
 import type { PluginListenerHandle } from '@capacitor/core';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 
 export enum KeyboardStyle {
     Light = 'light',

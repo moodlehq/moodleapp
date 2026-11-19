@@ -31,7 +31,7 @@ import { Translate } from '@singletons';
 import { SafeHtml } from '@angular/platform-browser';
 import { CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { ALWAYS_SHOW_LOGIN_FORM_CHANGED, FORGOTTEN_PASSWORD_FEATURE_NAME } from '@features/login/constants';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreLoginMethodsComponent, CoreLoginMethodsCurrentLogin } from '@features/login/components/login-methods/login-methods';
 import { CoreAlerts } from '@services/overlays/alerts';

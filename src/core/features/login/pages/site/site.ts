@@ -41,7 +41,7 @@ import { CoreLoginError } from '@classes/errors/loginerror';
 import { CoreReferrer } from '@services/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreQRScan } from '@services/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';

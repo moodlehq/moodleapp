@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, inject } from '@angular/core';
 import { CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreConfig } from '@services/config';
 import { CoreFilepool } from '@services/filepool';
@@ -24,7 +23,7 @@ import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreDevice } from '@services/native/device';
 import { CoreAppBadge } from '@services/app-badge';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreFile } from '@services/file';
 import { CoreNativeStatusBar } from '@services/native/status-bar';
 
@@ -32,9 +31,7 @@ import { CoreNativeStatusBar } from '@services/native/status-bar';
  * Initializes various core components asynchronously.
  */
 export default async function(): Promise<void> {
-    const injector = inject(Injector);
-
-    // Native plugins initializations.
+    // Initialize first the most prioritary native plugins.
     await Promise.all([
         CoreDevice.initialize(),
         CoreFile.initialize(),
@@ -49,7 +46,7 @@ export default async function(): Promise<void> {
         CoreNetwork.initialize(),
         CoreUpdateManager.initialize(),
         CoreTime.initialize(),
-        CoreKeyboard.initialize(injector),
+        CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
         CoreAppBadge.initialize(),
         CoreNativeStatusBar.initialize(),

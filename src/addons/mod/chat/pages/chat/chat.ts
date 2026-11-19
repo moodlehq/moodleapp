@@ -27,7 +27,7 @@ import { AddonModChat, AddonModChatUser } from '../../services/chat';
 import { AddonModChatFormattedMessage, AddonModChatHelper } from '../../services/chat-helper';
 import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreLoadings } from '@services/overlays/loadings';

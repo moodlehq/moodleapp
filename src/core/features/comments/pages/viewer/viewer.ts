@@ -47,7 +47,7 @@ import { CoreDom } from '@static/dom';
 import { CoreSharedModule } from '@/core/shared.module';
 import { ADDON_MOD_ASSIGN_COMMENTS_COMPONENT_NAME } from '@addons/mod/assign/submission/comments/constants';
 import { CoreCourses } from '@features/courses/services/courses';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 
 /**
  * Page that displays comments.

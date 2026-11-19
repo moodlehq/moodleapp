@@ -39,7 +39,7 @@ import {
 } from '@features/login/constants';
 import { CoreCustomURLSchemes } from '@services/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoginMethodsComponent } from '../../components/login-methods/login-methods';

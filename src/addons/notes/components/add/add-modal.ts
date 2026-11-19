@@ -17,7 +17,7 @@ import { Component, ElementRef, Input, viewChild } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreForms } from '@static/form';
 import { ModalController } from '@singletons';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';

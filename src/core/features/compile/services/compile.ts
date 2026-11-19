@@ -91,7 +91,6 @@ import { CoreDom } from '@static/dom';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreForms } from '@static/form';
 import { CoreIframe } from '@static/iframe';
-import { CoreKeyboard } from '@static/keyboard';
 import { CoreMedia } from '@static/media';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreNetwork } from '@services/network';
@@ -311,7 +310,7 @@ export class CoreCompileProvider {
         instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
         instance['CoreIframe'] = CoreIframe;
-        instance['CoreKeyboard'] = CoreKeyboard;
+        // instance['CoreKeyboard'] = CoreKeyboard; // @todo Capacitor: Inject Keyboard service and other missing wrappers.
         instance['CoreMedia'] = CoreMedia;
         instance['CoreMimetype'] = CoreMimetype;
         instance['CoreObject'] = CoreObject;
