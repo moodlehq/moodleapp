@@ -23,7 +23,7 @@ import {
     CoreCaptureMediaChooseFromGalleryOptions,
     CoreCaptureMediaTakePhotoOptions,
     CoreMediaFile,
-} from './capture-media';
+} from '@services/native/capture-media';
 import { CoreFileFormat } from '@services/file';
 
 /* eslint-disable @typescript-eslint/no-deprecated */

@@ -59,6 +59,7 @@ import { getH5PServices } from '@features/h5p/h5p.module';
 import { getLoginServices } from '@features/login/login.module';
 import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
+import { getCordovaCompatServices } from '@features/cordova-compat/cordova-compat.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
 import { getQuestionExportedDirectives, getQuestionServices } from '@features/question/question.module';
 import { getRatingServices } from '@features/rating/rating.module';
@@ -371,6 +372,7 @@ export class CoreCompileProvider {
             getLoginServices(),
             getMainMenuServices(),
             getNativeServices(),
+            getCordovaCompatServices(),
             getPushNotificationsServices(),
             getQuestionServices(),
             getRatingServices(),

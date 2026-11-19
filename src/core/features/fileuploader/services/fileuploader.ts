@@ -13,9 +13,9 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CameraOptions } from '@services/native/camera-compat';
+import { CameraOptions } from '@features/cordova-compat/services/camera-compat';
 import { FileEntry } from '@classes/native/filesystem';
-import { MediaFile } from '@services/native/media-capture';
+import { MediaFile } from '@features/cordova-compat/services/media-capture-compat';
 import { Subject } from 'rxjs';
 
 import { CoreFile, CoreFileProvider } from '@services/file';
@@ -392,7 +392,7 @@ export class CoreFileUploaderProvider {
         this.onGetPicture.next(true);
 
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        const { CoreNativeCamera } = await import('@services/native/camera-compat');
+        const { CoreNativeCamera } = await import('@features/cordova-compat/services/camera-compat');
 
         return CoreNativeCamera.getPicture(options).finally(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated

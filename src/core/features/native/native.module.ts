@@ -12,12 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, provideAppInitializer, Type } from '@angular/core';
+import { NgModule, Type } from '@angular/core';
 
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
-import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
 /**
  * Get native services.
@@ -25,57 +24,10 @@ import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/fi
  * @returns Returns native services.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Camera } = await import('@services/native/camera-compat');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { MediaCapture } = await import('@services/native/media-capture');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Clipboard } = await import('@services/native/clipboard');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { File } = await import('@services/native/file');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Chooser } = await import('@features/native/plugins/chooser');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { FileOpener } = await import('./plugins/file-opener');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Keyboard } = await import('@services/native/keyboard');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Zip } = await import('@features/native/plugins/zip');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Badge } = await import('./plugins/badge');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { WebView } = await import('./plugins/webview');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { WebIntent } = await import('./plugins/webintent');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { StatusBar } = await import('./plugins/status-bar');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { InAppBrowser } = await import('./plugins/inappbrowser');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { QRScanner } = await import('./plugins/qrscanner');
-
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { Device } = await import('./plugins/device');
-
     return [
-        Badge,
-        Camera,
-        Chooser,
-        Clipboard,
-        Device,
-        File,
-        FileOpener,
-        InAppBrowser,
-        Keyboard,
         LocalNotifications,
-        MediaCapture,
         Push,
-        QRScanner,
         SQLite,
-        StatusBar,
-        WebIntent,
-        WebView,
-        Zip,
     ];
 }
 
@@ -84,12 +36,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
         LocalNotifications,
         Push,
         SQLite,
-        provideAppInitializer(() => {
-            // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
-            (<any> window).FileTransfer = FileTransferCompat;
-            // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any
-            (<any> window).FileTransferError = FileTransferErrorCompat;
-        }),
     ],
 })
 export class CoreNativeModule {}

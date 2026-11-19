@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreCaptureMedia } from './capture-media';
+import { CoreCaptureMedia } from '@services/native/capture-media';
 import { Observable } from 'rxjs';
 
 /**
