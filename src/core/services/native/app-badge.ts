@@ -15,22 +15,22 @@
 import { Injectable } from '@angular/core';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { makeSingleton } from '@singletons';
-import { asyncInstance } from '../utils/async-instance';
+import { asyncInstance } from '@/core/utils/async-instance';
 import {
     APP_SCHEMA,
     CORE_APP_BADGE_TABLE_NAME,
     CORE_APP_BADGE_TABLE_PRIMARY_KEYS,
     CoreAppBadgeDBPrimaryKeys,
     CoreAppBadgeDBRecord,
-} from './database/app-badge';
+} from '@services/database/app-badge';
 import { CoreDatabaseTableProxy, CoreDatabaseCachingStrategy } from '@classes/database/database-table-proxy';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
 import { CoreEvents } from '@static/events';
-import { CoreAppDB } from './app-db';
+import { CoreAppDB } from '@services/app-db';
 import { CoreLogger } from '@static/logger';
 import { Badge } from '@capawesome/capacitor-badge';
-import { CorePlatform } from './platform';
-import { CoreSites } from './sites';
+import { CorePlatform } from '@services/platform';
+import { CoreSites } from '@services/sites';
 
 /**
  * Service to manage the app badge.

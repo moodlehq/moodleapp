@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 
 import { CoreAppDB } from '@services/app-db';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreConfig } from '@services/config';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreConfigSettingKey, CoreTimeConstants } from '@/core/constants';

@@ -17,15 +17,15 @@ import { CoreConfig } from '@services/config';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
 import { CoreDevice } from '@services/native/device';
-import { CoreAppBadge } from '@services/app-badge';
+import { CoreAppBadge } from '@services/native/app-badge';
 import { CoreKeyboard } from '@services/native/keyboard';
-import { CoreFile } from '@services/file';
-import { CoreNativeStatusBar } from '@services/native/status-bar';
+import { CoreFile } from '@services/native/file';
+import { CoreStatusBar } from '@services/native/status-bar';
 
 /**
  * Initializes various core components asynchronously.
@@ -49,6 +49,6 @@ export default async function(): Promise<void> {
         CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
         CoreAppBadge.initialize(),
-        CoreNativeStatusBar.initialize(),
+        CoreStatusBar.initialize(),
     ]);
 }

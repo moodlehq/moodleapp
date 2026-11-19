@@ -33,7 +33,7 @@ import { AddonMessagesPushClickHandler } from './services/handlers/push-click';
 import { CoreUserDelegate } from '@features/user/services/user-delegate';
 import { AddonMessagesSendMessageUserHandler } from './services/handlers/user-send-message';
 import { NgZone } from '@singletons';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { AddonMessagesSync } from './services/messages-sync';
 import { AddonMessagesSyncCronHandler } from './services/handlers/sync-cron';
 import { CoreSitePreferencesRoutingModule } from '@features/settings/settings-site-routing.module';

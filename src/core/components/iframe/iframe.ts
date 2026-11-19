@@ -30,7 +30,7 @@ import {
 import { CoreUrl } from '@static/url';
 import { CoreIframe } from '@static/iframe';
 import { Router, Translate } from '@singletons';
-import { CoreScreen, CoreScreenOrientation } from '@services/screen';
+import { CoreScreen, CoreScreenOrientation } from '@services/native/screen';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { NavigationStart } from '@angular/router';
@@ -46,8 +46,8 @@ import { CoreFaIconDirective } from '@directives/fa-icon';
 import { CoreUpdateNonReactiveAttributesDirective } from '@directives/update-non-reactive-attributes';
 import { BackButtonEvent } from '@ionic/angular';
 import { BackButtonPriority } from '@/core/constants';
-import { CoreFile } from '@services/file';
-import { CoreNativeStatusBar } from '@services/native/status-bar';
+import { CoreFile } from '@services/native/file';
+import { CoreStatusBar } from '@services/native/status-bar';
 
 /**
  * Component to render an iframe, handling auto-login if needed, fixing iOS cookies, check if content should be opened
@@ -445,9 +445,9 @@ export class CoreIframeComponent implements OnDestroy {
 
         try {
             if (this.fullscreen()) {
-                await CoreNativeStatusBar.hide();
+                await CoreStatusBar.hide();
             } else {
-                await CoreNativeStatusBar.show();
+                await CoreStatusBar.show();
             }
         } catch {
             // Ignore errors.

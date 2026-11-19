@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { FileEntry } from '@classes/native/filesystem';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreText } from '@static/text';
 import { Translate } from '@singletons';

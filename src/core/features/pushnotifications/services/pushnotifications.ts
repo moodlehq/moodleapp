@@ -327,7 +327,7 @@ export class CorePushNotificationsProvider {
      * @deprecated since 6.0. Use CoreAppBadge.getSiteCounter instead.
      */
     async getSiteCounter(siteId: string): Promise<number> {
-        const { CoreAppBadge } = await import('@services/app-badge');
+        const { CoreAppBadge } = await import('@services/native/app-badge');
 
         return CoreAppBadge.getSiteCounter(siteId);
     }

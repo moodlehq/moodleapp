@@ -19,7 +19,7 @@ import {
 	type Entry,
 	type FileEntry,
 } from '@classes/native/filesystem';
-import { CoreFile, CoreFileFormat } from '@services/file';
+import { CoreFile, CoreFileFormat } from '@services/native/file';
 import { CorePath } from '@static/path';
 import { CorePlatform } from '@services/platform';
 import { CoreBytesConstants } from '@/core/constants';

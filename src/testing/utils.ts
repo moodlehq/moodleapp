@@ -31,7 +31,7 @@ import { ApplicationInit, CoreSingletonProxy, Translate } from '@singletons';
 import { CoreText } from '@static/text';
 
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CorePlatform } from '@services/platform';
 import { CoreDB } from '@services/db';
 import { CoreNavigator } from '@services/navigator';

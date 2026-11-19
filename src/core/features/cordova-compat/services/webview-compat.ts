@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 
 /**
  * WebView plugin wrapper.

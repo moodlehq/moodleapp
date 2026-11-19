@@ -34,7 +34,7 @@ import { AddonModAssignSubmissionModule } from './submission/submission.module';
 import { ADDON_MOD_ASSIGN_COMPONENT_LEGACY, ADDON_MOD_ASSIGN_PAGE_NAME } from './constants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**

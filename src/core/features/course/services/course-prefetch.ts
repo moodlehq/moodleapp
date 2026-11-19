@@ -46,7 +46,7 @@ import {
 } from './module-prefetch-delegate';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreFileHelper } from '@services/file-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUrl } from '@static/url';
 import { CoreText } from '@static/text';
@@ -59,7 +59,7 @@ import {
     CoreCourseDownloadStatusIcon,
 } from '../constants';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/native/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseDownloadStatusHelper } from './course-download-status-helper';
 import { CoreCourseHelper, CoreCourseModuleData, CoreCourseSection } from './course-helper';

@@ -24,7 +24,7 @@ import { CoreCourseModulePrefetchDelegate } from '@features/course/services/modu
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { CoreCronDelegate } from '@services/cron';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { SITE_SCHEMA, OFFLINE_SITE_SCHEMA } from './services/database/glossary';
 import { AddonModGlossaryEditLinkHandler } from './services/handlers/edit-link';

@@ -31,7 +31,7 @@ import { CoreUtils } from '@static/utils';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreText } from '@static/text';
 import { makeSingleton, NavController, Router } from '@singletons';
-import { CoreScreen } from './screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreError } from '@classes/errors/error';
 import { CoreMainMenuDelegate } from '@features/mainmenu/services/mainmenu-delegate';
 import { CorePlatform } from '@services/platform';

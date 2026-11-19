@@ -17,7 +17,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { ADDONS_NOTIFICATIONS_MAIN_PAGE_NAME } from './constants';
 
 /**

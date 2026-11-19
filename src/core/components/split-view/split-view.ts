@@ -15,7 +15,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, inject, viewChild, input, signal } from '@angular/core';
 import { ActivatedRouteSnapshot } from '@angular/router';
 import { IonRouterOutlet } from '@ionic/angular';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { CoreBaseModule } from '@/core/base.module';
 import { CoreEmptyBoxComponent } from '../empty-box/empty-box';

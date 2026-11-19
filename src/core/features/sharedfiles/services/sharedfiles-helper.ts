@@ -18,7 +18,7 @@ import { FileEntry } from '@classes/native/filesystem';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreFileUploaderHandlerResult } from '@features/fileuploader/services/fileuploader-delegate';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { AlertController, ApplicationInit, makeSingleton, Translate } from '@singletons';

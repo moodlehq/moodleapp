@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 
 import { NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';

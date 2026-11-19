@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreCourseActivityPrefetchHandlerBase } from '@features/course/classes/activity-prefetch-handler';
 import { CoreCourse, CoreCourseAnyModuleData, CoreCourseCommonModWSOptions } from '@features/course/services/course';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFilepool } from '@services/filepool';
 import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';

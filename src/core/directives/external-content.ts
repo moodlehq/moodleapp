@@ -23,7 +23,7 @@ import {
     EventEmitter,
     OnDestroy,
 } from '@angular/core';
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/native/file';
 import { CoreFilepool, CoreFilepoolFileActions, CoreFilepoolFileEventData } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
@@ -33,7 +33,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { DATA_APP_OPEN_IN, DATA_APP_OPEN_IN_LEGACY, CoreLinkOpenMethod, DownloadStatus } from '../constants';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { Translate } from '@singletons';
 import type { AsyncDirective } from '@coretypes/async-directive';
 import { CoreDirectivesRegistry } from '@static/directives-registry';

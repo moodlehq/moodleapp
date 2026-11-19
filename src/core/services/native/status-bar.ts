@@ -23,9 +23,9 @@ import { CoreLogger } from '@static/logger';
  * Controls edge-to-edge system bar icon styles and visibility.
  */
 @Injectable({ providedIn: 'root' })
-export class StatusBar {
+export class CoreStatusBarService {
 
-    protected logger = CoreLogger.getInstance('CoreNativeStatusBar');
+    protected logger = CoreLogger.getInstance('CoreStatusBar');
     protected statusStyle?: SystemBarsStyle;
     protected navigationStyle?: SystemBarsStyle;
     protected initialized = false;
@@ -139,4 +139,4 @@ export class StatusBar {
     }
 
 }
-export const CoreNativeStatusBar = makeSingleton(StatusBar);
+export const CoreStatusBar = makeSingleton(CoreStatusBarService);

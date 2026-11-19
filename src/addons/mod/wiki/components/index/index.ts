@@ -19,7 +19,7 @@ import { CoreCourseModuleMainActivityComponent } from '@features/course/classes/
 import { CoreCourse } from '@features/course/services/course';
 import { CoreTag, CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser } from '@features/user/services/user';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreGroup, CoreGroups } from '@services/groups';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';

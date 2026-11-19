@@ -14,11 +14,11 @@
 
 import { TestingBehatDomUtils, TestingBehatDomUtilsService } from './behat-dom';
 import { TestingBehatBlocking } from './behat-blocking';
-import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/native/urlschemes';
 import { CoreConfig } from '@services/config';
 import { EnvironmentConfig } from '@/types/config';
 import { LocalNotifications, makeSingleton, NgZone, ToastController } from '@singletons';
-import { CoreNetwork, CoreNetworkService } from '@services/network';
+import { CoreNetwork, CoreNetworkService } from '@services/native/network';
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreCronDelegate, CoreCronDelegateService } from '@services/cron';
 import { CoreLoadingComponent } from '@components/loading/loading';
@@ -36,7 +36,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLang } from '@services/lang';
 import { CoreBrowser } from '@static/browser';
 import { CoreText } from '@static/text';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 
 /**
  * Behat runtime servive with public API.

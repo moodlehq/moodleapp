@@ -18,7 +18,7 @@ import { CoreContentLinksDelegate, CoreContentLinksAction } from './contentlinks
 import { CoreSite } from '@classes/sites/site';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreNavigator } from '@services/navigator';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreCustomURLSchemes } from '@services/native/urlschemes';
 import { CoreModals } from '@services/overlays/modals';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLinkSource } from '@/core/constants';

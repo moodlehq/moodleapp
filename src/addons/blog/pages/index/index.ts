@@ -32,7 +32,7 @@ import { CoreComments } from '@features/comments/services/comments';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUrl } from '@static/url';
 import { CorePromiseUtils } from '@static/promise-utils';

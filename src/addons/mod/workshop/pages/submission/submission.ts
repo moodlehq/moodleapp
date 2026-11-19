@@ -60,7 +60,7 @@ import { CoreEditorRichTextEditorComponent } from '@features/editor/components/r
 import { AddonModWorkshopAssessmentComponent } from '../../components/assessment/assessment';
 import { AddonModWorkshopSubmissionComponent } from '../../components/submission/submission';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreErrorHelper } from '@services/error-helper';
 
 /**

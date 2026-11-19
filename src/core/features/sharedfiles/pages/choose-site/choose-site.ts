@@ -16,7 +16,7 @@ import { Component, OnInit } from '@angular/core';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSharedFilesHelper } from '@features/sharedfiles/services/sharedfiles-helper';
 import { FileEntry } from '@classes/native/filesystem';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSiteBasicInfo } from '@services/sites';
 import { CoreFileUtils } from '@static/file-utils';

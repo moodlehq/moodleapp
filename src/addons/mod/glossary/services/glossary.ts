@@ -20,7 +20,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreObject } from '@static/object';
 import { CoreWSExternalFile, CoreWSExternalWarning } from '@services/ws';

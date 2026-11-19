@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreText, CoreTextFormat } from '@static/text';
 import { CoreTime } from '@static/time';
 import { CoreUrl } from '@static/url';

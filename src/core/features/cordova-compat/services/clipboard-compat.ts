@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreClipboard, CoreClipboardService } from '@services/clipboard';
+import { CoreClipboard, CoreClipboardService } from '@services/native/clipboard';
 
 /**
  * Service wrapping the Native Clipboard plugin.

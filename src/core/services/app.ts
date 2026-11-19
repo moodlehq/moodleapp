@@ -27,7 +27,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSSO } from '@static/sso';
 import { CoreRedirectData, CoreRedirects } from '@static/redirects';
 import { MAIN_MENU_VISIBILITY_UPDATED_EVENT } from '@features/mainmenu/constants';
-import { CoreNativeStatusBar } from '@services/native/status-bar';
+import { CoreStatusBar } from '@services/native/status-bar';
 
 /**
  * Factory to provide some global functionalities.
@@ -262,7 +262,7 @@ export class CoreAppProvider {
         this.logger.debug(`Set status bar color ${color}`);
 
         try {
-            await CoreNativeStatusBar.setStatusBarColor(color);
+            await CoreStatusBar.setStatusBarColor(color);
         } catch {
             // Ignore errors.
         }
@@ -286,7 +286,7 @@ export class CoreAppProvider {
         this.logger.debug(`Set navigation bar color ${color}`);
 
         try {
-            await CoreNativeStatusBar.setNavigationBarColor(color);
+            await CoreStatusBar.setNavigationBarColor(color);
         } catch {
             // Ignore errors.
         }

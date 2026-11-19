@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { StatusBar } from '../status-bar';
+import { CoreStatusBarService } from '@services/native/status-bar';
 import { SystemBarsStyle } from '@capacitor/core';
 
 describe('StatusBar', () => {
 
-    let statusBar: StatusBar;
+    let statusBar: CoreStatusBarService;
 
     beforeEach(() => {
-        statusBar = new StatusBar();
+        statusBar = new CoreStatusBarService();
     });
 
     it.each([

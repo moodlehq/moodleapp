@@ -20,7 +20,7 @@ import { CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreXAPIOffline } from '@features/xapi/services/offline';
 import { CoreXAPI, XAPI_STATE_DELETED } from '@features/xapi/services/xapi';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreEvents } from '@static/events';

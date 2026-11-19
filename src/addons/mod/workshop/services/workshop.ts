@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions, CoreCourseCommonModWSOptionsWithFilter } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreGradesMenuItem } from '@features/grades/services/grades-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreTextFormat, DEFAULT_TEXT_FORMAT } from '@static/text';
 import { CoreArray } from '@static/array';

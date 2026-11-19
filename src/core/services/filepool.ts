@@ -15,9 +15,9 @@
 import { Injectable } from '@angular/core';
 import { Md5 } from 'ts-md5';
 import { CoreAppDB } from '@services/app-db';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreEventPackageStatusChanged, CoreEvents } from '@static/events';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CorePluginFileDelegate } from '@services/plugin-file-delegate';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSExternalFile, CoreWSFile } from '@services/ws';
@@ -59,7 +59,7 @@ import { CorePromisedValue } from '@classes/promised-value';
 import { CoreAnalytics, CoreAnalyticsEventType } from './analytics';
 import { convertTextToHTMLElement } from '../utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/native/opener';
 import { CoreErrorHelper } from '@services/error-helper';
 import { FilesystemErrorCode } from '@services/native/filesystem';
 

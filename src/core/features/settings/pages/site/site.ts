@@ -22,7 +22,7 @@ import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreListItemsManager } from '@classes/items-management/list-items-manager';
 import { CoreRoutedItemsManagerSourcesTracker } from '@classes/items-management/routed-items-manager-sources-tracker';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { Translate } from '@singletons';
 import { CoreConfigSettingKey } from '@/core/constants';
 import { CoreConfig } from '@services/config';

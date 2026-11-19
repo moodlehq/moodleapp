@@ -18,7 +18,7 @@ import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/act
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreGroups } from '@services/groups';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';

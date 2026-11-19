@@ -17,7 +17,7 @@ import { signal } from '@angular/core';
 import { CoreIframeComponent } from '@components/iframe/iframe';
 
 import { mockSingleton, renderTemplate } from '@/testing/utils';
-import { CoreScreen, CoreScreenOrientation } from '@services/screen';
+import { CoreScreen, CoreScreenOrientation } from '@services/native/screen';
 
 describe('CoreIframeComponent', () => {
 

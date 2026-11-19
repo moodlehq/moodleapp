@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreToasts } from './overlays/toasts';
+import { CoreToasts } from '@services/overlays/toasts';
 import { Clipboard } from '@capacitor/clipboard';
 
 /**

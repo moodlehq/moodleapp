@@ -31,7 +31,7 @@ import { CoreLogger } from '@static/logger';
 import { CoreUrl, CoreUrlParams } from '@static/url';
 import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
-import { CoreAppBadge } from '@services/app-badge';
+import { CoreAppBadge } from '@services/native/app-badge';
 import { CorePath } from '@static/path';
 import { CorePromisedValue } from '@classes/promised-value';
 import { SafeHtml } from '@angular/platform-browser';
@@ -56,11 +56,11 @@ import {
 } from '../constants';
 import { LazyDefaultStandaloneComponent } from '@/app/app-routing.module';
 import { CoreSiteError } from '@classes/errors/siteerror';
-import { CoreQRScan } from '@services/qrscan';
+import { CoreQRScan } from '@services/native/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreInAppBrowserInstance, CoreOpener } from '@services/opener';
+import { CoreInAppBrowserInstance, CoreOpener } from '@services/native/opener';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CorePrompts } from '@services/overlays/prompts';
 import {

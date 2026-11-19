@@ -17,7 +17,7 @@ import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';

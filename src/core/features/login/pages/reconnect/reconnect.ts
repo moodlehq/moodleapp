@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, inject, viewChild, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreLoginHelper } from '@features/login/services/login-helper';

@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 
 import { CoreSites } from '@services/sites';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreCourseOffline } from './course-offline';

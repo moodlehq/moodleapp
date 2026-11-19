@@ -19,7 +19,7 @@ import { CoreUtils } from '@static/utils';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreUrl } from '@static/url';
 import { CoreSiteInfo } from '@classes/sites/unauthenticated-site';
 import { toBoolean } from '@/core/transforms/boolean';

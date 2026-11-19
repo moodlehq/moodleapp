@@ -14,7 +14,7 @@
 
 import { DownloadStatus } from '@/core/constants';
 import { OnInit, OnDestroy, Input, Output, EventEmitter, Component, inject } from '@angular/core';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';
 import { Translate } from '@singletons';

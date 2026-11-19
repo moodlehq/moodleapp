@@ -19,7 +19,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreRatingSync } from '@features/rating/services/rating-sync';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';

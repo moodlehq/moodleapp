@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreEvents } from '@static/events';
 import { CoreLogger } from '@static/logger';
 import { CoreSitesCommonWSOptions, CoreSites, CoreSitesReadingStrategy, CoreSitesWSOptionsWithFilter } from '@services/sites';

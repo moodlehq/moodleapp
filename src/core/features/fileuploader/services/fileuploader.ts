@@ -18,7 +18,7 @@ import { FileEntry } from '@classes/native/filesystem';
 import { MediaFile } from '@features/cordova-compat/services/media-capture-compat';
 import { Subject } from 'rxjs';
 
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/native/file';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';

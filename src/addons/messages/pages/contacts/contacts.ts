@@ -20,7 +20,7 @@ import {
     AddonMessagesConversationMember,
 } from '../../services/messages';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { ADDON_MESSAGES_CONTACT_REQUESTS_COUNT_EVENT, ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT } from '@addons/messages/constants';
 import { CoreAlerts } from '@services/overlays/alerts';

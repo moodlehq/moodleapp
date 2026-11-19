@@ -20,7 +20,7 @@ import { CORE_SITE_SCHEMAS } from '@services/sites';
 import { CoreCourseContentsRoutingModule } from '@features/course/course-contents-routing.module';
 import { CoreCourseModuleDelegate } from '@features/course/services/module-delegate';
 import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 
 import { AddonModForumModuleHandler } from './services/handlers/module';
 import { SITE_SCHEMA } from './services/database/offline';

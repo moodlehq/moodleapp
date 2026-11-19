@@ -24,7 +24,7 @@ import {
     CoreCaptureMediaTakePhotoOptions,
     CoreMediaFile,
 } from '@services/native/capture-media';
-import { CoreFileFormat } from '@services/file';
+import { CoreFileFormat } from '@services/native/file';
 
 /* eslint-disable @typescript-eslint/no-deprecated */
 
@@ -117,7 +117,7 @@ export class Camera {
         }
 
         if (!path.startsWith('blob:')) {
-            const { CoreFile } = await import('@services/file');
+            const { CoreFile } = await import('@services/native/file');
 
             return CoreFile.readFile(path, CoreFileFormat.FORMATDATAURL);
         }

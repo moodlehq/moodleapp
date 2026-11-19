@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { FileOpenerOptions, FileOpenerPlugin } from '@capacitor-community/file-opener';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 
 /**
  * Emulates the Capacitor File Opener in browser.

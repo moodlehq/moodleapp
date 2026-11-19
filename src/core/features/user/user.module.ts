@@ -31,7 +31,7 @@ import { CoreCourseOptionsDelegate } from '@features/course/services/course-opti
 import { CoreUserCourseOptionHandler } from './services/handlers/course-option';
 import { CoreUserHelper } from './services/user-helper';
 import { AppRoutingModule, conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreEvents } from '@static/events';
 import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH, CoreCourseForceLanguageSource } from '@features/course/constants';
 import { PARTICIPANTS_PAGE_NAME } from './constants';

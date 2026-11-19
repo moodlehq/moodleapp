@@ -39,7 +39,7 @@ import {
     CORE_USER_PROFILE_SERVER_TIMEZONE,
 } from '@features/user/constants';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 
 /**
  * Page that displays info about a user.

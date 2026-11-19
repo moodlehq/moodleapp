@@ -28,8 +28,8 @@ import { Observable, firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
 import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
-import { CoreNetwork } from '@services/network';
-import { CoreFile, CoreFileFormat } from '@services/file';
+import { CoreNetwork } from '@services/native/network';
+import { CoreFile, CoreFileFormat } from '@services/native/file';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
 import { MINIMUM_MOODLE_VERSION } from '@/core/constants';

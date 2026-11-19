@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreFileUploader } from '@features/fileuploader/services/fileuploader';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';

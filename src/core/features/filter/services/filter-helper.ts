@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreFilterDelegate } from './filter-delegate';
 import {

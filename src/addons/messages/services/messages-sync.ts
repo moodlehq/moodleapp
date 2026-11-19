@@ -25,7 +25,7 @@ import { CoreEvents } from '@static/events';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreSites } from '@services/sites';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreUser } from '@features/user/services/user';
 import { CoreError } from '@classes/errors/error';
 import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';

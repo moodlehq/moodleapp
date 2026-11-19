@@ -20,7 +20,7 @@ import { CoreCourseResourceDownloadResult } from '@features/course/classes/main-
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CorePromiseUtils } from '@static/promise-utils';

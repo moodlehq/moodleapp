@@ -28,29 +28,29 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     const { CoreAppProvider } = await import('@services/app');
     const { CoreAppDBService } = await import('@services/app-db');
-    const { CoreClipboardService } = await import('@services/clipboard');
+    const { CoreClipboardService } = await import('@services/native/clipboard');
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
-    const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
+    const { CoreCustomURLSchemesProvider } = await import('@services/native/urlschemes');
     const { CoreDbProvider } = await import('@services/db');
     const { CoreErrorHelperService } = await import('@services/error-helper');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
     const { CoreFilepoolProvider } = await import('@services/filepool');
-    const { CoreFileProvider } = await import('@services/file');
+    const { CoreFileProvider } = await import('@services/native/file');
     const { CoreFileSessionProvider } = await import('@services/file-session');
     const { CoreGroupsProvider } = await import('@services/groups');
     const { CoreLangProvider } = await import('@services/lang');
     const { CoreLocalNotificationsProvider } = await import('@services/local-notifications');
     const { CoreNavigatorService } = await import('@services/navigator');
-    const { CoreOpenerService } = await import('@services/opener');
+    const { CoreOpenerService } = await import('@services/native/opener');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
-    const { CoreScreenService } = await import('@services/screen');
+    const { CoreScreenService } = await import('@services/native/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
     const { CoreUpdateManagerProvider } = await import('@services/update-manager');
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
-    const { CoreQRScanService } = await import('@services/qrscan');
+    const { CoreQRScanService } = await import('@services/native/qrscan');
 
     const { CoreAlertsService } = await import('@services/overlays/alerts');
     const { CoreLoadingsService } = await import('@services/overlays/loadings');

@@ -19,7 +19,7 @@ import { CoreFileUploader, CoreFileUploaderTypeList } from '@features/fileupload
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { Translate } from '@singletons';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreFileEntry } from '@services/file-helper';
 import { CoreCourses } from '@features/courses/services/courses';

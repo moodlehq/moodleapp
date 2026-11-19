@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 
 /**
  * Initializes the application by watching the viewport and orientation changes.

@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreApp } from '@services/app';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreCronDelegate } from '@services/cron';
 import { CoreEvents } from '@static/events';
 import { CoreFilepool } from '@services/filepool';

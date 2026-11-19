@@ -39,7 +39,7 @@ import { AddonModAssignOffline } from '../../services/assign-offline';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreTime } from '@static/time';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFileUploaderHelper } from '@features/fileuploader/services/fileuploader-helper';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionPluginComponent } from '../submission-plugin/submission-plugin';

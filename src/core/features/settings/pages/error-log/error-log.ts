@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, OnInit } from '@angular/core';
-import { CoreClipboard } from '@services/clipboard';
+import { CoreClipboard } from '@services/native/clipboard';
 import { CoreErrorLogs, CoreSettingsErrorLog } from '@static/error-logs';
 import { CoreSharedModule } from '@/core/shared.module';
 

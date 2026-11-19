@@ -37,7 +37,7 @@ import { AddonModFeedbackSyncCronHandler } from './services/handlers/sync-cron';
 import { ADDON_MOD_FEEDBACK_COMPONENT_LEGACY, ADDON_MOD_FEEDBACK_PAGE_NAME } from './constants';
 import { conditionalRoutes } from '@/app/app-routing.module';
 import { canLeaveGuard } from '@guards/can-leave';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreCourseForceLanguageSource } from '@features/course/constants';
 
 const commonRoutes: Routes = [

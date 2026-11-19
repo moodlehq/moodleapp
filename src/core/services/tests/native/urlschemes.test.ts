@@ -15,7 +15,7 @@
 import type * as CapacitorApp from '@capacitor/app';
 import { CoreConstants } from '@/core/constants';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreCustomURLSchemesProvider } from '@services/native/urlschemes';
 import { CoreEvents } from '@static/events';
 
 describe('CoreCustomURLSchemes launch URL', () => {

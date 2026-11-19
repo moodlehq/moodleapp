@@ -36,7 +36,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCommentsOffline } from '@features/comments/services/comments-offline';
 import { CoreCommentsDBRecord } from '@features/comments/services/database/comments';
 import { CoreTime } from '@static/time';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { dayjs } from '@/core/utils/dayjs';
 import { CoreToasts, ToastDuration } from '@services/overlays/toasts';
 import { CoreLoadings } from '@services/overlays/loadings';

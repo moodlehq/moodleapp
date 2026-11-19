@@ -24,8 +24,8 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
 import { Translate, FileOpener, NgZone, makeSingleton } from '@singletons';
-import { CoreConstants, CoreConfigSettingKey } from '../constants';
-import { CoreFile } from '@services/file';
+import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
+import { CoreFile } from '@services/native/file';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUrl } from '@static/url';
 import { CoreLogger } from '@static/logger';
@@ -39,7 +39,7 @@ import { FileOpenerOptions } from '@capacitor-community/file-opener';
 import { CoreIntentLauncher } from '@services/native/intent-launcher';
 import { CorePromisedValue } from '@classes/promised-value';
 import { PluginListenerHandle } from '@capacitor/core';
-import { CoreCustomURLSchemes } from './urlschemes';
+import { CoreCustomURLSchemes } from '@services/native/urlschemes';
 import { CoreWait } from '@static/wait';
 
 /**

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@classes/native/filesystem';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { AddonModGlossaryOffline } from './glossary-offline';
 import { makeSingleton } from '@singletons';

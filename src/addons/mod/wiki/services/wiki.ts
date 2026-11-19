@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreTagItem } from '@features/tag/services/tag';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';

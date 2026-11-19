@@ -34,7 +34,7 @@ import { CorePushNotificationsNotificationBasicData } from '@features/pushnotifi
 import { ActivatedRoute, Params } from '@angular/router';
 import { CoreUtils } from '@static/utils';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CorePlatform } from '@services/platform';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import {

@@ -93,7 +93,7 @@ import { CoreForms } from '@static/form';
 import { CoreIframe } from '@static/iframe';
 import { CoreMedia } from '@static/media';
 import { CoreMimetype } from '@static/mimetype';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreObject } from '@static/object';
 import { CorePath } from '@static/path';
 import { CorePromiseUtils } from '@static/promise-utils';

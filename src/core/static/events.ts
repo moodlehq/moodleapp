@@ -19,7 +19,7 @@ import { CoreSite } from '@classes/sites/site';
 import { CoreFilepoolComponentFileEventData } from '@services/filepool';
 import { CoreRedirectPayload } from '@services/navigator';
 import { CoreCourseModuleCompletionData } from '@features/course/services/course-helper';
-import { CoreScreenOrientation } from '@services/screen';
+import { CoreScreenOrientation } from '@services/native/screen';
 import { CoreSiteInfoResponse, CoreSitePublicConfigResponse } from '@classes/sites/unauthenticated-site';
 import { DownloadStatus } from '../constants';
 import { COURSE_STATUS_CHANGED_EVENT } from '@features/course/constants';

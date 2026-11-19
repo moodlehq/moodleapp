@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, viewChild } from '@angular/core';
 import { CoreSendMessageFormComponent } from '@components/send-message-form/send-message-form';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';

@@ -57,7 +57,7 @@ import {
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreClipboard } from '@services/clipboard';
+import { CoreClipboard } from '@services/native/clipboard';
 
 /**
  * Page that displays a message discussion page.
