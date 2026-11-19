@@ -22,7 +22,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreErrorHelper } from '@services/error-helper';
-import { FilesystemErrorCode } from '@services/native/filesystem';
+import { FilesystemErrorCode } from '@/core/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreWSFile } from '@services/ws';
 import { makeSingleton } from '@singletons';

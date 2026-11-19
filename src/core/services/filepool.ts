@@ -28,7 +28,7 @@ import { CoreTime } from '@static/time';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreArray } from '@static/array';
 import { CoreError } from '@classes/errors/error';
-import { CoreBytesConstants, DownloadStatus } from '@/core/constants';
+import { CoreBytesConstants, DownloadStatus, FilesystemErrorCode } from '@/core/constants';
 import { ApplicationInit, makeSingleton, NgZone, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import {
@@ -61,7 +61,6 @@ import { convertTextToHTMLElement } from '../utils/create-html-element';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreOpener, CoreOpenerOpenFileOptions } from '@services/native/opener';
 import { CoreErrorHelper } from '@services/error-helper';
-import { FilesystemErrorCode } from '@services/native/filesystem';
 
 /**
  * Filepool queue management.

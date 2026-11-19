@@ -24,7 +24,7 @@ import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
 import { Translate, FileOpener, NgZone, makeSingleton } from '@singletons';
-import { CoreConstants, CoreConfigSettingKey } from '@/core/constants';
+import { CoreConstants, CoreConfigSettingKey, FileOpenerErrorCode } from '@/core/constants';
 import { CoreFile } from '@services/native/file';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreUrl } from '@static/url';
@@ -33,7 +33,6 @@ import { CoreConfig } from '@services/config';
 import { CoreEvents } from '@static/events';
 import { CoreColors } from '@static/colors';
 import { CorePrompts } from '@services/overlays/prompts';
-import { CoreNativeCapacitorFileOpenerErrorCode } from '@features/native/constants';
 import { CoreViewer } from '@features/viewer/services/viewer';
 import { FileOpenerOptions } from '@capacitor-community/file-opener';
 import { CoreIntentLauncher } from '@services/native/intent-launcher';
@@ -146,7 +145,7 @@ export class CoreOpenerService {
             } catch (error) {
                 if (
                     hasFailed ||
-                    error.code !== CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_FOUND
+                    error.code !== FileOpenerErrorCode.FILE_NOT_FOUND
                 ) {
                     throw error;
                 }
@@ -166,7 +165,7 @@ export class CoreOpenerService {
             try {
                 await openFile(path, mimetype);
             } catch (error) {
-                if (!extension || !error || error.code !== CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_SUPPORTED) {
+                if (!extension || !error || error.code !== FileOpenerErrorCode.FILE_NOT_SUPPORTED) {
                     throw error;
                 }
 
@@ -187,7 +186,7 @@ export class CoreOpenerService {
                 throw new Error(Translate.instant('core.erroropenfilenoextension'));
             }
 
-            if (error.code === CoreNativeCapacitorFileOpenerErrorCode.FILE_NOT_SUPPORTED) {
+            if (error.code === FileOpenerErrorCode.FILE_NOT_SUPPORTED) {
                 throw new Error(Translate.instant('core.erroropenfilenoapp'));
             }
             throw new Error(error.message);

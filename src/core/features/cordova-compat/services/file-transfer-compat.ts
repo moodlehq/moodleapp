@@ -18,7 +18,7 @@ import type { PluginListenerHandle } from '@capacitor/core';
 import type { DownloadFileOptions, ProgressStatus, UploadFileOptions } from '@capacitor/file-transfer';
 import { FileEntry } from '@classes/native/filesystem';
 import { CoreErrorHelper } from '@services/error-helper';
-import { FileTransferErrorCode } from '@services/native/file-transfer';
+import { FileTransferErrorCode } from '@/core/constants';
 import { FileTransfer } from '@singletons';
 
 /**

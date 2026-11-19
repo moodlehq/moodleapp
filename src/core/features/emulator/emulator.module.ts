@@ -15,8 +15,18 @@
 import { NgModule, provideAppInitializer } from '@angular/core';
 
 // Ionic Native services.
-import { CAPACITOR_CAMERA, resolveCapacitorCamera } from '@services/native/camera';
-import { CAPACITOR_FILE_OPENER, resolveCapacitorFileOpener } from '@services/native/file-opener';
+import {
+    CAPACITOR_CAMERA,
+    CAPACITOR_FILESYSTEM,
+    CAPACITOR_FILE_OPENER,
+    CAPACITOR_FILE_TRANSFER,
+    CAPACITOR_ZIP,
+    resolveCapacitorCamera,
+    resolveCapacitorFilesystem,
+    resolveCapacitorFileOpener,
+    resolveCapacitorFileTransfer,
+    resolveCapacitorZip,
+} from '@services/native/injection-tokens';
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 
 // Mock services.
@@ -31,10 +41,7 @@ import { CoreNative } from '@features/native/services/native';
 import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 import { CoreDbProvider } from '@services/db';
 import { CoreDbProviderMock } from '@features/emulator/services/db';
-import { CAPACITOR_FILESYSTEM, resolveCapacitorFilesystem } from '@services/native/filesystem';
-import { CAPACITOR_FILE_TRANSFER, resolveCapacitorFileTransfer } from '@services/native/file-transfer';
 import { FileTransferMock } from './services/file-transfer';
-import { CAPACITOR_ZIP, resolveCapacitorZip } from '@services/native/zip';
 
 /**
  * This module handles the emulation of Capacitor plugins in browser and desktop.

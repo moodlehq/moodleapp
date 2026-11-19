@@ -169,6 +169,50 @@ export const enum CoreSyncIcon {
     SYNC = 'fas-rotate',
 };
 
+// @todo Capacitor MOBILE-5183: Decide where to put these enums.
+/**
+ * Capacitor FileTransfer error codes.
+ */
+export const enum FileTransferErrorCode {
+    INVALID_PARAMETERS = 'OS-PLUG-FLTR-0004',
+    INVALID_URL = 'OS-PLUG-FLTR-0005',
+    PERMISSION_DENIED = 'OS-PLUG-FLTR-0006',
+    FILE_NOT_FOUND = 'OS-PLUG-FLTR-0007',
+    CONNECTION_FAILED = 'OS-PLUG-FLTR-0008',
+    NOT_MODIFIED = 'OS-PLUG-FLTR-0009',
+    HTTP_ERROR = 'OS-PLUG-FLTR-0010',
+    UNKNOWN_ERROR = 'OS-PLUG-FLTR-0011',
+}
+
+/**
+ * Capacitor Filesystem error codes.
+ */
+export const enum FilesystemErrorCode {
+    BRIDGE_NOT_INITIALIZED = 'OS-PLUG-FILE-0004',
+    INVALID_PARAMETERS = 'OS-PLUG-FILE-0005',
+    INVALID_PATH = 'OS-PLUG-FILE-0006',
+    PERMISSION_DENIED = 'OS-PLUG-FILE-0007',
+    FILE_NOT_FOUND = 'OS-PLUG-FILE-0008',
+    OPERATION_NOT_SUPPORTED = 'OS-PLUG-FILE-0009',
+    DIRECTORY_ALREADY_EXISTS = 'OS-PLUG-FILE-0010',
+    MISSING_PARENT_DIRECTORY = 'OS-PLUG-FILE-0011',
+    DIRECTORY_NOT_EMPTY = 'OS-PLUG-FILE-0012',
+    UNKNOWN_ERROR = 'OS-PLUG-FILE-0013',
+}
+
+/**
+ * List of Error Codes and Meanings for FileOpener
+ *
+ * When an error is thrown, one of the following codes (as a string value) will be used.
+ */
+export const enum FileOpenerErrorCode {
+    INTERNAL_ERROR = '1',
+    INVALID_ARGUMENT = '2',
+    FILE_NOT_SUPPORTED = '8',
+    FILE_NOT_FOUND = '9',
+    UNKNOWN = '10',
+}
+
 export enum CoreLinkOpenMethod {
     APP = 'app',
     INAPPBROWSER = 'inappbrowser',

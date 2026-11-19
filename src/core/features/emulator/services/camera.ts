@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { MediaType, type CameraPlugin, type MediaResult } from '@capacitor/camera';
-import { resolveCapacitorCamera } from '@services/native/camera';
+import { resolveCapacitorCamera } from '@services/native/injection-tokens';
 import { CoreEmulatorCaptureHelper } from './capture-helper';
 import {
     CoreCaptureMediaTakePhotoOptions,

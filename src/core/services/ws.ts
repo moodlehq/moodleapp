@@ -32,7 +32,7 @@ import { CoreNetwork } from '@services/native/network';
 import { CoreFile, CoreFileFormat } from '@services/native/file';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
-import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
+import { FileTransferErrorCode, MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
 import { makeSingleton, Translate, Http, FileTransfer } from '@singletons';
@@ -54,7 +54,6 @@ import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
 import { CoreFileUtils } from '@static/file-utils';
 import { type FileTransferError, type UploadFileResult } from '@capacitor/file-transfer';
-import { FileTransferErrorCode } from '@services/native/file-transfer';
 
 /**
  * This service allows performing WS calls and download/upload files.
