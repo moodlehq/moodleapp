@@ -14,7 +14,9 @@
 
 import { registerPlugin } from '@capacitor/core';
 
-const BrowserLauncherPlugin = registerPlugin<BrowserLauncherNativePlugin>('MoodleAppBrowserLauncher');
+export const BROWSER_LAUNCHER_PLUGIN_NAME = 'MoodleAppBrowserLauncher';
+
+const BrowserLauncherPlugin = registerPlugin<BrowserLauncherNativePlugin>(BROWSER_LAUNCHER_PLUGIN_NAME);
 
 /**
  * Opens URLs in the system default browser.

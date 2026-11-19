@@ -22,6 +22,8 @@ import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
  * Get native services.
  *
  * @returns Returns native services.
+ * @todo Capacitor: once all migrations are done, this feature will be very thin. Study moving the CoreNative
+ * service somewhere else and rename it to avoid confusing it with services/native.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
     return [

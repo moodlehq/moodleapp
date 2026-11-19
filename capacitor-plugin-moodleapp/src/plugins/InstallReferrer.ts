@@ -14,7 +14,9 @@
 
 import { registerPlugin } from '@capacitor/core';
 
-const NativeInstallReferrer = registerPlugin<InstallReferrerNativePlugin>('MoodleAppInstallReferrer');
+export const INSTALL_REFERRER_PLUGIN_NAME = 'MoodleAppInstallReferrer';
+
+const NativeInstallReferrer = registerPlugin<InstallReferrerNativePlugin>(INSTALL_REFERRER_PLUGIN_NAME);
 
 /**
  * Allows retrieving install referrer data.

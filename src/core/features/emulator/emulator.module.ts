@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { NgModule, provideAppInitializer } from '@angular/core';
+import { NgModule } from '@angular/core';
 
 // Ionic Native services.
 import {
@@ -37,8 +37,6 @@ import { LocalNotificationsMock } from './services/local-notifications';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreNative } from '@features/native/services/native';
-import { SecureStorageMock } from '@features/emulator/classes/SecureStorage';
 import { CoreDbProvider } from '@services/db';
 import { CoreDbProviderMock } from '@features/emulator/services/db';
 import { FileTransferMock } from './services/file-transfer';
@@ -84,13 +82,6 @@ import { FileTransferMock } from './services/file-transfer';
             provide: CoreDbProvider,
             useFactory: (): CoreDbProvider => CorePlatform.isMobile() ? new CoreDbProvider() : new CoreDbProviderMock(),
         },
-        provideAppInitializer(async () => {
-            if (CorePlatform.isMobile()) {
-                return;
-            }
-
-            CoreNative.registerBrowserMock('secureStorage', new SecureStorageMock());
-        }),
     ],
 })
 export class CoreEmulatorModule {}
