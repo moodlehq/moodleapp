@@ -50,9 +50,13 @@ function createAsyncInstanceWrapper<
                 promisedInstance = new CorePromisedValue();
 
                 if (lazyConstructor) {
-                    const instance = await lazyConstructor();
+                    try {
+                        const instance = await lazyConstructor();
 
-                    promisedInstance.resolve(instance);
+                        promisedInstance.resolve(instance);
+                    } catch (error) {
+                        promisedInstance.reject(error);
+                    }
                 }
             }
 

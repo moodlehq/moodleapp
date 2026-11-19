@@ -19,13 +19,16 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreStorage } from '@services/storage';
+import { CoreDB } from '@services/db';
 
 /**
  * Init databases instances.
  */
 export default async function(): Promise<void> {
+    await CoreDB.ready();
+    await CoreAppDB.initializeDatabase();
+
     await Promise.all([
-        CoreAppDB.initializeDatabase(),
         CoreConfig.initializeDatabase(),
         CoreCronDelegate.initializeDatabase(),
         CoreFilepool.initializeDatabase(),
