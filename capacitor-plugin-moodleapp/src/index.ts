@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import { BrowserLauncher } from './plugins/BrowserLauncher';
 import { DiskSpace } from './plugins/DiskSpace';
 import { InstallReferrer } from './plugins/InstallReferrer';
 import { PreventOverride } from './plugins/PreventOverride';
@@ -22,6 +23,7 @@ export type { SecureStorage } from './plugins/SecureStorage';
 
 // Wrapped in plain classes because Capacitor proxies are thenables and break when resolved from a promise.
 export const MoodleAppCapacitorPlugins = {
+    browserLauncher: new BrowserLauncher(),
     diskSpace: new DiskSpace(),
     installReferrer: new InstallReferrer(),
     preventOverride: new PreventOverride(),

@@ -7,7 +7,6 @@
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
     "types": [
-      "@moodlehq/cordova-plugin-inappbrowser",
       "cordova",
       "dom-mediacapture-record",
       "jest",

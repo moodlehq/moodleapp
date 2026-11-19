@@ -7,12 +7,18 @@ let package = Package(
     products: [
         .library(
             name: "CapacitorPluginMoodleapp",
-            targets: ["DiskSpacePlugin", "PreventOverridePlugin", "SecureStoragePlugin"])
+            targets: ["BrowserLauncherPlugin", "DiskSpacePlugin", "PreventOverridePlugin", "SecureStoragePlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0")
     ],
     targets: [
+        .target(
+            name: "BrowserLauncherPlugin",
+            dependencies: [
+                .product(name: "Capacitor", package: "capacitor-swift-pm")
+            ],
+            path: "ios/Sources/BrowserLauncherPlugin"),
         .target(
             name: "DiskSpacePlugin",
             dependencies: [

@@ -21,7 +21,6 @@
       "dom"
     ],
     "types": [
-      "@moodlehq/cordova-plugin-inappbrowser",
       "cordova",
       "dom-mediacapture-record",
       "jest",
