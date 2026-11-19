@@ -14,6 +14,7 @@ let package = Package(
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.5.2"),
         .package(name: "CapacitorCommunityFileOpener", path: "../../../node_modules/@capacitor-community/file-opener"),
         .package(name: "CapacitorApp", path: "../../../node_modules/@capacitor/app"),
+        .package(name: "CapacitorBarcodeScanner", path: "../../../node_modules/@capacitor/barcode-scanner"),
         .package(name: "CapacitorCamera", path: "../../../node_modules/@capacitor/camera"),
         .package(name: "CapacitorClipboard", path: "../../../node_modules/@capacitor/clipboard"),
         .package(name: "CapacitorDevice", path: "../../../node_modules/@capacitor/device"),
@@ -29,7 +30,6 @@ let package = Package(
         .package(name: "CapgoCapacitorIntentLauncher", path: "../../../node_modules/@capgo/capacitor-intent-launcher"),
         .package(name: "CapgoCapacitorZip", path: "../../../node_modules/@capgo/capacitor-zip"),
         .package(name: "CapacitorPluginMoodleapp", path: "../../../capacitor-plugin-moodleapp"),
-        .package(name: "MoodlehqCordovaPluginQrscanner", path: "../../capacitor-cordova-ios-plugins/sources/MoodlehqCordovaPluginQrscanner"),
         .package(name: "CordovaPluginDevice", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginDevice"),
         .package(name: "CordovaPluginLocalNotification", path: "../../capacitor-cordova-ios-plugins/sources/CordovaPluginLocalNotification"),
         .package(name: "CordovaSqliteStorage", path: "../../capacitor-cordova-ios-plugins/sources/CordovaSqliteStorage")
@@ -42,6 +42,7 @@ let package = Package(
                 .product(name: "Cordova", package: "capacitor-swift-pm"),
                 .product(name: "CapacitorCommunityFileOpener", package: "CapacitorCommunityFileOpener"),
                 .product(name: "CapacitorApp", package: "CapacitorApp"),
+                .product(name: "CapacitorBarcodeScanner", package: "CapacitorBarcodeScanner"),
                 .product(name: "CapacitorCamera", package: "CapacitorCamera"),
                 .product(name: "CapacitorClipboard", package: "CapacitorClipboard"),
                 .product(name: "CapacitorDevice", package: "CapacitorDevice"),
@@ -57,7 +58,6 @@ let package = Package(
                 .product(name: "CapgoCapacitorIntentLauncher", package: "CapgoCapacitorIntentLauncher"),
                 .product(name: "CapgoCapacitorZip", package: "CapgoCapacitorZip"),
                 .product(name: "CapacitorPluginMoodleapp", package: "CapacitorPluginMoodleapp"),
-                .product(name: "MoodlehqCordovaPluginQrscanner", package: "MoodlehqCordovaPluginQrscanner"),
                 .product(name: "CordovaPluginDevice", package: "CordovaPluginDevice"),
                 .product(name: "CordovaPluginLocalNotification", package: "CordovaPluginLocalNotification"),
                 .product(name: "CordovaSqliteStorage", package: "CordovaSqliteStorage")

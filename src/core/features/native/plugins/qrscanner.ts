@@ -11,220 +11,219 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 import { Injectable } from '@angular/core';
+import { CoreQRScan } from '@services/qrscan';
 import { Observable } from 'rxjs';
-import { QRScannerError, QRScannerStatus } from '@moodlehq/cordova-plugin-qrscanner';
 
 /**
- * QR Scanner plugin wrapper
+ * QR Scanner plugin wrapper.
+ *
+ * @deprecated since 6.0. Use CoreQRScan service instead.
  */
 @Injectable({ providedIn: 'root' })
 export class QRScanner {
 
+    protected buildStatus: BarcodeScannerStatus = {
+        authorized: true, // Assume authorized until proven otherwise (permissions checked at scan time)
+        denied: false,
+        restricted: false,
+        prepared: true,
+        scanning: false,
+        previewing: false,
+        showing: false,
+        lightEnabled: false,
+        canOpenSettings: false,
+        canEnableLight: false, // Not supported by this plugin
+        canChangeCamera: false, // User controls camera in native modal
+        currentCamera: 0,
+    };
+
     /**
-     * Destroy the scanner instance.
+     * Prepare the scanner (permissions are handled automatically).
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    destroy(): Promise<QRScannerStatus> {
-        return new Promise((resolve) => window.QRScanner.destroy(resolve));
+    async prepare(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Request permission to use QR scanner.
+     * Destroy/cleanup the scanner instance.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    prepare(): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.prepare((error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
-            });
-        });
+    async destroy(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Configures the native webview to have a transparent background, then sets the background of the <body> and <html> DOM
-     * elements to transparent, allowing the webview to re-render with the transparent background.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    show(): Promise<QRScannerStatus> {
-        return new Promise(resolve => window.QRScanner.show((status) => resolve(status)));
+    async show(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
+    }
+
+    /**
+     * This method is a no-op.
+     *
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
+     */
+    async hide(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
      * Call this method to enable scanning. You must then call the `show` method to make the camera preview visible.
      *
      * @returns Observable that emits the scanned text. Unsubscribe from the observable to stop scanning.
+     * @deprecated since 6.0. Use CoreQRScan.scanQR().
      */
     scan(): Observable<string> {
-        return new Observable(observer => {
-            window.QRScanner.scan((error: QRScannerError, text: string) => {
-                if (error) {
-                    observer.error(error);
-                } else {
-                    observer.next(text);
-                }
-            });
+        return new Observable<string>((observer) => {
+            CoreQRScan.scanQR().then((result) => {
+                observer.next(result);
+                observer.complete();
 
-            return () => {
-                window.QRScanner.cancelScan();
-            };
-        });
-    }
-
-    /**
-     * Configures the native webview to be opaque with a white background, covering the video preview.
-     *
-     * @returns QR scanner status.
-     */
-    hide(): Promise<QRScannerStatus> {
-        return new Promise((resolve) => window.QRScanner.hide(resolve));
-    }
-
-    /**
-     * Enable the device's light (for scanning in low-light environments).
-     *
-     * @returns QR scanner status.
-     */
-    enableLight(): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.enableLight((error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
+                return;
+            }).catch((error) => {
+                observer.error(error);
             });
         });
     }
 
     /**
-     * Disable the device's light.
+     * User dismisses modal to cancel scan.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    disableLight(): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.disableLight((error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
-            });
-        });
+    async cancelScan(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Use front camera.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    useFrontCamera(): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.useFrontCamera((error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
-            });
-        });
+    async enableLight(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Use back camera.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    useBackCamera(): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.useBackCamera((error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
-            });
-        });
+    async disableLight(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Disable the device's light.
+     * This method is a no-op.
      *
-     * @param camera Provide `0` for back camera, and `1` for front camera.
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    useCamera(camera: QRScannerCamera): Promise<QRScannerStatus> {
-        return new Promise((resolve, reject) => {
-            window.QRScanner.useCamera(camera, (error: QRScannerError, status: QRScannerStatus) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(status);
-                }
-            });
-        });
+    async useCamera(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Pauses the video preview on the current frame and pauses scanning.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    pausePreview(): Promise<QRScannerStatus> {
-        return new Promise((resolve) => window.QRScanner.pausePreview(resolve));
+    async useFrontCamera(): Promise<BarcodeScannerStatus> {
+
+        return this.buildStatus;
     }
 
     /**
-     * Resume the video preview and resumes scanning.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    resumePreview(): Promise<QRScannerStatus> {
-        return new Promise((resolve) => window.QRScanner.resumePreview(resolve));
+    async useBackCamera(): Promise<BarcodeScannerStatus> {
+
+        return this.buildStatus;
     }
 
     /**
-     * Returns permission status.
+     * This method is a no-op.
      *
-     * @returns QR scanner status.
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
      */
-    getStatus(): Promise<QRScannerStatus> {
-        return new Promise((resolve) => window.QRScanner.getStatus(resolve));
+    async pausePreview(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
     /**
-     * Opens settings to edit app permissions.
+     * This method is a no-op.
+     *
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
+     */
+    async resumePreview(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
+    }
+
+    /**
+     * Get the current scanner status.
+     *
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
+     */
+    async getStatus(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
+    }
+
+    /**
+     * The native modal handles permission requests automatically.
+     * This method is a no-op.
+     *
+     * @deprecated since 6.0. Not supported anymore.
      */
     openSettings(): void {
-        window.QRScanner.openSettings();
+        // No-op
+    }
+
+    /**
+     * Permissions are requested when scan() is called.
+     * This method returns a default status.
+     *
+     * @returns A status object compatible with Cordova API.
+     * @deprecated since 6.0. Not supported anymore.
+     */
+    async checkPermissions(): Promise<BarcodeScannerStatus> {
+        return this.buildStatus;
     }
 
 }
 
-export enum QRScannerCamera {
-    BACK_CAMERA = 0,
-    FRONT_CAMERA = 1,
-}
-
-export enum QRScannerErrorCode {
-    UNEXPECTED_ERROR = 0, // An unexpected error. Returned only by bugs in QRScanner.
-    CAMERA_ACCESS_DENIED = 1, // The user denied camera access.
-    CAMERA_ACCESS_RESTRICTED = 2, // Camera access is restricted (due to parental controls,
-                                  // organization security configuration profiles, or similar reasons).
-    BACK_CAMERA_UNAVAILABLE = 3, // The back camera is unavailable.
-    FRONT_CAMERA_UNAVAILABLE = 4, // The front camera is unavailable.
-    CAMERA_UNAVAILABLE = 5, // The camera is unavailable because it doesn't exist or is otherwise unable to be configured.
-                            // (Also returned if QRScanner cannot return one of the more specific BACK_CAMERA_UNAVAILABLE
-                            // or FRONT_CAMERA_UNAVAILABLE errors.)
-    SCAN_CANCELED = 6, // Scan was canceled by the cancelScan() method. (Returned exclusively to the QRScanner.scan() method.)
-    LIGHT_UNAVAILABLE = 7, // The device light is unavailable because it doesn't exist or is otherwise unable to be configured.
-    OPEN_SETTINGS_UNAVAILABLE = 8, // The device is unable to open settings.
+interface BarcodeScannerStatus {
+    authorized: boolean;
+    denied: boolean;
+    restricted: boolean;
+    prepared: boolean;
+    scanning: boolean;
+    previewing: boolean;
+    showing: boolean;
+    lightEnabled: boolean;
+    canOpenSettings: boolean;
+    canEnableLight: boolean;
+    canChangeCamera: boolean;
+    currentCamera: number;
 }

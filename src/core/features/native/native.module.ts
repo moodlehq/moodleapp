@@ -16,7 +16,6 @@ import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
-import { QRScanner } from './plugins/qrscanner';
 import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { FileTransferCompat, FileTransferErrorCompat } from '@services/native/file-transfer-compat';
 
@@ -54,6 +53,8 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     const { StatusBar } = await import('./plugins/status-bar');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { InAppBrowser } = await import('./plugins/inappbrowser');
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    const { QRScanner } = await import('./plugins/qrscanner');
 
     const { Device } = await import('@services/native/device');
 
@@ -84,7 +85,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     providers: [
         LocalNotifications,
         Push,
-        QRScanner,
         SQLite,
         provideAppInitializer(() => {
             // eslint-disable-next-line @typescript-eslint/no-deprecated, @typescript-eslint/no-explicit-any

@@ -36,6 +36,7 @@ import { SwiperOptions } from 'swiper/types';
 import { CoreSwiper } from '@static/swiper';
 import { CoreWait } from '@static/wait';
 import { CoreQRScan } from '@services/qrscan';
+import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreEditorBaseComponent } from '@features/editor/classes/base-editor-component';
 import { CoreEventObserver } from '@static/events';
@@ -563,13 +564,17 @@ export class CoreEditorClassicEditorComponent extends CoreEditorBaseComponent im
 
         this.stopBubble(event);
 
-        // Scan for a QR code.
-        const text = await CoreQRScan.scanQR();
+        try {
+            // Scan for a QR code.
+            const text = await CoreQRScan.scanQR();
 
-        if (text) {
-            this.focusRTE(event); // Make sure the editor is focused.
-            // eslint-disable-next-line @typescript-eslint/no-deprecated
-            document.execCommand('insertText', false, text);
+            if (text) {
+                this.focusRTE(event); // Make sure the editor is focused.
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                document.execCommand('insertText', false, text);
+            }
+        } catch (error) {
+            CoreAlerts.showError(error);
         }
     }
 

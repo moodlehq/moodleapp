@@ -14,7 +14,5 @@
 
 import { makeSingleton } from '@singletons';
 import { Push as PushService } from './push';
-import { QRScanner as QRScannerService } from './qrscanner';
 
 export const Push = makeSingleton(PushService);
-export const QRScanner = makeSingleton(QRScannerService);

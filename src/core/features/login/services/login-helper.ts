@@ -1171,20 +1171,24 @@ export class CoreLoginHelperProvider {
      * Scan a QR code and tries to authenticate the user using custom URL scheme.
      */
     async scanQR(): Promise<void> {
-        // Scan for a QR code.
-        const text = await CoreQRScan.scanQRWithUrlHandling();
+        try {
+            // Scan for a QR code.
+            const text = await CoreQRScan.scanQRWithUrlHandling();
 
-        if (!text) {
-            return;
-        }
+            if (!text) {
+                return;
+            }
 
-        // Not a custom URL scheme, check if it's a URL scheme to another app.
-        const scheme = CoreUrl.getUrlProtocol(text);
+            // Not a custom URL scheme, check if it's a URL scheme to another app.
+            const scheme = CoreUrl.getUrlProtocol(text);
 
-        if (scheme && scheme !== 'http' && scheme !== 'https') {
-            CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
-        } else {
-            CoreAlerts.showError(Translate.instant('core.login.errorqrnoscheme'));
+            if (scheme && scheme !== 'http' && scheme !== 'https') {
+                CoreAlerts.showError(Translate.instant('core.errorurlschemeinvalidscheme', { $a: text }));
+            } else {
+                CoreAlerts.showError(Translate.instant('core.login.errorqrnoscheme'));
+            }
+        } catch (error) {
+            CoreAlerts.showError(error);
         }
     }
 
