@@ -14,12 +14,15 @@
 
 import { Injectable } from '@angular/core';
 
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBConnection } from '@classes/sqlitedb';
 import { CoreBrowser } from '@static/browser';
-import { SQLite, makeSingleton } from '@singletons';
+import { makeSingleton } from '@singletons';
+import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
+import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
+import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
-import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { asyncInstance } from '@/core/utils/async-instance';
+import { CoreLogger } from '@static/logger';
 
 const tableNameRegex = new RegExp([
     '^SELECT.*FROM ([^ ]+)',
@@ -40,6 +43,107 @@ export class CoreDbProvider {
     queryLogs: CoreDbQueryLog[] = [];
 
     protected dbInstances: { [name: string]: SQLiteDB } = {};
+    protected initialization?: Promise<void>;
+    protected nativeSQLite: CoreNativeSQLiteDriver = CapacitorSQLite;
+    protected manager = new CoreCapacitorSQLiteManager(this.nativeSQLite);
+    protected logger: CoreLogger = CoreLogger.getInstance('CoreDb');
+
+    /**
+     * Share platform readiness and legacy-file migration across database operations.
+     * A failed initialisation remains blocked until the application is restarted.
+     *
+     * @returns Promise resolved when database access is safe.
+     */
+    ready(): Promise<void> {
+        this.initialization ??= this.initialize();
+
+        return this.initialization;
+    }
+
+    /**
+     * Prepare the active driver before allowing database access.
+     */
+    protected async initialize(): Promise<void> {
+        await CorePlatform.ready();
+        await this.manager.ready();
+        await this.migrateLegacyDatabases();
+    }
+
+    /**
+     * Move legacy SQLite files into the Capacitor database directory before opening connections.
+     *
+     * @returns Promise resolved when migration is complete.
+     * @todo 7.0 Remove this legacy migration logic.
+     */
+    protected async migrateLegacyDatabases(): Promise<void> {
+
+        const migrationOptions = CorePlatform.isIOS() ? { folderPath: 'Library/LocalDatabase' } : {};
+
+        let result: Awaited<ReturnType<CoreNativeSQLiteDriver['getMigratableDbList']>>;
+        try {
+            result = await this.nativeSQLite.getMigratableDbList(migrationOptions);
+        } catch (error) {
+            if (this.isEmptyLegacyDatabaseListError(error)) {
+                return;
+            }
+
+            throw error;
+        }
+
+        const dbNameList = result.values ?? [];
+        if (dbNameList.length > 0) {
+            this.logger.error(`Migrating databases: ${dbNameList.join(', ')}...`);
+            await this.nativeSQLite.moveDatabasesAndAddSuffix({ dbNameList, ...migrationOptions });
+        }
+    }
+
+    /**
+     * Check for Capacitor SQLite's explicit empty-directory response.
+     *
+     * @param error Plugin error.
+     * @returns Whether there are no legacy databases.
+     */
+    protected isEmptyLegacyDatabaseListError(error: unknown): boolean {
+        const message = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
+
+        return message.trim() === 'getMigratableDbList: No databases available';
+    }
+
+    /**
+     * Check whether a logical database exists without opening or creating it.
+     *
+     * @param name Logical database name.
+     * @returns Whether the database exists.
+     */
+    async databaseExists(name: string): Promise<boolean> {
+        await this.ready();
+
+        return this.manager.databaseExists(name);
+    }
+
+    /**
+     * List database files without opening them.
+     *
+     * @returns Database filenames.
+     */
+    async listDatabaseFiles(): Promise<string[]> {
+        await this.ready();
+        const result = await this.getDatabaseList();
+        if (!Array.isArray(result.values) || result.values.some(value => typeof value !== 'string')) {
+            throw new CoreError('SQLite returned an invalid database list.');
+        }
+
+        return result.values;
+    }
+
+    /**
+     * Obtain the database list from the active driver.
+     *
+     * @returns Plugin database list.
+     */
+    protected getDatabaseList(): ReturnType<CapacitorSQLitePlugin['getDatabaseList']> {
+        return this.nativeSQLite.getDatabaseList();
+    }
 
     /**
      * Check whether database queries should be logged.
@@ -216,7 +320,7 @@ export class CoreDbProvider {
 
                 db = new Proxy(db, {
                     get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
-                }) as unknown as SQLiteObject;
+                });
             }
 
             this.dbInstances[name] = new SQLiteDB(name, db);
@@ -231,14 +335,15 @@ export class CoreDbProvider {
      * @param name Database name.
      * @returns Database connection.
      */
-    protected createDatabase(name: string): SQLiteObject {
-        // Ideally, this method would return a Promise instead of resorting to Duck typing;
-        // but doing so would mean that the getDB() method should also return a promise.
-        // Given that it is heavily used throughout the app, we want to avoid it for now.
-        return asyncInstance(async () => {
-            await CorePlatform.ready();
+    protected createDatabase(name: string): SQLiteDBConnection {
+        // Get the connection immediately so a later delete invalidates this handle,
+        // rather than rebinding it to a recreated database.
+        const connection = this.manager.getConnection(name);
 
-            return SQLite.create({ name, location: 'default' });
+        return asyncInstance(async () => {
+            await this.ready();
+
+            return connection;
         }, {});
     }
 
@@ -248,25 +353,10 @@ export class CoreDbProvider {
      * @param name DB name.
      */
     async deleteDB(name: string): Promise<void> {
-        if (this.dbInstances[name] !== undefined) {
-            await this.dbInstances[name].close();
+        await this.ready();
 
-            delete this.dbInstances[name];
-        }
-
-        await this.deleteDatabase(name);
-    }
-
-    /**
-     * Delete database.
-     *
-     * @param name Database name.
-     */
-    protected async deleteDatabase(name: string): Promise<void> {
-        await SQLite.deleteDatabase({
-            name,
-            location: 'default',
-        });
+        await this.manager.deleteDatabase(name);
+        delete this.dbInstances[name];
     }
 
     /**
@@ -276,7 +366,7 @@ export class CoreDbProvider {
      * @param db Database to spy.
      * @returns Spy methods.
      */
-    protected getDatabaseSpies(dbName: string, db: SQLiteObject): Partial<SQLiteObject> {
+    protected getDatabaseSpies(dbName: string, db: SQLiteDBConnection): Partial<SQLiteDBConnection> {
         return {
             async executeSql(statement, params) {
                 const start = performance.now();
@@ -365,3 +455,6 @@ type TablesSummaryFilters = {
     dbName?: RegExp | string;
     tableName?: RegExp | string;
 };
+
+type CoreNativeSQLiteDriver = CoreCapacitorSQLiteManagerDriver &
+    Pick<CapacitorSQLitePlugin, 'getMigratableDbList' | 'moveDatabasesAndAddSuffix' | 'getDatabaseList'>;
