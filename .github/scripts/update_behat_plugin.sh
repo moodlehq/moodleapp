@@ -8,7 +8,7 @@ fi
 
 
 BRANCHNAME=${GITHUB_REF_NAME#$BEHAT_PLUGIN_BRANCH_PREFIX}
-if [[ $BRANCHNAME != "main" && $BRANCHNAME != "latest" ]]; then
+if [[ $BRANCHNAME != "main" && $BRANCHNAME != "latest" && $BRANCHNAME != "latest-test" ]]; then
     echo "Script disabled for this branch"
     exit 0
 fi
