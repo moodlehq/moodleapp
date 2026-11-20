@@ -17,8 +17,8 @@ import { ActionSheetButton } from '@ionic/core';
 import { EncodingType, MediaTypeSelection } from '@capacitor/camera';
 import { FileEntry } from '@classes/native/filesystem';
 
-import { CoreNetwork } from '@services/network';
-import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/file';
+import { CoreNetwork } from '@services/native/network';
+import { CoreFile, CoreFileProvider, CoreFileProgressEvent } from '@services/native/file';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
 import { CoreArray } from '@static/array';
@@ -52,7 +52,7 @@ import {
     CoreMediaFile,
 } from '@services/native/capture-media';
 import { CoreErrorHelper } from '@services/error-helper';
-import { CoreNativeFilePicker } from '@services/native/file-picker';
+import { CoreFilePicker } from '@services/native/file-picker';
 
 /**
  * Helper service to upload files.
@@ -89,7 +89,7 @@ export class CoreFileUploaderHelperProvider {
 
         const modal = await CoreLoadings.show();
 
-        const result = await CoreNativeFilePicker.pickFile(mimetypes, false);
+        const result = await CoreFilePicker.pickFile(mimetypes, false);
 
         modal.dismiss();
 

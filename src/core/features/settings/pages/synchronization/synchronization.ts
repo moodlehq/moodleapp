@@ -21,7 +21,7 @@ import { CoreConfig } from '@services/config';
 import { CoreSettingsHelper } from '@features/settings/services/settings-helper';
 import { Translate } from '@singletons';
 import { CoreAccountsList, CoreLoginHelper } from '@features/login/services/login-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreAlerts } from '@services/overlays/alerts';

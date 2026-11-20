@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component } from '@angular/core';
-import { CoreQRScan } from '@services/qrscan';
+import { CoreQRScan } from '@services/native/qrscan';
 import { ModalController, Translate } from '@singletons';
 import { FAQ_QRCODE_IMAGE_HTML, FAQ_URL_IMAGE_HTML, GET_STARTED_URL } from '@features/login/constants';
 import { SubPartial } from '@/core/utils/types';

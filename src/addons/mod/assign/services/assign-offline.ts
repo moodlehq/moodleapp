@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { SQLiteDBRecordValues } from '@classes/sqlitedb';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreTime } from '@static/time';

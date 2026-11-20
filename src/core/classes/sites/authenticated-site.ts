@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreSSO } from '@static/sso';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreEventData, CoreEvents } from '@static/events';
 import {
     CoreWS,

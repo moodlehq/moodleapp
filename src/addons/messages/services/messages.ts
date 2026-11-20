@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreLogger } from '@static/logger';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreUser, CoreUserBasicData } from '@features/user/services/user';
 import {
     AddonMessagesOffline,

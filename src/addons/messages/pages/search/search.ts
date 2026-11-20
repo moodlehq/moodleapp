@@ -21,9 +21,9 @@ import {
     AddonMessages,
 } from '../../services/messages';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import {
     ADDON_MESSAGES_MEMBER_INFO_CHANGED_EVENT,
     ADDON_MESSAGES_LIMIT_SEARCH,

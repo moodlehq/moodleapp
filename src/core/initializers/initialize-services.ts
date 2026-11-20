@@ -12,31 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injector, inject } from '@angular/core';
 import { CoreAutoLogout } from '@features/autologout/services/autologout';
 import { CoreConfig } from '@services/config';
 import { CoreFilepool } from '@services/filepool';
 import { CoreLang } from '@services/lang';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreUpdateManager } from '@services/update-manager';
 import { CoreTime } from '@static/time';
-import { CoreNativeDevice } from '@services/native/device';
-import { CoreAppBadge } from '@services/app-badge';
-import { CoreKeyboard } from '@static/keyboard';
-import { CoreFile } from '@services/file';
-import { CoreNativeStatusBar } from '@services/native/status-bar';
+import { CoreDevice } from '@services/native/device';
+import { CoreAppBadge } from '@services/native/app-badge';
+import { CoreKeyboard } from '@services/native/keyboard';
+import { CoreFile } from '@services/native/file';
+import { CoreStatusBar } from '@services/native/status-bar';
 
 /**
  * Initializes various core components asynchronously.
  */
 export default async function(): Promise<void> {
-    const injector = inject(Injector);
-
-    // Native plugins initializations.
+    // Initialize first the most prioritary native plugins.
     await Promise.all([
-        CoreNativeDevice.initialize(),
+        CoreDevice.initialize(),
         CoreFile.initialize(),
     ]);
 
@@ -49,9 +46,9 @@ export default async function(): Promise<void> {
         CoreNetwork.initialize(),
         CoreUpdateManager.initialize(),
         CoreTime.initialize(),
-        CoreKeyboard.initialize(injector),
+        CoreKeyboard.initialize(),
         CoreAutoLogout.initialize(),
         CoreAppBadge.initialize(),
-        CoreNativeStatusBar.initialize(),
+        CoreStatusBar.initialize(),
     ]);
 }

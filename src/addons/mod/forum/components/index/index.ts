@@ -37,7 +37,7 @@ import { CoreSites } from '@services/sites';
 import { CoreUserPreferences } from '@features/user/services/user-preferences';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { AddonModForumPrefetchHandler } from '../../services/handlers/prefetch';
 import { CoreRatingProvider } from '@features/rating/services/rating';
 import { CoreRatingSyncProvider } from '@features/rating/services/rating-sync';

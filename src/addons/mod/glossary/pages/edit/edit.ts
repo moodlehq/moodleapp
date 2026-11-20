@@ -21,7 +21,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CanLeave } from '@guards/can-leave';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText } from '@static/text';
 import { CoreWSError } from '@classes/errors/wserror';

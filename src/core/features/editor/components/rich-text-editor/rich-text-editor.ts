@@ -54,7 +54,7 @@ import { CoreLoadingComponent } from '@components/loading/loading';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { convertTextToHTMLElement } from '@/core/utils/create-html-element';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 
 /**
  * Component that displays a rich text editor.

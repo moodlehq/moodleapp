@@ -19,7 +19,7 @@ import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSiteHomeIndexLinkHandlerService } from '@features/sitehome/services/handlers/index-link';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreCustomURLSchemes } from '@services/native/urlschemes';
 
 describe('Site Home link handlers', () => {
 

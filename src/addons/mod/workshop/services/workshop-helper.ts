@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
 import { FileEntry } from '@classes/native/filesystem';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreText, DEFAULT_TEXT_FORMAT } from '@static/text';
@@ -47,7 +47,7 @@ import {
 } from '@addons/mod/workshop/constants';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreObject } from '@static/object';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 
 /**
  * Helper to gather some common functions for workshop.

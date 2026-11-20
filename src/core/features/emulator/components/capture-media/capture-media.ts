@@ -15,7 +15,7 @@
 import { Component, OnInit, OnDestroy, ElementRef, ChangeDetectorRef, Input, inject, viewChild } from '@angular/core';
 import { CoreMediaFile } from '@services/native/capture-media';
 
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/native/file';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreTime } from '@static/time';
 import { ModalController } from '@singletons';

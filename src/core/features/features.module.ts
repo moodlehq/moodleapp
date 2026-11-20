@@ -17,6 +17,7 @@ import { NgModule } from '@angular/core';
 import { CoreBlockModule } from './block/block.module';
 import { CoreCommentsModule } from './comments/comments.module';
 import { CoreContentLinksModule } from './contentlinks/contentlinks.module';
+import { CoreCordovaCompatModule } from './cordova-compat/cordova-compat.module';
 import { CoreCourseModule } from './course/course.module';
 import { CoreCoursesModule } from './courses/courses.module';
 import { CoreDataPrivacyModule } from './dataprivacy/dataprivacy.module';
@@ -53,6 +54,7 @@ import { CorePolicyModule } from './policy/policy.module';
         CoreBlockModule,
         CoreCommentsModule,
         CoreContentLinksModule,
+        CoreCordovaCompatModule,
         CoreCourseModule,
         CoreCoursesModule,
         CoreDataPrivacyModule,

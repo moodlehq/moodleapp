@@ -30,7 +30,7 @@ import { Mp3MediaRecorder } from 'mp3-mediarecorder';
 import { initAudioEncoderMessage } from '@features/fileuploader/utils/worker-messages';
 import { CAPTURE_ERROR_NO_MEDIA_FILES, CoreCaptureError } from '@classes/errors/captureerror';
 import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/native/file';
 import { CorePath } from '@static/path';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreFileUploaderAudioHistogramComponent } from '../audio-histogram/audio-histogram';

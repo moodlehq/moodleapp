@@ -21,7 +21,7 @@ import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreQuestion, CoreQuestionQuestionParsed } from '@features/question/services/question';
 import { CoreQuestionDelegate } from '@features/question/services/question-delegate';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CorePromiseUtils } from '@static/promise-utils';

@@ -28,29 +28,39 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     const { CoreAppProvider } = await import('@services/app');
     const { CoreAppDBService } = await import('@services/app-db');
-    const { CoreClipboardService } = await import('@services/clipboard');
     const { CoreConfigProvider } = await import('@services/config');
     const { CoreCronDelegateService } = await import('@services/cron');
-    const { CoreCustomURLSchemesProvider } = await import('@services/urlschemes');
     const { CoreDbProvider } = await import('@services/db');
     const { CoreErrorHelperService } = await import('@services/error-helper');
     const { CoreFileHelperProvider } = await import('@services/file-helper');
     const { CoreFilepoolProvider } = await import('@services/filepool');
-    const { CoreFileProvider } = await import('@services/file');
     const { CoreFileSessionProvider } = await import('@services/file-session');
     const { CoreGroupsProvider } = await import('@services/groups');
     const { CoreLangProvider } = await import('@services/lang');
     const { CoreLocalNotificationsProvider } = await import('@services/local-notifications');
     const { CoreNavigatorService } = await import('@services/navigator');
-    const { CoreOpenerService } = await import('@services/opener');
     const { CorePluginFileDelegateService } = await import('@services/plugin-file-delegate');
-    const { CoreScreenService } = await import('@services/screen');
     const { CoreSitesProvider } = await import('@services/sites');
     const { CoreSyncProvider } = await import('@services/sync');
     const { CoreUpdateManagerProvider } = await import('@services/update-manager');
     const { CoreWSProvider } = await import('@services/ws');
     const { CorePlatformService } = await import('@services/platform');
-    const { CoreQRScanService } = await import('@services/qrscan');
+    const { CoreQRScanService } = await import('@services/native/qrscan');
+
+    const { CoreAppBadgeService } = await import('@services/native/app-badge');
+    const { CoreCaptureMediaService } = await import('@services/native/capture-media');
+    const { CoreClipboardService } = await import('@services/native/clipboard');
+    const { CoreCustomURLSchemesProvider } = await import('@services/native/urlschemes');
+    const { CoreDeviceService } = await import('@services/native/device');
+    const { CoreFileProvider } = await import('@services/native/file');
+    const { CoreKeyboardService } = await import('@services/native/keyboard');
+    const { CoreNetworkService } = await import('@services/native/network');
+    const { CoreOpenerService } = await import('@services/native/opener');
+    const { CoreScreenService } = await import('@services/native/screen');
+
+    // Do not export CoreFilePickerService and CoreIntentLauncher because they should be used through CoreOpenerService.
+    // Do not export CoreHttpService and CoreFileTransferService because they should be used through CoreWSProvider.
+    // Do not export CoreStatusBar because site plugins should not control the status bar.
 
     const { CoreAlertsService } = await import('@services/overlays/alerts');
     const { CoreLoadingsService } = await import('@services/overlays/loadings');
@@ -60,8 +70,6 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
 
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreDomUtilsProvider } = await import('@services/utils/dom');
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { CoreGeolocationProvider } = await import('@services/geolocation');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
     const { CoreTextUtilsProvider } = await import('@services/utils/text');
     // eslint-disable-next-line @typescript-eslint/no-deprecated
@@ -76,29 +84,23 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     return [
         CoreAppProvider,
         CoreAppDBService,
-        CoreClipboardService,
         CoreConfigProvider,
         CoreCronDelegateService,
-        CoreCustomURLSchemesProvider,
         CoreDbProvider,
         CoreDomUtilsProvider,
         CoreErrorHelperService,
         CoreFileHelperProvider,
         CoreFilepoolProvider,
-        CoreFileProvider,
         CoreFileSessionProvider,
-        CoreGeolocationProvider,
         CoreGroupsProvider,
         CoreIframeUtilsProvider,
         CoreLangProvider,
         CoreLocalNotificationsProvider,
         CoreMimetypeUtilsProvider,
         CoreNavigatorService,
-        CoreOpenerService,
         CorePluginFileDelegateService,
         CorePlatformService,
         CoreQRScanService,
-        CoreScreenService,
         CoreSitesProvider,
         CoreSyncProvider,
         CoreTextUtilsProvider,
@@ -106,6 +108,16 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
         CoreUpdateManagerProvider,
         CoreUtilsProvider,
         CoreWSProvider,
+        CoreAppBadgeService,
+        CoreCaptureMediaService,
+        CoreClipboardService,
+        CoreCustomURLSchemesProvider,
+        CoreDeviceService,
+        CoreFileProvider,
+        CoreKeyboardService,
+        CoreNetworkService,
+        CoreOpenerService,
+        CoreScreenService,
         CoreAlertsService,
         CoreLoadingsService,
         CorePopoversService,

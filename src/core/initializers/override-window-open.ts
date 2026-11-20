@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CorePlatform } from '@services/platform';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 
 /**
  * Initializes the application and sets up the InAppBrowser if available.

@@ -37,7 +37,7 @@ import { CoreObject } from '@static/object';
 import { IonAccordionGroup } from '@ionic/angular';
 import { CoreCourse } from '@features/course/services/course';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { map } from 'rxjs';
 import {
     CORE_COURSE_OVERVIEW_OPTION_NAME,

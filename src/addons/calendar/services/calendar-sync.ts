@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider, CoreSyncBlockedError } from '@classes/base-sync';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreEvents } from '@static/events';
 import { CoreSites } from '@services/sites';
 import { CoreUtils } from '@static/utils';

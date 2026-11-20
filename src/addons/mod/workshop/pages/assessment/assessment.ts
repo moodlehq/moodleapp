@@ -48,7 +48,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreEditorRichTextEditorComponent } from '@features/editor/components/rich-text-editor/rich-text-editor';
 import { AddonModWorkshopAssessmentStrategyComponent } from '../../components/assessment-strategy/assessment-strategy';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreErrorHelper } from '@services/error-helper';
 
 /**

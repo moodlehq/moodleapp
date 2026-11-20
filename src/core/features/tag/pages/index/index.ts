@@ -15,7 +15,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CoreTag } from '@features/tag/services/tag';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';

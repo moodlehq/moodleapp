@@ -18,7 +18,7 @@ import { CoreCourse, CoreCourseCommonModWSOptions } from '@features/course/servi
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CanLeave } from '@guards/can-leave';
 import { IonContent } from '@ionic/angular';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreUtils } from '@static/utils';

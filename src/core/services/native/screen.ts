@@ -20,7 +20,7 @@ import { makeSingleton } from '@singletons';
 import { CoreEvents } from '@static/events';
 import { CorePlatform } from '@services/platform';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
-import { CoreNativeStatusBar } from '@services/native/status-bar';
+import { CoreStatusBar } from '@services/native/status-bar';
 
 /**
  * Screen breakpoints.
@@ -166,9 +166,9 @@ export class CoreScreenService {
         document.addEventListener('fullscreenchange', async () => {
             try {
                 if (document.fullscreenElement) {
-                    await CoreNativeStatusBar.hide();
+                    await CoreStatusBar.hide();
                 } else {
-                    await CoreNativeStatusBar.show();
+                    await CoreStatusBar.show();
                 }
             } catch {
                 // Ignore errors.

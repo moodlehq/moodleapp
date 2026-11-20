@@ -17,7 +17,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { IonContent } from '@ionic/angular';
 import { CoreError } from '@classes/errors/error';
 import { CanLeave } from '@guards/can-leave';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';

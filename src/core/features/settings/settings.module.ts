@@ -20,7 +20,7 @@ import { CoreMainMenuTabRoutingModule } from '@features/mainmenu/mainmenu-tab-ro
 import { CoreSettingsHelper } from './services/settings-helper';
 import { SHAREDFILES_PAGE_NAME } from '@features/sharedfiles/constants';
 import { getSharedFilesRoutes } from '@features/sharedfiles/sharedfiles.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import {
     CORE_SETTINGS_ABOUT_PAGE_NAME,
     CORE_SETTINGS_DEV_PAGE_NAME,

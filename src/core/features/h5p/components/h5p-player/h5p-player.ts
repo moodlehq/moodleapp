@@ -14,7 +14,7 @@
 
 import { Component, Input, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChange, inject, signal } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';

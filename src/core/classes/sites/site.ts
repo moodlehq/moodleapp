@@ -17,12 +17,12 @@ import {
     CoreOpener,
     CoreOpenerOpenInBrowserOptions,
     CoreOpenerOpenInAppBrowserOptions,
-} from '@services/opener';
+} from '@services/native/opener';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreDB } from '@services/db';
 import { CoreEventData, CoreEvents } from '@static/events';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import {
     CoreWS,
     CoreWSFileUploadOptions,

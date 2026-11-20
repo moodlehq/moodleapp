@@ -14,7 +14,9 @@
 
 import { registerPlugin } from '@capacitor/core';
 
-const DiskSpacePlugin = registerPlugin<DiskSpacePlugin>('MoodleAppDiskSpace');
+export const DISK_SPACE_PLUGIN_NAME = 'MoodleAppDiskSpace';
+
+const DiskSpacePlugin = registerPlugin<DiskSpacePlugin>(DISK_SPACE_PLUGIN_NAME);
 
 /**
  * Allows retrieving the free space of the storage volume where the app stores its files.

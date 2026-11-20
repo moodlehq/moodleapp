@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreUserPreferencesOffline } from './user-preferences-offline';
 import { CoreLogger } from '@static/logger';

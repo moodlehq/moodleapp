@@ -12,22 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken } from '@angular/core';
-import { FileOpener, type FileOpenerPlugin } from '@capacitor-community/file-opener';
+import { Injectable } from '@angular/core';
+import { CoreFile } from '@services/native/file';
 
 /**
- * Resolve the native Capacitor File Opener implementation.
+ * WebView plugin wrapper.
  *
- * @returns Native Capacitor File Opener plugin.
+ * @deprecated since 6.0. Use CoreFile.convertFileSrc directly instead.
  */
-export function resolveCapacitorFileOpener(): FileOpenerPlugin {
-    return FileOpener;
-}
+@Injectable({ providedIn: 'root' })
+export class WebView {
 
-/**
- * Injection token for the Capacitor File Opener instance, allowing browser emulation.
- */
-export const CAPACITOR_FILE_OPENER = new InjectionToken<FileOpenerPlugin>('CAPACITOR_FILE_OPENER', {
-    providedIn: 'root',
-    factory: () => resolveCapacitorFileOpener(),
-});
+    /**
+     * Convert a file URL to a URL that can be used in the WebView.
+     *
+     * @param url File URL.
+     * @returns Converted URL.
+     */
+    convertFileSrc(url: string): string {
+        return CoreFile.convertFileSrc(url);
+    }
+
+}

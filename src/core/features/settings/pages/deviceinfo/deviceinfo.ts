@@ -17,7 +17,7 @@ import { CoreConstants } from '@/core/constants';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { Translate } from '@singletons';
 import { CoreLang } from '@services/lang';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreSites } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CorePushNotifications } from '@features/pushnotifications/services/pushnotifications';
@@ -25,14 +25,14 @@ import { CoreConfig } from '@services/config';
 import { CoreToasts } from '@services/overlays/toasts';
 import { CoreNavigator } from '@services/navigator';
 import { CorePlatform } from '@services/platform';
-import { CoreNetwork, CoreNetworkConnectionType } from '@services/network';
+import { CoreNetwork, CoreNetworkConnectionType } from '@services/native/network';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { CoreSitesFactory } from '@services/sites-factory';
-import { CoreClipboard } from '@services/clipboard';
+import { CoreClipboard } from '@services/native/clipboard';
 import { GestureDetail } from '@ionic/angular';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CORE_SETTINGS_DEV_PAGE_NAME } from '@features/settings/constants';
-import { CoreNativeDevice } from '@services/native/device';
+import { CoreDevice } from '@services/native/device';
 
 /**
  * Device Info to be shown and copied to clipboard.
@@ -191,7 +191,7 @@ export default class CoreSettingsDeviceInfoPage {
             undefined;
         this.deviceInfo.encryptedPushSupported = publicKey !== undefined;
 
-        const capacitorDeviceInfo = await CoreNativeDevice.getInfo();
+        const capacitorDeviceInfo = await CoreDevice.getInfo();
 
         if (capacitorDeviceInfo.platform) {
             this.deviceInfo.platform = capacitorDeviceInfo.platform;
@@ -206,7 +206,7 @@ export default class CoreSettingsDeviceInfoPage {
             this.deviceInfo.model = capacitorDeviceInfo.model;
         }
 
-        const capacitorDeviceId = await CoreNativeDevice.getId();
+        const capacitorDeviceId = await CoreDevice.getId();
 
         if (capacitorDeviceId.identifier) {
             this.deviceInfo.uuid = capacitorDeviceId.identifier;

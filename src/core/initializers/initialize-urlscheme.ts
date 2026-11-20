@@ -14,7 +14,7 @@
 
 import { App } from '@capacitor/app';
 import { CorePlatform } from '@services/platform';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreCustomURLSchemes } from '@services/native/urlschemes';
 import { NgZone } from '@singletons';
 import { CoreUrl } from '@static/url';
 

@@ -13,29 +13,23 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { HttpResponse, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpResponse, HttpErrorResponse } from '@angular/common/http';
 
 import { FileEntry } from '@classes/native/filesystem';
-import {
-    CapacitorHttp,
-    HttpResponse as NativeHttpResponse,
-    CapacitorException,
-    HttpOptions as NativeHttpOptions,
-    PluginListenerHandle,
-} from '@capacitor/core';
 import { Md5 } from 'ts-md5';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { timeout } from 'rxjs/operators';
 
-import { CoreNativeToAngularHttpResponse } from '@classes/native-to-angular-http';
-import { CoreNetwork } from '@services/network';
-import { CoreFile, CoreFileFormat } from '@services/file';
+import { CoreNetwork } from '@services/native/network';
+import { CoreFile } from '@services/native/file';
+import { CoreFileTransfer, type CoreFileTransferUploadResult } from '@services/native/file-transfer';
+import { CoreHttp, type CoreHttpRequestOptions } from '@services/native/http';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreText } from '@static/text';
-import { MINIMUM_MOODLE_VERSION } from '@/core/constants';
+import { FileTransferErrorCode, MINIMUM_MOODLE_VERSION } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { CoreInterceptor } from '@classes/interceptor';
-import { makeSingleton, Translate, Http, FileTransfer } from '@singletons';
+import { makeSingleton, Translate, Http } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreAjaxError } from '@classes/errors/ajaxerror';
@@ -52,9 +46,7 @@ import { CoreErrorLogs } from '@static/error-logs';
 import { CoreErrorHelper, CoreErrorObject } from './error-helper';
 import { CoreDom } from '@static/dom';
 import { CoreUserNullSupportConfig } from '@features/user/classes/support/null-support-config';
-import { CoreFileUtils } from '@static/file-utils';
-import { type FileTransferError, type UploadFileResult } from '@capacitor/file-transfer';
-import { FileTransferErrorCode } from '@services/native/file-transfer';
+import { type FileTransferError } from '@capacitor/file-transfer';
 
 /**
  * This service allows performing WS calls and download/upload files.
@@ -136,7 +128,7 @@ export class CoreWSProvider {
 
             return this.addToRetryQueue<T>(method, siteUrl, dataToSend, preSets);
         } else {
-            return this.performPost<T>(method, siteUrl, dataToSend, preSets);
+            return this.sendWSRequest<T>(method, siteUrl, dataToSend, preSets);
         }
     }
 
@@ -275,7 +267,7 @@ export class CoreWSProvider {
             // Create the tmp file as an empty file.
             const fileEntry = await CoreFile.createFile(tmpPath);
 
-            const headers = await this.downloadFileFollowingRedirects(url, fileEntry.toURL(), onProgress);
+            const headers = await CoreFileTransfer.downloadFile(url, fileEntry.toURL(), onProgress);
 
             let extension = '';
 
@@ -320,92 +312,6 @@ export class CoreWSProvider {
 
             throw error;
         }
-    }
-
-    /**
-     * Download a file, following redirects if any.
-     *
-     * @param url The URL of the file to download.
-     * @param path The local path where the file should be saved.
-     * @param onProgress Optional callback to track download progress.
-     * @returns The HTTP headers of the final response after following redirects.
-     */
-    protected async downloadFileFollowingRedirects(
-        url: string,
-        path: string,
-        onProgress?: (event: ProgressEvent) => void,
-    ): Promise<HttpHeaders> {
-        let headers = new HttpHeaders();
-        let redirectUrl: string | null = null;
-        let maxRedirects = 5;
-        let currentDownloadUrl = url;
-        let listener: PluginListenerHandle | undefined = undefined;
-
-        if (onProgress) {
-            listener = await FileTransfer.addListener('progress', progress => {
-                if (progress.type !== 'download') {
-                    return;
-                }
-
-                if (progress.url && progress.url !== currentDownloadUrl) {
-                    return;
-                }
-
-                onProgress(new ProgressEvent('progress', {
-                    lengthComputable: progress.lengthComputable,
-                    loaded: progress.bytes,
-                    total: progress.contentLength,
-                }));
-            });
-
-        }
-
-        try {
-            do {
-                currentDownloadUrl = redirectUrl ?? url;
-
-                try {
-                    const result = await FileTransfer.downloadFile({
-                        url: currentDownloadUrl,
-                        path,
-                        progress: !!onProgress,
-                        headers: {
-                            'User-Agent': navigator.userAgent,
-                        },
-                        disableRedirects: false,
-                    });
-
-                    headers = new HttpHeaders(result.headers); // Convert to HttpHeaders because names are normalised.
-
-                    // Redirections should have been handled by the platform,
-                    // but Android does not follow redirections between HTTP and HTTPS.
-                    // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                    redirectUrl = headers.get('Location');
-                } catch (error) {
-                    if (!CoreErrorHelper.isCapacitorLikeError(error) || error.code !== FileTransferErrorCode.HTTP_ERROR) {
-                        throw error;
-                    }
-
-                    // HTTP error , treat 300 errors too in case we receive one.
-                    const transferError = error.data as FileTransferError;
-                    headers = new HttpHeaders(transferError.headers);
-                    const transferErrorRedirectUrl = headers.get('Location');
-                    const status = transferError.httpStatus ?? -1;
-
-                    if (transferErrorRedirectUrl && status >= 300 && status < 400) {
-                        redirectUrl = transferErrorRedirectUrl;
-                    } else {
-                        throw error;
-                    }
-                }
-
-                maxRedirects--;
-            } while (redirectUrl && maxRedirects >= 0);
-        } finally {
-            await listener?.remove();
-        }
-
-        return headers;
     }
 
     /**
@@ -730,7 +636,26 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform the post call. It can be split into several requests.
+     * Perform a request to call a WS. It can be split into several requests.
+     *
+     * @param method The WebService method to be called.
+     * @param siteUrl Complete site url to perform the call.
+     * @param ajaxData Arguments to pass to the method.
+     * @param preSets Extra settings and information.
+     * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     * @deprecated since 6.0. Use CoreWS.call instead.
+     */
+    async performPost<T = unknown>(
+        method: string,
+        siteUrl: string,
+        ajaxData: Record<string, unknown>,
+        preSets: CoreWSPreSets,
+    ): Promise<T> {
+        return this.sendWSRequest(method, siteUrl, ajaxData, preSets);
+    }
+
+    /**
+     * Perform a request to call a WS. It can be split into several requests.
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
@@ -738,7 +663,7 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information.
      * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
-    async performPost<T = unknown>(
+    protected async sendWSRequest<T = unknown>(
         method: string,
         siteUrl: string,
         ajaxData: Record<string, unknown>,
@@ -753,7 +678,7 @@ export class CoreWSProvider {
         }
 
         if (!preSets.splitRequest || !ajaxData[preSets.splitRequest.param]) {
-            return this.performSinglePost(method, siteUrl, ajaxData, preSets, options);
+            return this.sendSingleWSRequest(method, siteUrl, ajaxData, preSets, options);
         }
 
         // Split the request into several requests if needed.
@@ -765,7 +690,7 @@ export class CoreWSProvider {
             const limitedData = Object.assign({}, ajaxData);
             limitedData[preSets.splitRequest.param] = splitParam.slice(i, i + preSets.splitRequest.maxLength);
 
-            promises.push(this.performSinglePost(method, siteUrl, limitedData, preSets, options));
+            promises.push(this.sendSingleWSRequest(method, siteUrl, limitedData, preSets, options));
         }
 
         const results = await Promise.all(promises);
@@ -800,7 +725,8 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform a single post request.
+     * Perform a single WS request.
+     * This request will always go through the WebView, it doesn't use native requests.
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
@@ -809,7 +735,7 @@ export class CoreWSProvider {
      * @param options Request options.
      * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
-    protected performSinglePost<T>(
+    protected sendSingleWSRequest<T>(
         method: string,
         siteUrl: string,
         ajaxData: Record<string, unknown>,
@@ -970,7 +896,7 @@ export class CoreWSProvider {
 
             // Add a delay between calls.
             setTimeout(() => {
-                call.deferred.resolve(this.performPost(call.method, call.siteUrl, call.data, call.preSets));
+                call.deferred.resolve(this.sendWSRequest(call.method, call.siteUrl, call.data, call.preSets));
                 this.processRetryQueue();
             }, 200);
         } else {
@@ -1127,64 +1053,38 @@ export class CoreWSProvider {
         }
 
         const uploadUrl = `${preSets.siteUrl}/webservice/upload.php`;
-        let listener: PluginListenerHandle | undefined = undefined;
-        if (onProgress) {
-            listener = await FileTransfer.addListener('progress', progress => {
-                if (progress.type !== 'upload') {
-                    return;
-                }
 
-                if (progress.url && progress.url !== uploadUrl) {
-                    return;
-                }
-
-                onProgress(new ProgressEvent('progress', {
-                    lengthComputable: progress.lengthComputable,
-                    loaded: progress.bytes,
-                    total: progress.contentLength,
-                }));
-            });
-        }
-
-        let result: UploadFileResult;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let result: CoreFileTransferUploadResult<any>;
 
         try {
-            result = await FileTransfer.uploadFile({
-                url: uploadUrl,
-                path: filePath,
-                method: 'POST',
-                progress: !!onProgress,
-                params: {
-                    token: preSets.wsToken,
-                    filearea: options.fileArea || 'draft',
-                    itemid: String(options.itemId || 0),
+            result = await CoreFileTransfer.uploadFile(
+                {
+                    url: uploadUrl,
+                    path: filePath,
+                    params: {
+                        token: preSets.wsToken,
+                        filearea: options.fileArea || 'draft',
+                        itemid: String(options.itemId || 0),
+                    },
+                    mimeType: options.mimeType,
+                    fileKey: options.fileKey,
+                    jsonResponse: true,
                 },
-                chunkedMode: false,
-                mimeType: options.mimeType,
-                fileKey: options.fileKey,
-                headers: {
-                    'User-Agent': navigator.userAgent,
-                    'connection': 'close',
-                },
-            });
+                onProgress,
+            );
         } catch (error) {
             this.logger.error('Error while uploading file', filePath, error);
 
+            // @todo Capacitor MOBILE-5183. Review this part when reworking errors.
             if (CoreErrorHelper.isCapacitorLikeError(error) && error.code === FileTransferErrorCode.HTTP_ERROR) {
                 throw this.createHttpError(error, (error.data as FileTransferError).httpStatus ?? -1);
             }
 
             throw error;
-        } finally {
-            await listener?.remove();
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const data = CoreText.parseJSON<any>(
-            result.response ?? '',
-            null,
-            error => this.logger.error('Error parsing response from upload', result.response, error),
-        );
+        const data = result.response;
 
         if (data === null) {
             throw await this.createCannotConnectSiteError(preSets.siteUrl, {
@@ -1261,7 +1161,7 @@ export class CoreWSProvider {
      */
     async getText(url: string): Promise<string> {
         // Fetch the URL content.
-        const options: HttpRequestOptions = {
+        const options: CoreHttpRequestOptions = {
             method: 'get',
             responseType: 'text',
         };
@@ -1278,173 +1178,17 @@ export class CoreWSProvider {
     }
 
     /**
-     * Send an HTTP request. In mobile devices it will use native requests.
+     * Send a native HTTP request.
      *
      * @param url URL of the request.
      * @param options Options for the request.
      * @returns Promise resolved with the response.
      */
-    async sendHTTPRequest<T = unknown>(url: string, options: HttpRequestOptions): Promise<HttpResponse<T>> {
-        // Set default values.
-        options.responseType = options.responseType || 'json';
-        options.timeout = options.timeout === undefined ? this.getRequestTimeout() : options.timeout;
-
-        if (CorePlatform.isMobile()) {
-            // Use a native request.
-            if (CoreFileUtils.isFileUrl(url)) {
-                // We cannot load local files using the http native plugin. Use file provider instead.
-                const content = options.responseType === 'json' ?
-                    await CoreFile.readFile<T>(url, CoreFileFormat.FORMATJSON) :
-                    await CoreFile.readFile(url, CoreFileFormat.FORMATTEXT);
-
-                return new HttpResponse<T>({
-                    body: <T> content,
-                    headers: undefined,
-                    status: 200,
-                    statusText: 'OK',
-                    url,
-                });
-            }
-
-            const headers = {
-                ...options.headers,
-            };
-            if (!headers['User-Agent'] && !headers['user-agent']) {
-                headers['User-Agent'] = navigator.userAgent;
-            }
-
-            let response: NativeHttpResponse | undefined = undefined;
-            let redirectUrl: string | null = null;
-            let maxRedirects = 5;
-            do {
-                try {
-                    const { data: serializedData, contentType } = this.serializeHttpData(options);
-                    if (contentType) {
-                        headers['Content-Type'] = contentType;
-                    }
-
-                    const nativeRequestOptions: NativeHttpOptions = {
-                        url: redirectUrl ?? url,
-                        method: options.method.toUpperCase(),
-                        params: options.params,
-                        data: serializedData,
-                        headers,
-                        connectTimeout: options.timeout,
-                        readTimeout: options.timeout,
-                        disableRedirects: options.followRedirect === false,
-                        responseType: options.responseType,
-                    };
-
-                    response = await CapacitorHttp.request(nativeRequestOptions);
-
-                    if (response.status < 200 || response.status >= 300) {
-                        throw response;
-                    }
-
-                    redirectUrl = null;
-                } catch (error) {
-                    const responseOrError = error as CapacitorException | NativeHttpResponse;
-
-                    if ('headers' in responseOrError) {
-                        // Convert to HttpHeaders because names are normalised.
-                        const headers = new HttpHeaders(responseOrError.headers);
-
-                        // Redirections should have been handled by the platform,
-                        // but Android does not follow redirections between HTTP and HTTPS.
-                        // See: https://developer.android.com/reference/java/net/HttpURLConnection#response-handling
-                        redirectUrl = headers.get('Location');
-                        maxRedirects--;
-                    }
-
-                    if (!redirectUrl || maxRedirects < 0) {
-                        throw responseOrError;
-                    }
-                }
-            } while (redirectUrl);
-
-            if (!response) {
-                // Shouldn't happen, if the response failed the catch should have thrown an error.
-                throw new CoreError(Translate.instant('core.unexpectederror'));
-            }
-
-            return new CoreNativeToAngularHttpResponse(response);
-        } else {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            let observable: Observable<HttpResponse<any>>;
-            const headers = {
-                ...options.headers,
-            };
-
-            // Use Angular's library.
-            switch (options.method) {
-                case 'get':
-                    observable = Http.get(url, {
-                        headers,
-                        params: options.params,
-                        observe: 'response',
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> options.responseType,
-                    });
-                    break;
-
-                case 'post': {
-                    const { data: serializedData, contentType } = this.serializeHttpData(options);
-                    if (contentType) {
-                        headers['Content-Type'] = contentType;
-                    }
-
-                    observable = Http.post(url, serializedData, {
-                        headers,
-                        observe: 'response',
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> options.responseType,
-                    });
-                    break;
-                }
-
-                case 'head':
-                    observable = Http.head(url, {
-                        headers,
-                        observe: 'response',
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        responseType: <any> options.responseType,
-                    });
-                    break;
-
-                default:
-                    throw new CoreError('Method not implemented yet.');
-            }
-
-            if (options.timeout) {
-                observable = observable.pipe(timeout(options.timeout));
-            }
-
-            return await firstValueFrom(observable);
-        }
-    }
-
-    /**
-     * Serialise HTTP data.
-     *
-     * @param options Request options.
-     * @returns Serialised request data and content type.
-     */
-    protected serializeHttpData(options: HttpRequestOptions): { data: unknown; contentType?: string } {
-        if (options.data === undefined || options.data === null) {
-            return { data: options.data };
-        }
-
-        if (options.serializer === 'json') {
-            return {
-                data: typeof options.data === 'string' ? options.data : JSON.stringify(options.data),
-                contentType: 'application/json',
-            };
-        }
-
-        return {
-            data: typeof options.data === 'string' ? options.data : CoreInterceptor.serialize(options.data),
-            contentType: 'application/x-www-form-urlencoded;charset=utf-8',
-        };
+    async sendHTTPRequest<T = unknown>(url: string, options: CoreHttpRequestOptions): Promise<HttpResponse<T>> {
+        return await CoreHttp.request<T>(url, {
+            ...options,
+            timeout: options.timeout === undefined ? this.getRequestTimeout() : options.timeout,
+        });
     }
 
     /**
@@ -1722,51 +1466,6 @@ export type CoreWSAjaxPreSets = {
      * Whether to omit the support config.
      */
     omitSupport?: boolean;
-};
-
-/**
- * Options for HTTP requests.
- */
-export type HttpRequestOptions = {
-    /**
-     * The HTTP method.
-     */
-    method: 'get' | 'post' | 'put' | 'patch' | 'head' | 'delete' | 'options';
-
-    /**
-     * Payload to send to the server. Only applicable on post, put or patch methods.
-     */
-    data?: Record<string, unknown>;
-
-    /**
-     * Query params to be appended to the URL (only applicable on get, head or delete methods).
-     */
-    params?: Record<string, string>;
-
-    /**
-     * Response type. Defaults to json.
-     */
-    responseType?: 'json' | 'text' | 'arraybuffer' | 'blob';
-
-    /**
-     * Timeout for the request in seconds. If undefined, the default value will be used. If null, no timeout.
-     */
-    timeout?: number;
-
-    /**
-     * Serializer to use. Defaults to 'urlencoded'.
-     */
-    serializer?: 'json' | 'urlencoded';
-
-    /**
-     * Whether to follow redirects. Defaults to true. Only for mobile environments.
-     */
-    followRedirect?: boolean;
-
-    /**
-     * Headers. Only for mobile environments.
-     */
-    headers?: Record<string, string>;
 };
 
 /**

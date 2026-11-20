@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreUser } from '@features/user/services/user';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton, Translate } from '@singletons';

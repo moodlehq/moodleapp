@@ -35,7 +35,7 @@ import {
     ADDON_COMPETENCY_SUMMARY_PAGE,
 } from './constants';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 
 /**
  * Get competency services.

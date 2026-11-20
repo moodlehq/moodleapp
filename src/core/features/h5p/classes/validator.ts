@@ -14,7 +14,7 @@
 
 import { CoreH5PMissingDependenciesError } from './errors/missing-dependencies-error';
 import { FileEntry, DirectoryEntry } from '@classes/native/filesystem';
-import { CoreFile, CoreFileFormat } from '@services/file';
+import { CoreFile, CoreFileFormat } from '@services/native/file';
 import { Translate } from '@singletons';
 import { CorePath } from '@static/path';
 import { CoreUrl } from '@static/url';

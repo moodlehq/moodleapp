@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { FileEntry } from '@classes/native/filesystem';
-import { CoreFile, CoreFileProvider } from '@services/file';
+import { CoreFile, CoreFileProvider } from '@services/native/file';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreH5P } from '../services/h5p';

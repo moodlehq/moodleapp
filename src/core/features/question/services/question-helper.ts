@@ -15,7 +15,7 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { FileEntry, DirectoryEntry } from '@classes/native/filesystem';
 
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreInAppBrowserInstance, CoreOpener, CoreOpenerOpenInAppBrowserOptions } from '@services/opener';
+import { CoreInAppBrowserInstance, CoreOpener, CoreOpenerOpenInAppBrowserOptions } from '@services/native/opener';
 
 /**
  * Retains the legacy InAppBrowser service.

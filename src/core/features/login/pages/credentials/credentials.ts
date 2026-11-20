@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { CoreSSO } from '@static/sso';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
 import { CoreLoginHelper } from '@features/login/services/login-helper';
 import { Translate } from '@singletons';
@@ -37,9 +37,9 @@ import {
     EMAIL_SIGNUP_FEATURE_NAME,
     FORGOTTEN_PASSWORD_FEATURE_NAME,
 } from '@features/login/constants';
-import { CoreCustomURLSchemes } from '@services/urlschemes';
+import { CoreCustomURLSchemes } from '@services/native/urlschemes';
 import { CoreSiteError } from '@classes/errors/siteerror';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreLoginMethodsComponent } from '../../components/login-methods/login-methods';

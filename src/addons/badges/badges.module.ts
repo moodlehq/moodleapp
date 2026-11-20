@@ -27,7 +27,7 @@ import { AddonBadgesPushClickHandler } from './services/handlers/push-click';
 import { CoreTagAreaDelegate } from '@features/tag/services/tag-area-delegate';
 import { AddonBadgesTagAreaHandler } from './services/handlers/tag-area';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreCourseForceLanguageSource } from '@features/course/constants';
 import { AddonBadgesSystemReportLinkHandler } from './services/handlers/badge-systemreport-link';
 

@@ -47,7 +47,7 @@ import {
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreMainMenuUserButtonComponent } from '../../components/user-menu-button/user-menu-button';
 import { BackButtonPriority } from '@/core/constants';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 
 /**
  * Page that displays the main menu of the app.

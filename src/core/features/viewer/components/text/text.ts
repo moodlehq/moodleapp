@@ -18,7 +18,7 @@ import { toBoolean } from '@/core/transforms/boolean';
 import { Component, Input } from '@angular/core';
 import { CoreFileEntry } from '@services/file-helper';
 
-import { CoreClipboard } from '@services/clipboard';
+import { CoreClipboard } from '@services/native/clipboard';
 import { ModalController } from '@singletons';
 
 /**

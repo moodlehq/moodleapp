@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreMimetype } from '@static/mimetype';

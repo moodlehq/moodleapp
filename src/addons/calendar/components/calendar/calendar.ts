@@ -35,7 +35,7 @@ import {
 import { AddonCalendarFilter, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { CoreCategoryData, CoreCourses } from '@features/courses/services/courses';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSwipeSlidesComponent } from '@components/swipe-slides/swipe-slides';
 import {
     CoreSwipeSlidesDynamicItem,

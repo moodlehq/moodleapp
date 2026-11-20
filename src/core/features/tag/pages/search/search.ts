@@ -21,7 +21,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreNavigator } from '@services/navigator';
 import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreSites } from '@services/sites';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';

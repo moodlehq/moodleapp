@@ -15,7 +15,7 @@
 import { CorePushNotifications, CorePushNotificationsProvider } from '@features/pushnotifications/services/pushnotifications';
 import { CoreConfig, CoreConfigProvider } from '@services/config';
 import { CoreDB, CoreDbProvider } from '@services/db';
-import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/urlschemes';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesProvider } from '@services/native/urlschemes';
 import { CoreBrowser } from '@static/browser';
 import { CoreConstants } from '../constants';
 import { CoreAppDB, CoreAppDBService } from '@services/app-db';

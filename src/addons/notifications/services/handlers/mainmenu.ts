@@ -28,7 +28,7 @@ import {
     ADDONS_NOTIFICATIONS_READ_CHANGED_EVENT,
     ADDONS_NOTIFICATIONS_READ_CRON_EVENT,
 } from '@addons/notifications/constants';
-import { CoreAppBadge } from '@services/app-badge';
+import { CoreAppBadge } from '@services/native/app-badge';
 
 /**
  * Handler to inject an option into main menu.

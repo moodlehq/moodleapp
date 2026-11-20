@@ -19,7 +19,7 @@ import { CoreFileUploaderStoreFilesResult } from '@features/fileuploader/service
 import { CoreTagItem } from '@features/tag/services/tag';
 import { CoreUser, CoreUserProfile } from '@features/user/services/user';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesWSOptionsWithFilter } from '@services/sites';
 import { CoreTime } from '@static/time';
 import { CoreObject } from '@static/object';

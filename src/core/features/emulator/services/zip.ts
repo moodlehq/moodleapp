@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { BlobReader, BlobWriter, ZipReader, type Entry } from '@zip.js/zip.js';
 import { CorePath } from '@static/path';
-import { CoreFile, CoreFileFormat } from '@services/file';
+import { CoreFile, CoreFileFormat } from '@services/native/file';
 import type { CapacitorZipPlugin, UnzipOptions, ZipOptions, ZipProgressEvent } from '@capgo/capacitor-zip';
 import type { PluginListenerHandle } from '@capacitor/core';
 

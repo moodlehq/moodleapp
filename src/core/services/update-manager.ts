@@ -25,7 +25,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreRedirects } from '@static/redirects';
 import { CoreZoomLevel } from '@features/settings/services/settings-helper';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CoreFile } from './file';
+import { CoreFile } from '@services/native/file';
 import { NO_SITE_ID } from '@features/login/constants';
 
 /**

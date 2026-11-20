@@ -16,7 +16,7 @@ import { ContextLevel, CoreCacheUpdateFrequency } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSite } from '@classes/sites/site';
 import { CoreUser } from '@features/user/services/user';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSExternalWarning } from '@services/ws';
 import { makeSingleton } from '@singletons';

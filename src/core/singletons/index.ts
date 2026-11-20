@@ -42,13 +42,15 @@ import { SQLite as SQLiteService } from '@awesome-cordova-plugins/sqlite/ngx';
 import { TranslateService } from '@ngx-translate/core';
 
 import { CoreApplicationInitStatus } from '@classes/application-init-status';
-import { CAPACITOR_CAMERA } from '@services/native/camera';
-import { CAPACITOR_FILESYSTEM } from '@services/native/filesystem';
-import { CAPACITOR_FILE_TRANSFER } from '@services/native/file-transfer';
-import { CAPACITOR_FILE_OPENER } from '@services/native/file-opener';
+import {
+    CAPACITOR_CAMERA,
+    CAPACITOR_FILESYSTEM,
+    CAPACITOR_FILE_OPENER,
+    CAPACITOR_FILE_TRANSFER,
+    CAPACITOR_ZIP,
+} from '@services/native/injection-tokens';
 import { asyncInstance } from '@/core/utils/async-instance';
 import { CorePromisedValue } from '@classes/promised-value';
-import { CAPACITOR_ZIP } from '@services/native/zip';
 
 /**
  * Injector instance used to resolve singletons.

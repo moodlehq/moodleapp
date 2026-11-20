@@ -14,7 +14,7 @@
 
 import { Component, computed, effect, input, linkedSignal, signal, untracked } from '@angular/core';
 import { CoreSitesReadingStrategy } from '@services/sites';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { AddonModForum, AddonModForumPost } from '@addons/mod/forum/services/forum';
 import { PopoverController } from '@singletons';
 import { CoreSharedModule } from '@/core/shared.module';

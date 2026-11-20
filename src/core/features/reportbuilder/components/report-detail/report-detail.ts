@@ -24,10 +24,10 @@ import {
 } from '@features/reportbuilder/services/reportbuilder';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreSites } from '@services/sites';
 import { CoreErrorObject } from '@services/error-helper';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 import { Translate } from '@singletons';
 import { CoreTime } from '@static/time';
 import { CorePromiseUtils } from '@static/promise-utils';

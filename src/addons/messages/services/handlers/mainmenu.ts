@@ -34,7 +34,7 @@ import {
     ADDONS_MESSAGES_COMPONENT_NAME,
 } from '@addons/messages/constants';
 import { MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT } from '@features/mainmenu/constants';
-import { CoreAppBadge } from '@services/app-badge';
+import { CoreAppBadge } from '@services/native/app-badge';
 
 /**
  * Handler to inject an option into main menu.

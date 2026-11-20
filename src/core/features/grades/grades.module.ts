@@ -28,7 +28,7 @@ import { CoreGradesReportLinkHandler } from './services/handlers/report-link';
 import { CoreGradesUserLinkHandler } from './services/handlers/user-link';
 import { CoreGradesCourseParticipantsOptionHandler } from '@features/grades/services/handlers/course-participants-option';
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CORE_COURSE_PAGE_NAME, CORE_COURSE_INDEX_PATH, CoreCourseForceLanguageSource } from '@features/course/constants';
 
 /**
