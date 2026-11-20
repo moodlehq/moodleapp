@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
-import { CoreCapacitorSQLiteDBConnection, CoreCapacitorSQLiteDriver } from '@classes/capacitor-sqlite-db-connection';
-import { CoreCapacitorSQLiteManager } from '@classes/capacitor-sqlite-manager';
+import { CoreCapacitorSQLiteDBConnection } from '@classes/capacitor-sqlite-db-connection';
+import { ConnectionEntry, CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
 import { CoreError } from '@classes/errors/error';
-import { CoreQueueRunner } from '@classes/queue-runner';
 import { SQLiteDBConnection } from '@classes/sqlitedb';
 import { CoreDbService } from '@services/db';
 
@@ -26,41 +25,19 @@ import { CoreDbService } from '@services/db';
  */
 export class CoreDbServiceMock extends CoreDbService {
 
-    protected entries = new Map<string, BrowserConnectionEntry>();
-
     constructor(
         protected sqlite: CoreBrowserSQLiteDriver = CapacitorSQLite,
         protected initializeStore: () => Promise<void> = initializeBrowserSQLite,
     ) {
         super();
+        this.manager = new CoreBrowserSQLiteManager(sqlite, initializeStore);
     }
 
     /**
      * @inheritdoc
      */
     protected async initialize(): Promise<void> {
-        await this.initializeStore();
-        await this.sqlite.initWebStore();
-    }
-
-    /**
-     * Check whether a logical database exists without opening or creating it.
-     *
-     * @param name Logical database name.
-     * @returns Whether the database exists.
-     */
-    async databaseExists(name: string): Promise<boolean> {
-        await this.ready();
-        if (!CoreCapacitorSQLiteManager.isValidDatabaseName(name)) {
-            throw new CoreError('Invalid SQLite database name.');
-        }
-
-        const result = await this.sqlite.isDatabase({ database: name });
-        if (typeof result.result !== 'boolean') {
-            throw new CoreError('Invalid SQLite existence response.');
-        }
-
-        return result.result;
+        await this.manager.ready();
     }
 
     /**
@@ -74,111 +51,45 @@ export class CoreDbServiceMock extends CoreDbService {
      * @inheritdoc
      */
     protected createDatabase(name: string): SQLiteDBConnection {
-        const entry = this.getEntry(name);
-        const generation = entry.generation;
-        const run = <T>(operation: () => Promise<T>) => entry.queue.run(async () => {
-            await this.ready();
-            if (generation !== entry.generation) {
-                throw new CoreError('SQLite connection belongs to a deleted database.');
-            }
-            if (entry.failure) {
-                throw entry.failure;
-            }
-
-            return operation();
-        });
-
-        return {
-            executeSql: (sql, params) => run(async () => (await this.connect(name, entry)).executeSql(sql, params)),
-            sqlBatch: statements => run(async () => (await this.connect(name, entry)).sqlBatch(statements)),
-            open: () => run(async () => {
-                try {
-                    const adapter = await this.connect(name, entry);
-                    if (!entry.closed) {
-                        return;
-                    }
-                    await adapter.open();
-                    await this.disableForeignKeys(name);
-                    entry.closed = false;
-                } catch (error) {
-                    entry.failure = error;
-                    throw error;
-                }
-            }),
-            close: () => run(async () => {
-                try {
-                    if (entry.adapter) {
-                        await entry.adapter.close();
-                        entry.closed = true;
-                    }
-                } catch (error) {
-                    entry.failure = error;
-                    throw error;
-                }
-            }),
-        };
+        return this.manager.getConnection(name);
     }
 
     /**
-     * Delete only the named plugin database after queued writes finish. Retire every old wrapper.
-     *
-     * @param name Logical database name.
+     * @inheritdoc
      */
     async deleteDB(name: string): Promise<void> {
+        // The manager's readiness barrier also initialises the web store, so deletion can join the queue immediately.
+        await this.manager.deleteDatabase(name);
+        delete this.dbInstances[name];
+    }
+
+}
+
+/**
+ * Browser-specific storage and failure handling for the shared connection manager.
+ */
+class CoreBrowserSQLiteManager extends CoreCapacitorSQLiteManager {
+
+    constructor(
+        protected sqlite: CoreBrowserSQLiteDriver,
+        protected initializeStore: () => Promise<void>,
+    ) {
+        super(sqlite);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async initialize(): Promise<void> {
+        await this.initializeStore();
+        await this.sqlite.initWebStore();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async createAdapter(name: string): Promise<CoreCapacitorSQLiteDBConnection> {
         const entry = this.getEntry(name);
-        await entry.queue.run(async () => {
-            await this.ready();
-            if (entry.failure) {
-                throw entry.failure;
-            }
-            entry.generation++;
-            try {
-                const exists = await this.sqlite.isDatabase({ database: name });
-                if (entry.adapter || exists.result) {
-                    await (await this.connect(name, entry)).close();
-                    await this.sqlite.deleteDatabase({ database: name, readonly: false });
-                    await this.sqlite.closeConnection({ database: name, readonly: false });
-                }
-                entry.adapter = undefined;
-                entry.closed = false;
-                delete this.dbInstances[name];
-            } catch (error) {
-                entry.failure = error;
-                throw error;
-            }
-        });
-    }
-
-    /**
-     * Obtain the queue shared by all generations of a database.
-     *
-     * @param name Logical database name.
-     * @returns Shared connection state.
-     */
-    protected getEntry(name: string): BrowserConnectionEntry {
-        if (!CoreCapacitorSQLiteManager.isValidDatabaseName(name)) {
-            throw new CoreError('Invalid SQLite database name.');
-        }
-        let entry = this.entries.get(name);
-        if (!entry) {
-            entry = { queue: new CoreQueueRunner(), generation: 0, closed: false };
-            this.entries.set(name, entry);
-        }
-
-        return entry;
-    }
-
-    /**
-     * Register/open once and persist writes before acknowledging them. Persistence failures block the name until reload.
-     *
-     * @param name Logical database name.
-     * @param entry Shared connection state.
-     * @returns Open SQL adapter.
-     */
-    protected async connect(name: string, entry: BrowserConnectionEntry): Promise<CoreCapacitorSQLiteDBConnection> {
-        if (entry.adapter) {
-            return entry.adapter;
-        }
         const persist = async () => {
             try {
                 const settings = await this.sqlite.query({ database: name, statement: 'PRAGMA foreign_keys', values: [] });
@@ -190,24 +101,40 @@ export class CoreDbServiceMock extends CoreDbService {
                 // Export resets connection PRAGMAs and jeep-sqlite enables constraints; preserve the caller's setting.
                 await this.sqlite.query({ database: name, statement: `PRAGMA foreign_keys = ${foreignKeys}`, values: [] });
             } catch (error) {
-                entry.failure = error;
-                throw error;
+                await this.fail(entry, name, error);
             }
         };
-        try {
-            await this.sqlite.createConnection({
-                database: name, version: 1, encrypted: false, mode: 'no-encryption', readonly: false,
-            });
-            await this.sqlite.open({ database: name, readonly: false });
-            await this.disableForeignKeys(name);
-            await persist();
-            entry.adapter = new CoreCapacitorSQLiteDBConnection(name, this.sqlite, persist);
+        await this.disableForeignKeys(name);
+        await persist();
 
-            return entry.adapter;
-        } catch (error) {
-            entry.failure = error;
-            throw error;
+        return new CoreCapacitorSQLiteDBConnection(name, this.sqlite, persist, () => this.disableForeignKeys(name));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected async closeAdapter(name: string, entry: ConnectionEntry): Promise<void> {
+        if (entry.failure) {
+            throw entry.failure;
         }
+        try {
+            await super.closeAdapter(name, entry);
+        } catch (error) {
+            await this.fail(entry, name, error);
+        }
+    }
+
+    /**
+     * Do not release a browser connection after failure: closing it can export unacknowledged data.
+     *
+     * @param entry Connection state.
+     * @param name Logical database name.
+     * @param error Original failure.
+     */
+    protected async fail(entry: ConnectionEntry, name: string, error: unknown): Promise<never> {
+        entry.failure = error instanceof Error ? error : new CoreError(String(error));
+
+        throw entry.failure;
     }
 
     /**
@@ -249,13 +176,5 @@ export async function initializeBrowserSQLite(): Promise<void> {
     }
 }
 
-export type CoreBrowserSQLiteDriver = CoreCapacitorSQLiteDriver & Pick<CapacitorSQLitePlugin,
-    'initWebStore' | 'saveToStore' | 'createConnection' | 'closeConnection' | 'deleteDatabase' | 'getDatabaseList'>;
-
-type BrowserConnectionEntry = {
-    queue: CoreQueueRunner;
-    generation: number;
-    closed: boolean;
-    adapter?: CoreCapacitorSQLiteDBConnection;
-    failure?: unknown;
-};
+export type CoreBrowserSQLiteDriver = CoreCapacitorSQLiteManagerDriver &
+    Pick<CapacitorSQLitePlugin, 'initWebStore' | 'saveToStore' | 'getDatabaseList'>;

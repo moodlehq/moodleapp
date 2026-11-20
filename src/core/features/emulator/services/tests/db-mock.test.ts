@@ -48,6 +48,7 @@ describe('Capacitor browser database provider', () => {
         registered = new Set();
         initialize = jest.fn(async () => undefined);
         driver = {
+            checkConnectionsConsistency: jest.fn(async () => ({ result: true })),
             initWebStore: jest.fn(async () => undefined),
             getDatabaseList: jest.fn(async () => ({ values: [...engines.keys()].map(name => `${name}SQLite.db`) })),
             saveToStore: jest.fn(async ({ database }) => {
@@ -136,6 +137,33 @@ describe('Capacitor browser database provider', () => {
         expect(initialize).toHaveBeenCalledTimes(1);
     });
 
+    it('preserves the order of writes and deletion while the store is initializing', async () => {
+        const pending = new CorePromisedValue<void>();
+        initialize.mockImplementation(() => pending);
+        const old = provider.getDB('Site-test');
+        const writing = old.execute('CREATE TABLE records (id INTEGER)');
+        const deletion = provider.deleteDB('Site-test');
+
+        pending.resolve();
+        await writing;
+        await deletion;
+        await expect(old.execute('SELECT 1')).rejects.toThrow('deleted');
+        expect(engines.has('Site-test')).toBe(false);
+    });
+
+    it('invalidates a queued operation when deletion is requested first during initialization', async () => {
+        const pending = new CorePromisedValue<void>();
+        initialize.mockImplementation(() => pending);
+        const old = provider.getDB('Site-test');
+        const deletion = provider.deleteDB('Site-test');
+        const query = old.execute('SELECT 1');
+
+        pending.resolve();
+        await expect(query).rejects.toThrow('deleted');
+        await deletion;
+        expect(driver.open).not.toHaveBeenCalled();
+    });
+
     it('checks database existence without opening or creating a connection', async () => {
         await expect(provider.databaseExists('Site-absent')).resolves.toBe(false);
         expect(driver.createConnection).not.toHaveBeenCalled();
@@ -216,6 +244,18 @@ describe('Capacitor browser database provider', () => {
         expect(driver.deleteDatabase).not.toHaveBeenCalled();
     });
 
+    it('does not close a browser connection after initial persistence fails', async () => {
+        const error = new Error('QuotaExceededError');
+        jest.mocked(driver.saveToStore).mockRejectedValueOnce(error);
+        const db = provider.getDB('Site-test');
+
+        await expect(db.execute('SELECT 1')).rejects.toBe(error);
+        await expect(db.close()).rejects.toBe(error);
+        await expect(provider.deleteDB('Site-test')).rejects.toBe(error);
+        expect(driver.closeConnection).not.toHaveBeenCalled();
+        expect(driver.deleteDatabase).not.toHaveBeenCalled();
+    });
+
     it('coordinates close/reopen across wrappers without allowing SQL after close', async () => {
         const first = provider.getDB('MoodleMobile');
         const second = provider.getDB('MoodleMobile', true);
@@ -243,6 +283,11 @@ describe('Capacitor browser database provider', () => {
     it('preserves the previous browser foreign-key policy after opening and exporting', async () => {
         const db = provider.getDB('MoodleMobile');
         await db.execute('CREATE TABLE records (value TEXT)');
+        await db.close();
+        jest.mocked(driver.open).mockImplementationOnce(async ({ database }) => {
+            engine(database).exec('PRAGMA foreign_keys = ON');
+        });
+        await db.open();
         const result = await db.execute('PRAGMA foreign_keys');
         expect(result.rows.item(0)).toEqual({ ['foreign_keys']: 0 });
     });
@@ -250,11 +295,25 @@ describe('Capacitor browser database provider', () => {
     it('preserves explicitly enabled foreign keys across exports', async () => {
         const db = provider.getDB('MoodleMobile');
         await db.execute('PRAGMA foreign_keys = ON');
+        await db.open();
         await db.execute('CREATE TABLE parent (id INTEGER PRIMARY KEY)');
         await db.execute('CREATE TABLE child (id INTEGER REFERENCES parent(id))');
         await expect(db.execute('INSERT INTO child VALUES (1)')).rejects.toThrow('FOREIGN KEY');
         const result = await db.execute('PRAGMA foreign_keys');
         expect(result.rows.item(0)).toEqual({ ['foreign_keys']: 1 });
+    });
+
+    it('blocks later operations after a browser close fails', async () => {
+        const db = provider.getDB('MoodleMobile');
+        await db.execute('CREATE TABLE records (id INTEGER)');
+        const error = new Error('Cannot close');
+        jest.mocked(driver.close).mockRejectedValueOnce(error);
+
+        await expect(db.close()).rejects.toBe(error);
+        await expect(db.execute('SELECT 1')).rejects.toBe(error);
+        await expect(provider.deleteDB('MoodleMobile')).rejects.toBe(error);
+        expect(driver.closeConnection).not.toHaveBeenCalled();
+        expect(driver.deleteDatabase).not.toHaveBeenCalled();
     });
 
     it('does not flush or delete a database after rollback cannot be confirmed', async () => {
@@ -273,6 +332,17 @@ describe('Capacitor browser database provider', () => {
         await provider.deleteDB('Site-absent');
         expect(driver.createConnection).not.toHaveBeenCalled();
         expect(driver.deleteDatabase).not.toHaveBeenCalled();
+    });
+
+    it('deletes an existing unopened database without opening it', async () => {
+        engines.set('Site-existing', new DatabaseSync(':memory:'));
+
+        await provider.deleteDB('Site-existing');
+
+        expect(driver.open).not.toHaveBeenCalled();
+        expect(driver.deleteDatabase).toHaveBeenCalledWith({ database: 'Site-existing', readonly: false });
+        expect(engines.has('Site-existing')).toBe(false);
+        expect(registered.has('Site-existing')).toBe(false);
     });
 
     it.each([false, true])('defaults to native storage without the emulator module (mobile: %s)', mobile => {

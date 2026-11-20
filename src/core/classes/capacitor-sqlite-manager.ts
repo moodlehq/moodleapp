@@ -19,7 +19,7 @@ import { CoreQueueRunner } from '@classes/queue-runner';
 import { SQLiteDBConnection } from '@classes/sqlitedb';
 
 /**
- * Inactive native connection owner. All wrappers, including forceNew wrappers, must use this same manager.
+ * Connection owner. All wrappers, including forceNew wrappers, must use this same manager.
  */
 export class CoreCapacitorSQLiteManager {
 
@@ -66,9 +66,7 @@ export class CoreCapacitorSQLiteManager {
                 if (entry.generation !== generation) {
                     throw new CoreError('SQLite connection belongs to a deleted database.');
                 }
-                if (entry.adapter) {
-                    await entry.adapter.close();
-                }
+                await this.closeAdapter(name, entry);
             }),
         };
     }
@@ -91,9 +89,7 @@ export class CoreCapacitorSQLiteManager {
             entry.generation++;
 
             try {
-                if (entry.adapter) {
-                    await entry.adapter.close();
-                }
+                await this.closeAdapter(name, entry);
                 if (await this.checkDatabaseExists(name)) {
                     if (!entry.registered) {
                         await this.register(name, entry);
@@ -210,13 +206,33 @@ export class CoreCapacitorSQLiteManager {
         try {
             await this.register(name, entry);
             await this.sqlite.open({ database: name, readonly: false });
-            const adapter = new CoreCapacitorSQLiteDBConnection(name, this.sqlite);
+            const adapter = await this.createAdapter(name);
             entry.adapter = adapter;
 
             return adapter;
         } catch (error) {
             return this.fail(entry, name, error);
         }
+    }
+
+    /**
+     * Create an adapter after the native connection has opened.
+     *
+     * @param name Logical database name.
+     * @returns Open adapter.
+     */
+    protected async createAdapter(name: string): Promise<CoreCapacitorSQLiteDBConnection> {
+        return new CoreCapacitorSQLiteDBConnection(name, this.sqlite);
+    }
+
+    /**
+     * Close an existing adapter without creating a connection.
+     *
+     * @param name Logical database name.
+     * @param entry Connection state.
+     */
+    protected async closeAdapter(name: string, entry: ConnectionEntry): Promise<void> {
+        await entry.adapter?.close();
     }
 
     /**
@@ -261,7 +277,7 @@ export class CoreCapacitorSQLiteManager {
 export type CoreCapacitorSQLiteManagerDriver = CoreCapacitorSQLiteDriver &
     Pick<CapacitorSQLitePlugin, 'createConnection' | 'closeConnection' | 'deleteDatabase' | 'checkConnectionsConsistency'>;
 
-type ConnectionEntry = {
+export type ConnectionEntry = {
     queue: CoreQueueRunner;
     generation: number;
     registered: boolean;
