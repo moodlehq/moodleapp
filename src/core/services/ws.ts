@@ -128,7 +128,7 @@ export class CoreWSProvider {
 
             return this.addToRetryQueue<T>(method, siteUrl, dataToSend, preSets);
         } else {
-            return this.performPost<T>(method, siteUrl, dataToSend, preSets);
+            return this.sendWSRequest<T>(method, siteUrl, dataToSend, preSets);
         }
     }
 
@@ -636,7 +636,26 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform the post call. It can be split into several requests.
+     * Perform a request to call a WS. It can be split into several requests.
+     *
+     * @param method The WebService method to be called.
+     * @param siteUrl Complete site url to perform the call.
+     * @param ajaxData Arguments to pass to the method.
+     * @param preSets Extra settings and information.
+     * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
+     * @deprecated since 6.0. Use CoreWS.call instead.
+     */
+    async performPost<T = unknown>(
+        method: string,
+        siteUrl: string,
+        ajaxData: Record<string, unknown>,
+        preSets: CoreWSPreSets,
+    ): Promise<T> {
+        return this.sendWSRequest(method, siteUrl, ajaxData, preSets);
+    }
+
+    /**
+     * Perform a request to call a WS. It can be split into several requests.
      *
      * @param method The WebService method to be called.
      * @param siteUrl Complete site url to perform the call.
@@ -644,7 +663,7 @@ export class CoreWSProvider {
      * @param preSets Extra settings and information.
      * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
-    async performPost<T = unknown>(
+    protected async sendWSRequest<T = unknown>(
         method: string,
         siteUrl: string,
         ajaxData: Record<string, unknown>,
@@ -659,7 +678,7 @@ export class CoreWSProvider {
         }
 
         if (!preSets.splitRequest || !ajaxData[preSets.splitRequest.param]) {
-            return this.performSinglePost(method, siteUrl, ajaxData, preSets, options);
+            return this.sendSingleWSRequest(method, siteUrl, ajaxData, preSets, options);
         }
 
         // Split the request into several requests if needed.
@@ -671,7 +690,7 @@ export class CoreWSProvider {
             const limitedData = Object.assign({}, ajaxData);
             limitedData[preSets.splitRequest.param] = splitParam.slice(i, i + preSets.splitRequest.maxLength);
 
-            promises.push(this.performSinglePost(method, siteUrl, limitedData, preSets, options));
+            promises.push(this.sendSingleWSRequest(method, siteUrl, limitedData, preSets, options));
         }
 
         const results = await Promise.all(promises);
@@ -706,7 +725,7 @@ export class CoreWSProvider {
     }
 
     /**
-     * Perform a single post request.
+     * Perform a single WS request.
      * This request will always go through the WebView, it doesn't use native requests.
      *
      * @param method The WebService method to be called.
@@ -716,7 +735,7 @@ export class CoreWSProvider {
      * @param options Request options.
      * @returns Promise resolved with the response data in success and rejected with CoreWSError if it fails.
      */
-    protected performSinglePost<T>(
+    protected sendSingleWSRequest<T>(
         method: string,
         siteUrl: string,
         ajaxData: Record<string, unknown>,
@@ -877,7 +896,7 @@ export class CoreWSProvider {
 
             // Add a delay between calls.
             setTimeout(() => {
-                call.deferred.resolve(this.performPost(call.method, call.siteUrl, call.data, call.preSets));
+                call.deferred.resolve(this.sendWSRequest(call.method, call.siteUrl, call.data, call.preSets));
                 this.processRetryQueue();
             }, 200);
         } else {

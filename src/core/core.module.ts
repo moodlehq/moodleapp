@@ -59,6 +59,7 @@ export async function getCoreServices(): Promise<Type<unknown>[]> {
     const { CoreScreenService } = await import('@services/native/screen');
 
     // Do not export CoreFilePickerService and CoreIntentLauncher because they should be used through CoreOpenerService.
+    // Do not export CoreHttpService and CoreFileTransferService because they should be used through CoreWSProvider.
     // Do not export CoreStatusBar because site plugins should not control the status bar.
 
     const { CoreAlertsService } = await import('@services/overlays/alerts');
