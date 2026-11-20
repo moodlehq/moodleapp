@@ -32,6 +32,7 @@ export class CoreCapacitorSQLiteDBConnection implements SQLiteDBConnection {
         protected name: string,
         protected sqlite: CoreCapacitorSQLiteDriver,
         protected persist?: () => Promise<void>,
+        protected afterReopen?: () => Promise<void>,
     ) {}
 
     /**
@@ -124,6 +125,7 @@ export class CoreCapacitorSQLiteDBConnection implements SQLiteDBConnection {
                 throw new CoreError('SQLite database is missing; refusing to reopen an empty replacement.');
             }
             await this.sqlite.open({ database: this.name, readonly: false });
+            await this.afterReopen?.();
             this.closed = false;
         });
     }
