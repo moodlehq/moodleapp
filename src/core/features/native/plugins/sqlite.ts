@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 /**
  * Retains the legacy SQLite service name for site plugins without accessing databases.
  *
- * @deprecated since 6.0. Not used for database access anymore.
+ * @deprecated since 6.0. Site plugins must not control DBs directly.
  */
 @Injectable({ providedIn: 'root' })
 export class SQLite {
