@@ -14,188 +14,122 @@
 
 import { Injectable } from '@angular/core';
 
-import { SQLiteDB } from '@classes/sqlitedb';
-import { CoreBrowser } from '@static/browser';
-import { SQLite, makeSingleton } from '@singletons';
+import { SQLiteDB, SQLiteDBConnection } from '@classes/sqlitedb';
+import { makeSingleton } from '@singletons';
+import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
+import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
+import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
-import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
 import { asyncInstance } from '@/core/utils/async-instance';
-
-const tableNameRegex = new RegExp([
-    '^SELECT.*FROM ([^ ]+)',
-    '^INSERT.*INTO ([^ ]+)',
-    '^UPDATE ([^ ]+)',
-    '^DELETE FROM ([^ ]+)',
-    '^CREATE TABLE IF NOT EXISTS ([^ ]+)',
-    '^ALTER TABLE ([^ ]+)',
-    '^DROP TABLE IF EXISTS ([^ ]+)',
-].join('|'));
+import { CoreLogger } from '@static/logger';
 
 /**
  * This service allows interacting with the local database to store and retrieve data.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreDbProvider {
-
-    queryLogs: CoreDbQueryLog[] = [];
+export class CoreDbService {
 
     protected dbInstances: { [name: string]: SQLiteDB } = {};
+    protected initialization?: Promise<void>;
+    protected nativeSQLite: CoreNativeSQLiteDriver = CapacitorSQLite;
+    protected manager = new CoreCapacitorSQLiteManager(this.nativeSQLite);
+    protected logger: CoreLogger = CoreLogger.getInstance('CoreDb');
 
     /**
-     * Check whether database queries should be logged.
+     * Share platform readiness and legacy-file migration across database operations.
+     * A failed initialisation remains blocked until the application is restarted.
      *
-     * @returns Whether queries should be logged.
+     * @returns Promise resolved when database access is safe.
      */
-    loggingEnabled(): boolean {
-        return CoreBrowser.hasDevelopmentSetting('DBLoggingEnabled');
+    ready(): Promise<void> {
+        this.initialization ??= this.initialize();
+
+        return this.initialization;
     }
 
     /**
-     * Print query history in console.
-     *
-     * @param format Log format, with the following substitutions: :dbname, :sql, :duration, and :result.
+     * Prepare the active driver before allowing database access.
      */
-    printHistory(format = ':dbname | :sql | Duration: :duration | Result: :result'): void {
-        const substituteParams = ({ sql, params, duration, error, dbName }: CoreDbQueryLog) => format
-            .replace(':dbname', dbName)
-            .replace(':sql', Object
-                .values(params ?? [])
-                .reduce((sql: string, param: string) => sql.replace('?', param) as string, sql) as string)
-            .replace(':duration', `${Math.round(duration).toString().padStart(4, '0')}ms`)
-            .replace(':result', error?.message ?? 'Success');
-
-        // eslint-disable-next-line no-console
-        console.log(this.queryLogs.map(substituteParams).join('\n'));
+    protected async initialize(): Promise<void> {
+        await CorePlatform.ready();
+        await this.manager.ready();
+        await this.migrateLegacyDatabases();
     }
 
     /**
-     * Get the table name from a SQL query.
+     * Move legacy SQLite files into the Capacitor database directory before opening connections.
      *
-     * @param sql SQL query.
-     * @returns Table name, undefined if not found.
+     * @returns Promise resolved when migration is complete.
+     * @todo 7.0 Remove this legacy migration logic.
      */
-    protected getTableNameFromSql(sql: string): string | undefined {
-        const matches = sql.match(tableNameRegex);
+    protected async migrateLegacyDatabases(): Promise<void> {
 
-        return matches?.find((matchEntry, index) => index > 0 && !!matchEntry);
-    }
+        const migrationOptions = CorePlatform.isIOS() ? { folderPath: 'Library/LocalDatabase' } : {};
 
-    /**
-     * Check if a value matches a certain filter.
-     *
-     * @param value Value.
-     * @param filter Filter.
-     * @returns Whether the value matches the filter.
-     */
-    protected valueMatchesFilter(value: string, filter?: RegExp | string): boolean {
-        if (typeof filter === 'string') {
-            return value === filter;
-        } else if (filter) {
-            return !!value.match(filter);
+        let result: Awaited<ReturnType<CoreNativeSQLiteDriver['getMigratableDbList']>>;
+        try {
+            result = await this.nativeSQLite.getMigratableDbList(migrationOptions);
+        } catch (error) {
+            if (this.isEmptyLegacyDatabaseListError(error)) {
+                return;
+            }
+
+            throw error;
         }
 
-        return true;
+        const dbNameList = result.values ?? [];
+        if (dbNameList.length > 0) {
+            this.logger.error(`Migrating databases: ${dbNameList.join(', ')}...`);
+            await this.nativeSQLite.moveDatabasesAndAddSuffix({ dbNameList, ...migrationOptions });
+        }
     }
 
     /**
-     * Build an object with the summary data for each db, table and statement.
+     * Check for Capacitor SQLite's explicit empty-directory response.
      *
-     * @param filters Filters to limit the data stored.
-     * @returns Object with the summary data.
+     * @param error Plugin error.
+     * @returns Whether there are no legacy databases.
      */
-    protected buildStatementsSummary(
-        filters: TablesSummaryFilters = {},
-    ): Record<string, Record<string, Record<string, CoreDbStatementSummary>>> {
-        const statementsSummary: Record<string, Record<string, Record<string, CoreDbStatementSummary>>> = {};
+    protected isEmptyLegacyDatabaseListError(error: unknown): boolean {
+        const message = error instanceof Error ? error.message : typeof error === 'string' ? error : '';
 
-        this.queryLogs.forEach(log => {
-            if (!this.valueMatchesFilter(log.dbName, filters.dbName)) {
-                return;
-            }
-
-            const statement = log.sql.substring(0, log.sql.indexOf(' '));
-            if (!statement) {
-                console.warn(`Statement not found from sql: ${log.sql}`); // eslint-disable-line no-console
-
-                return;
-            }
-
-            const tableName = this.getTableNameFromSql(log.sql);
-            if (!tableName) {
-                console.warn(`Table name not found from sql: ${log.sql}`); // eslint-disable-line no-console
-
-                return;
-            }
-
-            if (!this.valueMatchesFilter(tableName, filters.tableName)) {
-                return;
-            }
-
-            statementsSummary[log.dbName] = statementsSummary[log.dbName] ?? {};
-            statementsSummary[log.dbName][tableName] = statementsSummary[log.dbName][tableName] ?? {};
-            statementsSummary[log.dbName][tableName][statement] = statementsSummary[log.dbName][tableName][statement] ?? {
-                count: 0,
-                duration: 0,
-                errors: 0,
-            };
-
-            statementsSummary[log.dbName][tableName][statement].count++;
-            statementsSummary[log.dbName][tableName][statement].duration += log.duration;
-            if (log.error) {
-                statementsSummary[log.dbName][tableName][statement].errors++;
-            }
-        });
-
-        return statementsSummary;
+        return message.trim() === 'getMigratableDbList: No databases available';
     }
 
     /**
-     * Print summary of statements for several tables.
+     * Check whether a logical database exists without opening or creating it.
      *
-     * @param filters Filters to limit the results printed.
-     * @param format Log format, with the following substitutions: :dbname, :table, :statement, :count, :duration and :errors.
+     * @param name Logical database name.
+     * @returns Whether the database exists.
      */
-    printTablesSummary(
-        filters: TablesSummaryFilters = {},
-        format = ':dbname, :table, :statement, :count, :duration, :errors',
-    ): void {
-        const statementsSummary = this.buildStatementsSummary(filters);
+    async databaseExists(name: string): Promise<boolean> {
+        await this.ready();
 
-        const substituteParams = (dbName: string,  tableName: string, statementName: string) => format
-            .replace(':dbname', dbName)
-            .replace(':table', tableName)
-            .replace(':statement', statementName)
-            .replace(':count', String(statementsSummary[dbName][tableName][statementName].count))
-            .replace(':duration', `${statementsSummary[dbName][tableName][statementName].duration.toFixed(2)}ms`)
-            .replace(':errors', String(statementsSummary[dbName][tableName][statementName].errors));
-
-        // eslint-disable-next-line no-console
-        console.log(
-            Object.keys(statementsSummary)
-                .sort()
-                .map(dbName => Object.keys(statementsSummary[dbName])
-                    .sort()
-                    .map(tableName => Object.keys(statementsSummary[dbName][tableName])
-                        .sort()
-                        .map(statementName => substituteParams(dbName, tableName, statementName))
-                        .join('\n')).join('\n')).join('\n'),
-        );
+        return this.manager.databaseExists(name);
     }
 
     /**
-     * Log a query.
+     * List database files without opening them.
      *
-     * @param log Query log.
+     * @returns Database filenames.
      */
-    logQuery(log: CoreDbQueryLog): void {
-        this.queryLogs.push(log);
+    async listDatabaseFiles(): Promise<string[]> {
+        await this.ready();
+        const result = await this.getDatabaseList();
+        if (!Array.isArray(result.values) || result.values.some(value => typeof value !== 'string')) {
+            throw new CoreError('SQLite returned an invalid database list.');
+        }
+
+        return result.values;
     }
 
     /**
-     * Clear stored logs.
+     * Obtain the database list from the active driver.
+     *
+     * @returns Plugin database list.
      */
-    clearLogs(): void {
-        this.queryLogs = [];
+    protected getDatabaseList(): ReturnType<CapacitorSQLitePlugin['getDatabaseList']> {
+        return this.nativeSQLite.getDatabaseList();
     }
 
     /**
@@ -209,17 +143,7 @@ export class CoreDbProvider {
      */
     getDB(name: string, forceNew?: boolean): SQLiteDB {
         if (this.dbInstances[name] === undefined || forceNew) {
-            let db = this.createDatabase(name);
-
-            if (this.loggingEnabled()) {
-                const spies = this.getDatabaseSpies(name, db);
-
-                db = new Proxy(db, {
-                    get: (target, property, receiver) => spies[property] ?? Reflect.get(target, property, receiver),
-                }) as unknown as SQLiteObject;
-            }
-
-            this.dbInstances[name] = new SQLiteDB(name, db);
+            this.dbInstances[name] = new SQLiteDB(name, this.createDatabase(name));
         }
 
         return this.dbInstances[name];
@@ -231,14 +155,15 @@ export class CoreDbProvider {
      * @param name Database name.
      * @returns Database connection.
      */
-    protected createDatabase(name: string): SQLiteObject {
-        // Ideally, this method would return a Promise instead of resorting to Duck typing;
-        // but doing so would mean that the getDB() method should also return a promise.
-        // Given that it is heavily used throughout the app, we want to avoid it for now.
-        return asyncInstance(async () => {
-            await CorePlatform.ready();
+    protected createDatabase(name: string): SQLiteDBConnection {
+        // Get the connection immediately so a later delete invalidates this handle,
+        // rather than rebinding it to a recreated database.
+        const connection = this.manager.getConnection(name);
 
-            return SQLite.create({ name, location: 'default' });
+        return asyncInstance(async () => {
+            await this.ready();
+
+            return connection;
         }, {});
     }
 
@@ -248,120 +173,14 @@ export class CoreDbProvider {
      * @param name DB name.
      */
     async deleteDB(name: string): Promise<void> {
-        if (this.dbInstances[name] !== undefined) {
-            await this.dbInstances[name].close();
+        await this.ready();
 
-            delete this.dbInstances[name];
-        }
-
-        await this.deleteDatabase(name);
-    }
-
-    /**
-     * Delete database.
-     *
-     * @param name Database name.
-     */
-    protected async deleteDatabase(name: string): Promise<void> {
-        await SQLite.deleteDatabase({
-            name,
-            location: 'default',
-        });
-    }
-
-    /**
-     * Get database spy methods to intercept database calls and track logging information.
-     *
-     * @param dbName Database name.
-     * @param db Database to spy.
-     * @returns Spy methods.
-     */
-    protected getDatabaseSpies(dbName: string, db: SQLiteObject): Partial<SQLiteObject> {
-        return {
-            async executeSql(statement, params) {
-                const start = performance.now();
-
-                try {
-                    const result = await db.executeSql(statement, params);
-
-                    CoreDB.logQuery({
-                        params,
-                        sql: statement,
-                        duration:  performance.now() - start,
-                        dbName,
-                    });
-
-                    return result;
-                } catch (error) {
-                    CoreDB.logQuery({
-                        params,
-                        error,
-                        sql: statement,
-                        duration:  performance.now() - start,
-                        dbName,
-                    });
-
-                    throw error;
-                }
-            },
-            async sqlBatch(statements) {
-                const start = performance.now();
-                const sql = Array.isArray(statements)
-                    ? statements.join(' | ')
-                    : String(statements);
-
-                try {
-                    const result = await db.sqlBatch(statements);
-
-                    CoreDB.logQuery({
-                        sql,
-                        duration: performance.now() - start,
-                        dbName,
-                    });
-
-                    return result;
-                } catch (error) {
-                    CoreDB.logQuery({
-                        sql,
-                        error,
-                        duration: performance.now() - start,
-                        dbName,
-                    });
-
-                    throw error;
-                }
-            },
-        };
+        await this.manager.deleteDatabase(name);
+        delete this.dbInstances[name];
     }
 
 }
+export const CoreDB = makeSingleton(CoreDbService);
 
-export const CoreDB = makeSingleton(CoreDbProvider);
-
-/**
- * Database query log entry.
- */
-export type CoreDbQueryLog = {
-    dbName: string;
-    sql: string;
-    duration: number;
-    error?: Error;
-    params?: unknown[];
-};
-
-/**
- * Summary about a certain DB statement.
- */
-type CoreDbStatementSummary = {
-    count: number;
-    duration: number;
-    errors: number;
-};
-
-/**
- * Filters to print tables summary.
- */
-type TablesSummaryFilters = {
-    dbName?: RegExp | string;
-    tableName?: RegExp | string;
-};
+type CoreNativeSQLiteDriver = CoreCapacitorSQLiteManagerDriver &
+    Pick<CapacitorSQLitePlugin, 'getMigratableDbList' | 'moveDatabasesAndAddSuffix' | 'getDatabaseList'>;

@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteObject } from '@awesome-cordova-plugins/sqlite/ngx';
-
 import { CoreError } from '@classes/errors/error';
 
 type SQLiteDBColumnType = 'INTEGER' | 'REAL' | 'TEXT' | 'BLOB';
@@ -140,7 +138,7 @@ export class SQLiteDB {
      * @param name Database name.
      * @param db Database connection.
      */
-    constructor(public name: string, private db: SQLiteObject) {}
+    constructor(public name: string, private db: SQLiteDBConnection) {}
 
     /**
      * Add a column to an existing table.
@@ -1059,6 +1057,27 @@ export type SQLiteDBQueryParams = {
 };
 
 export type SQLiteDBRecordValue = number | string  | undefined | null;
+
+/**
+ * Driver-independent connection surface consumed by the app database wrapper.
+ */
+export type SQLiteDBConnection = {
+    open(): Promise<void>;
+    close(): Promise<void>;
+    executeSql(statement: string, params?: SQLiteDBRecordValue[]): Promise<SQLiteDBResult>;
+    sqlBatch(statements: SQLiteDBStatement[]): Promise<unknown>;
+};
+
+export type SQLiteDBStatement = string | [string, SQLiteDBRecordValue[]?];
+
+export type SQLiteDBResult = {
+    rows: {
+        length: number;
+        item(index: number): Record<string, unknown> | undefined;
+    };
+    rowsAffected: number;
+    insertId?: number;
+};
 
 export type SQLiteInsertResult = {
     insertId: number;
