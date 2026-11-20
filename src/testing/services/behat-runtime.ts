@@ -103,8 +103,37 @@ export class TestingBehatRuntimeService {
             return originalOpen(...args);
         };
 
+        this.forceAnimationsToFinish();
+
         // Reduce iframes timeout to speed up tests.
         CoreIframeComponent.loadingTimeout = 1000;
+    }
+
+    /**
+     * In Behat, web animations sometimes never fire onfinish (MOBILE-4885), so Ionic overlays never finish dismissing.
+     * Add a watchdog that finishes animations that stay running well past their end time.
+     */
+    protected forceAnimationsToFinish(): void {
+        const originalPlay = Animation.prototype.play;
+        const timeouts = new WeakMap<Animation, number>();
+
+        Animation.prototype.play = function(this: Animation, ...args): void {
+            originalPlay.apply(this, args);
+
+            // The same animation can be played again, so discard the previous run's watchdog.
+            window.clearTimeout(timeouts.get(this));
+
+            const endTime = Number(this.effect?.getComputedTiming().endTime);
+            if (!isFinite(endTime)) {
+                return;
+            }
+
+            timeouts.set(this, window.setTimeout(() => {
+                if (this.playState === 'running') {
+                    this.finish();
+                }
+            }, endTime + 1000));
+        };
     }
 
     /**
