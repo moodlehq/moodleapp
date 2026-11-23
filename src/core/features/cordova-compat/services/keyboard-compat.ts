@@ -56,6 +56,13 @@ export class Keyboard {
     }
 
     /**
+     * Hide the keyboard.
+     */
+    hide(): void {
+        CoreKeyboard.close();
+    }
+
+    /**
      * Force keyboard to be shown.
      */
     show(): void {
