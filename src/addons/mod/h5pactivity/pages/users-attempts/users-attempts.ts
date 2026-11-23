@@ -27,7 +27,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { AddonModH5PActivityGradeMethod } from '../../constants';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { map } from 'rxjs';
 
 /**

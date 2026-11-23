@@ -17,7 +17,7 @@ import { Injector, NgModule } from '@angular/core';
 import { Route, ROUTES, Routes } from '@angular/router';
 
 import { buildTabMainRoutes } from '@features/mainmenu/mainmenu-tab-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CORE_TAG_MAIN_MENU_PAGE_NAME } from './constants';
 
 const indexAreaRoute: Route = {

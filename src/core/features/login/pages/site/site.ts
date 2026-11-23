@@ -15,7 +15,7 @@
 import { Component, OnInit, ElementRef, inject, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSiteCheckResponse, CoreLoginSiteInfo, CoreSitesDemoSiteData } from '@services/sites';
 import { CoreUtils } from '@static/utils';
 import {
@@ -28,7 +28,7 @@ import { CoreConstants } from '@/core/constants';
 import { Translate } from '@singletons';
 import { CoreUrl, CoreUrlPartNames } from '@static/url';
 import { CoreNavigator } from '@services/navigator';
-import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/urlschemes';
+import { CoreCustomURLSchemes, CoreCustomURLSchemesHandleError } from '@services/native/urlschemes';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreForms } from '@static/form';
 import { AlertButton } from '@ionic/core';
@@ -38,12 +38,12 @@ import { CoreErrorAccordion } from '@services/error-accordion';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserGuestSupportConfig } from '@features/user/classes/support/guest-support-config';
 import { CoreLoginError } from '@classes/errors/loginerror';
-import { CoreReferrer } from '@services/referrer';
+import { CoreReferrer } from '@services/native/referrer';
 import { CoreSitesFactory } from '@services/sites-factory';
 import { CoreUnauthenticatedSite } from '@classes/sites/unauthenticated-site';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreQRScan } from '@services/qrscan';
+import { CoreQRScan } from '@services/native/qrscan';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreCountries } from '@static/countries';

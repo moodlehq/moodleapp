@@ -14,8 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { MediaType, type CameraPlugin, type MediaResult } from '@capacitor/camera';
-import { Camera } from '@services/native/camera-compat';
-import { resolveCapacitorCamera } from '@services/native/camera';
+import { resolveCapacitorCamera } from '@services/native/injection-tokens';
 import { CoreEmulatorCaptureHelper } from './capture-helper';
 import {
     CoreCaptureMediaTakePhotoOptions,
@@ -26,8 +25,7 @@ import {
  * Emulates the Capacitor Camera plugin in browser.
  */
 @Injectable()
-// eslint-disable-next-line @typescript-eslint/no-deprecated
-export class CameraMock extends Camera {
+export class CameraMock implements Pick<CameraPlugin, 'takePhoto' | 'recordVideo'> {
 
     /**
      * @inheritdoc

@@ -14,7 +14,9 @@
 
 import { PluginListenerHandle, registerPlugin } from '@capacitor/core';
 
-const PreventOverridePlugin = registerPlugin<PreventOverrideNativePlugin>('MoodleAppPreventOverride');
+export const PREVENT_OVERRIDE_PLUGIN_NAME = 'MoodleAppPreventOverride';
+
+const PreventOverridePlugin = registerPlugin<PreventOverrideNativePlugin>(PREVENT_OVERRIDE_PLUGIN_NAME);
 
 /**
  * Handles navigation attempts that would leave the app's WebView.

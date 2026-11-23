@@ -59,6 +59,7 @@ import { getH5PServices } from '@features/h5p/h5p.module';
 import { getLoginServices } from '@features/login/login.module';
 import { getMainMenuExportedObjects, getMainMenuServices } from '@features/mainmenu/mainmenu.module';
 import { getNativeServices } from '@features/native/native.module';
+import { getCordovaCompatServices } from '@features/cordova-compat/cordova-compat.module';
 import { getPushNotificationsServices } from '@features/pushnotifications/pushnotifications.module';
 import { getQuestionExportedDirectives, getQuestionServices } from '@features/question/question.module';
 import { getRatingServices } from '@features/rating/rating.module';
@@ -89,12 +90,11 @@ import { CoreDirectivesRegistry } from '@static/directives-registry';
 import { CoreDom } from '@static/dom';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreForms } from '@static/form';
-import { CoreGeolocationError, CoreGeolocationErrorReason } from '@services/geolocation';
 import { CoreIframe } from '@static/iframe';
-import { CoreKeyboard } from '@static/keyboard';
 import { CoreMedia } from '@static/media';
 import { CoreMimetype } from '@static/mimetype';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreObject } from '@static/object';
 import { CorePath } from '@static/path';
 import { CorePromiseUtils } from '@static/promise-utils';
@@ -302,7 +302,6 @@ export class CoreCompileProvider {
         instance['untracked'] = untracked;
         instance['effect'] = options.effectWrapper ?? effectWithInjectionContext(injector);
 
-        instance['CoreNetwork'] = CoreNetwork.instance;
         instance['CoreArray'] = CoreArray;
         instance['CoreColors'] = CoreColors;
         instance['CoreCountries'] = CoreCountries;
@@ -311,7 +310,6 @@ export class CoreCompileProvider {
         instance['CoreFileUtils'] = CoreFileUtils;
         instance['CoreForms'] = CoreForms;
         instance['CoreIframe'] = CoreIframe;
-        instance['CoreKeyboard'] = CoreKeyboard;
         instance['CoreMedia'] = CoreMedia;
         instance['CoreMimetype'] = CoreMimetype;
         instance['CoreObject'] = CoreObject;
@@ -329,18 +327,14 @@ export class CoreCompileProvider {
         instance['CoreDelegate'] = CoreDelegate;
         instance['CorePromisedValue'] = CorePromisedValue;
 
-        /**
-         * @deprecated since 5.0, geolocation is deprecated and will be removed in future versions.
-         */
-        instance['CoreGeolocationError'] = CoreGeolocationError; // eslint-disable-line @typescript-eslint/no-deprecated
-        instance['CoreGeolocationErrorReason'] = CoreGeolocationErrorReason; // eslint-disable-line @typescript-eslint/no-deprecated
-
         // Inject exported objects.
         for (const name in this.exportedObjects) {
             instance[name] = this.exportedObjects[name];
         }
 
         instance['SplashScreen'] = SplashScreen; // @deprecated since 6.0. Plugins shouldn't control the splash screen.
+        instance['CoreNetwork'] = CoreNetwork.instance; // @deprecated since 6.0. Use CoreNetworkService instead.
+        instance['CoreKeyboard'] = CoreKeyboard.instance; // @deprecated since 6.0. Use CoreKeyboardService instead.
     }
 
     /**
@@ -378,6 +372,7 @@ export class CoreCompileProvider {
             getLoginServices(),
             getMainMenuServices(),
             getNativeServices(),
+            getCordovaCompatServices(),
             getPushNotificationsServices(),
             getQuestionServices(),
             getRatingServices(),

@@ -20,16 +20,3 @@ export const enum AndroidNotificationPriority {
     HIGH = 4,
     MAX = 5,
 }
-
-/**
- * List of Error Codes and Meanings for FileOpener
- *
- * When an error is thrown, one of the following codes (as a string value) will be used.
- */
-export const enum CoreNativeCapacitorFileOpenerErrorCode {
-    INTERNAL_ERROR = '1',
-    INVALID_ARGUMENT = '2',
-    FILE_NOT_SUPPORTED = '8',
-    FILE_NOT_FOUND = '9',
-    UNKNOWN = '10',
-}

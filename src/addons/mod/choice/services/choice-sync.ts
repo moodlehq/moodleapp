@@ -18,7 +18,7 @@ import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/act
 import { CoreSyncResult } from '@services/sync';
 import { CoreCourse } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
 import { makeSingleton } from '@singletons';

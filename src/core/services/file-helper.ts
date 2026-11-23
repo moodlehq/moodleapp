@@ -14,14 +14,14 @@
 
 import { Injectable } from '@angular/core';
 import { FileEntry } from '@classes/native/filesystem';
-import { CoreNetwork } from '@services/network';
-import { CoreFile } from '@services/file';
+import { CoreNetwork } from '@services/native/network';
+import { CoreFile } from '@services/native/file';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWS, CoreWSFile } from '@services/ws';
 import { CoreUrl } from '@static/url';
-import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@services/opener';
+import { CoreOpener, CoreOpenerOpenFileOptions, OpenFileAction } from '@services/native/opener';
 import { CoreConstants, DownloadStatus } from '@/core/constants';
 import { CoreError } from '@classes/errors/error';
 import { makeSingleton, Translate } from '@singletons';

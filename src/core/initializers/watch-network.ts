@@ -14,7 +14,7 @@
 
 import { CoreCronDelegate } from '@services/cron';
 import { NgZone } from '@singletons';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 
 /**
  * Initializer function.

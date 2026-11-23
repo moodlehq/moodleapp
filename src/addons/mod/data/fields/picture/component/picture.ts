@@ -18,7 +18,7 @@ import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreDom } from '@static/dom';
 import { AddonModDataFieldPluginBaseComponent } from '../../../classes/base-field-plugin-component';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { ADDON_MOD_DATA_COMPONENT_LEGACY } from '@addons/mod/data/constants';
 import { CoreSharedModule } from '@/core/shared.module';
 

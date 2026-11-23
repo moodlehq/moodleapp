@@ -17,7 +17,7 @@ import { CoreContentLinksHelper } from '@features/contentlinks/services/contentl
 import { CoreFileHelper } from '@services/file-helper';
 import { CoreSites } from '@services/sites';
 import { CoreUrl } from '@static/url';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 
 /**
  * Static class with helper functions for windows.

@@ -20,7 +20,7 @@ import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { Translate } from '@singletons';
 import { CorePolicy, CorePolicySitePolicy, CorePolicyStatus } from '@features/policy/services/policy';
 import { CoreTime } from '@static/time';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { Subscription } from 'rxjs';
 import { CORE_DATAPRIVACY_FEATURE_NAME, CORE_DATAPRIVACY_PAGE_NAME } from '@features/dataprivacy/constants';
 import { CoreNavigator } from '@services/navigator';

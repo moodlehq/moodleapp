@@ -70,7 +70,7 @@ import { CoreRatingAggregateComponent } from '@features/rating/components/aggreg
 import { CoreRatingRateComponent } from '@features/rating/components/rate/rate';
 import { AddonModForumPostOptionsMenuAction } from '../post-options-menu/post-options-menu';
 import { AddonModForumWS } from '../../services/forum-ws';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 
 /**
  * Components that shows a discussion post, its attachments and the action buttons allowed (reply, etc.).

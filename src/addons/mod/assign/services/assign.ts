@@ -23,7 +23,7 @@ import { CoreGrades } from '@features/grades/services/grades';
 import { CoreTime } from '@static/time';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreError } from '@classes/errors/error';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { AddonModAssignOffline } from './assign-offline';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';
 import { CoreComments } from '@features/comments/services/comments';

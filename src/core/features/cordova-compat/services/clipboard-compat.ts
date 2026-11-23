@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { InjectionToken } from '@angular/core';
-import { CapacitorZip, type CapacitorZipPlugin } from '@capgo/capacitor-zip';
+import { Injectable } from '@angular/core';
+import { CoreClipboard, CoreClipboardService } from '@services/native/clipboard';
 
 /**
- * Resolve the native Capacitor Zip implementation.
+ * Service wrapping the Native Clipboard plugin.
  *
- * @returns Native Capacitor Zip plugin.
+ * @deprecated since 6.0. Use CoreClipboard instead.
  */
-export function resolveCapacitorZip(): CapacitorZipPlugin {
-    return CapacitorZip;
-}
+@Injectable({ providedIn: 'root' })
+export class Clipboard extends CoreClipboardService {
 
-/**
- * Injection token for the Capacitor Zip instance, allowing browser emulation.
- */
-export const CAPACITOR_ZIP = new InjectionToken<CapacitorZipPlugin>('CAPACITOR_ZIP', {
-    providedIn: 'root',
-    factory: () => resolveCapacitorZip(),
-});
+    /**
+     * Clear the text stored in clipboard
+     *
+     * @deprecated since 6.0. Use CoreClipboard.copy('') instead.
+     */
+    async clear(): Promise<void> {
+        await CoreClipboard.copy('');
+    }
+
+}

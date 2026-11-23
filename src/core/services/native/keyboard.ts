@@ -12,177 +12,164 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Injectable } from '@angular/core';
-import { fromEventPattern, Observable } from 'rxjs';
-import {
-    Keyboard as CapacitorKeyboard,
-    KeyboardInfo,
-    KeyboardResizeOptions,
-    KeyboardStyle as CapacitorKeyboardStyle,
-} from '@capacitor/keyboard';
-import type { PluginListenerHandle } from '@capacitor/core';
-import { CoreKeyboard } from '@static/keyboard';
+import { Injectable, Signal, effect, signal } from '@angular/core';
+import { Keyboard } from '@capacitor/keyboard';
+import { CorePlatform } from '@services/platform';
+import { makeSingleton, NgZone } from '@singletons';
+import { CoreEvents } from '@static/events';
 
-export enum KeyboardStyle {
-    Light = 'light',
-    Dark = 'dark',
-}
-
-export type KeyboardResizeMode = KeyboardResizeOptions['mode'];
 /**
- * Service to keep backwards compatibility with Cordova Keyboard service for plugins. Will be removed in the future.
- *
- * @deprecated since 6.0. Use the native Capacitor Keyboard plugin instead.
+ * Service with helper functions for keyboard management.
  */
 @Injectable({ providedIn: 'root' })
-export class Keyboard {
+export class CoreKeyboardService {
 
-    /**
-     * Check keyboard status visible or not.
-     *
-     * @returns Whether the keyboard is visible.
-     */
-    get isVisible(): boolean {
-        return CoreKeyboard.isKeyboardVisible();
-    }
+    protected readonly isKeyboardShown = signal(false);
+    protected readonly keyboardOpening = signal(false);
+    protected readonly keyboardClosing = signal(false);
+    protected readonly keyboardHeight = signal(0);
 
-    /**
-     * Hide the keyboard accessory bar with the next, previous and done buttons.
-     *
-     * @param hide Whether to hide the keyboard accessory bar.
-     */
-    hideFormAccessoryBar(hide: boolean): void {
-        CapacitorKeyboard.setAccessoryBarVisible({ isVisible: !hide });
-    }
-
-    /**
-     * Force keyboard to be shown.
-     */
-    show(): void {
-        CapacitorKeyboard.show();
-    }
-
-    /**
-     * Programatically set the resize mode
-     *
-     * @param mode The resize mode to set.
-     */
-    setResizeMode(mode: KeyboardResizeMode): void {
-        CapacitorKeyboard.setResizeMode({ mode });
-    }
-
-    /**
-     * Programatically set Keyboard style
-     *
-     * @param style The keyboard style to set.
-     */
-    setKeyboardStyle(style: KeyboardStyle): void {
-        CapacitorKeyboard.setStyle({
-            style: style === KeyboardStyle.Dark ? CapacitorKeyboardStyle.Dark : CapacitorKeyboardStyle.Light,
+    constructor() {
+        effect(() => {
+            document.body.classList.toggle('keyboard-is-open', this.isKeyboardShown());
         });
     }
 
     /**
-     * Programatically enable or disable the WebView scroll
-     *
-     * @param disable Whether to disable the WebView scroll.
+     * Initialize the service.
      */
-    disableScroll(disable: boolean): void {
-        CapacitorKeyboard.setScroll({ isDisabled: disable });
+    initialize(): void {
+        if (!CorePlatform.isMobile()) {
+            return;
+        }
+
+        // Execute callbacks in the Angular zone, so change detection doesn't stop working.
+        Keyboard.addListener('keyboardDidShow', data => NgZone.run(() => this.onKeyboardShow(data.keyboardHeight)));
+        Keyboard.addListener('keyboardDidHide', () => NgZone.run(() => this.onKeyboardHide()));
+        Keyboard.addListener('keyboardWillShow', data => NgZone.run(() => this.onKeyboardWillShow(data.keyboardHeight)));
+        Keyboard.addListener('keyboardWillHide', () => NgZone.run(() => this.onKeyboardWillHide()));
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard is shown. Unsubscribe to observable to cancel event watch.
-     *
-     * @returns An observable of keyboard show events.
+     * Closes the keyboard.
      */
-    onKeyboardShow(): Observable<KeyboardInfo> {
-        return this.createKeyboardEventObservable<KeyboardInfo>(
-            handler => CapacitorKeyboard.addListener('keyboardDidShow', handler),
-            info => info,
-        );
+    close(): void {
+        if (CorePlatform.isMobile()) {
+            Keyboard.hide();
+        }
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard will show. Unsubscribe to observable to cancel event watch.
-     *
-     * @returns An observable of keyboard will-show events.
+     * Open the keyboard.
      */
-    onKeyboardWillShow(): Observable<KeyboardInfo> {
-        return this.createKeyboardEventObservable<KeyboardInfo>(
-            handler => CapacitorKeyboard.addListener('keyboardWillShow', handler),
-            info => info,
-        );
+    open(): void {
+        // Open keyboard is not supported in desktop and in iOS.
+        if (CorePlatform.isAndroid()) {
+            Keyboard.show();
+        }
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard did show. Unsubscribe to observable to cancel event watch.
+     * Get a signal that indicates whether the keyboard is shown or not.
      *
-     * @returns An observable of keyboard did-show events.
+     * @returns Signal indicating whether the keyboard is shown.
      */
-    onKeyboardDidShow(): Observable<KeyboardInfo> {
-        return this.createKeyboardEventObservable<KeyboardInfo>(
-            handler => CapacitorKeyboard.addListener('keyboardDidShow', handler),
-            info => info,
-        );
+    get keyboardShownSignal(): Signal<boolean> {
+        return this.isKeyboardShown.asReadonly();
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard is hidden. Unsubscribe to observable to cancel event watch.
+     * Get a signal that indicates the keyboard height.
      *
-     * @returns An observable that emits when the keyboard is hidden.
+     * @returns Signal indicating the keyboard height.
      */
-    onKeyboardHide(): Observable<void> {
-        return this.createKeyboardEventObservable<void>(
-            handler => CapacitorKeyboard.addListener('keyboardDidHide', handler),
-            () => undefined,
-        );
+    get keyboardHeightSignal(): Signal<number> {
+        return this.keyboardHeight.asReadonly();
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard will hide. Unsubscribe to observable to cancel event watch.
+     * Notify that Keyboard has been shown.
      *
-     * @returns An observable that emits when the keyboard is about to be hidden.
+     * @param keyboardHeight Keyboard height.
      */
-    onKeyboardWillHide(): Observable<void> {
-        return this.createKeyboardEventObservable<void>(
-            handler => CapacitorKeyboard.addListener('keyboardWillHide', handler),
-            () => undefined,
-        );
+    onKeyboardShow(keyboardHeight: number): void {
+        this.setKeyboardShown(true, keyboardHeight);
     }
 
     /**
-     * Creates an observable that notifies you when the keyboard did hide. Unsubscribe to observable to cancel event watch.
-     *
-     * @returns An observable that emits when the keyboard is hidden.
+     * Notify that Keyboard has been hidden.
      */
-    onKeyboardDidHide(): Observable<void> {
-        return this.createKeyboardEventObservable<void>(
-            handler => CapacitorKeyboard.addListener('keyboardDidHide', handler),
-            () => undefined,
-        );
+    onKeyboardHide(): void {
+        this.setKeyboardShown(false, 0);
     }
 
     /**
-     * Creates an observable from a Capacitor keyboard event and removes its listener on unsubscribe.
+     * Notify that Keyboard is about to be shown.
      *
-     * @param addListener Registers the event callback and returns its listener handle.
-     * @param resultSelector Converts event arguments to the observable value.
-     * @returns An observable of the selected event value.
+     * @param keyboardHeight Keyboard height.
      */
-    private createKeyboardEventObservable<T>(
-        addListener: (handler: (...args: T[]) => void) => Promise<PluginListenerHandle>,
-        resultSelector: (...args: T[]) => T,
-    ): Observable<T> {
-        return fromEventPattern<T>(
-            handler => addListener(handler),
-            (_, listener: Promise<PluginListenerHandle>) => {
-                listener.then(handle => handle.remove()).catch(() => {
-                    // Ignore errors when removing the listener.
-                });
-            },
-            resultSelector,
-        );
+    onKeyboardWillShow(keyboardHeight?: number): void {
+        this.keyboardOpening.set(true);
+        this.keyboardClosing.set(false);
+
+        if (keyboardHeight !== undefined) {
+            this.keyboardHeight.set(keyboardHeight);
+        }
+    }
+
+    /**
+     * Notify that Keyboard is about to be hidden.
+     */
+    onKeyboardWillHide(): void {
+        this.keyboardOpening.set(false);
+        this.keyboardClosing.set(true);
+
+        this.keyboardHeight.set(0);
+    }
+
+    /**
+     * Set keyboard shown or hidden.
+     *
+     * @param shown Whether the keyboard is shown or hidden.
+     * @param keyboardHeight Keyboard height.
+     */
+    protected setKeyboardShown(shown: boolean, keyboardHeight: number): void {
+        this.isKeyboardShown.set(shown);
+        this.keyboardOpening.set(false);
+        this.keyboardClosing.set(false);
+        this.keyboardHeight.set(keyboardHeight);
+
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        CoreEvents.trigger(CoreEvents.KEYBOARD_CHANGE, keyboardHeight);
+    }
+
+    /**
+     * Check if the keyboard is closing.
+     *
+     * @returns Whether keyboard is closing (animating).
+     */
+    isKeyboardClosing(): boolean {
+        return this.keyboardClosing();
+    }
+
+    /**
+     * Check if the keyboard is being opened.
+     *
+     * @returns Whether keyboard is opening (animating).
+     */
+    isKeyboardOpening(): boolean {
+        return this.keyboardOpening();
+    }
+
+    /**
+     * Check if the keyboard is visible.
+     *
+     * @returns Whether keyboard is visible.
+     */
+    isKeyboardVisible(): boolean {
+        return this.isKeyboardShown();
     }
 
 }
+
+export const CoreKeyboard = makeSingleton(CoreKeyboardService);

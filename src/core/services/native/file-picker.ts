@@ -20,7 +20,7 @@ import { FilePicker as CapacitorFilePicker, PickedFile } from '@capawesome/capac
  * Service wrapping the Native File Picker plugin.
  */
 @Injectable({ providedIn: 'root' })
-export class CoreNativeFilePickerService {
+export class CoreFilePickerService {
 
     /**
      * Pick a file using the native file picker.
@@ -52,6 +52,6 @@ export class CoreNativeFilePickerService {
     }
 
 }
-export const CoreNativeFilePicker = makeSingleton(CoreNativeFilePickerService);
+export const CoreFilePicker = makeSingleton(CoreFilePickerService);
 
 export type CorePickedFile = PickedFile;

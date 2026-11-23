@@ -16,7 +16,7 @@ import { Component, OnInit, OnDestroy, viewChildren, Type } from '@angular/core'
 import { Subscription } from 'rxjs';
 
 import { CoreSites } from '@services/sites';
-import { CoreQRScan } from '@services/qrscan';
+import { CoreQRScan } from '@services/native/qrscan';
 import { CoreAlerts } from '@services/overlays/alerts';
 import {
     CoreMainMenuDelegate,

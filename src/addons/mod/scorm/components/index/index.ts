@@ -49,7 +49,7 @@ import {
 } from '../../constants';
 import { CoreWait } from '@static/wait';
 import { CorePromiseUtils } from '@static/promise-utils';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreCourseModuleNavigationComponent } from '@features/course/components/module-navigation/module-navigation';
 import { CoreCourseModuleInfoComponent } from '@features/course/components/module-info/module-info';

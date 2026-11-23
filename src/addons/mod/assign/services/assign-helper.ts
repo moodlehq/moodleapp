@@ -29,7 +29,7 @@ import {
 } from './assign';
 import { AddonModAssignOffline } from './assign-offline';
 import { CoreObject } from '@static/object';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreGroups } from '@services/groups';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';

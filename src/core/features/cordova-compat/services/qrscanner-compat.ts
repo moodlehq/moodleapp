@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreQRScan } from '@services/qrscan';
+import { CoreQRScan } from '@services/native/qrscan';
 import { Observable } from 'rxjs';
 
 /**

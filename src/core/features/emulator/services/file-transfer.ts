@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CapacitorException, ExceptionCode, PluginListenerHandle } from '@capacitor/core';
 import {
     type DownloadFileOptions,
@@ -26,7 +26,7 @@ import {
 import { CoreUrl } from '@static/url';
 import { CoreFileUtils } from '@static/file-utils';
 import { CoreErrorHelper } from '@services/error-helper';
-import { FileTransferErrorCode } from '@services/native/file-transfer';
+import { FileTransferErrorCode } from '@/core/constants';
 
 /**
  * Emulates the Capacitor FileTransfer plugin in desktop apps and in browser.

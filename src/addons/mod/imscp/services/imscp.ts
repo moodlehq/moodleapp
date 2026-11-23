@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { CoreCourse, CoreCourseModuleContentFile } from '@features/course/services/course';
 import { CoreCourseModuleData } from '@features/course/services/course-helper';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSitesCommonWSOptions, CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';

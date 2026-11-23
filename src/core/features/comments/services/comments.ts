@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreError } from '@classes/errors/error';
 import { CoreSite } from '@classes/sites/site';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreWSExternalWarning } from '@services/ws';

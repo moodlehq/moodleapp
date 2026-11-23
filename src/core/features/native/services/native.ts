@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
 import { CorePlatform } from '@services/platform';
 import { AsyncInstance, AsyncObject, asyncInstance } from '@/core/utils/async-instance';
-import { MoodleAppCapacitorPlugins } from 'capacitor-plugin-moodleapp';
+import { isMoodleAppCapacitorPluginAvailable, MoodleAppCapacitorPlugins } from 'capacitor-plugin-moodleapp';
 
 /**
  * Native plugin manager.
@@ -25,7 +25,6 @@ import { MoodleAppCapacitorPlugins } from 'capacitor-plugin-moodleapp';
 export class CoreNativeService {
 
     private plugins: Partial<Record<keyof CoreNativePlugins, AsyncInstance<AsyncObject>>> = {};
-    private mocks: Partial<Record<keyof CoreNativePlugins, CoreNativePlugins[keyof CoreNativePlugins]>> = {};
 
     /**
      * Get a native plugin instance.
@@ -34,7 +33,7 @@ export class CoreNativeService {
      * @returns Plugin instance, null if plugin is not supported for current platform.
      */
     plugin<Plugin extends keyof CoreNativePlugins>(plugin: Plugin): AsyncInstance<CoreNativePlugins[Plugin]> | null {
-        if (plugin === 'installReferrer' && !CorePlatform.isAndroid()) {
+        if (!isMoodleAppCapacitorPluginAvailable(plugin)) {
             return null;
         }
 
@@ -42,26 +41,11 @@ export class CoreNativeService {
             this.plugins[plugin] = asyncInstance(async () => {
                 await CorePlatform.ready();
 
-                const instance = CorePlatform.isMobile() ? MoodleAppCapacitorPlugins[plugin] : this.mocks[plugin];
-                if (!instance) {
-                    throw new Error(`Plugin ${plugin} not found.`);
-                }
-
-                return instance;
+                return MoodleAppCapacitorPlugins[plugin];
             });
         }
 
         return this.plugins[plugin] as AsyncInstance<CoreNativePlugins[Plugin]>;
-    }
-
-    /**
-     * Register a mock to use in browser instead of the native plugin implementation.
-     *
-     * @param plugin Plugin name.
-     * @param instance Instance to use.
-     */
-    registerBrowserMock<Plugin extends keyof CoreNativePlugins>(plugin: Plugin, instance: CoreNativePlugins[Plugin]): void {
-        this.mocks[plugin] = instance;
     }
 
 }

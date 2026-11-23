@@ -22,7 +22,7 @@ import { makeSingleton } from '@singletons';
  * Service to launch native intents on the device.
  */
 @Injectable({ providedIn: 'root' })
-export class IntentLauncherService {
+export class CoreIntentLauncherService {
 
     /**
      * Starts a view activity with the specified options.
@@ -56,7 +56,7 @@ export class IntentLauncherService {
     }
 
 }
-export const CoreIntentLauncher = makeSingleton(IntentLauncherService);
+export const CoreIntentLauncher = makeSingleton(CoreIntentLauncherService);
 
 /**
  * Options for IntentLauncher.startActivity.

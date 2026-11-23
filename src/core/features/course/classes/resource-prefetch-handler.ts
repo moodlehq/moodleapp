@@ -14,7 +14,7 @@
 
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreFilterHelper } from '@features/filter/services/filter-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites } from '@services/sites';
 import { CoreWSFile } from '@services/ws';

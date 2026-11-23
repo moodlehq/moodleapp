@@ -19,7 +19,7 @@ import { CoreEvents } from '@static/events';
 import { makeSingleton, Translate } from '@singletons';
 import { CoreCommentsOffline } from './comments-offline';
 import { CoreSites } from '@services/sites';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCommentsDBRecord, CoreCommentsDeletedDBRecord } from './database/comments';

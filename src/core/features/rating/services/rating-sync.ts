@@ -16,7 +16,7 @@ import { ContextLevel } from '@/core/constants';
 import { Injectable } from '@angular/core';
 import { CoreSyncBaseProvider } from '@classes/base-sync';
 import { CoreNetworkError } from '@classes/errors/network-error';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreErrorHelper } from '@services/error-helper';
 import { CoreWSError } from '@classes/errors/wserror';

@@ -15,7 +15,7 @@
 import { Injectable } from '@angular/core';
 import { CoreUserSupportConfig } from '@features/user/classes/support/support-config';
 import { CoreUserAuthenticatedSupportConfig } from '@features/user/classes/support/authenticated-support-config';
-import { CoreOpener, CoreInAppBrowserInstance } from '@services/opener';
+import { CoreOpener, CoreInAppBrowserInstance } from '@services/native/opener';
 import { CorePlatform } from '@services/platform';
 import { CoreSites } from '@services/sites';
 import { makeSingleton, Translate } from '@singletons';

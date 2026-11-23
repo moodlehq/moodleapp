@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Component, Input, OnInit } from '@angular/core';
-import { CoreOpener } from '@services/opener';
+import { CoreOpener } from '@services/native/opener';
 import { ModalController } from '@singletons';
 import { AddonModWorkshopPhaseData, AddonModWorkshopPhaseTaskData } from '../../services/workshop';
 import { AddonModWorkshopPhase } from '../../constants';

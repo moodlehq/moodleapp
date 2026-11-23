@@ -15,7 +15,7 @@
 import { Component, OnDestroy, OnInit, signal } from '@angular/core';
 import { Md5 } from 'ts-md5';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites } from '@services/sites';
 import { CoreText } from '@static/text';
 import { Translate } from '@singletons';

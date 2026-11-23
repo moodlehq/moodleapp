@@ -25,7 +25,7 @@ import { CoreRatingInfo } from '@features/rating/services/rating';
 import { CoreTag } from '@features/tag/services/tag';
 import { FileEntry } from '@classes/native/filesystem';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { Translate } from '@singletons';
 import { CoreEventObserver, CoreEvents } from '@static/events';

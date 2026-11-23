@@ -35,7 +35,7 @@ import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fi
 import { CanLeave } from '@guards/can-leave';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { CoreNavigator } from '@services/navigator';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';

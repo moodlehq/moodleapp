@@ -17,7 +17,7 @@ import { Injectable } from '@angular/core';
 import { CoreSites } from '@services/sites';
 import { CoreMainMenuDelegate, CoreMainMenuPageNavHandlerToDisplay } from './mainmenu-delegate';
 import { makeSingleton } from '@singletons';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import {
     CoreMainMenuPlacement,
     MAIN_MENU_HANDLER_BADGE_UPDATED_EVENT,

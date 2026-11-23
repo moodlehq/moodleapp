@@ -20,7 +20,7 @@ import { CorePromiseUtils } from '@static/promise-utils';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CorePushNotificationsNotificationBasicData } from './pushnotifications';
-import { CoreAppBadge } from '@services/app-badge';
+import { CoreAppBadge } from '@services/native/app-badge';
 
 /**
  * Interface that all click handlers must implement.

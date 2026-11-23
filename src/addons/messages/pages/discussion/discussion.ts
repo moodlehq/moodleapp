@@ -37,7 +37,7 @@ import { CoreIonLoadingElement } from '@classes/ion-loading';
 import { ActivatedRoute } from '@angular/router';
 import { LOADING_ICON } from '@/core/constants';
 import { CoreDom } from '@static/dom';
-import { CoreKeyboard } from '@static/keyboard';
+import { CoreKeyboard } from '@services/native/keyboard';
 import { CoreText } from '@static/text';
 import { CoreWait } from '@static/wait';
 import { CoreModals } from '@services/overlays/modals';
@@ -57,7 +57,7 @@ import {
 import { CoreAlerts, CoreAlertsConfirmOptions } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
-import { CoreClipboard } from '@services/clipboard';
+import { CoreClipboard } from '@services/native/clipboard';
 
 /**
  * Page that displays a message discussion page.

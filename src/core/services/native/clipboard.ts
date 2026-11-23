@@ -13,23 +13,42 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreClipboard, CoreClipboardService } from '@services/clipboard';
+import { makeSingleton } from '@singletons';
+import { CoreToasts } from '@services/overlays/toasts';
+import { Clipboard } from '@capacitor/clipboard';
 
 /**
- * Service wrapping the Native Clipboard plugin.
- *
- * @deprecated since 6.0. Use CoreClipboard instead.
+ * Service to handle clipboard operations.
  */
 @Injectable({ providedIn: 'root' })
-export class Clipboard extends CoreClipboardService {
+export class CoreClipboardService {
 
     /**
-     * Clear the text stored in clipboard
+     * Copies a text to clipboard and shows a toast message.
      *
-     * @deprecated since 6.0. Use CoreClipboard.copy('') instead.
+     * @param text Text to be copied
      */
-    async clear(): Promise<void> {
-        await CoreClipboard.copy('');
+    async copy(text: string): Promise<void> {
+        await Clipboard.write({ string: text }); // eslint-disable-line id-denylist
+
+        // Show toast using ionicLoading.
+        CoreToasts.show({
+            message: 'core.copiedtoclipboard',
+            translateMessage: true,
+        });
+    }
+
+    /**
+     * Read a value from the clipboard (the "paste" action)
+     *
+     * @returns The result containing the text from the clipboard.
+     */
+    async paste(): Promise<string> {
+        const result = await Clipboard.read();
+
+        return result.value;
     }
 
 }
+
+export const CoreClipboard = makeSingleton(CoreClipboardService);

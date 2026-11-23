@@ -14,7 +14,7 @@
 
 import { Injectable, SecurityContext } from '@angular/core';
 
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesCommonWSOptions, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSite } from '@classes/sites/site';
 import { CoreWSExternalWarning } from '@services/ws';

@@ -16,7 +16,7 @@ import { Injector, NgModule } from '@angular/core';
 import { ROUTES, Routes } from '@angular/router';
 
 import { conditionalRoutes } from '@/app/app-routing.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { resolveSiteRoutes } from '@features/settings/settings-site-routing.module';
 
 /**

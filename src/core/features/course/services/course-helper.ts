@@ -37,7 +37,7 @@ import {
 } from '@features/courses/services/courses';
 import { CoreCourseOffline } from './course-offline';
 import { CoreCourseModuleDelegate, CoreCourseModuleHandlerData } from './module-delegate';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { DEFAULT_TEXT_FORMAT } from '@static/text';
 import { CoreSiteHome } from '@features/sitehome/services/sitehome';
 import { CoreNavigationOptions, CoreNavigationOptionsWithSite, CoreNavigator } from '@services/navigator';
@@ -61,7 +61,7 @@ import { CoreAlerts } from '@services/overlays/alerts';
 import { CORE_SITEHOME_PAGE_NAME } from '@features/sitehome/constants';
 import { DownloadStatus } from '@/core/constants';
 import { CoreFileSizeSum } from '@services/plugin-file-delegate';
-import { CoreOpenerOpenFileOptions } from '@services/opener';
+import { CoreOpenerOpenFileOptions } from '@services/native/opener';
 import {
     CoreCourseSectionWithStatus,
     CorePrefetchStatusInfo,

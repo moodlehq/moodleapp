@@ -17,7 +17,7 @@ import { CoreError } from '@classes/errors/error';
 import { CoreWSError } from '@classes/errors/wserror';
 import { CoreCourseCommonModWSOptions } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreSites, CoreSitesCommonWSOptions } from '@services/sites';
 import { CoreStatusWithWarningsWSResponse, CoreWSExternalWarning } from '@services/ws';

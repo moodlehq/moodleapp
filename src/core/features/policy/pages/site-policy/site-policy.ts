@@ -25,7 +25,7 @@ import { CorePolicy, CorePolicyAgreementStyle, CorePolicySitePolicy } from '@fea
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CoreUrl } from '@static/url';
 import { IonContent } from '@ionic/angular';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { Subscription } from 'rxjs';
 import { CoreDom } from '@static/dom';
 import { CoreWait } from '@static/wait';

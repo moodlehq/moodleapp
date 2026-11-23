@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { makeSingleton } from '@singletons';
-import { CoreConfig } from './config';
+import { CoreConfig } from '@services/config';
 import { CoreNative } from '@features/native/services/native';
 
 /**

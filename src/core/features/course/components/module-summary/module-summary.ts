@@ -23,7 +23,7 @@ import { CoreCourseModuleDelegate } from '@features/course/services/module-deleg
 import { CoreCourseModulePrefetchDelegate } from '@features/course/services/module-prefetch-delegate';
 import { CoreCourseAnyCourseData } from '@features/courses/services/courses';
 import { CoreGradesFormattedTableRow, CoreGradesHelper } from '@features/grades/services/grades-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreFilepool } from '@services/filepool';
 import { CoreNavigator } from '@services/navigator';
 import { CoreSites } from '@services/sites';

@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 
 import { CoreSplitViewComponent } from '@components/split-view/split-view';
 import { CoreNavigator } from '@services/navigator';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { CoreUtils } from '@static/utils';
 
 import { CoreRoutedItemsManagerSource } from './routed-items-manager-source';

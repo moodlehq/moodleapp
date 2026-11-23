@@ -18,7 +18,7 @@ import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreCourseActivitySyncBaseProvider } from '@features/course/classes/activity-sync';
 import { CoreCourse, CoreCourseAnyModuleData } from '@features/course/services/course';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreWSError } from '@classes/errors/wserror';

@@ -23,17 +23,17 @@ import { CoreLoginHelper, CoreLoginSSOData } from '@features/login/services/logi
 import { ApplicationInit, makeSingleton, Translate } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CorePath } from '@static/path';
-import { CoreConstants, CoreLinkSource } from '../constants';
+import { CoreConstants, CoreLinkSource } from '@/core/constants';
 import { CoreSSO } from '@static/sso';
-import { CoreNavigator, CoreRedirectPayload } from './navigator';
-import { CoreSiteCheckResponse, CoreSites } from './sites';
-import { CoreErrorHelper, CoreErrorObject } from './error-helper';
+import { CoreNavigator, CoreRedirectPayload } from '@services/navigator';
+import { CoreSiteCheckResponse, CoreSites } from '@services/sites';
+import { CoreErrorHelper, CoreErrorObject } from '@services/error-helper';
 import { CoreUrl } from '@static/url';
-import { CoreLoadings } from './overlays/loadings';
-import { CoreAlerts } from './overlays/alerts';
-import { CorePlatform } from './platform';
+import { CoreLoadings } from '@services/overlays/loadings';
+import { CoreAlerts } from '@services/overlays/alerts';
+import { CorePlatform } from '@services/platform';
 import { NO_SITE_ID } from '@features/login/constants';
-import { CoreSitesFactory } from './sites-factory';
+import { CoreSitesFactory } from '@services/sites-factory';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreEvents } from '@static/events';
 

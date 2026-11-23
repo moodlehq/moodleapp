@@ -34,7 +34,7 @@ import {
 import { CoreSync, CoreSyncResult } from '@services/sync';
 import { CoreCourseLogHelper } from '@features/course/services/log-helper';
 import { CoreWSError } from '@classes/errors/wserror';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreNetworkError } from '@classes/errors/network-error';
 import { CoreGradesFormattedItem, CoreGradesHelper } from '@features/grades/services/grades-helper';
 import { AddonModAssignSubmissionDelegate } from './submission-delegate';

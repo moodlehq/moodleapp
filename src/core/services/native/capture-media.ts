@@ -22,7 +22,7 @@ import {
 } from '@capacitor/camera';
 import { Camera, makeSingleton } from '@singletons';
 import { CoreModals } from '@services/overlays/modals';
-import { CoreFileUploaderAudioRecording } from '../../features/fileuploader/services/fileuploader';
+import { CoreFileUploaderAudioRecording } from '@features/fileuploader/services/fileuploader';
 import { CoreCanceledError } from '@classes/errors/cancelederror';
 import { CoreFileUtils } from '@static/file-utils';
 

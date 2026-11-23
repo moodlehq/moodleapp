@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { CoreNativeFilePicker } from '@services/native/file-picker';
+import { CoreFilePicker } from '@services/native/file-picker';
 import { CoreFileUtils } from '@static/file-utils';
 
 /**
@@ -40,7 +40,7 @@ export class Chooser {
         name: string;
         uri: string;
     }> {
-        const file = await CoreNativeFilePicker.pickFile(
+        const file = await CoreFilePicker.pickFile(
             accept ? accept.split(',').map(type => type.trim()) : undefined,
             true,
         );
@@ -72,7 +72,7 @@ export class Chooser {
         name: string;
         uri: string;
     }> {
-        const file = await CoreNativeFilePicker.pickFile(
+        const file = await CoreFilePicker.pickFile(
             accept ? [accept] : undefined,
             false,
         );

@@ -16,7 +16,7 @@ import { Component, Input, OnInit, ElementRef, Type, OnDestroy, viewChild } from
 import { FormControl } from '@angular/forms';
 import { CoreError } from '@classes/errors/error';
 import { CoreFileUploader, CoreFileUploaderStoreFilesResult } from '@features/fileuploader/services/fileuploader';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CoreFileEntry, CoreFileHelper } from '@services/file-helper';
 import { CoreFileSession } from '@services/file-session';
 import { CoreSites, CoreSitesReadingStrategy } from '@services/sites';

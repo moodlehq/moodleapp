@@ -17,7 +17,7 @@ import { FileEntry, DirectoryEntry } from '@classes/native/filesystem';
 import { Md5 } from 'ts-md5';
 import { CoreLogger } from '@static/logger';
 import { CoreAppDB } from '@services/app-db';
-import { CoreFile } from '@services/file';
+import { CoreFile } from '@services/native/file';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreMimetype } from '@static/mimetype';
 import { CoreSites } from '@services/sites';

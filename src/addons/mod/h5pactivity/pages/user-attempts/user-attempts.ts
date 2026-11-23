@@ -29,7 +29,7 @@ import { CoreTime } from '@static/time';
 import { CoreAnalytics, CoreAnalyticsEventType } from '@services/analytics';
 import { CoreAlerts } from '@services/overlays/alerts';
 import { CoreSharedModule } from '@/core/shared.module';
-import { CoreScreen } from '@services/screen';
+import { CoreScreen } from '@services/native/screen';
 import { map } from 'rxjs';
 import { Translate } from '@singletons';
 import { AddonModH5PActivityAttemptCompletionComponent } from '../../components/attempt-completion/attempt-completion';

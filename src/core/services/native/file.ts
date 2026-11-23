@@ -13,538 +13,1443 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { Directory } from '@capacitor/filesystem';
-import {
-	type DirectoryEntry,
-	type Entry,
-	type FileEntry,
-} from '@classes/native/filesystem';
-import { CoreFile, CoreFileFormat } from '@services/file';
-import { CorePath } from '@static/path';
-import { CorePlatform } from '@services/platform';
-import { CoreBytesConstants } from '@/core/constants';
-import { CorePromiseUtils } from '@static/promise-utils';
-import { Filesystem } from '@singletons';
+
+import { CoreMimetype } from '@static/mimetype';
 import { CoreFileUtils } from '@static/file-utils';
+import { CoreBytesConstants, CoreConstants } from '@/core/constants';
+import { CoreError } from '@classes/errors/error';
 
-type Flags = {
-	create?: boolean;
-	exclusive?: boolean;
-};
+import { CoreLogger } from '@static/logger';
+import { Filesystem, makeSingleton, Zip } from '@singletons';
+import { CoreFileEntry } from '@services/file-helper';
+import { CoreText } from '@static/text';
+import { CorePlatform } from '@services/platform';
+import { CorePath } from '@static/path';
+import { CoreUrl } from '@static/url';
+import { CorePromiseUtils } from '@static/promise-utils';
+import { CoreNative } from '@features/native/services/native';
+import { Capacitor } from '@capacitor/core';
+import { Directory, Encoding } from '@capacitor/filesystem';
+import { DirectoryEntry, FileEntry, Entry, Metadata } from '@classes/native/filesystem';
+import type { ZipProgressEvent } from '@capgo/capacitor-zip';
 
-type IWriteOptions = {
-	replace?: boolean;
-	append?: boolean;
-	truncate?: number;
-};
+/**
+ * Progress event used when writing a file data into a file.
+ */
+export type CoreFileProgressEvent = {
+    /**
+     * Whether the values are reliabñe.
+     */
+    lengthComputable?: boolean;
 
-type RemoveResult = {
-	success: boolean;
-	fileRemoved: Entry;
+    /**
+     * Number of treated bytes.
+     */
+    loaded?: number;
+
+    /**
+     * Total of bytes.
+     */
+    total?: number;
 };
 
 /**
- * Service to keep backwards compatibility with Cordova File service for plugins. Will be removed in the future.
- *
- * @deprecated since 6.0. Use CoreFile instead.
+ * Progress function.
+ */
+export type CoreFileProgressFunction = (event: CoreFileProgressEvent) => void;
+
+/**
+ * Constants to define the format to read a file.
+ */
+export const enum CoreFileFormat {
+    FORMATTEXT = 0,
+    FORMATDATAURL = 1,
+    /**
+     * @deprecated since 5.1. This is related to Javascript API deprecation and it's not safe
+     * to use it. When readAsBinaryString is finally removed this format could be deleted from the app.
+     * For more information, read
+     * https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString
+     */
+    FORMATBINARYSTRING = 2,
+    FORMATARRAYBUFFER = 3,
+    FORMATJSON = 4,
+}
+
+/**
+ * Factory to interact with the file system.
  */
 @Injectable({ providedIn: 'root' })
-export class File {
-
-	applicationDirectory = '';
-	applicationStorageDirectory = '';
-	dataDirectory = '';
-	cacheDirectory = '';
-	externalApplicationStorageDirectory = '';
-	externalDataDirectory = '';
-	externalCacheDirectory = '';
-	externalRootDirectory = '';
-	tempDirectory = '';
-	syncedDataDirectory = '';
-	documentsDirectory = '';
-	sharedDirectory = '';
-
-	cordovaFileError = {
-		1: 'NOT_FOUND_ERR',
-		2: 'SECURITY_ERR',
-		3: 'ABORT_ERR',
-		4: 'NOT_READABLE_ERR',
-		5: 'ENCODING_ERR',
-		6: 'NO_MODIFICATION_ALLOWED_ERR',
-		7: 'INVALID_STATE_ERR',
-		8: 'SYNTAX_ERR',
-		9: 'INVALID_MODIFICATION_ERR',
-		10: 'QUOTA_EXCEEDED_ERR',
-		11: 'TYPE_MISMATCH_ERR',
-		12: 'PATH_EXISTS_ERR',
-		13: 'WRONG_ENTRY_TYPE',
-		14: 'DIR_READ_ERR',
-	};
-
-	/**
-	 * Create FileMock service.
-	 */
-	constructor() {
-		this.hydrateBaseDirectories();
-	}
-
-	/**
-	 * Get free disk space, keeping the units that Cordova returned.
-	 *
-	 * @returns Remaining free disk space, in bytes in iOS and in KB in Android.
-	 */
-	async getFreeDiskSpace(): Promise<number> {
-		const bytes = await CoreFile.calculateFreeSpace();
-		if (bytes === null) {
-			return -1;
-		}
-
-		return CorePlatform.isAndroid() ? Math.floor(bytes / CoreBytesConstants.KILOBYTE) : bytes;
-	}
-
-	/**
-	 * Check if a directory exists.
-	 *
-	 * @param path Base path.
-	 * @param dir Directory name.
-	 * @returns True if directory exists.
-	 */
-	async checkDir(path: string, dir: string): Promise<boolean> {
-		await CoreFile.getDir(this.joinPath(path, dir));
-
-		return true;
-	}
-
-	/**
-	 * Create a directory.
-	 *
-	 * @param path Base path.
-	 * @param dirName Directory name.
-	 * @param replace Whether to replace an existing directory.
-	 * @returns Created directory entry.
-	 */
-	async createDir(path: string, dirName: string, replace: boolean): Promise<DirectoryEntry> {
-		const fullPath = this.joinPath(path, dirName);
-
-		if (replace) {
-			await CorePromiseUtils.ignoreErrors(CoreFile.removeDir(fullPath));
-
-			return CoreFile.createDir(fullPath);
-		}
-
-		return CoreFile.createDir(fullPath, true);
-	}
-
-	/**
-	 * Remove a directory.
-	 *
-	 * @param path Base path.
-	 * @param dirName Directory name.
-	 * @returns Removal result.
-	 */
-	async removeDir(path: string, dirName: string): Promise<RemoveResult> {
-		const fullPath = this.joinPath(path, dirName);
-		const removedEntry = await CoreFile.getDir(fullPath);
-
-		await Filesystem.rmdir({ path: removedEntry.toURL(), recursive: false });
-
-		return {
-			success: true,
-			fileRemoved: removedEntry,
-		};
-	}
-
-	/**
-	 * Move a directory.
-	 *
-	 * @param path Source base path.
-	 * @param dirName Source directory name.
-	 * @param newPath Destination base path.
-	 * @param newDirName Destination directory name.
-	 * @returns Moved entry.
-	 */
-	async moveDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<DirectoryEntry | Entry> {
-		const source = this.joinPath(path, dirName);
-		const destination = this.joinPath(newPath, newDirName || dirName);
-
-		return CoreFile.moveDir(source, destination);
-	}
-
-	/**
-	 * Copy a directory.
-	 *
-	 * @param path Source base path.
-	 * @param dirName Source directory name.
-	 * @param newPath Destination base path.
-	 * @param newDirName Destination directory name.
-	 * @returns Copied entry.
-	 */
-	async copyDir(path: string, dirName: string, newPath: string, newDirName: string): Promise<Entry> {
-		const source = this.joinPath(path, dirName);
-		const destination = this.joinPath(newPath, newDirName || dirName);
-
-		return CoreFile.copyDir(source, destination);
-	}
-
-	/**
-	 * List directory entries.
-	 *
-	 * @param path Base path.
-	 * @param dirName Directory name.
-	 * @returns Entries in the directory.
-	 */
-	async listDir(path: string, dirName: string): Promise<Entry[]> {
-		return CoreFile.getDirectoryContents(this.joinPath(path, dirName));
-	}
-
-	/**
-	 * Remove a directory recursively.
-	 *
-	 * @param path Base path.
-	 * @param dirName Directory name.
-	 * @returns Removal result.
-	 */
-	async removeRecursively(path: string, dirName: string): Promise<RemoveResult> {
-		const fullPath = this.joinPath(path, dirName);
-		const removedEntry = await CoreFile.getDir(fullPath);
-
-		await CoreFile.removeDir(fullPath);
-
-		return {
-			success: true,
-			fileRemoved: removedEntry,
-		};
-	}
-
-	/**
-	 * Check if a file exists.
-	 *
-	 * @param path Base path.
-	 * @param file File name.
-	 * @returns True if file exists.
-	 */
-	async checkFile(path: string, file: string): Promise<boolean> {
-		await CoreFile.getFile(this.joinPath(path, file));
-
-		return true;
-	}
-
-	/**
-	 * Create a file.
-	 *
-	 * @param path Base path.
-	 * @param fileName File name.
-	 * @param replace Whether to replace an existing file.
-	 * @returns Created file entry.
-	 */
-	async createFile(path: string, fileName: string, replace: boolean): Promise<FileEntry> {
-		const fullPath = this.joinPath(path, fileName);
-
-		if (replace) {
-			await CorePromiseUtils.ignoreErrors(CoreFile.removeFile(fullPath));
-
-			return CoreFile.createFile(fullPath);
-		}
-
-		return CoreFile.createFile(fullPath, true);
-	}
-
-	/**
-	 * Remove a file.
-	 *
-	 * @param path Base path.
-	 * @param fileName File name.
-	 * @returns Removal result.
-	 */
-	async removeFile(path: string, fileName: string): Promise<RemoveResult> {
-		const fullPath = this.joinPath(path, fileName);
-		const removedEntry = await CoreFile.getFile(fullPath);
-
-		await CoreFile.removeFile(fullPath);
-
-		return {
-			success: true,
-			fileRemoved: removedEntry,
-		};
-	}
-
-	/**
-	 * Write content into a file.
-	 *
-	 * @param path Base path.
-	 * @param fileName File name.
-	 * @param text Data to write.
-	 * @param options Write options.
-	 * @returns Updated file entry.
-	 */
-	async writeFile(
-		path: string,
-		fileName: string,
-		text: string | Blob | ArrayBuffer,
-		options?: IWriteOptions,
-	): Promise<FileEntry> {
-		const fullPath = this.joinPath(path, fileName);
-
-		if (options?.replace === false) {
-			await CoreFile.createFile(fullPath, true);
-		}
-
-		if (typeof options?.truncate === 'number') {
-			await this.truncateFile(fullPath, options.truncate);
-		}
-
-		const data = this.normalizeWriteData(text);
-
-		return CoreFile.writeFile(fullPath, data, options?.append);
-	}
-
-	/**
-	 * Write content into an existing file.
-	 *
-	 * @param path Base path.
-	 * @param fileName File name.
-	 * @param text Data to write.
-	 * @returns Promise resolved when written.
-	 */
-	async writeExistingFile(path: string, fileName: string, text: string | Blob): Promise<void> {
-		const fullPath = this.joinPath(path, fileName);
-
-		await CoreFile.getFile(fullPath);
-		await CoreFile.writeFile(fullPath, text, false);
-	}
-
-	/**
-	 * Read a file as UTF-8 text.
-	 *
-	 * @param path Base path.
-	 * @param file File name.
-	 * @returns File contents.
-	 */
-	async readAsText(path: string, file: string): Promise<string> {
-		return CoreFile.readFile(this.joinPath(path, file), CoreFileFormat.FORMATTEXT);
-	}
-
-	/**
-	 * Read a file as data URL.
-	 *
-	 * @param path Base path.
-	 * @param file File name.
-	 * @returns File contents in data URL format.
-	 */
-	async readAsDataURL(path: string, file: string): Promise<string> {
-		return CoreFile.readFile(this.joinPath(path, file), CoreFileFormat.FORMATDATAURL);
-	}
-
-	/**
-	 * Read a file as binary string.
-	 *
-	 * @param path Base path.
-	 * @param file File name.
-	 * @returns Binary string representation.
-	 */
-	async readAsBinaryString(path: string, file: string): Promise<string> {
-		const buffer = await this.readAsArrayBuffer(path, file);
-
-		return CoreFileUtils.arrayBufferToBinaryString(buffer);
-	}
-
-	/**
-	 * Read a file as ArrayBuffer.
-	 *
-	 * @param path Base path.
-	 * @param file File name.
-	 * @returns ArrayBuffer contents.
-	 */
-	async readAsArrayBuffer(path: string, file: string): Promise<ArrayBuffer> {
-		return CoreFile.readFile(this.joinPath(path, file), CoreFileFormat.FORMATARRAYBUFFER);
-	}
-
-	/**
-	 * Move a file.
-	 *
-	 * @param path Source base path.
-	 * @param fileName Source file name.
-	 * @param newPath Destination base path.
-	 * @param newFileName Destination file name.
-	 * @returns Moved entry.
-	 */
-	async moveFile(path: string, fileName: string, newPath: string, newFileName: string): Promise<Entry> {
-		const source = this.joinPath(path, fileName);
-		const destination = this.joinPath(newPath, newFileName || fileName);
-
-		return CoreFile.moveFile(source, destination);
-	}
-
-	/**
-	 * Copy a file.
-	 *
-	 * @param path Source base path.
-	 * @param fileName Source file name.
-	 * @param newPath Destination base path.
-	 * @param newFileName Destination file name.
-	 * @returns Copied entry.
-	 */
-	async copyFile(path: string, fileName: string, newPath: string, newFileName: string): Promise<Entry> {
-		const source = this.joinPath(path, fileName);
-		const destination = this.joinPath(newPath, newFileName || fileName);
-
-		return CoreFile.copyFile(source, destination);
-	}
-
-	/**
-	 * Resolve a local filesystem URL.
-	 *
-	 * @param fileUrl URL to resolve.
-	 * @returns Resolved file or directory entry.
-	 */
-	async resolveLocalFilesystemUrl(fileUrl: string): Promise<Entry> {
-		const normalizedPath = this.normalizeIncomingPath(fileUrl);
-
-		try {
-			return await CoreFile.getFile(normalizedPath);
-		} catch {
-			return CoreFile.getDir(normalizedPath);
-		}
-	}
-
-	/**
-	 * Resolve a local directory URL.
-	 *
-	 * @param directoryUrl URL to resolve.
-	 * @returns Resolved directory entry.
-	 */
-	async resolveDirectoryUrl(directoryUrl: string): Promise<DirectoryEntry> {
-		return CoreFile.getDir(this.normalizeIncomingPath(directoryUrl));
-	}
-
-	/**
-	 * Get or create a child directory from a parent directory entry.
-	 *
-	 * @param directoryEntry Parent directory entry.
-	 * @param directoryName Child directory name.
-	 * @param flags Lookup flags.
-	 * @returns Directory entry.
-	 */
-	async getDirectory(directoryEntry: DirectoryEntry, directoryName: string, flags: Flags): Promise<DirectoryEntry> {
-		const childPath = this.joinPath(directoryEntry.toURL(), directoryName);
-
-		if (flags.create) {
-			return CoreFile.createDir(childPath, !!flags.exclusive);
-		}
-
-		return CoreFile.getDir(childPath);
-	}
-
-	/**
-	 * Get or create a child file from a parent directory entry.
-	 *
-	 * @param directoryEntry Parent directory entry.
-	 * @param fileName Child file name.
-	 * @param flags Lookup flags.
-	 * @returns File entry.
-	 */
-	async getFile(directoryEntry: DirectoryEntry, fileName: string, flags: Flags): Promise<FileEntry> {
-		const childPath = this.joinPath(directoryEntry.toURL(), fileName);
-
-		if (flags.create) {
-			return CoreFile.createFile(childPath, !!flags.exclusive);
-		}
-
-		return CoreFile.getFile(childPath);
-	}
-
-	/**
-	 * Fill base folder properties from CoreFile since Cordova values are not available.
-	 */
-	protected async hydrateBaseDirectories(): Promise<void> {
-		const dataUri = await this.getDirectoryUri(Directory.Data);
-		const cacheUri = await this.getDirectoryUri(Directory.Cache);
-		const externalUri = await this.getDirectoryUri(Directory.External);
-		const externalStorageUri = await this.getDirectoryUri(Directory.ExternalStorage);
-		const documentsUri = await this.getDirectoryUri(Directory.Documents);
-		const temporaryUri = await this.getDirectoryUri(Directory.Temporary);
-		const externalCacheUri = await this.getDirectoryUri(Directory.ExternalCache);
-
-		const basePath = CoreFile.basePath;
-		const defaultDataDirectory = dataUri || basePath;
-		const defaultCacheDirectory = cacheUri || CorePath.concatenatePaths(basePath, 'cache');
-		const defaultDocumentsDirectory = documentsUri || defaultDataDirectory;
-		const defaultExternalDirectory = externalUri || externalStorageUri || defaultDataDirectory;
-
-		this.applicationStorageDirectory = this.applicationStorageDirectory || defaultDataDirectory;
-		this.dataDirectory = this.dataDirectory || defaultDataDirectory;
-		this.cacheDirectory = this.cacheDirectory || defaultCacheDirectory;
-		this.externalApplicationStorageDirectory = this.externalApplicationStorageDirectory || defaultExternalDirectory;
-		this.externalDataDirectory = this.externalDataDirectory || defaultExternalDirectory;
-		this.externalCacheDirectory = this.externalCacheDirectory || externalCacheUri || defaultCacheDirectory;
-		this.externalRootDirectory = this.externalRootDirectory || externalStorageUri || defaultExternalDirectory;
-		this.tempDirectory = this.tempDirectory || temporaryUri || CorePath.concatenatePaths(basePath, 'tmp');
-		this.syncedDataDirectory = this.syncedDataDirectory || defaultDocumentsDirectory;
-		this.documentsDirectory = this.documentsDirectory || defaultDocumentsDirectory;
-		this.sharedDirectory = this.sharedDirectory || defaultDocumentsDirectory;
-	}
-
-	/**
-	 * Join a base path with a child file or directory name.
-	 *
-	 * @param path Base path.
-	 * @param child Child name.
-	 * @returns Joined path.
-	 */
-	protected joinPath(path: string, child: string): string {
-		return this.normalizeIncomingPath(CorePath.concatenatePaths(path, child));
-	}
-
-	/**
-	 * Normalize input paths to avoid mixed Capacitor and file:// URL formats.
-	 *
-	 * @param path Path to normalize.
-	 * @returns Normalized path.
-	 */
-	protected normalizeIncomingPath(path: string): string {
-		return CoreFile.unconvertFileSrc(path);
-	}
-
-	/**
-	 * Resolve a Capacitor directory to an absolute URI.
-	 *
-	 * @param directory Directory to resolve.
-	 * @returns Absolute URI, or empty string if unavailable.
-	 */
-	protected async getDirectoryUri(directory: Directory): Promise<string> {
-		const result = await CorePromiseUtils.ignoreErrors(Filesystem.getUri({
-			directory,
-			path: '',
-		}));
-
-		return result?.uri || '';
-	}
-
-	/**
-	 * Convert write input into a CoreFile-compatible value.
-	 *
-	 * @param text Data to write.
-	 * @returns Normalized data.
-	 */
-	protected normalizeWriteData(text: string | Blob | ArrayBuffer): string | Blob {
-		if (text instanceof ArrayBuffer) {
-			return new Blob([text]);
-		}
-
-		return text;
-	}
-
-	/**
-	 * Truncate a file to a specific size.
-	 *
-	 * @param path File path.
-	 * @param size Target size in bytes.
-	 */
-	protected async truncateFile(path: string, size: number): Promise<void> {
-		const current = await CoreFile.readFile(path, CoreFileFormat.FORMATARRAYBUFFER);
-		const truncated = current.slice(0, Math.max(size, 0));
-
-		await CoreFile.writeFile(path, new Blob([truncated]), false);
-	}
+export class CoreFileProvider {
+
+    // Folders.
+    static readonly SITESFOLDER = 'sites';
+    static readonly TMPFOLDER = 'tmp';
+    static readonly NO_SITE_FOLDER = 'nosite';
+
+    static readonly CHUNK_SIZE = CoreBytesConstants.MEGABYTE; // Same chunk size as Ionic Native.
+
+    protected static readonly IOS_FREE_SPACE_THRESHOLD = 500 * CoreBytesConstants.MEGABYTE;
+
+    static readonly MINIMUM_FREE_SPACE = 10 * CoreBytesConstants.MEGABYTE;
+    static readonly WIFI_DOWNLOAD_DEFAULT_CONFIRMATION_THRESHOLD = 100 * CoreBytesConstants.MEGABYTE;
+    static readonly DOWNLOAD_DEFAULT_CONFIRMATION_THRESHOLD = 10 * CoreBytesConstants.MEGABYTE;
+
+    protected logger = CoreLogger.getInstance('CoreFileProvider');
+    protected initialized = false;
+    protected fileSystemPath = '';
+
+    get basePath(): string {
+        return this.fileSystemPath;
+    }
+
+    /**
+     * Initialize basePath based on the OS if it's not initialized already.
+     *
+     * @returns Promise to be resolved when the initialization is finished.
+     */
+    async initialize(): Promise<void> {
+        if (this.initialized) {
+            return;
+        }
+
+        await CorePlatform.ready();
+
+        let fsUri = '';
+        if (CorePlatform.isAndroid()) {
+            // Capacitor returns .../files for Directory.External. Use the parent to keep compatibility with Cordova paths.
+            const { uri } = await Filesystem.getUri({ directory: Directory.External, path: '' });
+            fsUri = uri.replace(/\/files\/?$/, '');
+        } else if (CorePlatform.isIOS()) {
+            const { uri } = await Filesystem.getUri({ directory: Directory.Documents, path: '' });
+            fsUri = uri;
+        } else {
+            // Options is not used for browsers, just get the URI.
+            const { uri } = await Filesystem.getUri({ directory: Directory.External, path: '' });
+            fsUri = uri;
+        }
+
+        if (fsUri === '') {
+            return Promise.reject(new CoreError('Error initializing file system: base path not set.'));
+        }
+
+        this.fileSystemPath = CoreText.addEndingSlash(fsUri);
+
+        this.initialized = true;
+        this.logger.debug(`FS initialized: ${this.fileSystemPath}`);
+    }
+
+    /**
+     * Check if the plugin is available.
+     *
+     * @returns Whether the plugin is available.
+     * @deprecated since 5.0. Not necessary anymore.
+     */
+    isAvailable(): boolean {
+        return true;
+    }
+
+    /**
+     * Get a file.
+     *
+     * @param path Relative path to the file.
+     * @returns Promise resolved when the file is retrieved.
+     */
+    async getFile(path: string): Promise<FileEntry> {
+        this.logger.debug(`Get file: ${path}`);
+
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+        const stat = await Filesystem.stat({ path: absolutePath });
+
+        if (stat.type !== 'file') {
+            throw new CoreError(`Path is not a file: ${path}`);
+        }
+
+        return new FileEntry(stat.uri);
+    }
+
+    /**
+     * Get a directory.
+     *
+     * @param path Relative path to the directory.
+     * @returns Promise resolved when the directory is retrieved.
+     */
+    async getDir(path: string): Promise<DirectoryEntry> {
+        this.logger.debug(`Get directory: ${path}`);
+
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+        const stat = await Filesystem.stat({ path: absolutePath });
+
+        if (stat.type !== 'directory') {
+            throw new CoreError(`Path is not a directory: ${path}`);
+        }
+
+        return new DirectoryEntry(stat.uri);
+    }
+
+    /**
+     * Get site folder path.
+     *
+     * @param siteId Site ID.
+     * @returns Site folder path.
+     */
+    getSiteFolder(siteId: string): string {
+        return `${CoreFileProvider.SITESFOLDER}/${siteId}`;
+    }
+
+    /**
+     * Create a directory or a file.
+     *
+     * @param isDirectory True if a directory should be created, false if it should create a file.
+     * @param path Relative path to the dir/file.
+     * @param failIfExists True if it should fail if the dir/file exists, false otherwise.
+     * @param base Base path to create the dir/file in. If not set, use basePath.
+     * @returns Promise to be resolved when the dir/file is created.
+     */
+    protected async create(
+        isDirectory: boolean,
+        path: string,
+        failIfExists?: boolean,
+        base?: string,
+    ): Promise<FileEntry | DirectoryEntry> {
+        const absolutePath = this.toAbsoluteAndNormalize(base ? CorePath.concatenatePaths(base, path) : path);
+
+        this.logger.debug(`Create ${isDirectory ? 'dir' : 'file'} ${path}`);
+
+        // Check if it already exists to honor failIfExists and to avoid overwriting existing files.
+        const existing = await CorePromiseUtils.ignoreErrors(Filesystem.stat({ path: absolutePath }));
+
+        if (existing) {
+            if (failIfExists) {
+                throw new CoreError(`Path already exists: ${path}`);
+            }
+            if (isDirectory && existing.type !== 'directory') {
+                throw new CoreError(`Path exists and is not a directory: ${path}`);
+            }
+            if (!isDirectory && existing.type !== 'file') {
+                throw new CoreError(`Path exists and is not a file: ${path}`);
+            }
+
+            return isDirectory ? new DirectoryEntry(existing.uri) : new FileEntry(existing.uri);
+        }
+
+        if (isDirectory) {
+            await Filesystem.mkdir({ path: absolutePath, recursive: true });
+
+            return new DirectoryEntry(absolutePath);
+        }
+
+        // Ensure parent directory exists.
+        const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
+        if (parent) {
+            await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
+                path: parent,
+                recursive: true,
+            }));
+        }
+
+        // Create empty file.
+        const { uri } = await Filesystem.writeFile({
+            path: absolutePath,
+            data: '',
+            encoding: Encoding.UTF8,
+        });
+
+        return new FileEntry(uri);
+    }
+
+    /**
+     * Create a directory.
+     *
+     * @param path Relative path to the directory.
+     * @param failIfExists True if it should fail if the directory exists, false otherwise.
+     * @returns Promise to be resolved when the directory is created.
+     */
+    async createDir(path: string, failIfExists?: boolean): Promise<DirectoryEntry> {
+        const entry = <DirectoryEntry>await this.create(true, path, failIfExists);
+
+        return entry;
+    }
+
+    /**
+     * Create a file.
+     *
+     * @param path Relative path to the file.
+     * @param failIfExists True if it should fail if the file exists, false otherwise..
+     * @returns Promise to be resolved when the file is created.
+     */
+    async createFile(path: string, failIfExists?: boolean): Promise<FileEntry> {
+        const entry = <FileEntry>await this.create(false, path, failIfExists);
+
+        return entry;
+    }
+
+    /**
+     * Removes a directory and all its contents.
+     *
+     * @param path Relative path to the directory.
+     */
+    async removeDir(path: string): Promise<void> {
+        this.logger.debug(`Remove directory: ${path}`);
+
+        await Filesystem.rmdir({ path: this.toAbsoluteAndNormalize(path), recursive: true });
+    }
+
+    /**
+     * Removes a file and all its contents.
+     *
+     * @param path Relative path to the file.
+     */
+    async removeFile(path: string): Promise<void> {
+        this.logger.debug(`Remove file: ${path}`);
+
+        await Filesystem.deleteFile({ path: this.toAbsoluteAndNormalize(path) });
+    }
+
+    /**
+     * Removes a file given its FileEntry.
+     *
+     * @param entry File Entry.
+     */
+    async removeFileByFileEntry(entry: Entry): Promise<void> {
+        if (entry.isDirectory) {
+            await this.removeDir(entry.toURL());
+        } else {
+            await this.removeFile(entry.toURL());
+        }
+    }
+
+    /**
+     * Retrieve the contents of a directory (not subdirectories).
+     *
+     * @param path Relative path to the directory.
+     * @returns Promise to be resolved when the contents are retrieved.
+     */
+    async getDirectoryContents(path: string): Promise<(FileEntry | DirectoryEntry)[]> {
+        this.logger.debug(`Get contents of dir: ${path}`);
+
+        const { files } = await Filesystem.readdir({ path: this.toAbsoluteAndNormalize(path) });
+
+        return files.map((info) => info.type === 'directory'
+            ? new DirectoryEntry(info.uri)
+            : new FileEntry(info.uri));
+    }
+
+    /**
+     * Type guard to check if the param is a DirectoryEntry.
+     *
+     * @param entry Param to check.
+     * @returns Whether the param is a DirectoryEntry.
+     */
+    protected isDirectoryEntry(entry: FileEntry | DirectoryEntry): entry is DirectoryEntry {
+        return entry.isDirectory === true;
+    }
+
+    /**
+     * Calculate the size of a directory or a file.
+     *
+     * @param entry Directory or file.
+     * @returns Promise to be resolved when the size is calculated.
+     */
+    protected async getSize(entry: DirectoryEntry | FileEntry): Promise<number> {
+        if (!this.isDirectoryEntry(entry)) {
+            const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(entry.toURL()) });
+
+            return stat.size;
+        }
+
+        const contents = await this.getDirectoryContents(this.normalizePathForFilesystem(entry.toURL()));
+        const sizes = await Promise.all(contents.map((child) => this.getSize(child)));
+
+        return sizes.reduce((total, size) => total + size, 0);
+    }
+
+    /**
+     * Calculate the size of a directory.
+     *
+     * @param path Relative path to the directory.
+     * @returns Promise to be resolved when the size is calculated.
+     */
+    async getDirectorySize(path: string): Promise<number> {
+        this.logger.debug(`Get size of dir: ${path}`);
+
+        const dirEntry = await this.getDir(path);
+
+        return this.getSize(dirEntry);
+    }
+
+    /**
+     * Calculate the size of a file.
+     *
+     * @param path Relative path to the file.
+     * @returns Promise to be resolved when the size is calculated.
+     */
+    async getFileSize(path: string): Promise<number> {
+        this.logger.debug(`Get size of file: ${path}`);
+
+        const fileEntry = await this.getFile(path);
+
+        return this.getSize(fileEntry);
+    }
+
+    /**
+     * Get file object from a FileEntry.
+     * Use this function only if strictly needed, since it loads the file in memory.
+     *
+     * @param entry Relative path to the file.
+     * @returns Promise to be resolved when the file is retrieved.
+     */
+    async getFileObjectFromFileEntry(entry: FileEntry): Promise<File> {
+        // File type is used a lot in file uploader, check this after FileTransfer has been migrated.
+        this.logger.debug(`Get file object of: ${entry.toURL()}`);
+
+        const uri = this.normalizePathForFilesystem(entry.toURL());
+
+        // Guess mimetype from the extension, Capacitor doesn't provide a way to obtain the MIME type.
+        const extension = CoreMimetype.getFileExtension(entry.name);
+        const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
+
+        const [data, stat] = await Promise.all([
+            this.readAsArrayBuffer(uri),
+            Filesystem.stat({ path: uri }),
+        ]);
+        const lastModified = stat.mtime ?? Date.now();
+        const file = new File([data], entry.name, { type: mimeType, lastModified });
+
+        // Keep the legacy Cordova properties. lastModifiedDate is getter-only in some browsers, so define it instead of assigning.
+        Object.defineProperties(file, {
+            localURL: { value: entry.toURL(), configurable: true, writable: true },
+            start: { value: 0, configurable: true, writable: true },
+            end: { value: file.size, configurable: true, writable: true },
+            lastModifiedDate: { value: new Date(lastModified), configurable: true, writable: true },
+        });
+
+        return file;
+    }
+
+    /**
+     * Calculate the free space in the disk.
+     * In mobile devices it's the free space of the whole storage volume, not only the app folder.
+     *
+     * @returns Promise resolved with the free space in bytes. In browsers, it's an estimate.
+     */
+    async calculateFreeSpace(): Promise<number | null> {
+        if (CorePlatform.isMobile()) {
+            try {
+                return await CoreNative.plugin('diskSpace')?.getFreeSpace() ?? Number.MAX_SAFE_INTEGER;
+            } catch (error) {
+                this.logger.error('Error getting free space from native plugin', error);
+
+                return null;
+            }
+        }
+
+        // In browser, use the Storage Manager API as an estimate.
+        if (typeof navigator.storage?.estimate !== 'function') {
+            return Number.MAX_SAFE_INTEGER;
+        }
+
+        const estimate = await navigator.storage.estimate();
+
+        if (estimate.quota === undefined || estimate.usage === undefined) {
+            this.logger.error('Error getting free space using navigator.storage');
+
+            return null;
+        }
+
+        return Math.max(estimate.quota - estimate.usage, 0);
+    }
+
+    /**
+     * Calculates and returns the available free space in bytes, with platform-specific logic.
+     *
+     * On Android, always returns the calculated available bytes.
+     * On iOS, returns the available bytes only if the free space is below a certain threshold
+     * (`IOS_FREE_SPACE_THRESHOLD`) or if the requested size is more than half of the available space.
+     * Otherwise, returns `null` to indicate that the calculation may not be accurate.
+     *
+     * @param size - The size in bytes that is intended to be used or downloaded.
+     * @returns A promise that resolves to the number of available bytes, or `null` if the value is not reliable.
+     * @deprecated since 6.0. Use CoreFile.calculateFreeSpace instead.
+     */
+    async getPlatformAvailableBytes(size: number): Promise<number | null> {
+        const availableBytes = await this.calculateFreeSpace();
+
+        if (CorePlatform.isAndroid() || availableBytes === null) {
+            return availableBytes;
+        }
+
+        // Space calculation is not accurate on iOS, but it gets more accurate when space is lower.
+        // We'll only use it when space is <500MB, or we're downloading more than twice the reported space.
+        if (availableBytes < CoreFileProvider.IOS_FREE_SPACE_THRESHOLD || size > availableBytes / 2) {
+            return availableBytes;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Normalize a filename that usually comes URL encoded.
+     *
+     * @param filename The file name.
+     * @returns The file name normalized.
+     *
+     * @deprecated since 5.0. Not used anymore.
+     */
+    normalizeFileName(filename: string): string {
+        return CoreUrl.decodeURIComponent(filename);
+    }
+
+    /**
+     * Read a file from local file system.
+     *
+     * @param path Relative path to the file.
+     * @param format Format to read the file.
+     * @param folder Absolute path to the folder where the file is. Use it to read files outside of the app's data folder.
+     * @returns Promise to be resolved when the file is read.
+     */
+    readFile(
+        path: string,
+        // eslint-disable-next-line @typescript-eslint/no-deprecated
+        format?: CoreFileFormat.FORMATTEXT | CoreFileFormat.FORMATDATAURL | CoreFileFormat.FORMATBINARYSTRING,
+        folder?: string,
+    ): Promise<string>;
+    readFile(path: string, format: CoreFileFormat.FORMATARRAYBUFFER, folder?: string): Promise<ArrayBuffer>;
+    readFile<T = unknown>(path: string, format: CoreFileFormat.FORMATJSON, folder?: string): Promise<T>;
+    readFile(
+        path: string,
+        format: CoreFileFormat = CoreFileFormat.FORMATTEXT,
+        folder?: string,
+    ): Promise<string | ArrayBuffer | unknown> {
+        if (folder) {
+            path = CorePath.concatenatePaths(folder, path);
+        }
+
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+
+        this.logger.debug(`Read file ${absolutePath} with format ${format}`);
+
+        switch (format) {
+            case CoreFileFormat.FORMATDATAURL:
+                return this.readAsDataUrl(absolutePath);
+            // eslint-disable-next-line @typescript-eslint/no-deprecated
+            case CoreFileFormat.FORMATBINARYSTRING:
+                return this.readAsBinaryString(absolutePath);
+            case CoreFileFormat.FORMATARRAYBUFFER:
+                return this.readAsArrayBuffer(absolutePath);
+            case CoreFileFormat.FORMATJSON:
+                return this.readAsText(absolutePath).then((text) => {
+                    const parsed = CoreText.parseJSON(text, null);
+
+                    if (parsed === null && text !== null) {
+                        throw new CoreError(`Error parsing JSON file: ${path}`);
+                    }
+
+                    return parsed;
+                });
+            default:
+                return this.readAsText(absolutePath);
+        }
+    }
+
+    /**
+     * Read a file as UTF-8 text.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsText(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path, encoding: Encoding.UTF8 });
+
+        return typeof data === 'string' ? data : await data.text();
+    }
+
+    /**
+     * Read a file and return its contents as an ArrayBuffer.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsArrayBuffer(path: string): Promise<ArrayBuffer> {
+        const { data } = await Filesystem.readFile({ path });
+
+        if (typeof data !== 'string') {
+            return data.arrayBuffer();
+        }
+
+        const view = CoreFileUtils.base64ToBinaryData(data);
+
+        return view.buffer;
+    }
+
+    /**
+     * Read a file and return its contents as a binary string.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsBinaryString(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path });
+
+        if (typeof data === 'string') {
+            return atob(data);
+        }
+
+        // Convert Blob → binary string via ArrayBuffer.
+        const buffer = await data.arrayBuffer();
+
+        return CoreFileUtils.arrayBufferToBinaryString(buffer);
+    }
+
+    /**
+     * Read a file and return its contents as a base64 data URL.
+     *
+     * @param path File path.
+     * @returns Promise resolved with the file contents.
+     */
+    protected async readAsDataUrl(path: string): Promise<string> {
+        const { data } = await Filesystem.readFile({ path });
+        const extension = CoreMimetype.getFileExtension(path);
+        const mimeType = (extension && CoreMimetype.getMimeType(extension)) || 'application/octet-stream';
+
+        if (typeof data === 'string') {
+            return `data:${mimeType};base64,${data}`;
+        }
+
+        // Blob returned by the web implementation: read it as data URL.
+        return CoreFileUtils.readBlobAsString(data, 'data-url');
+    }
+
+    /**
+     * Read file contents from a file data object.
+     *
+     * @param fileData File's data.
+     * @param format Format to read the file.
+     * @returns Promise to be resolved when the file is read.
+     */
+    readFileData(fileData: File, format: CoreFileFormat = CoreFileFormat.FORMATTEXT): Promise<string | ArrayBuffer | unknown> {
+        this.logger.debug(`Read file from file data with format ${format}`);
+
+        return new Promise((resolve, reject): void => {
+            const reader = new FileReader();
+
+            reader.onloadend = (event): void => {
+                if (event.target?.result !== undefined && event.target.result !== null) {
+                    if (format === CoreFileFormat.FORMATJSON) {
+                        // Convert to object.
+                        const parsed = CoreText.parseJSON(<string>event.target.result, null);
+
+                        if (parsed === null) {
+                            reject('Error parsing JSON file.');
+                        }
+
+                        resolve(parsed);
+                    } else {
+                        resolve(event.target.result);
+                    }
+                } else if (event.target?.error !== undefined && event.target.error !== null) {
+                    reject(event.target.error);
+                } else {
+                    reject({ code: null, message: 'READER_ONLOADEND_ERR' });
+                }
+            };
+
+            // Check if the load starts. If it doesn't start in 3 seconds, reject.
+            // Sometimes in Android the read doesn't start for some reason, so the promise never finishes.
+            let hasStarted = false;
+            reader.onloadstart = () => {
+                hasStarted = true;
+            };
+            setTimeout(() => {
+                if (!hasStarted) {
+                    reject('Upload cannot start.');
+                }
+            }, 3000);
+
+            switch (format) {
+                case CoreFileFormat.FORMATDATAURL:
+                    reader.readAsDataURL(fileData);
+                    break;
+                // eslint-disable-next-line @typescript-eslint/no-deprecated
+                case CoreFileFormat.FORMATBINARYSTRING:
+                    // eslint-disable-next-line @typescript-eslint/no-deprecated
+                    reader.readAsBinaryString(fileData);
+                    break;
+                case CoreFileFormat.FORMATARRAYBUFFER:
+                    reader.readAsArrayBuffer(fileData);
+                    break;
+                default:
+                    reader.readAsText(fileData);
+            }
+        });
+    }
+
+    /**
+     * Writes some data in a file.
+     *
+     * @param path Relative path to the file.
+     * @param data Data to write.
+     * @param append Whether to append the data to the end of the file.
+     * @returns Promise to be resolved when the file is written.
+     */
+    async writeFile(path: string, data: string | Blob, append?: boolean): Promise<FileEntry> {
+        this.logger.debug(`Write file: ${path}`);
+
+        const absolutePath = this.toAbsoluteAndNormalize(path);
+
+        if (append) {
+            // Ensure parent directory exists to prevent errors.
+            const parent = CoreFileUtils.getFileAndDirectoryFromPath(absolutePath).directory;
+            if (parent) {
+                await CorePromiseUtils.ignoreErrors(Filesystem.mkdir({
+                    path: parent,
+                    recursive: true,
+                }));
+            }
+        }
+
+        if (typeof data === 'string') {
+            if (append) {
+                await Filesystem.appendFile({ path: absolutePath, data, encoding: Encoding.UTF8 });
+            } else {
+                await Filesystem.writeFile({ path: absolutePath, data, encoding: Encoding.UTF8, recursive: true });
+            }
+        } else {
+            const base64 = await this.blobToBase64(data);
+
+            if (append) {
+                await Filesystem.appendFile({ path: absolutePath, data: base64 });
+            } else {
+                await Filesystem.writeFile({ path: absolutePath, data: base64, recursive: true });
+            }
+        }
+
+        return new FileEntry(absolutePath);
+    }
+
+    /**
+     * Read a Blob and return its base64-encoded contents (without the data URL prefix).
+     *
+     * @param blob Blob to encode.
+     * @returns Promise resolved with the base64 representation.
+     */
+    protected async blobToBase64(blob: Blob): Promise<string> {
+        const dataUrl = await CoreFileUtils.readBlobAsString(blob, 'data-url');
+        const commaIndex = dataUrl.indexOf(',');
+
+        return commaIndex === -1 ? dataUrl : dataUrl.substring(commaIndex + 1);
+    }
+
+    /**
+     * Write some file data into a filesystem file.
+     * It's done in chunks to prevent crashing the app for big files.
+     * Please notice Ionic Native writeFile function already splits by chunks, but it doesn't have an onProgress function.
+     *
+     * @param file The data to write.
+     * @param path Path where to store the data.
+     * @param onProgress Function to call on progress.
+     * @param offset Offset where to start reading from.
+     * @param append Whether to append the data to the end of the file.
+     * @returns Promise resolved when done.
+     */
+    async writeFileDataInFile(
+        file: Blob,
+        path: string,
+        onProgress?: CoreFileProgressFunction,
+        offset = 0,
+        append?: boolean,
+    ): Promise<FileEntry> {
+        offset = offset || 0;
+
+        try {
+            // Get the chunk to write.
+            const chunk = file.slice(offset, Math.min(offset + CoreFileProvider.CHUNK_SIZE, file.size));
+
+            const fileEntry = await this.writeFile(path, chunk, append);
+
+            offset += CoreFileProvider.CHUNK_SIZE;
+
+            onProgress && onProgress({
+                lengthComputable: true,
+                loaded: offset,
+                total: file.size,
+            });
+
+            if (offset >= file.size) {
+                // Done, stop.
+                return fileEntry;
+            }
+
+            // Read the next chunk.
+            return this.writeFileDataInFile(file, path, onProgress, offset, true);
+        } catch (error) {
+            if (error && error.target && error.target.error) {
+                // Error returned by the writer, throw the "real" error.
+                throw error.target.error;
+            }
+
+            throw error;
+        }
+    }
+
+    /**
+     * Gets a file that might be outside the app's folder.
+     *
+     * @param fullPath Absolute path to the file.
+     * @returns Promise to be resolved when the file is retrieved.
+     * @deprecated since 6.0. Use getFile with the absolute path instead.
+     */
+    async getExternalFile(fullPath: string): Promise<FileEntry> {
+        const { uri } = await Filesystem.stat({ path: this.normalizePathForFilesystem(fullPath) });
+
+        return new FileEntry(uri);
+    }
+
+    /**
+     * Calculate the size of a file.
+     *
+     * @param path Absolute path to the file.
+     * @returns Promise to be resolved when the size is calculated.
+     * @deprecated since 6.0. Use getFileSize with the absolute path instead.
+     */
+    async getExternalFileSize(path: string): Promise<number> {
+        const stat = await Filesystem.stat({ path: this.normalizePathForFilesystem(path) });
+
+        return stat.size;
+    }
+
+    /**
+     * Removes a file that might be outside the app's folder.
+     *
+     * @param fullPath Absolute path to the file.
+     * @returns Promise to be resolved when the file is removed.
+     * @deprecated since 6.0. Use removeFile with the absolute path instead.
+     */
+    async removeExternalFile(fullPath: string): Promise<void> {
+        await Filesystem.deleteFile({ path: this.normalizePathForFilesystem(fullPath) });
+    }
+
+    /**
+     * Get the base path where the application files are stored.
+     *
+     * @returns Promise to be resolved when the base path is retrieved.
+     * @deprecated since 6.0. Use basePath getter instead. Not needed a promise anymore.
+     */
+    async getBasePath(): Promise<string> {
+        return this.basePath;
+    }
+
+    /**
+     * Get the base path where the application files are stored in the format to be used for downloads.
+     *
+     * @returns Promise to be resolved when the base path is retrieved.
+     * @deprecated since 6.0. Use basePath getter instead. Capacitor doesn't provide a cdvfile URL.
+     */
+    async getBasePathToDownload(): Promise<string> {
+        return this.basePath;
+    }
+
+    /**
+     * Get the base path where the application files are stored. Returns the value instantly, without waiting for it to be ready.
+     *
+     * @returns Base path. If the service hasn't been initialized it will return an invalid value.
+     * @deprecated since 6.0. Use basePath getter instead.
+     */
+    getBasePathInstant(): string {
+        return this.basePath;
+    }
+
+    /**
+     * Move a dir.
+     *
+     * @param originalPath Path to the dir to move.
+     * @param newPath New path of the dir.
+     * @param destDirExists Set it to true if you know the directory where to put the dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @returns Promise resolved when the entry is moved.
+     */
+    async moveDir(originalPath: string, newPath: string, destDirExists?: boolean): Promise<DirectoryEntry> {
+        const entry = await this.copyOrMoveFileOrDir(originalPath, newPath, true, false, destDirExists);
+
+        return <DirectoryEntry>entry;
+    }
+
+    /**
+     * Move a file.
+     *
+     * @param originalPath Path to the file to move.
+     * @param newPath New path of the file.
+     * @param destDirExists Set it to true if you know the directory where to put the file exists. If false, the function will
+     *                      try to create it (slower).
+     * @returns Promise resolved when the entry is moved.
+     */
+    async moveFile(originalPath: string, newPath: string, destDirExists?: boolean): Promise<FileEntry> {
+        const entry = await this.copyOrMoveFileOrDir(originalPath, newPath, false, false, destDirExists);
+
+        return <FileEntry>entry;
+    }
+
+    /**
+     * Copy a directory.
+     *
+     * @param from Path to the directory to move.
+     * @param to New path of the directory.
+     * @param destDirExists Set it to true if you know the directory where to put the dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @returns Promise resolved when the entry is copied.
+     */
+    async copyDir(from: string, to: string, destDirExists?: boolean): Promise<DirectoryEntry> {
+        const entry = await this.copyOrMoveFileOrDir(from, to, true, true, destDirExists);
+
+        return <DirectoryEntry>entry;
+    }
+
+    /**
+     * Copy a file.
+     *
+     * @param from Path to the file to move.
+     * @param to New path of the file.
+     * @param destDirExists Set it to true if you know the directory where to put the file exists. If false, the function will
+     *                      try to create it (slower).
+     * @returns Promise resolved when the entry is copied.
+     */
+    async copyFile(from: string, to: string, destDirExists?: boolean): Promise<FileEntry> {
+        const entry = await this.copyOrMoveFileOrDir(from, to, false, true, destDirExists);
+
+        return <FileEntry>entry;
+    }
+
+    /**
+     * Copy or move a file or a directory.
+     *
+     * @param from Path to the file/dir to move.
+     * @param to New path of the file/dir.
+     * @param isDir Whether it's a dir or a file.
+     * @param copy Whether to copy. If false, it will move the file.
+     * @param destDirExists Set it to true if you know the directory where to put the file/dir exists. If false, the function will
+     *                      try to create it (slower).
+     * @returns Promise resolved when the entry is copied.
+     */
+    protected async copyOrMoveFileOrDir(
+        from: string,
+        to: string,
+        isDir?: boolean,
+        copy?: boolean,
+        destDirExists?: boolean,
+    ): Promise<FileEntry | DirectoryEntry> {
+        const fileIsInAppFolder = this.isPathInAppFolder(from);
+
+        if (!fileIsInAppFolder) {
+            return this.copyOrMoveExternalFile(from, to, copy);
+        }
+
+        const toFileAndDir = CoreFileUtils.getFileAndDirectoryFromPath(to);
+
+        if (toFileAndDir.directory && !destDirExists) {
+            // Create the target directory if it doesn't exist.
+            await this.createDir(toFileAndDir.directory);
+        }
+
+        const fromPath = this.toAbsoluteAndNormalize(from);
+        const toPath = this.toAbsoluteAndNormalize(to);
+
+        if (copy) {
+            await Filesystem.copy({
+                from: fromPath,
+                to: toPath,
+            });
+        } else {
+            await Filesystem.rename({
+                from: fromPath,
+                to: toPath,
+            });
+        }
+
+        return isDir ? new DirectoryEntry(toPath) : new FileEntry(toPath);
+    }
+
+    /**
+     * Extract the file name and directory from a given path.
+     *
+     * @param path Path to be extracted.
+     * @returns Plain object containing the file name and directory.
+     * @deprecated since 5.0. Use CoreFileUtils.getFileAndDirectoryFromPath instead.
+     */
+    getFileAndDirectoryFromPath(path: string): { directory: string; name: string } {
+        return CoreFileUtils.getFileAndDirectoryFromPath(path);
+    }
+
+    /**
+     * Get the internal URL of a file.
+     * Please notice that with WKWebView these URLs no longer work in mobile. Use fileEntry.toURL() along with convertFileSrc.
+     *
+     * @param fileEntry File Entry.
+     * @returns Internal URL.
+     * @deprecated since 6.0. Use toURL() from the FileEntry instance instead.
+     */
+    getInternalURL(fileEntry: FileEntry): string {
+        return fileEntry.toURL();
+    }
+
+    /**
+     * Get the URL (absolute path) of a file.
+     * Use this function instead of doing fileEntry.toURL because the latter causes problems with WebView and other plugins.
+     *
+     * @param fileEntry File Entry.
+     * @returns URL.
+     * @deprecated since 6.0. Use toURL() from the FileEntry instance instead.
+     */
+    getFileEntryURL(fileEntry: Entry): string {
+        return fileEntry.toURL();
+    }
+
+    /**
+     * Adds the basePath to a path if it doesn't have it already.
+     *
+     * @param path Path to treat.
+     * @returns Path with basePath added.
+     * @deprecated since 6.0. Use the toAbsoluteAndNormalize instead, for internal use only.
+     */
+    addBasePathIfNeeded(path: string): string {
+        if (path.match(/^[a-z0-9]+:\/\//i)) {
+            return path;
+        }
+
+        if (path.startsWith(this.basePath)) {
+            return path;
+        } else {
+            return CorePath.concatenatePaths(this.basePath, path);
+        }
+    }
+
+    /**
+     * Converts the path to an absolute path and also fixes invalid percent encodings.
+     *
+     * @param path Path to treat.
+     * @returns Fixed path.
+     */
+    protected toAbsoluteAndNormalize(path: string): string {
+        const absolutePath = path.match(/^[a-z0-9]+:\/\//i)
+            ? path
+            : path.startsWith(this.basePath)
+                ? path
+                : CorePath.concatenatePaths(this.basePath, path);
+
+        return this.normalizePathForFilesystem(absolutePath);
+    }
+
+    /**
+     * Normalize a path before using it in Capacitor Filesystem calls.
+     *
+     * It keeps already URI-encoded bytes unchanged and encodes invalid `%` occurrences.
+     *
+     * @param path Path to normalize.
+     * @returns Normalized path.
+     */
+    protected normalizePathForFilesystem(path: string): string {
+        const placeholder = '__CORE_FILE_ENCODED_PERCENT__';
+        const protectedPath = path.replace(/%([0-9a-fA-F]{2})/g, `${placeholder}$1`);
+
+        return encodeURI(protectedPath).replace(new RegExp(`${placeholder}([0-9a-fA-F]{2})`, 'g'), '%$1');
+    }
+
+    /**
+     * Remove the base path from a path.
+     *
+     * @param path Path to treat.
+     * @returns Path without basePath.
+     */
+    removeBasePath(path: string): string {
+        return CoreText.removeStartingSlash(path.replace(this.basePath, ''));
+    }
+
+    /**
+     * Unzips a file.
+     *
+     * @param source Path to the ZIP file.
+     * @param destination Path to the destination folder. If not defined, a new folder will be created with the
+     *                   same location and name as the ZIP file (without extension).
+     * @param onProgress Function to call on progress.
+     * @param recreateDir Delete the dest directory before unzipping. Defaults to true.
+     */
+    async unzipFile(
+        source: string,
+        destination?: string,
+        onProgress?: (progress: ProgressEvent) => void,
+        recreateDir = true,
+    ): Promise<void> {
+        // Get the source file.
+        const fileEntry = await this.getFile(source);
+
+        if (destination && recreateDir) {
+            // Make sure the dest dir doesn't exist already.
+            await CorePromiseUtils.ignoreErrors(this.removeDir(destination));
+
+            // Now create the dir, otherwise if any of the ancestor dirs doesn't exist the unzip would fail.
+            await this.createDir(destination);
+        }
+
+        // If destination is not set, use same location as ZIP file.
+        destination = this.toAbsoluteAndNormalize(destination || CoreMimetype.removeExtension(source));
+
+        let zipOnProgress: ((event: ZipProgressEvent) => void) | undefined;
+        if (onProgress) {
+            // Wrap the onProgress function to remove some unnecessary information from the event.
+            zipOnProgress = (event: ZipProgressEvent) => {
+                const progressEvent = new ProgressEvent('progress', {
+                    lengthComputable: event.lengthComputable,
+                    loaded: event.loaded,
+                    total: event.total,
+                });
+
+                onProgress(progressEvent);
+            };
+        }
+
+        await Zip.unzip({
+            source: fileEntry.toURL(),
+            destination,
+            onProgress: zipOnProgress,
+        });
+    }
+
+    /**
+     * Search a string or regexp in a file contents and replace it. The result is saved in the same file.
+     *
+     * @param path Path to the file.
+     * @param search Value to search.
+     * @param newValue New value.
+     * @returns Promise resolved in success.
+     */
+    async replaceInFile(path: string, search: string | RegExp, newValue: string): Promise<void> {
+        let content = <string> await this.readFile(path);
+
+        if (content === undefined || content === null || !content.replace) {
+            throw new CoreError(`Error reading file ${path}`);
+        }
+
+        if (content.match(search)) {
+            content = content.replace(search, newValue);
+
+            await this.writeFile(path, content);
+        }
+    }
+
+    /**
+     * Get a file/dir metadata given the file's entry.
+     *
+     * @param fileEntry FileEntry retrieved from getFile or similar.
+     * @returns Promise resolved with metadata.
+     */
+    async getMetadata(fileEntry: Entry): Promise<Metadata> {
+        const path = this.normalizePathForFilesystem(fileEntry.toURL());
+        const stat = await Filesystem.stat({ path });
+
+        return {
+            modificationTime: new Date(stat.mtime),
+            size: stat.size,
+        };
+    }
+
+    /**
+     * Get a file/dir metadata given the path.
+     *
+     * @param path Path to the file/dir.
+     * @param isDir True if directory, false if file.
+     * @returns Promise resolved with metadata.
+     */
+    async getMetadataFromPath(path: string, isDir?: boolean): Promise<Metadata> {
+        const entry = isDir ? await this.getDir(path) : await this.getFile(path);
+
+        return this.getMetadata(entry);
+    }
+
+    /**
+     * Convenience function to copy or move an external file.
+     *
+     * @param from Absolute path to the file to copy/move.
+     * @param to Relative new path of the file (inside the app folder).
+     * @param copy True to copy, false to move.
+     * @returns Promise resolved when the entry is copied/moved.
+     */
+    protected async copyOrMoveExternalFile(from: string, to: string, copy?: boolean): Promise<FileEntry> {
+
+        // Create the destination dir if it doesn't exist.
+        const dirAndFile = CoreFileUtils.getFileAndDirectoryFromPath(to);
+        if (dirAndFile.directory) {
+            await this.createDir(dirAndFile.directory);
+        }
+
+        from = this.toAbsoluteAndNormalize(from);
+        to = this.toAbsoluteAndNormalize(to);
+
+        if (copy) {
+            await Filesystem.copy({ from, to });
+        } else {
+            await Filesystem.rename({ from, to });
+        }
+
+        return new FileEntry(to);
+    }
+
+    /**
+     * Copy a file from outside of the app folder to somewhere inside the app folder.
+     *
+     * @param from Absolute path to the file to copy.
+     * @param to Relative new path of the file (inside the app folder).
+     * @returns Promise resolved when the entry is copied.
+     * @deprecated since 6.0. Use copyFile instead.
+     */
+    copyExternalFile(from: string, to: string): Promise<FileEntry> {
+        return this.copyOrMoveExternalFile(from, to, true);
+    }
+
+    /**
+     * Move a file from outside of the app folder to somewhere inside the app folder.
+     *
+     * @param from Absolute path to the file to move.
+     * @param to Relative new path of the file (inside the app folder).
+     * @returns Promise resolved when the entry is moved.
+     * @deprecated since 6.0. Use moveFile instead.
+     */
+    moveExternalFile(from: string, to: string): Promise<FileEntry> {
+        return this.copyOrMoveExternalFile(from, to, false);
+    }
+
+    /**
+     * Get a unique file name inside a folder, adding numbers to the file name if needed.
+     *
+     * @param dirPath Path to the destination folder.
+     * @param fileName File name that wants to be used.
+     * @param defaultExt Default extension to use if no extension found in the file.
+     * @returns Promise resolved with the unique file name.
+     */
+    async getUniqueNameInFolder(dirPath: string, fileName: string, defaultExt?: string): Promise<string> {
+        // Get existing files in the folder.
+        try {
+            const entries = await this.getDirectoryContents(dirPath);
+
+            const files: Record<string, FileEntry | DirectoryEntry> = {};
+            let fileNameWithoutExtension = CoreMimetype.removeExtension(fileName);
+            let extension = CoreMimetype.getFileExtension(fileName) || defaultExt;
+
+            // Clean the file name.
+            fileNameWithoutExtension = CoreText.removeSpecialCharactersForFiles(
+                CoreUrl.decodeURIComponent(fileNameWithoutExtension),
+            );
+
+            // Index the files by name.
+            entries.forEach((entry) => {
+                files[entry.name.toLowerCase()] = entry;
+            });
+
+            // Format extension.
+            if (extension) {
+                extension = `.${extension}`;
+            } else {
+                extension = '';
+            }
+
+            return this.calculateUniqueName(files, fileNameWithoutExtension + extension);
+        } catch {
+            // Folder doesn't exist, name is unique. Clean it and return it.
+            return CoreText.removeSpecialCharactersForFiles(CoreUrl.decodeURIComponent(fileName));
+        }
+    }
+
+    /**
+     * Given a file name and a set of already used names, calculate a unique name.
+     *
+     * @param usedNames Object with names already used as keys.
+     * @param name Name to check.
+     * @returns Unique name.
+     */
+    calculateUniqueName(usedNames: Record<string, unknown>, name: string): string {
+        if (usedNames[name.toLowerCase()] === undefined) {
+            // No file with the same name.
+            return name;
+        }
+
+        // Repeated name. Add a number until we find a free name.
+        const nameWithoutExtension = CoreMimetype.removeExtension(name);
+        let extension = CoreMimetype.getFileExtension(name);
+        let num = 1;
+        extension = extension ? `.${extension}` : '';
+
+        do {
+            name = `${nameWithoutExtension}(${num})${extension}`;
+            num++;
+        } while (usedNames[name.toLowerCase()] !== undefined);
+
+        return name;
+    }
+
+    /**
+     * Remove app temporary folder.
+     */
+    async clearTmpFolder(): Promise<void> {
+        // Ignore errors because the folder might not exist.
+        await CorePromiseUtils.ignoreErrors(this.removeDir(CoreFileProvider.TMPFOLDER));
+    }
+
+    /**
+     * Remove deleted sites folders.
+     *
+     * @param existingSiteNames List of existing site names. Folders with names not in this list will be deleted.
+     * @returns Promise resolved when done.
+     */
+    async clearDeletedSitesFolder(existingSiteNames: string[]): Promise<void> {
+        // Ignore errors because the folder might not exist.
+        const dirPath = CoreFileProvider.SITESFOLDER;
+
+        // Get the directory contents.
+        try {
+            const contents = await this.getDirectoryContents(dirPath);
+
+            if (!contents.length) {
+                return;
+            }
+
+            const promises: Promise<void>[] = contents.map(async (file) => {
+                if (file.isDirectory && !existingSiteNames.includes(file.name)) {
+                    // Site does not exist, delete it.
+                    await CorePromiseUtils.ignoreErrors(this.removeDir(file.toURL()));
+                }
+            });
+
+            await Promise.all(promises);
+        } catch {
+            // Ignore errors, maybe it doesn't exist.
+        }
+    }
+
+    /**
+     * Given a folder path and a list of used files, remove all the files of the folder that aren't on the list of used files.
+     *
+     * @param dirPath Folder path.
+     * @param files List of used files.
+     */
+    async removeUnusedFiles(dirPath: string, files: CoreFileEntry[]): Promise<void> {
+        // Get the directory contents.
+        try {
+            const contents = await this.getDirectoryContents(dirPath);
+
+            if (!contents.length) {
+                return;
+            }
+
+            const filesMap: { [fullPath: string]: FileEntry } = {};
+            const promises: Promise<void>[] = [];
+
+            // Index the received files by fullPath and ignore the invalid ones.
+            files.forEach((file) => {
+                if ('fullPath' in file) {
+                    filesMap[file.toURL()] = file;
+                }
+            });
+
+            // Check which of the content files aren't used anymore and delete them.
+            contents.forEach((file) => {
+                if (!filesMap[file.toURL()]) {
+                    // File isn't used, delete it.
+                    promises.push(this.removeFileByFileEntry(file));
+                }
+            });
+
+            await Promise.all(promises);
+        } catch {
+            // Ignore errors, maybe it doesn't exist.
+        }
+    }
+
+    /**
+     * Check if a file is inside the app's folder.
+     *
+     * @param path The absolute path of the file to check.
+     * @returns Whether the file is in the app's folder.
+     */
+    isFileInAppFolder(path: string): boolean {
+        return path.includes(this.basePath);
+    }
+
+    /**
+     * Get the path to the www folder at runtime based on the WebView URL.
+     *
+     * @returns Path.
+     */
+    getWWWPath(): string {
+        // Use current URL, removing the path.
+        if (!window.location.pathname || window.location.pathname === '/') {
+            return window.location.href;
+        }
+
+        const position = window.location.href.indexOf(window.location.pathname);
+
+        if (position !== -1) {
+            return window.location.href.substring(0, position);
+        }
+
+        return window.location.href;
+    }
+
+    /**
+     * Get the full path to the www folder.
+     *
+     * @returns Path.
+     * @deprecated since 6.0. Capacitor doesn't allow obtaining a native path to the www folder.
+     */
+    getWWWAbsolutePath(): string {
+        // Cannot use Cordova to get it, use the WebView URL.
+        return this.getWWWPath();
+    }
+
+    /**
+     * Helper function to call Ionic WebView convertFileSrc only in the needed platforms.
+     * This is needed to make files work with the Ionic WebView plugin.
+     *
+     * @param src Source to convert.
+     * @returns Converted src.
+     */
+    convertFileSrc(src: string): string {
+        return CorePlatform.isMobile() ? Capacitor.convertFileSrc(src) : src;
+    }
+
+    /**
+     * Undo the conversion of convertFileSrc.
+     *
+     * @param src Source to unconvert.
+     * @returns Unconverted src.
+     */
+    unconvertFileSrc(src: string): string {
+        if (!CorePlatform.isMobile()) {
+            return src;
+        }
+
+        const scheme = CorePlatform.isIOS() ? CoreConstants.CONFIG.ioswebviewscheme : 'http';
+
+        return src.replace(`${scheme}://localhost/_capacitor_file_`, 'file://')
+            .replace(`${scheme}://localhost/_app_file_`, 'file://'); // @deprecated since 6.0. Keep Cordova value for now.
+    }
+
+    /**
+     * Check if a certain path is in the app's folder (basePath).
+     *
+     * @param path Path to check.
+     * @returns Whether it's in the app folder.
+     */
+    protected isPathInAppFolder(path: string): boolean {
+        return !path || !path.match(/^[a-z0-9]+:\/\//i) || path.includes(this.basePath);
+    }
+
+    /**
+     * Get the file's name.
+     *
+     * @param file The file.
+     * @returns The file name.
+     */
+    getFileName(file: CoreFileEntry): string | undefined {
+        return CoreFileUtils.isFileEntry(file) ? file.name : file.filename;
+    }
 
 }
+
+export const CoreFile = makeSingleton(CoreFileProvider);

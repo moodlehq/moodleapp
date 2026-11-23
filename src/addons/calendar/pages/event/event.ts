@@ -20,7 +20,7 @@ import {
 import { AddonCalendarEventReminder, AddonCalendarHelper } from '../../services/calendar-helper';
 import { AddonCalendarOffline } from '../../services/calendar-offline';
 import { AddonCalendarSync, AddonCalendarSyncEvents } from '../../services/calendar-sync';
-import { CoreNetwork } from '@services/network';
+import { CoreNetwork } from '@services/native/network';
 import { CoreEventObserver, CoreEvents } from '@static/events';
 import { CoreText } from '@static/text';
 import { CoreSites } from '@services/sites';

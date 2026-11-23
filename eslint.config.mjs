@@ -231,9 +231,29 @@ const appConfig = {
                 'message': 'Please use the dayjs wrapper from @/core/utils/dayjs instead.',
             },
             {
+                'name': '@capacitor/camera',
+                'importNames': ['Camera'],
+                'message': 'Please use the Camera singleton from @singletons instead.',
+            },
+            {
+                'name': '@capacitor-community/file-opener',
+                'importNames': ['FileOpener'],
+                'message': 'Please use the FileOpener singleton from @singletons instead.',
+            },
+            {
+                'name': '@capacitor/file-transfer',
+                'importNames': ['FileTransfer'],
+                'message': 'Please use the FileTransfer singleton from @singletons instead.',
+            },
+            {
                 'name': '@capacitor/filesystem',
                 'importNames': ['Filesystem'],
                 'message': 'Please use the Filesystem singleton from @singletons instead.',
+            },
+            {
+                'name': '@capgo/capacitor-zip',
+                'importNames': ['CapacitorZip'],
+                'message': 'Please use the Zip singleton from @singletons instead.',
             },
         ],
         'no-restricted-syntax': ['error', {

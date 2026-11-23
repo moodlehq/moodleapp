@@ -14,7 +14,7 @@
 
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
-import { CoreNativeDevice } from '@services/native/device';
+import { CoreDevice } from '@services/native/device';
 import { makeSingleton } from '@singletons';
 
 /**
@@ -35,7 +35,7 @@ export class CorePlatformService extends Platform {
             return 0;
         }
 
-        return Number(CoreNativeDevice.deviceInfo?.osVersion.split('.')[0]);
+        return Number(CoreDevice.deviceInfo?.osVersion.split('.')[0]);
     }
 
     /**
