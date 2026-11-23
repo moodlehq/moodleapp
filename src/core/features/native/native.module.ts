@@ -25,13 +25,9 @@ import { Push } from '@features/native/plugins/push';
  * service somewhere else and rename it to avoid confusing it with services/native.
  */
 export async function getNativeServices(): Promise<Type<unknown>[]> {
-    // eslint-disable-next-line @typescript-eslint/no-deprecated
-    const { SQLite } = await import('./plugins/sqlite');
-
     return [
         LocalNotifications,
         Push,
-        SQLite,
     ];
 }
 

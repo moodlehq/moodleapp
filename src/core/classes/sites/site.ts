@@ -20,7 +20,7 @@ import {
 } from '@services/native/opener';
 
 import { CoreNetwork } from '@services/native/network';
-import { CoreDB } from '@services/db';
+import { CoreDB } from '@services/native/db';
 import { CoreEventData, CoreEvents } from '@static/events';
 import { CoreFile } from '@services/native/file';
 import {
@@ -32,7 +32,7 @@ import {
 import { CoreTime } from '@static/time';
 import { CoreUrl } from '@static/url';
 import { CoreConstants, CoreTimeConstants } from '@/core/constants';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { CoreError } from '@classes/errors/error';
 import { CoreLogger } from '@static/logger';
 import { Translate } from '@singletons';

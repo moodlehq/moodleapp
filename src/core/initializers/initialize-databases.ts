@@ -19,7 +19,7 @@ import { CoreFilepool } from '@services/filepool';
 import { CoreLocalNotifications } from '@services/local-notifications';
 import { CoreSites } from '@services/sites';
 import { CoreStorage } from '@services/storage';
-import { CoreDB } from '@services/db';
+import { CoreDB } from '@services/native/db';
 
 /**
  * Init databases instances.

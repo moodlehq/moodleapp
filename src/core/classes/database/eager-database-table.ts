@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreError } from '@classes/errors/error';
-import { SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDBRecordValues } from '@classes/native/sqlitedb';
 import { CoreInMemoryDatabaseConditions, CoreInMemoryDatabaseReducer, CoreInMemoryDatabaseTable } from './inmemory-database-table';
 import {
     GetDBRecordPrimaryKey,

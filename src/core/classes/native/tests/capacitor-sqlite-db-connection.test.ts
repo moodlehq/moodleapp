@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { DatabaseSync } from 'node:sqlite';
-import { CoreCapacitorSQLiteDBConnection, CoreCapacitorSQLiteDriver } from '@classes/capacitor-sqlite-db-connection';
+import { CoreCapacitorSQLiteDBConnection, CoreCapacitorSQLiteDriver } from '@classes/native/capacitor-sqlite-db-connection';
 
 describe.each([false, true])('Capacitor SQLite contract (iOS metadata: %s)', ios => {
     let engine: DatabaseSync;

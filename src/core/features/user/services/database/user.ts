@@ -14,7 +14,7 @@
 
 import { CoreSiteSchema } from '@services/sites';
 import { CoreUserBasicData } from '../user';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 
 /**
  * Database variables for CoreUser service.

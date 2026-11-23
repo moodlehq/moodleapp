@@ -14,7 +14,7 @@
 
 import { CoreAppSchema } from '@services/app-db';
 import { CoreSiteSchema } from '@services/sites';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/native/sqlitedb';
 
 /**
  * Database variables for CoreSites service.

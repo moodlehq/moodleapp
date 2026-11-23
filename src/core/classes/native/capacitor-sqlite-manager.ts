@@ -13,10 +13,10 @@
 // limitations under the License.
 
 import type { CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
-import { CoreCapacitorSQLiteDBConnection, CoreCapacitorSQLiteDriver } from '@classes/capacitor-sqlite-db-connection';
+import { CoreCapacitorSQLiteDBConnection, CoreCapacitorSQLiteDriver } from '@classes/native/capacitor-sqlite-db-connection';
 import { CoreError } from '@classes/errors/error';
 import { CoreQueueRunner } from '@classes/queue-runner';
-import { SQLiteDBConnection } from '@classes/sqlitedb';
+import { SQLiteDBConnection } from '@classes/native/sqlitedb';
 
 /**
  * Connection owner. All wrappers, including forceNew wrappers, must use this same manager.

@@ -15,7 +15,6 @@
 import { NgModule, provideAppInitializer, Type } from '@angular/core';
 
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
-import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 import { Push } from '@features/native/plugins/push';
 import { FileTransferCompat, FileTransferErrorCompat } from './services/file-transfer-compat';
 
@@ -37,6 +36,7 @@ export async function getCordovaCompatServices(): Promise<Type<unknown>[]> {
     const { Keyboard } = await import('./services/keyboard-compat');
     const { MediaCapture } = await import('./services/media-capture-compat');
     const { QRScanner } = await import('./services/qrscanner-compat');
+    const { SQLite } = await import('../cordova-compat/services/sqlite-compat');
     const { StatusBar } = await import('./services/status-bar-compat');
     const { WebIntent } = await import('./services/webintent-compat');
     const { WebView } = await import('./services/webview-compat');

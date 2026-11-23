@@ -16,7 +16,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { CoreDbServiceMock, CoreBrowserSQLiteDriver } from '@features/emulator/services/db';
 import { CorePromisedValue } from '@classes/promised-value';
 import { CorePlatform } from '@services/platform';
-import { CoreDbService } from '@services/db';
+import { CoreDbService } from '@services/native/db';
 import { getDatabaseProviders } from '@services/database';
 import { mockSingleton } from '@/testing/utils';
 import { Injector } from '@angular/core';

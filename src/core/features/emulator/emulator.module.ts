@@ -37,7 +37,7 @@ import { LocalNotificationsMock } from './services/local-notifications';
 import { ZipMock } from './services/zip';
 import { CorePlatform } from '@services/platform';
 import { CoreLocalNotifications } from '@services/local-notifications';
-import { CoreDbService } from '@services/db';
+import { CoreDbService } from '@services/native/db';
 import { CoreDbServiceMock } from '@features/emulator/services/db';
 import { FileTransferMock } from './services/file-transfer';
 

@@ -14,11 +14,11 @@
 
 import { DatabaseSync } from 'node:sqlite';
 import { CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
-import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
-import { CoreDbService } from '@services/db';
+import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/native/capacitor-sqlite-manager';
+import { CoreDbService } from '@services/native/db';
 import { CorePlatform } from '@services/platform';
 import { mock, mockSingleton } from '@/testing/utils';
-import { SQLiteDBConnection } from '@classes/sqlitedb';
+import { SQLiteDBConnection } from '@classes/native/sqlitedb';
 import { CorePromisedValue } from '@classes/promised-value';
 
 type TestSQLiteDriver = CoreCapacitorSQLiteManagerDriver &

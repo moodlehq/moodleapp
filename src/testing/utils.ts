@@ -33,7 +33,7 @@ import { CoreText } from '@static/text';
 import { CoreExternalContentDirectiveStub } from './stubs/directives/core-external-content';
 import { CoreNetwork } from '@services/native/network';
 import { CorePlatform } from '@services/platform';
-import { CoreDB } from '@services/db';
+import { CoreDB } from '@services/native/db';
 import { CoreNavigator } from '@services/navigator';
 import { CoreLoadings } from '@services/overlays/loadings';
 import { TranslatePipe, provideTranslateLoader, provideTranslateService } from '@ngx-translate/core';

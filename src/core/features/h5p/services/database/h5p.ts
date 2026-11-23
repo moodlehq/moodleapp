@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { CoreH5PUnsupportedPackageReason } from '@features/h5p/constants';
 import { CoreSiteSchema } from '@services/sites';
 

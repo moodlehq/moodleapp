@@ -14,8 +14,8 @@
 
 import { Injectable } from '@angular/core';
 
-import { CoreDB } from '@services/db';
-import { SQLiteDB, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { CoreDB } from '@services/native/db';
+import { SQLiteDB, SQLiteDBTableSchema } from '@classes/native/sqlitedb';
 
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@static/logger';

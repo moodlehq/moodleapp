@@ -14,10 +14,10 @@
 
 import { Injectable } from '@angular/core';
 
-import { SQLiteDB, SQLiteDBConnection } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBConnection } from '@classes/native/sqlitedb';
 import { makeSingleton } from '@singletons';
 import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
-import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
+import { CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/native/capacitor-sqlite-manager';
 import { CoreError } from '@classes/errors/error';
 import { CorePlatform } from '@services/platform';
 import { asyncInstance } from '@/core/utils/async-instance';

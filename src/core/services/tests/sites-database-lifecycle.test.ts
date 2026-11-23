@@ -19,9 +19,9 @@ import { CoreAuthenticatedSite } from '@classes/sites/authenticated-site';
 import { CoreSite } from '@classes/sites/site';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { SiteDBEntry } from '@services/database/sites';
-import { CoreDB } from '@services/db';
+import { CoreDB } from '@services/native/db';
 import { CoreSiteInfoResponse } from '@classes/sites/unauthenticated-site';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { CoreConfig } from '@services/config';
 import { CorePromisedValue } from '@classes/promised-value';
 

@@ -15,9 +15,9 @@
 import {
     CoreCapacitorSQLiteManager,
     CoreCapacitorSQLiteManagerDriver,
-} from '@classes/capacitor-sqlite-manager';
+} from '@classes/native/capacitor-sqlite-manager';
 import { CorePromisedValue } from '@classes/promised-value';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 
 describe('CoreCapacitorSQLiteManager', () => {
     const name = 'Site-manager';

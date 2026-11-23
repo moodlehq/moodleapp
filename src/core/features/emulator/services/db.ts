@@ -13,11 +13,15 @@
 // limitations under the License.
 
 import { CapacitorSQLite, CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
-import { CoreCapacitorSQLiteDBConnection } from '@classes/capacitor-sqlite-db-connection';
-import { ConnectionEntry, CoreCapacitorSQLiteManager, CoreCapacitorSQLiteManagerDriver } from '@classes/capacitor-sqlite-manager';
+import { CoreCapacitorSQLiteDBConnection } from '@classes/native/capacitor-sqlite-db-connection';
+import {
+    ConnectionEntry,
+    CoreCapacitorSQLiteManager,
+    CoreCapacitorSQLiteManagerDriver,
+} from '@classes/native/capacitor-sqlite-manager';
 import { CoreError } from '@classes/errors/error';
-import { SQLiteDBConnection } from '@classes/sqlitedb';
-import { CoreDbService } from '@services/db';
+import { SQLiteDBConnection } from '@classes/native/sqlitedb';
+import { CoreDbService } from '@services/native/db';
 
 /**
  * Browser SQLite storage. The old moodleapp-idb store is deliberately neither opened nor removed.

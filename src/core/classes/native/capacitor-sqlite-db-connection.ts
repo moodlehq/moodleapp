@@ -15,7 +15,7 @@
 import type { CapacitorSQLitePlugin } from '@capacitor-community/sqlite';
 import { CoreError } from '@classes/errors/error';
 import { CoreQueueRunner } from '@classes/queue-runner';
-import { SQLiteDBConnection, SQLiteDBRecordValue, SQLiteDBResult, SQLiteDBStatement } from '@classes/sqlitedb';
+import { SQLiteDBConnection, SQLiteDBRecordValue, SQLiteDBResult, SQLiteDBStatement } from '@classes/native/sqlitedb';
 
 /**
  * Adapter for a Capacitor connection that preserves the app's Cordova-compatible result format.

@@ -14,8 +14,8 @@
 
 import { mock, mockSingleton } from '@/testing/utils';
 import { CoreAppDB, CoreAppDBService } from '@services/app-db';
-import { CoreDB } from '@services/db';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { CoreDB } from '@services/native/db';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import initializeDatabases from '@/core/initializers/initialize-databases';
 import { CoreConfig } from '@services/config';
 import { CoreCronDelegate } from '@services/cron';

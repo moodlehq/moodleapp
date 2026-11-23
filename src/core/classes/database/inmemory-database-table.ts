@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { CoreConstants } from '@/core/constants';
-import { SQLiteDB, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBRecordValues } from '@classes/native/sqlitedb';
 import { CoreLogger } from '@static/logger';
 import { CoreDatabaseConditions, CoreDatabaseReducer, CoreDatabaseTable, GetDBRecordPrimaryKey } from './database-table';
 import { SubPartial } from '@/core/utils/types';

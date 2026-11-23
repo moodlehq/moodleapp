@@ -19,7 +19,7 @@ import { CoreAppDB } from './app-db';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
 import { CoreDatabaseTable } from '@classes/database/database-table';
 import { makeSingleton } from '@singletons';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 
 import { APP_SCHEMA, CoreStorageRecord, TABLE_NAME } from './database/storage';
 import { CoreSites } from './sites';
