@@ -25,7 +25,7 @@ import {
     CoreSite,
     CoreSiteConfig,
 } from '@classes/sites/site';
-import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBRecordValues, SQLiteDBTableSchema } from '@classes/native/sqlitedb';
 import { CoreError, CoreErrorDebug } from '@classes/errors/error';
 import { CoreLoginError, CoreLoginErrorOptions } from '@classes/errors/loginerror';
 import { makeSingleton, Translate, Http } from '@singletons';

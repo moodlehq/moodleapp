@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { Injectable } from '@angular/core';
-import { SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDBRecordValues } from '@classes/native/sqlitedb';
 import { CoreSites } from '@services/sites';
 import { CoreArray } from '@static/array';
 import { makeSingleton } from '@singletons';

@@ -16,7 +16,6 @@ import { NgModule, Type } from '@angular/core';
 
 import { LocalNotifications } from '@awesome-cordova-plugins/local-notifications/ngx';
 import { Push } from '@features/native/plugins/push';
-import { SQLite } from '@awesome-cordova-plugins/sqlite/ngx';
 
 /**
  * Get native services.
@@ -29,7 +28,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     return [
         LocalNotifications,
         Push,
-        SQLite,
     ];
 }
 
@@ -37,7 +35,6 @@ export async function getNativeServices(): Promise<Type<unknown>[]> {
     providers: [
         LocalNotifications,
         Push,
-        SQLite,
     ],
 })
 export class CoreNativeModule {}

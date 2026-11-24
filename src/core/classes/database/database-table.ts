@@ -14,7 +14,7 @@
 
 import { SubPartial } from '@/core/utils/types';
 import { CoreError } from '@classes/errors/error';
-import { SQLiteDB, SQLiteDBRecordValue, SQLiteDBRecordValues } from '@classes/sqlitedb';
+import { SQLiteDB, SQLiteDBRecordValue, SQLiteDBRecordValues } from '@classes/native/sqlitedb';
 
 /**
  * Wrapper used to interact with a database table.

@@ -16,7 +16,7 @@ import { Injectable } from '@angular/core';
 
 import { CoreAppDB, CoreAppSchema } from './app-db';
 import { CoreEvents } from '@static/events';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { makeSingleton } from '@singletons';
 import { CoreLogger } from '@static/logger';
 import { CoreColors } from '@static/colors';

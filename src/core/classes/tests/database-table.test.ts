@@ -20,7 +20,7 @@ import {
 } from '@classes/database/database-table';
 import { CoreInMemoryDatabaseConditions, CoreInMemoryDatabaseReducer } from '@classes/database/inmemory-database-table';
 import { CoreDatabaseCachingStrategy, CoreDatabaseTableProxy } from '@classes/database/database-table-proxy';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { CoreConfig } from '@services/config';
 
 type User = {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { ADDON_CALENDAR_COMPONENT, ADDON_CALENDAR_EVENTS_TABLE } from '@addons/calendar/constants';
-import { SQLiteDB } from '@classes/sqlitedb';
+import { SQLiteDB } from '@classes/native/sqlitedb';
 import { CoreSiteSchema } from '@services/sites';
 import { CorePromiseUtils } from '@static/promise-utils';
 import { CoreReminderData } from '../reminders';
