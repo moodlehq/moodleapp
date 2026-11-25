@@ -45,7 +45,7 @@
                             <ion-item class="ion-text-wrap" [class.feedback_is_dependent]="item.dependitem > 0">
                                 <ion-label>
                                     @if (item.name) {
-                                        <p class="item-heading" [core-mark-required]="item.required">
+                                        <p class="item-heading addon-mod_feedback-item-name" [core-mark-required]="item.required">
                                             @if (feedback!.autonumbering && item.itemnumber) {
                                                 <span>{{item.itemnumber}}. </span>
                                             }
