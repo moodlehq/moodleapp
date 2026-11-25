@@ -613,24 +613,28 @@ export class AddonModAssignSubmissionComponent implements OnInit, OnDestroy {
     protected async loadFeedback(assign: AddonModAssignAssign, feedback?: AddonModAssignSubmissionFeedback): Promise<void> {
         this.feedback = feedback;
         if (this.feedback) {
-            const graders: CoreUserProfile[] = [];
-            const grader = await this.getGrader(this.feedback.grade?.grader);
-            if (grader) {
-                graders.push(grader);
+            // Collect unique grader IDs from both the final grader and markers.
+            const graderIds = new Set<number>();
+
+            if (this.feedback.grade?.grader) {
+                graderIds.add(this.feedback.grade.grader);
             }
 
-            // If we have data about the grader, get its profile.
             if (this.feedback.markerfeedback && this.feedback.markerfeedback.length > 0) {
-
-                const markerGraders = await Promise.all(this.feedback.markerfeedback.map(async (markerFeedback) => {
+                this.feedback.markerfeedback.forEach((markerFeedback) => {
                     if (markerFeedback.markerid > 0) {
-                        return this.getGrader(markerFeedback.markerid);
+                        graderIds.add(markerFeedback.markerid);
                     }
+                });
+            }
 
-                    return undefined;
-                }));
-                graders.push(...markerGraders.filter((grader: CoreUserProfile | undefined) => !!grader));
-
+            // Get the profiles for all unique graders.
+            const graders: CoreUserProfile[] = [];
+            if (graderIds.size > 0) {
+                const graderProfiles = await Promise.all(
+                    Array.from(graderIds).map((id) => this.getGrader(id)),
+                );
+                graders.push(...graderProfiles.filter((grader) => !!grader) as CoreUserProfile[]);
             }
 
             this.graders.set(graders);
