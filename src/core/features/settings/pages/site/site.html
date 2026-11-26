@@ -18,7 +18,7 @@
             <ion-list>
                 @for (handler of handlerItems; track handler.name) {
                     @if ('toggle' in handler) {
-                        <ion-item lines="none" [class]="['core-settings-handler', handler.class]"
+                        <ion-item lines="none" [class]="['core-settings-handler', 'ion-text-wrap', handler.class]"
                             [attr.aria-label]="handler.title | translate" >
                             @if (handler.icon) {
                                 <ion-icon [name]="handler.icon" slot="start" aria-hidden="true" />
@@ -28,7 +28,7 @@
                             </ion-toggle>
                         </ion-item>
                     } @else {
-                        <ion-item lines="none" [class]="['core-settings-handler', handler.class]"
+                        <ion-item lines="none" [class]="['core-settings-handler', 'ion-text-wrap', handler.class]"
                             [attr.aria-label]="handler.title | translate" (click)="handlerAction(handler)"
                             [button]="true" [detail]="'page' in handler"
                             [attr.aria-current]="'page' in handler && handlers.getItemAriaCurrent(handler)">
