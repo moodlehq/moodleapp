@@ -118,7 +118,18 @@ export class CoreIframeComponent implements OnDestroy {
         effect(() => {
             const host = this.iframeHostRef();
             const iframe = this.iframeElement();
-            if (!host || iframe) {
+            if (!host) {
+                return;
+            }
+
+            if (iframe) {
+                // Host was re-created, probably the src was set to empty. Re-attach the iframe to the new host.
+                if (iframe.parentElement !== host.nativeElement) {
+                    untracked(() => {
+                        host.nativeElement.appendChild(iframe);
+                    });
+                }
+
                 return;
             }
 
